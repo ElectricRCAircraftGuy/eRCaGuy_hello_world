@@ -26,7 +26,7 @@ ie: 1) .hh, .cpp C++ files --[preprocessing]-->
 COMPILE AND RUN ALL IN ONE! <========== EASIEST
     g++ -Wall -std=c++11 -save-temps hello_world.cpp -o hello_world && ./hello_world
 COMPILE AND RUN ALL IN ONE, OUTPUTTING EVERYTHING TO ./bin/ <========== MY FAVORITE
-    g++ -Wall -std=c++11 -save-temps=obj hello_world.cpp -o ./bin/hello_world && ./bin/hello_world
+    mkdir -p bin && g++ -Wall -std=c++11 -save-temps=obj hello_world.cpp -o ./bin/hello_world && ./bin/hello_world
     - For meaning of -save-temps=obj, see: https://stackoverflow.com/a/46256372/4561887
     - basically, it tells the temp objects to go to the same location as the -o setting!
 
@@ -47,7 +47,25 @@ int main()
     std::cout << "End.\n\n";
 }
 
+/*
+Sample Output:
 
+Easiest (all intermediate files are generated in same dir as the .cpp source file):
+
+    $ g++ -Wall -std=c++11 -save-temps hello_world.cpp -o hello_world && ./hello_world
+    Hello world! ~GS
+    End.
+
+My Favorite (all intermediate build files are generated in a "bin" sub-directory):
+
+    $ mkdir -p bin && g++ -Wall -std=c++11 -save-temps=obj hello_world.cpp -o ./bin/hello_world && ./bin/hello_world
+    Hello world! ~GS
+    End.
+
+
+
+
+*/
 
 
 
