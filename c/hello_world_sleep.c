@@ -80,5 +80,30 @@ int main(void)
     return 0;
 }
 
+/*
 
+Sample Output:
+
+(with 50ms sleep between each line printed)
+
+    $ gcc -Wall -g3 -std=c11 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
+
+    1: Hello sleep
+    2: Hello sleep
+    3: Hello sleep
+    4: Hello sleep
+    5: Hello sleep
+    6: Hello sleep
+    7: Hello sleep
+    8: Hello sleep
+    9: Hello sleep
+    10: Hello sleep
+    11: Hello sleep
+    12: Hello sleep
+    13: Hello sleep
+    14: Hello sleep
+
+
+
+*/
 

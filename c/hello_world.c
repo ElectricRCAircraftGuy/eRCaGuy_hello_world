@@ -53,7 +53,19 @@ int main(void)
 }
 
 /*
-Output:
+Sample Output:
+
+C11:
+
+    $ gcc -Wall -Werror -g3 -std=c11 -o hello_world hello_world.c && ./hello_world
+    Hello World
+    `true == 1`? = 1, `true == 1`? = true
+
+C++11:
+
+    $ g++ -Wall -Werror -g3 -std=c++11 -o hello_world hello_world.c && ./hello_world
+    Hello World
+    `true == 1`? = 1, `true == 1`? = true
 
 
 
