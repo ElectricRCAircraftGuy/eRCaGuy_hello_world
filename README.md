@@ -6,7 +6,7 @@ www.ElectricRCAircraftGuy.com
 
 **Status:** C & C++ demos are done and work! 
 
-## Not your average "hello world" examples
+## For beginners and experts alike: not your average "hello world" examples
 
 Note that these are NOT just your standard "simple" hello world demos for absolute beginners. Rather, they are simple enough for beginners but also contain some advanced techniques and tips & tricks to act as good reminders or teaching for more expert programmers too. I, myself, regularly reference my own examples here to remind myself of some of these details which are easy to forget. There's no sense stressing about trying to remember everything. _Instead of trying to remember everything, just remember where to look (here in this case)_. 
 
