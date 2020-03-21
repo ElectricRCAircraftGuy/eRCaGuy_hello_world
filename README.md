@@ -28,3 +28,6 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. How to specify the C or C++ version you are compiling for, such as `c90`, `c99`, or `c11` (C 2011), or `c++98`, `c++03` (C++ 2003), or `c++11` (C++ 2011)
     1. See "c/hello_world.c" and
     1. "c/hello_world_sleep.c"
+1. How to pass entire functions or curly-brace-scoped `{ }` code blocks, as though they were a single parameter, into a macro to be evaluated
+    1. See "advanced_macro_usage_pass_in_entire_func.cpp"
+
