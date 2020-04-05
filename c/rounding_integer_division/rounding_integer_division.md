@@ -6,6 +6,22 @@ This answer originally posted [on Stack Overflow here](https://stackoverflow.com
 
 --------------------------
 
+# Rounding during divion between two integers: `numerator/denominator`
+
+1. **Round down:**
+
+Rounding down during integer division is the natural state of things, because integers automatically truncate anything after the decimal. There's nothing special you have to do. For the sake of completeness, however (to match the macros, statement expressions, and template functions farther below), let's create a macro for it:
+
+    #define DIVIDE_ROUNDDOWN(numer/denom) ((numer)/(denom))
+
+And some examples with both positive and negative inputs (run them [online here](https://onlinegdb.com/BJ2eX9xPE)):
+
+    int numer = 9;
+    int denom = 10;
+    DIVIDE_ROUNDDOWN(numer, denom);  // 9/10 = 0.9 --> 0
+    DIVIDE_ROUNDDOWN(-numer, denom); // -9/10 = -0.9 --> 
+
+
 ## TLDR: Here's a macro; use it!
     
     // To do (numer/denom), rounded to the nearest whole integer, use:
