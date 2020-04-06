@@ -37,10 +37,14 @@ References:
 
 *******************************************************************************/
 
+#include <assert.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 
 // For unit testing:
+
+static uint32_t test_fail_cnt = 0; // increment counter each time a test fails
 
 /// @brief  Test if num1 and num2 are equal, automatically passing the line number to the 
 ///         test function.
@@ -54,6 +58,7 @@ void test_eq(int num1, int num2, int line_num)
 
     if (num1 != num2)
     {
+        test_fail_cnt++;
         printf("FAIL! <==\n");
     }
     else
@@ -174,9 +179,9 @@ void test_eq(int num1, int num2, int line_num)
 ({                                                                                      \
     __typeof__ (numer) numer_ = (numer);                                                \
     __typeof__ (denom) denom_ = (denom);                                                \
-    ((numer) < 0) != ((denom) < 0) ?                                                    \
-    (numer) / (denom) :                                                                 \
-    ((numer) + ((denom) < 0 ? (denom) + 1 : (denom) - 1)) / (denom);                    \
+    ((numer_) < 0) != ((denom_) < 0) ?                                                  \
+    (numer_) / (denom_) :                                                               \
+    ((numer_) + ((denom_) < 0 ? (denom_) + 1 : (denom_) - 1)) / (denom_);               \
 })
 
 /// @brief  *gcc statement expression* form of the above equivalent macro
@@ -184,9 +189,9 @@ void test_eq(int num1, int num2, int line_num)
 ({                                                                                      \
     __typeof__ (numer) numer_ = (numer);                                                \
     __typeof__ (denom) denom_ = (denom);                                                \
-    ((numer) < 0) != ((denom) < 0) ?                                                    \
-    ((numer) - ((denom) < 0 ? (denom) + 1 : (denom) - 1)) / (denom) :                   \
-    (numer) / (denom);                                                                  \
+    ((numer_) < 0) != ((denom_) < 0) ?                                                  \
+    ((numer_) - ((denom_) < 0 ? (denom_) + 1 : (denom_) - 1)) / (denom_) :              \
+    (numer_) / (denom_);                                                                \
 })
 
 /// @brief  *gcc statement expression* form of the above equivalent macro
@@ -194,9 +199,9 @@ void test_eq(int num1, int num2, int line_num)
 ({                                                                                      \
     __typeof__ (numer) numer_ = (numer);                                                \
     __typeof__ (denom) denom_ = (denom);                                                \
-    ((numer) < 0) != ((denom) < 0) ?                                                    \
-    ((numer) - ((denom)/2)) / (denom) :                                                 \
-    ((numer) + ((denom)/2)) / (denom);                                                  \
+    ((numer_) < 0) != ((denom_) < 0) ?                                                  \
+    ((numer_) - ((denom_)/2)) / (denom_) :                                              \
+    ((numer_) + ((denom_)/2)) / (denom_);                                               \
 })
 
 
@@ -266,8 +271,8 @@ T divide_roundnearest(T numer, T denom)
     static_assert(std::numeric_limits<T>::is_integer, "Only integer types are allowed"); 
 
     T result = ((numer) < 0) != ((denom) < 0) ?
-        ((numer) - ((denom) < 0 ? (denom) + 1 : (denom) - 1)) / (denom) :
-        (numer) / (denom);
+        ((numer) - ((denom)/2)) / (denom) :
+        ((numer) + ((denom)/2)) / (denom);
     return result;
 }
 
@@ -280,6 +285,7 @@ T divide_roundnearest(T numer, T denom)
 int main()
 {
     printf("Testing Rounding Integer Division\n\n");
+
 
     printf("1. Macro Tests\n\n");
 
@@ -328,6 +334,103 @@ int main()
     TEST_EQ(DIVIDE_ROUNDNEAREST(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
     TEST_EQ(DIVIDE_ROUNDNEAREST(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
 
+
+    printf("\n\n2. Statement Expression Tests\n\n");
+
+    printf("DIVIDE_ROUNDUP2():\n");
+    TEST_EQ(DIVIDE_ROUNDUP2(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDUP2(5, 4), 2);   // 5/4   = 1.25 --> 2
+    TEST_EQ(DIVIDE_ROUNDUP2(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(DIVIDE_ROUNDUP2(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(DIVIDE_ROUNDUP2(9, 10), 1);  // 9/10  = 0.90 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP2(3, 4), 1);   // 3/4   = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP2(-3, 4), 0);  // -3/4  = -0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP2(3, -4), 0);  // 3/-4  = -0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP2(-3, -4), 1); // -3/-4 = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP2(999, 1000), 1);   // 999/1000    = 0.999 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP2(-999, 1000), 0);  // -999/1000   = -0.999 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP2(999, -1000), 0);  // 999/-1000   = -0.999 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP2(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
+
+    printf("\nDIVIDE_ROUNDDOWN2():\n");
+    TEST_EQ(DIVIDE_ROUNDDOWN2(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDDOWN2(5, 4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(6, 4), 1);   // 6/4   = 1.50 --> 1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(7, 4), 1);   // 7/4   = 1.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(9, 10), 0);  // 9/10  = 0.90 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN2(3, 4), 0);   // 3/4   = 0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN2(-3, 4), -1); // -3/4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(3, -4), -1); // 3/-4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(-3, -4), 0); // -3/-4 = 0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN2(999, 1000), 0);   // 999/1000    = 0.999 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN2(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN2(-999, -1000), 0); // -999/-1000  = 0.999 --> 0
+    
+    printf("\nDIVIDE_ROUNDNEAREST2():\n");
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(5, 4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(9, 10), 1);  // 9/10  = 0.90 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(3, 4), 1);   // 3/4   = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(-3, 4), -1);  // -3/4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(3, -4), -1);  // 3/-4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(-3, -4), 1); // -3/-4 = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(999, 1000), 1);   // 999/1000    = 0.999 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
+
+
+#ifdef __cplusplus
+    printf("\n\n3. Function Template Tests\n\n");
+
+    printf("divide_roundup():\n");
+    TEST_EQ(divide_roundup(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(divide_roundup(5, 4), 2);   // 5/4   = 1.25 --> 2
+    TEST_EQ(divide_roundup(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(divide_roundup(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(divide_roundup(9, 10), 1);  // 9/10  = 0.90 --> 1
+    TEST_EQ(divide_roundup(3, 4), 1);   // 3/4   = 0.75 --> 1
+    TEST_EQ(divide_roundup(-3, 4), 0);  // -3/4  = -0.75 --> 0
+    TEST_EQ(divide_roundup(3, -4), 0);  // 3/-4  = -0.75 --> 0
+    TEST_EQ(divide_roundup(-3, -4), 1); // -3/-4 = 0.75 --> 1
+    TEST_EQ(divide_roundup(999, 1000), 1);   // 999/1000    = 0.999 --> 1
+    TEST_EQ(divide_roundup(-999, 1000), 0);  // -999/1000   = -0.999 --> 0
+    TEST_EQ(divide_roundup(999, -1000), 0);  // 999/-1000   = -0.999 --> 0
+    TEST_EQ(divide_roundup(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
+
+    printf("\ndivide_rounddown():\n");
+    TEST_EQ(divide_rounddown(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(divide_rounddown(5, 4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(divide_rounddown(6, 4), 1);   // 6/4   = 1.50 --> 1
+    TEST_EQ(divide_rounddown(7, 4), 1);   // 7/4   = 1.75 --> 1
+    TEST_EQ(divide_rounddown(9, 10), 0);  // 9/10  = 0.90 --> 0
+    TEST_EQ(divide_rounddown(3, 4), 0);   // 3/4   = 0.75 --> 0
+    TEST_EQ(divide_rounddown(-3, 4), -1); // -3/4  = -0.75 --> -1
+    TEST_EQ(divide_rounddown(3, -4), -1); // 3/-4  = -0.75 --> -1
+    TEST_EQ(divide_rounddown(-3, -4), 0); // -3/-4 = 0.75 --> 0
+    TEST_EQ(divide_rounddown(999, 1000), 0);   // 999/1000    = 0.999 --> 0
+    TEST_EQ(divide_rounddown(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
+    TEST_EQ(divide_rounddown(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
+    TEST_EQ(divide_rounddown(-999, -1000), 0); // -999/-1000  = 0.999 --> 0
+    
+    printf("\ndivide_roundnearest():\n");
+    TEST_EQ(divide_roundnearest(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(divide_roundnearest(5, 4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(divide_roundnearest(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(divide_roundnearest(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(divide_roundnearest(9, 10), 1);  // 9/10  = 0.90 --> 1
+    TEST_EQ(divide_roundnearest(3, 4), 1);   // 3/4   = 0.75 --> 1
+    TEST_EQ(divide_roundnearest(-3, 4), -1);  // -3/4  = -0.75 --> -1
+    TEST_EQ(divide_roundnearest(3, -4), -1);  // 3/-4  = -0.75 --> -1
+    TEST_EQ(divide_roundnearest(-3, -4), 1); // -3/-4 = 0.75 --> 1
+    TEST_EQ(divide_roundnearest(999, 1000), 1);   // 999/1000    = 0.999 --> 1
+    TEST_EQ(divide_roundnearest(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
+    TEST_EQ(divide_roundnearest(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
+    TEST_EQ(divide_roundnearest(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
+#endif
 
 // #ifdef __cplusplus
 //     printf("\nTEMPLATE TESTS:\n");
@@ -378,7 +481,9 @@ int main()
     
 // #endif
     
-    printf("\n");
+    printf("\nTest failure count = %u\n\n", test_fail_cnt);
+    assert(test_fail_cnt == 0);
+
     return 0;
 }
 
