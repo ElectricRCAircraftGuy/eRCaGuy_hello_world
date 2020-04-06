@@ -40,33 +40,59 @@ References:
 #include <stdint.h>
 #include <stdio.h>
 
+#define TEST_EQ(num1, num2, line_num) test_eq(num1, num2, __LINE__)
+
+// Function for unit tests
+void test_eq(int num1, int num2, int line_num)
+{
+    printf("Line %i:\t%i == %i\t\t", line_num, num1, num2);
+
+    if (num1 != num2)
+    {
+        printf("FAIL!\n");
+    }
+    else
+    {
+        printf("pass\n");
+    }
+}
+
 // 1. Macros
 // Great for C or C++, but some C++ developers hate them since they may have the multiple evaluation
 // problem where you pass in an expression as an input parameter and it gets evaluated multiple 
 // times.
 
-#define DIVIDE_ROUNDUP(numer, denom) (                                          \
-    /* NB: `!=` acts as a logical XOR operator; we are checking here to see */  \
-    /* if numer OR denom, but NOT both, is negative */                          \
-    ((numer) < 0) != ((denom) < 0) ?                                            \
-    (numer) / (denom) :                                                         \
-    ((numer) + ((denom) - 1)) / (denom)                                         \
+/////////
+#define DIVIDE_ROUNDUP(numer, denom) (                                                  \
+    /* NB: `!=` acts as a logical XOR operator */                                       \
+    /* See: https://stackoverflow.com/a/1596681/4561887 */                              \
+    ((numer) < 0) != ((denom) < 0) ?                                                    \
+    /* numer OR denom, but NOT both, is negative, so do this: */                        \
+    (numer) / (denom) :                                                                 \
+    /* numer AND denom are either *both positive* OR *both negative*, so do this: */    \
+    ((numer) + ((denom) - 1)) / (denom)                                                 \
 )
 
-#define DIVIDE_ROUNDDOWN(numer, denom) (                                        \
-    /* NB: `!=` acts as a logical XOR operator; we are checking here to see */  \
-    /* if numer OR denom, but NOT both, is negative */                          \
-    ((numer) < 0) != ((denom) < 0) ?                                            \
-    ((numer) - ((denom) - 1)) / (denom) :                                       \
-    (numer) / (denom)                                                           \
+/////
+#define DIVIDE_ROUNDDOWN(numer, denom) (                                                \
+    /* NB: `!=` acts as a logical XOR operator */                                       \
+    /* See: https://stackoverflow.com/a/1596681/4561887 */                              \
+    ((numer) < 0) != ((denom) < 0) ?                                                    \
+    /* numer OR denom, but NOT both, is negative, so do this: */                        \
+    ((numer) - ((denom) - 1)) / (denom) :                                               \
+    /* numer AND denom are either *both positive* OR *both negative*, so do this: */    \
+    (numer) / (denom)                                                                   \
 )
 
-#define DIVIDE_ROUNDNEAREST(numer, denom) (                                     \
-    /* NB: `!=` acts as a logical XOR operator; we are checking here to see */  \
-    /* if numer OR denom, but NOT both, is negative */                          \
-    ((numer) < 0) != ((denom) < 0) ?                                            \
-    ((numer) - ((denom)/2)) / (denom) :                                         \
-    ((numer) + ((denom)/2)) / (denom)                                           \
+//////////
+#define DIVIDE_ROUNDNEAREST(numer, denom) (                                             \
+    /* NB: `!=` acts as a logical XOR operator */                                       \
+    /* See: https://stackoverflow.com/a/1596681/4561887 */                              \
+    ((numer) < 0) != ((denom) < 0) ?                                                    \
+    /* numer OR denom, but NOT both, is negative, so do this: */                        \
+    ((numer) - ((denom)/2)) / (denom) :                                                 \
+    /* numer AND denom are either *both positive* OR *both negative*, so do this: */    \
+    ((numer) + ((denom)/2)) / (denom)                                                   \
 )
 
 
@@ -93,32 +119,6 @@ References:
 
 
 
-
-// TODO: THIS LOOKS LIKE A CORRECT ANSWER; TEST IT! https://stackoverflow.com/a/18067292/4561887
-
-// // For positive OR negative numbers!
-// #define ROUND_DIVISION2(numerator, denominator) \
-//     do {
-//         bool numer_is_negative = false;
-//         bool denom_is_negative = false;
-//         // Don't use `abs()`, as it only handles `int` in C
-//         if ((numerator) < 0)
-//         {
-//             numer_is_negative = true;
-//             numerator = -(numerator);
-//         }
-//         if ((denominator) < 0)
-//         {
-//             denom_is_negative = true;
-//             denominator = -(denominator);
-//         }
-//         // The `!=` acts as a logical XOR here; 
-//         // see: https://stackoverflow.com/a/1596681/4561887
-//         bool answer_is_negative = numer_is_negative != denom_is_negative;
-        
-//         ((numerator) + (denominator)/2)/(denominator)
-//     } while (0)
-
 #ifdef __cplusplus
 #include <limits>
 
@@ -138,98 +138,98 @@ T round_division(T numerator, T denominator)
     return (numerator + denominator/2)/denominator;
 }
 
-// For positive OR negative numbers
-// TODO 
-
 #endif
 
 int main()
 {
-    printf("Hello World\n");
+    int result;
+
+    printf("Testing Rounding Integer Division\n\n");
+
+    printf("1. Macro Tests\n\n");
+
+    printf("DIVIDE_ROUNDUP():\n\n")
+    TEST_EQ(DIVIDE_ROUNDUP(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDUP(5, 4), 2);   // 5/4   = 1.25 --> 2
+    TEST_EQ(DIVIDE_ROUNDUP(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(DIVIDE_ROUNDUP(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(DIVIDE_ROUNDUP(9, 10), 1);  // 9/10  = 0.90 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP(3, 4), 1);   // 3/4   = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP(-3, 4), 0);  // -3/4  = -0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP(3, -4), 0);  // 3/-4  = -0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP(-3, -4), 1); // -3/-4 = 0.75 --> 1
+
+    printf("DIVIDE_ROUNDDOWN():\n\n")
+    TEST_EQ(DIVIDE_ROUNDDOWN(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDDOWN(5, 4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(DIVIDE_ROUNDDOWN(6, 4), 1);   // 6/4   = 1.50 --> 1
+    TEST_EQ(DIVIDE_ROUNDDOWN(7, 4), 1);   // 7/4   = 1.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDDOWN(9, 10), 0);  // 9/10  = 0.90 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN(3, 4), 0);   // 3/4   = 0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN(-3, 4), -1); // -3/4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN(3, -4), -1); // 3/-4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN(-3, -4), 0); // -3/-4 = 0.75 --> 0
     
-    int i;
-    
-    
-    printf("\nMACRO TESTS:\n");
-    
-    i = ROUND_DIVISION(5, 4); // 5/4 = 1.25 --> 1
-    printf("%u\n", i);
-    
-    i = ROUND_DIVISION(6, 4); // 6/4 = 1.5 --> 2
-    printf("%u\n", i);
-    
-    i = ROUND_DIVISION(7, 4); // 7/4 = 1.75 --> 2
-    printf("%u\n", i);
-    
-    i = ROUND_DIVISION(9, 5); // 9/5 = 1.8 --> 2
-    printf("%u\n", i);
-    
-    i = ROUND_DIVISION(4, 4); // 4/4 = 1 --> 1
-    printf("%u\n", i);
-    
-    i = ROUND_DIVISION(3, 4); // 3/4 = 0.75 --> 1
-    printf("%u\n", i);
-    
-    // TRY IT ON NEGATIVE NUMBERS (WILL FAIL!)
-    printf("negative numbers:\n");
-    i = ROUND_DIVISION(-3, 4); // -3/4 = -0.75 --> 0 FAILED!
-    printf("%u\n", i);
-    i = ROUND_DIVISION(3, -4); // 3/-4 = -0.75 --> 0 FAILED!
-    printf("%u\n", i);
-    i = ROUND_DIVISION(-3, -4); // -3/-4 = 0.75 --> 1 PASSED!
-    printf("%u\n", i);
-    // Now try the new negative-capable statement expression version here 
-    // todo 
+    printf("DIVIDE_ROUNDNEAREST():\n\n")
+    TEST_EQ(DIVIDE_ROUNDNEAREST(5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDNEAREST(5, 4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(DIVIDE_ROUNDNEAREST(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(DIVIDE_ROUNDNEAREST(9, 10), 1);  // 9/10  = 0.90 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(3, 4), 1);   // 3/4   = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(-3, 4), -1);  // -3/4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(3, -4), -1);  // 3/-4  = -0.75 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(-3, -4), 1); // -3/-4 = 0.75 --> 1
 
 
-#ifdef __cplusplus
-    printf("\nTEMPLATE TESTS:\n");
+// #ifdef __cplusplus
+//     printf("\nTEMPLATE TESTS:\n");
     
-    i = round_division(5, 4); // 5/4 = 1.25 --> 1
-    printf("%u\n", i);
+//     i = round_division(5, 4); // 5/4 = 1.25 --> 1
+//     printf("%u\n", i);
     
-    i = round_division(6, 4); // 6/4 = 1.5 --> 2
-    printf("%u\n", i);
+//     i = round_division(6, 4); // 6/4 = 1.5 --> 2
+//     printf("%u\n", i);
     
-    i = round_division(7, 4); // 7/4 = 1.75 --> 2
-    printf("%u\n", i);
+//     i = round_division(7, 4); // 7/4 = 1.75 --> 2
+//     printf("%u\n", i);
     
-    i = round_division(9, 5); // 9/5 = 1.8 --> 2
-    printf("%u\n", i);
+//     i = round_division(9, 5); // 9/5 = 1.8 --> 2
+//     printf("%u\n", i);
     
-    i = round_division(4, 4); // 4/4 = 1 --> 1
-    printf("%u\n", i);
-    
-    
-    // Check the static assert to ensure only integer types are allowed,
-    // including with const or volatile specifiers
-    
-    // Float test:
-    // HITS STATIC ASSERT! GOOD!
-    // i = round_division(7.0, 4.0); // 7/4 = 1.75 --> 2
-    // printf("%u\n", i);
-    
-    float f = 7.0;
-    // round_division(f, f*2);
-    // round_division(f, 4);
-    uint8_t u8 = 7;
-    uint16_t u16 = 4;
-    // round_division(u8, u16); // error: no matching function for call to ‘round_division(uint8_t&, uint16_t&)’
-    uint16_t u16_2 = round_division((uint16_t)u8, u16);
-    printf("%u\n", u16_2); // 7/4 = 1.75 --> 2 
-    
-    const uint16_t u16_3 = 25;
-    volatile uint16_t u16_4 = 7;
-    u16_2 = round_division(u16_3, u16_4);
-    printf("%u\n", u16_2); // 25/7 = 3.57 --> 4
-    
-    const volatile uint32_t u32_1 = 25;
-    uint32_t u32_2 = 7;
-    uint32_t u32_result = round_division(u32_1, u32_2);
-    printf("%u\n", u32_result); // 25/7 = 3.57 --> 4
+//     i = round_division(4, 4); // 4/4 = 1 --> 1
+//     printf("%u\n", i);
     
     
-#endif
+//     // Check the static assert to ensure only integer types are allowed,
+//     // including with const or volatile specifiers
+    
+//     // Float test:
+//     // HITS STATIC ASSERT! GOOD!
+//     // i = round_division(7.0, 4.0); // 7/4 = 1.75 --> 2
+//     // printf("%u\n", i);
+    
+//     float f = 7.0;
+//     // round_division(f, f*2);
+//     // round_division(f, 4);
+//     uint8_t u8 = 7;
+//     uint16_t u16 = 4;
+//     // round_division(u8, u16); // error: no matching function for call to ‘round_division(uint8_t&, uint16_t&)’
+//     uint16_t u16_2 = round_division((uint16_t)u8, u16);
+//     printf("%u\n", u16_2); // 7/4 = 1.75 --> 2 
+    
+//     const uint16_t u16_3 = 25;
+//     volatile uint16_t u16_4 = 7;
+//     u16_2 = round_division(u16_3, u16_4);
+//     printf("%u\n", u16_2); // 25/7 = 3.57 --> 4
+    
+//     const volatile uint32_t u32_1 = 25;
+//     uint32_t u32_2 = 7;
+//     uint32_t u32_result = round_division(u32_1, u32_2);
+//     printf("%u\n", u32_result); // 25/7 = 3.57 --> 4
+    
+    
+// #endif
     
 
     return 0;
