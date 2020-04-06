@@ -334,6 +334,10 @@ int main()
     TEST_EQ(DIVIDE_ROUNDNEAREST(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
     TEST_EQ(DIVIDE_ROUNDNEAREST(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
 
+    // Add a few extras with some unsigned types
+    TEST_EQ(DIVIDE_ROUNDNEAREST((uint8_t)5, 5), 1);   // 5/5   = 1.00 --> 1 
+    TEST_EQ(DIVIDE_ROUNDNEAREST(5, (uint64_t)4), 1);   // 5/4   = 1.25 --> 1
+
 
     printf("\n\n2. Statement Expression Tests\n\n");
 
@@ -430,56 +434,31 @@ int main()
     TEST_EQ(divide_roundnearest(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
     TEST_EQ(divide_roundnearest(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
     TEST_EQ(divide_roundnearest(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
-#endif
 
-// #ifdef __cplusplus
-//     printf("\nTEMPLATE TESTS:\n");
+    // Check the static assert to ensure only integer types are allowed,
+    // including with const or volatile specifiers
     
-//     i = round_division(5, 4); // 5/4 = 1.25 --> 1
-//     printf("%u\n", i);
-    
-//     i = round_division(6, 4); // 6/4 = 1.5 --> 2
-//     printf("%u\n", i);
-    
-//     i = round_division(7, 4); // 7/4 = 1.75 --> 2
-//     printf("%u\n", i);
-    
-//     i = round_division(9, 5); // 9/5 = 1.8 --> 2
-//     printf("%u\n", i);
-    
-//     i = round_division(4, 4); // 4/4 = 1 --> 1
-//     printf("%u\n", i);
-    
-    
-//     // Check the static assert to ensure only integer types are allowed,
-//     // including with const or volatile specifiers
-    
-//     // Float test:
-//     // HITS STATIC ASSERT! GOOD!
-//     // i = round_division(7.0, 4.0); // 7/4 = 1.75 --> 2
-//     // printf("%u\n", i);
-    
-//     float f = 7.0;
-//     // round_division(f, f*2);
-//     // round_division(f, 4);
-//     uint8_t u8 = 7;
-//     uint16_t u16 = 4;
-//     // round_division(u8, u16); // error: no matching function for call to ‘round_division(uint8_t&, uint16_t&)’
-//     uint16_t u16_2 = round_division((uint16_t)u8, u16);
-//     printf("%u\n", u16_2); // 7/4 = 1.75 --> 2 
-    
-//     const uint16_t u16_3 = 25;
-//     volatile uint16_t u16_4 = 7;
-//     u16_2 = round_division(u16_3, u16_4);
-//     printf("%u\n", u16_2); // 25/7 = 3.57 --> 4
-    
-//     const volatile uint32_t u32_1 = 25;
-//     uint32_t u32_2 = 7;
-//     uint32_t u32_result = round_division(u32_1, u32_2);
-//     printf("%u\n", u32_result); // 25/7 = 3.57 --> 4
-    
-    
-// #endif
+    // Float test:
+    // HITS STATIC ASSERT! GOOD!
+    //      error: static assertion failed: Only integer types are allowed
+    //              static_assert(std::numeric_limits<T>::is_integer, "Only integer types are allowed");
+    //              ^~~~~~~~~~~~~
+    // TEST_EQ(divide_roundnearest(7.0, 4.0), 2); // 7/4 = 1.75
+
+    // Check differing types; this should NOT work since I wrote the template to expect two inputs
+    // of the EXACT SAME TYPE!
+    // FAILS TO COMPILE! GOOD!
+    //      rounding_integer_division.cpp:451:56: error: no matching function for call to ‘divide_roundnearest(uint32_t, int32_t)’
+    //              TEST_EQ(divide_roundnearest((uint32_t)7, (int32_t)4), 2); // 7/4 = 1.75 --> 2
+    //                                                                 ^
+    // TEST_EQ(divide_roundnearest((uint32_t)7, (int32_t)4), 2); // 7/4 = 1.75 --> 2
+
+    // Try a few as uint8_t for kicks:
+    TEST_EQ(divide_roundnearest((uint8_t)5, (uint8_t)4), 1);   // 5/4   = 1.25 --> 1
+    TEST_EQ(divide_roundnearest((uint8_t)6, (uint8_t)4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(divide_roundnearest((uint8_t)7, (uint8_t)4), 2);   // 7/4   = 1.75 --> 2
+
+#endif
     
     printf("\nTest failure count = %u\n\n", test_fail_cnt);
     assert(test_fail_cnt == 0);
