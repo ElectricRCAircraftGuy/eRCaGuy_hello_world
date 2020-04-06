@@ -40,9 +40,59 @@ References:
 #include <stdint.h>
 #include <stdio.h>
 
-// Works in C perfectly! (for POSITIVE numbers only!)
-#define ROUND_DIVISION(numerator, denominator) \
-    ((numerator) + (denominator)/2)/(denominator)
+// 1. Macros
+// Great for C or C++, but some C++ developers hate them since they may have the multiple evaluation
+// problem where you pass in an expression as an input parameter and it gets evaluated multiple 
+// times.
+
+#define DIVIDE_ROUNDUP(numer, denom) (                                          \
+    /* NB: `!=` acts as a logical XOR operator; we are checking here to see */  \
+    /* if numer OR denom, but NOT both, is negative */                          \
+    ((numer) < 0) != ((denom) < 0) ?                                            \
+    (numer) / (denom) :                                                         \
+    ((numer) + ((denom) - 1)) / (denom)                                         \
+)
+
+#define DIVIDE_ROUNDDOWN(numer, denom) (                                        \
+    /* NB: `!=` acts as a logical XOR operator; we are checking here to see */  \
+    /* if numer OR denom, but NOT both, is negative */                          \
+    ((numer) < 0) != ((denom) < 0) ?                                            \
+    ((numer) - ((denom) - 1)) / (denom) :                                       \
+    (numer) / (denom)                                                           \
+)
+
+#define DIVIDE_ROUNDNEAREST(numer, denom) (                                     \
+    /* NB: `!=` acts as a logical XOR operator; we are checking here to see */  \
+    /* if numer OR denom, but NOT both, is negative */                          \
+    ((numer) < 0) != ((denom) < 0) ?                                            \
+    ((numer) - ((denom)/2)) / (denom) :                                         \
+    ((numer) + ((denom)/2)) / (denom)                                           \
+)
+
+
+// #define ROUND_DIVISION(numerator, denominator) \
+//     ((numerator) + (denominator)/2)/(denominator)
+
+
+// 2. Statement Expressions
+// These solve the multiple evaluation problem of macros perfectly, but are not part of the C or 
+// C++ standard. Instead, they are gcc and clang compiler extensions to C and C++. These are safer
+// to use than macros, but can still have a name pollution risk because variables created inside
+// statement expressions are not in their own scope--rather, they are part of the outer scope.
+// Nevertheless, prefer them to macros.
+
+// 3. C++ Templated Functions (AKA: Function Templates)
+// Work in C++ only. They solve both problems above, and suffer neither from the multiple evaluation
+// problem of macros, nor from the name pollution/variable scope problem of statement expressions.
+// Since they work only in C++, I'm going to add type checking here too with a `static_assert()`
+// using `std::numeric_limits`, but the truth is this feature could be *easily* added to both
+// macros and statement expressions as well so long as you're using C++. Some C++ developers
+// feel so hateful towards macros (and are ignorant of statement expressions) that they'd rather
+// die than use anything but templates in this case, so for those cases where someone would rather
+// die than use one of the above approaches, use templates.
+
+
+
 
 // TODO: THIS LOOKS LIKE A CORRECT ANSWER; TEST IT! https://stackoverflow.com/a/18067292/4561887
 
