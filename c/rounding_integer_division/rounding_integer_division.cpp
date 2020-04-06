@@ -5,7 +5,15 @@ GDB online is an online compiler and debugger tool for C, C++, Python, PHP, Ruby
 C#, VB, Perl, Swift, Prolog, Javascript, Pascal, HTML, CSS, JS
 Code, Compile, Run and Debug online from anywhere in world.
 
-integer_rounding_during_division
+OnlineGDB name: integer_rounding_during_division
+eRCaGuy_hello_world project name: rounding_integer_division.cpp
+
+Build & run commands:
+Note: C files can't end in .cpp or else C compilation fails, so the .c version of this file
+for C compilation is simply a symbolic link to the .cpp version of this file. Therefore, they
+are the same file. Editing one will edit the other.
+1. C:   gcc -Wall -Werror -g3 -std=c11 -o rounding_integer_division rounding_integer_division.c && ./rounding_integer_division
+2. C++: g++ -Wall -Werror -g3 -std=c++17 -o rounding_integer_division rounding_integer_division.cpp && ./rounding_integer_division
 
 Gabriel Staples 
 www.ElectricRCAircraftGuy.com 
