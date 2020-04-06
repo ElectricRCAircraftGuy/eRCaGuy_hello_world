@@ -62,15 +62,16 @@ void test_eq(int num1, int num2, int line_num)
 // problem where you pass in an expression as an input parameter and it gets evaluated multiple 
 // times.
 
-/////////
+///////// 
 #define DIVIDE_ROUNDUP(numer, denom) (                                                  \
     /* NB: `!=` acts as a logical XOR operator */                                       \
     /* See: https://stackoverflow.com/a/1596681/4561887 */                              \
     ((numer) < 0) != ((denom) < 0) ?                                                    \
     /* numer OR denom, but NOT both, is negative, so do this: */                        \
     (numer) / (denom) :                                                                 \
-    /* numer AND denom are either *both positive* OR *both negative*, so do this: */    \
-    ((numer) + ((denom) - 1)) / (denom)                                                 \
+    /* numer AND denom are either *both positive* OR *both negative*, so do this, */    \
+    /* acting slightly differently if denom is negative: */                             \
+    ((numer) + ((denom) < 0 ? (denom) + 1 : (denom) - 1)) / (denom)                     \
 )
 
 /////
@@ -78,8 +79,9 @@ void test_eq(int num1, int num2, int line_num)
     /* NB: `!=` acts as a logical XOR operator */                                       \
     /* See: https://stackoverflow.com/a/1596681/4561887 */                              \
     ((numer) < 0) != ((denom) < 0) ?                                                    \
-    /* numer OR denom, but NOT both, is negative, so do this: */                        \
-    ((numer) - ((denom) - 1)) / (denom) :                                               \
+    /* numer OR denom, but NOT both, is negative, so do this, */                        \
+    /* acting slightly differently if denom is negative: */                             \
+    ((numer) - ((denom) < 0 ? (denom) + 1 : (denom) - 1)) / (denom) :                   \
     /* numer AND denom are either *both positive* OR *both negative*, so do this: */    \
     (numer) / (denom)                                                                   \
 )
@@ -152,6 +154,10 @@ int main()
     TEST_EQ(DIVIDE_ROUNDUP(-3, 4), 0);  // -3/4  = -0.75 --> 0
     TEST_EQ(DIVIDE_ROUNDUP(3, -4), 0);  // 3/-4  = -0.75 --> 0
     TEST_EQ(DIVIDE_ROUNDUP(-3, -4), 1); // -3/-4 = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP(999, 1000), 1);   // 999/1000    = 0.999 --> 1
+    TEST_EQ(DIVIDE_ROUNDUP(-999, 1000), 0);  // -999/1000   = -0.999 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP(999, -1000), 0);  // 999/-1000   = -0.999 --> 0
+    TEST_EQ(DIVIDE_ROUNDUP(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
 
     printf("\nDIVIDE_ROUNDDOWN():\n");
     TEST_EQ(DIVIDE_ROUNDDOWN(5, 5), 1);   // 5/5   = 1.00 --> 1 
@@ -163,6 +169,10 @@ int main()
     TEST_EQ(DIVIDE_ROUNDDOWN(-3, 4), -1); // -3/4  = -0.75 --> -1
     TEST_EQ(DIVIDE_ROUNDDOWN(3, -4), -1); // 3/-4  = -0.75 --> -1
     TEST_EQ(DIVIDE_ROUNDDOWN(-3, -4), 0); // -3/-4 = 0.75 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN(999, 1000), 0);   // 999/1000    = 0.999 --> 0
+    TEST_EQ(DIVIDE_ROUNDDOWN(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDDOWN(-999, -1000), 0); // -999/-1000  = 0.999 --> 0
     
     printf("\nDIVIDE_ROUNDNEAREST():\n");
     TEST_EQ(DIVIDE_ROUNDNEAREST(5, 5), 1);   // 5/5   = 1.00 --> 1 
@@ -174,6 +184,10 @@ int main()
     TEST_EQ(DIVIDE_ROUNDNEAREST(-3, 4), -1);  // -3/4  = -0.75 --> -1
     TEST_EQ(DIVIDE_ROUNDNEAREST(3, -4), -1);  // 3/-4  = -0.75 --> -1
     TEST_EQ(DIVIDE_ROUNDNEAREST(-3, -4), 1); // -3/-4 = 0.75 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(999, 1000), 1);   // 999/1000    = 0.999 --> 1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(-999, 1000), -1);  // -999/1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(999, -1000), -1);  // 999/-1000   = -0.999 --> -1
+    TEST_EQ(DIVIDE_ROUNDNEAREST(-999, -1000), 1); // -999/-1000  = 0.999 --> 1
 
 
 // #ifdef __cplusplus
@@ -225,7 +239,7 @@ int main()
     
 // #endif
     
-
+    printf("\n");
     return 0;
 }
 

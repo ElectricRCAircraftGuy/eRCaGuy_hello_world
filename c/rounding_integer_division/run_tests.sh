@@ -13,7 +13,6 @@ echo ""
 gcc -Wall -Werror -g3 -std=c11 -o "$THIS_DIR/bin/rounding_integer_division_c" "$THIS_DIR/rounding_integer_division.c" && "$THIS_DIR/bin/rounding_integer_division_c"
 
 echo ""
-echo ""
 echo "=========================="
 echo "2/2: C++ tests"
 echo 'g++ -Wall -Werror -g3 -std=c++17 -o "$THIS_DIR/bin/rounding_integer_division_cpp" "$THIS_DIR/rounding_integer_division.cpp" && "$THIS_DIR/bin/rounding_integer_division_cpp"'
