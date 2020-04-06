@@ -5,6 +5,9 @@ THIS_PATH="$(realpath $0)"
 THIS_DIR="$(dirname "$THIS_PATH")"
 # echo "THIS_DIR = \"$THIS_DIR\"" # for debugging 
 
+# Ensure bin dir exists for executable outputs to be placed
+mkdir -p "$THIS_DIR/bin"
+
 echo "=========================="
 echo "1/2: C tests"
 echo 'gcc -Wall -Werror -g3 -std=c11 -o "$THIS_DIR/bin/rounding_integer_division_c" "$THIS_DIR/rounding_integer_division.c" && "$THIS_DIR/bin/rounding_integer_division_c"'

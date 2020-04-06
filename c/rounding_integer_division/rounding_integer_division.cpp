@@ -42,7 +42,9 @@ References:
 #include <stdint.h>
 #include <stdio.h>
 
+// -------------------------------------------------------------------------------------------------
 // For unit testing:
+// -------------------------------------------------------------------------------------------------
 
 static uint32_t test_fail_cnt = 0; // increment counter each time a test fails
 
@@ -464,7 +466,7 @@ int main()
     assert(test_fail_cnt == 0);
 
     return 0;
-}
+} // main
 
 
 
