@@ -15,7 +15,7 @@ are the same file. Editing one will edit the other.
 1. C:   gcc -Wall -Werror -g3 -std=c11 -o rounding_integer_division rounding_integer_division.c && ./rounding_integer_division
 2. C++: g++ -Wall -Werror -g3 -std=c++17 -o rounding_integer_division rounding_integer_division.cpp && ./rounding_integer_division
 
-Gabriel Staples 
+By Gabriel Staples 
 www.ElectricRCAircraftGuy.com 
 Started: Oct. 2019 
 Last updated: Apr. 2020 
@@ -40,16 +40,16 @@ References:
 #include <stdint.h>
 #include <stdio.h>
 
-#define TEST_EQ(num1, num2, line_num) test_eq(num1, num2, __LINE__)
+#define TEST_EQ(num1, num2) test_eq(num1, num2, __LINE__)
 
 // Function for unit tests
 void test_eq(int num1, int num2, int line_num)
 {
-    printf("Line %i:\t%i == %i\t\t", line_num, num1, num2);
+    printf("Line %4i:%3i == %3i  ", line_num, num1, num2);
 
     if (num1 != num2)
     {
-        printf("FAIL!\n");
+        printf("FAIL! <==\n");
     }
     else
     {
@@ -96,10 +96,6 @@ void test_eq(int num1, int num2, int line_num)
 )
 
 
-// #define ROUND_DIVISION(numerator, denominator) \
-//     ((numerator) + (denominator)/2)/(denominator)
-
-
 // 2. Statement Expressions
 // These solve the multiple evaluation problem of macros perfectly, but are not part of the C or 
 // C++ standard. Instead, they are gcc and clang compiler extensions to C and C++. These are safer
@@ -142,13 +138,11 @@ T round_division(T numerator, T denominator)
 
 int main()
 {
-    int result;
-
     printf("Testing Rounding Integer Division\n\n");
 
     printf("1. Macro Tests\n\n");
 
-    printf("DIVIDE_ROUNDUP():\n\n")
+    printf("DIVIDE_ROUNDUP():\n");
     TEST_EQ(DIVIDE_ROUNDUP(5, 5), 1);   // 5/5   = 1.00 --> 1 
     TEST_EQ(DIVIDE_ROUNDUP(5, 4), 2);   // 5/4   = 1.25 --> 2
     TEST_EQ(DIVIDE_ROUNDUP(6, 4), 2);   // 6/4   = 1.50 --> 2
@@ -159,7 +153,7 @@ int main()
     TEST_EQ(DIVIDE_ROUNDUP(3, -4), 0);  // 3/-4  = -0.75 --> 0
     TEST_EQ(DIVIDE_ROUNDUP(-3, -4), 1); // -3/-4 = 0.75 --> 1
 
-    printf("DIVIDE_ROUNDDOWN():\n\n")
+    printf("\nDIVIDE_ROUNDDOWN():\n");
     TEST_EQ(DIVIDE_ROUNDDOWN(5, 5), 1);   // 5/5   = 1.00 --> 1 
     TEST_EQ(DIVIDE_ROUNDDOWN(5, 4), 1);   // 5/4   = 1.25 --> 1
     TEST_EQ(DIVIDE_ROUNDDOWN(6, 4), 1);   // 6/4   = 1.50 --> 1
@@ -170,7 +164,7 @@ int main()
     TEST_EQ(DIVIDE_ROUNDDOWN(3, -4), -1); // 3/-4  = -0.75 --> -1
     TEST_EQ(DIVIDE_ROUNDDOWN(-3, -4), 0); // -3/-4 = 0.75 --> 0
     
-    printf("DIVIDE_ROUNDNEAREST():\n\n")
+    printf("\nDIVIDE_ROUNDNEAREST():\n");
     TEST_EQ(DIVIDE_ROUNDNEAREST(5, 5), 1);   // 5/5   = 1.00 --> 1 
     TEST_EQ(DIVIDE_ROUNDNEAREST(5, 4), 1);   // 5/4   = 1.25 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST(6, 4), 2);   // 6/4   = 1.50 --> 2
