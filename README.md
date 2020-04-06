@@ -30,4 +30,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. "c/hello_world_sleep.c"
 1. How to pass entire functions or curly-brace-scoped `{ }` code blocks, as though they were a single parameter, into a macro to be evaluated
     1. See "advanced_macro_usage_pass_in_entire_func.cpp"
+1. How to do integer rounding UP, DOWN, and to NEAREST whole integer during division using 3 different techniques: 1) macros, 2) gcc/clang statement expressions, and 3) C++ function templates. This also is a great unit test example using simple hand-written unit tests.
+    1. See "c/rounding_integer_division/" directory
+    1. If you'd like to see how to use googletest (gtest) and googlemock (gmock) instead of writing custom unit tests, see my other project here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice. It also acts as a good demo of how to get up and running quickly with Google's Bazel build system.
 
