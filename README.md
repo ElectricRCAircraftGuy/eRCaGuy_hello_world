@@ -1,17 +1,24 @@
 # eRCaGuy_hello_world
-"hello world" demos &amp; templates for various languages, incl. gcc build commands for C &amp; C++ 
+"hello world" demos &amp; templates for various languages, incl. `gcc` build commands for C &amp; C++ 
 
 By Gabriel Staples  
 www.ElectricRCAircraftGuy.com
 
-**Status:** C & C++ demos are done and work! 
 
-## For beginners and experts alike: not your average "hello world" examples
+## Status:
+1. Many solid C & C++ demos are done and work! 
+1. A Python demo also is in place to show how to parse a YAML file. 
+
+See the `tree` output below to see the file/folder structure.
+
+
+# For beginners and experts alike: not your average "hello world" examples
 
 Note that these are NOT just your standard "simple" hello world demos for absolute beginners. Rather, they are simple enough for beginners but also contain some advanced techniques and tips & tricks to act as good reminders or teaching for more expert programmers too. I, myself, regularly reference my own examples here to remind myself of some of these details which are easy to forget. There's no sense stressing about trying to remember everything. _Instead of trying to remember everything, just remember where to look (here in this case)_. 
 
-**Examples of more advanced principles taught herein:** 
+## Examples of more advanced principles taught herein:
 
+## 1. C and C++:
 1. How to generate intermediate build files, including .ii, .s, and .o.
     1. See "cpp/hello_world.cpp"
 1. How to make a single file compile in both C and C++ by using the `#ifdef __cplusplus` `extern "C" {` brace trick
@@ -34,3 +41,87 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. See "c/rounding_integer_division/" directory
     1. If you'd like to see how to use googletest (gtest) and googlemock (gmock) instead of writing custom unit tests, see my other project here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice. It also acts as a good demo of how to get up and running quickly with Google's Bazel build system.
 
+## 2. Python:
+1. How to create, parse, and print YAML files. How to find the directory path a called Python file is in.
+    1. See "python/yaml_import/import_yaml_test.py" and other files in that directory.
+
+## File Structure:
+(Output of `tree`)
+
+```
+$ tree
+.
+├── arduino
+│   └── todo.txt
+├── bash
+│   └── todo.txt
+├── c
+│   ├── hello_world
+│   ├── hello_world.c
+│   ├── hello_world_sleep
+│   ├── hello_world_sleep.c
+│   ├── Link to c - Prototype of printf and implementation - Stack Overflow%%%%%+ [MY OWN ANS!].desktop
+│   ├── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
+│   ├── Link to Using the GNU Compiler Collection (GCC): Warning Options%%%%% [always use `-Wall -Werror`!].desktop
+│   ├── rounding_integer_division
+│   │   ├── c - Rounding integer division (instead of truncating) - Stack Overflow.desktop
+│   │   ├── rounding_integer_division.c -> rounding_integer_division.cpp
+│   │   ├── rounding_integer_division.cpp
+│   │   ├── rounding_integer_division.md
+│   │   ├── run_tests_sample_output.txt
+│   │   └── run_tests.sh
+│   └── Using the GNU Compiler Collection (GCC): Warning Options-1.desktop
+├── cpp
+│   ├── advanced_macro_usage_pass_in_entire_func.cpp
+│   ├── bin
+│   │   ├── hello_world
+│   │   ├── hello_world.ii
+│   │   ├── hello_world.o
+│   │   └── hello_world.s
+│   ├── bin_adv_macro
+│   │   ├── advanced_macro_usage_pass_in_entire_func
+│   │   ├── advanced_macro_usage_pass_in_entire_func.ii
+│   │   ├── advanced_macro_usage_pass_in_entire_func.o
+│   │   └── advanced_macro_usage_pass_in_entire_func.s
+│   ├── hello_world
+│   ├── hello_world.cpp
+│   ├── hello_world.ii
+│   ├── hello_world.o
+│   ├── hello_world.s
+│   └── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
+├── java
+│   └── todo.txt
+├── LICENSE
+├── python
+│   └── yaml_import
+│       ├── import_yaml_test.py
+│       ├── my_config1.yaml
+│       └── my_config2.yaml
+└── README.md
+
+10 directories, 37 files
+```
+
+
+# Changelog
+- Newest on top
+- Follows Semantic Versioning: MAJOR.MINOR.PATCH; see: https://semver.org/ for rules & FAQ.
+- The 6 most common recommended types of changes are (see here: https://keepachangelog.com/en/1.0.0/): Added, Changed, Deprecated, Removed, Fixed, Security
+
+INITIAL DEVELOPMENT PHASE:
+- Use version numbers 0.MINOR.PATCH for the initial development phase; ex: 0.1.0, 0.2.0, etc.
+- Increment just the MINOR version number for each new 0.y.z development phase enhancement, until the project is mature enough that you choose to move to a 1.0.0 release
+- You may increment the PATCH number for bug fixes to your development code, or just increment the MINOR version number if there are also enhancements
+
+MORE MATURE PHASE:
+- As the project matures, release a 1.0.0 version
+- Once you release a 1.0.0 version, do the following (copied from semver.org):
+- Given a version number MAJOR.MINOR.PATCH, increment the:  
+1. MAJOR version when you make incompatible API changes,  
+2. MINOR version when you add functionality in a backwards compatible manner, and  
+3. PATCH version when you make backwards compatible bug fixes.  
+
+## [v0.1.0] - 2020-04-14
+- Added changelog and started tracking a "version" number via the changelog
+- Added "python/yaml_import/import_yaml_test.py" and related .yaml configuration files to demonstrate importing and using YAML configuration files in Python
+- A bunch of really good C and C++ examples were already in place at this time, as I had been doing this project for quite some time without a Changelog 

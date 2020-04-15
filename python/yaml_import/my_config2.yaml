@@ -1,0 +1,22 @@
+
+---
+# See if this replaces the first `ray` string, or turns it into an array and adds to it.
+# Ans: it **replaces** it! Merging the parsed results of the two files would have to be done
+# programmatically by `load`ing them separately then programmatically combining them!
+ray: "hello there"
+# See if this replaces the first `pi` floating point number, or turns it into an array and 
+# adds to it.
+# Ans: it **replaces** it!
+pi:
+  - 23.7
+  - 87.12
+# See if this replaces the first `partridges` dict, or adds to it.
+# Ans: it **replaces** it!
+xmas-fifth-day:
+  partridges:
+    color: green
+# See if this replaces the first `another-list`, or adds to it.
+# Ans: it **replaces** it!
+another-list:
+  - it is nice
+  - to meet you.

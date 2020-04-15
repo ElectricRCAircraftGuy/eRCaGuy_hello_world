@@ -1,0 +1,39 @@
+# See: https://rollout.io/blog/yaml-tutorial-everything-you-need-get-started/
+
+--- 
+doe: "a deer, a female deer"
+ray: "a drop of golden sun"
+pi: 3.14159
+# A boolean (True or true work here)
+xmas1: True   # bool?
+xmas2: true   # bool?
+xmas3: On     # bool?
+xmas4: on     # bool?
+xmas5: Yes    # bool?
+xmas6: yes    # bool?
+xmas7: TRUE   # bool?
+xmas8: tRue   # string
+french-hens: 3
+# Array (or python List)
+calling-birds: 
+  - huey
+  - dewey
+  - louie
+  - fred
+# A Dict (hash table)
+xmas-fifth-day: 
+  calling-birds: four
+  french-hens: 3
+  golden-rings: 5
+  # A Dict within the outer Dict
+  partridges: 
+    count: 1
+    location: "a pear tree"
+  turtle-doves: two
+another-list:
+  - hey
+  - there
+  - how
+  - are 
+  - you doing
+  - today?
