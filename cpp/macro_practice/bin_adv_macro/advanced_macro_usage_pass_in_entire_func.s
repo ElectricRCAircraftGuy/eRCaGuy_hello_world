@@ -4963,8 +4963,6 @@ main:
 	.string	"__cpp_unicode_literals 200710"
 .LASF475:
 	.string	"__USE_ATFILE 1"
-.LASF834:
-	.string	"/home/gabriel.staples/GS--p/dev--p/eRCaGuy_hello_world/cpp"
 .LASF705:
 	.string	"_IO_CURRENTLY_PUTTING 0x800"
 .LASF316:
@@ -5199,6 +5197,8 @@ main:
 	.string	"__LONG_MAX__ 0x7fffffffffffffffL"
 .LASF22:
 	.string	"__SIZEOF_INT__ 4"
+.LASF834:
+	.string	"/home/gabriel.staples/GS--p/dev--p/eRCaGuy_hello_world/cpp/macro_practice"
 .LASF614:
 	.string	"__DEV_T_TYPE __UQUAD_TYPE"
 .LASF141:

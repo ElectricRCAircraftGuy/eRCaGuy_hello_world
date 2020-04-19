@@ -11,10 +11,11 @@ GS
 
     MY_MACRO(my_int1, my_int2, mynamespace1::mynamespace2::my_func(my_int1, my_int2));
 
-Build and run:
+Build and run C++ Options:
 - `-std=` options: https://gcc.gnu.org/projects/cxx-status.html
 - `c++98`, `c++11`, `c++14`, `c++17`, `c++2a`
 
+Build and run C++ Command:
     mkdir -p bin_adv_macro && g++ -Wall -Werror -g3 -std=c++17 -save-temps=obj \
     advanced_macro_usage_pass_in_entire_func.cpp \
     -o ./bin_adv_macro/advanced_macro_usage_pass_in_entire_func \

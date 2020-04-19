@@ -20,32 +20,32 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 
 ## 1. C and C++:
 1. How to generate intermediate build files, including .ii, .s, and .o.
-    1. See "cpp/hello_world.cpp"
+    1. See ["cpp/hello_world.cpp"](cpp/hello_world.cpp)
 1. How to make a single file compile in both C and C++ by using the `#ifdef __cplusplus` `extern "C" {` brace trick
-    1. See "c/hello_world.c"
+    1. See ["c/hello_world.c"](c/hello_world.c)
 1. How to use a forward declaration of `printf` rather than including `stdio.h` to make it link
-    1. See "c/hello_world.c"
+    1. See ["c/hello_world.c"](c/hello_world.c)
 1. How to do cross-platform sleep in Windows or Linux
-    1. See "c/hello_world_sleep.c"
+    1. See ["c/hello_world_sleep.c"](c/hello_world_sleep.c)
 1. A reminder to use `-Wall -Werror` for better code safety and quality
-    1. See "c/hello_world.c"
+    1. See ["c/hello_world.c"](c/hello_world.c)
 1. How to use `g3` for full debugging info
-    1. See "c/hello_world.c" and
-    1. "c/hello_world_sleep.c"
+    1. See ["c/hello_world.c"](c/hello_world.c) and
+    1. ["c/hello_world_sleep.c"](c/hello_world_sleep.c)
 1. How to specify the C or C++ version you are compiling for, such as `c90`, `c99`, or `c11` (C 2011), or `c++98`, `c++03` (C++ 2003), or `c++11` (C++ 2011)
-    1. See "c/hello_world.c" and
-    1. "c/hello_world_sleep.c"
+    1. See ["c/hello_world.c"](c/hello_world.c) and
+    1. ["c/hello_world_sleep.c"](c/hello_world_sleep.c)
 1. How to pass entire functions or curly-brace-scoped `{ }` code blocks, as though they were a single parameter, into a macro to be evaluated
-    1. See "advanced_macro_usage_pass_in_entire_func.cpp"
+    1. See ["cpp/macro_practice/advanced_macro_usage_pass_in_entire_func.cpp"](cpp/macro_practice/advanced_macro_usage_pass_in_entire_func.cpp)
 1. How to do integer rounding UP, DOWN, and to NEAREST whole integer during division using 3 different techniques: 1) macros, 2) gcc/clang statement expressions, and 3) C++ function templates. This also is a great unit test example using simple hand-written unit tests.
-    1. See "c/rounding_integer_division/" directory
+    1. See ["c/rounding_integer_division/"](c/rounding_integer_division/) directory
     1. If you'd like to see how to use googletest (gtest) and googlemock (gmock) instead of writing custom unit tests, see my other project here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice. It also acts as a good demo of how to get up and running quickly with Google's Bazel build system.
 1. Witness that the C++ `std::unordered_map<T_key, T_value>` unordered map (hash table) class automatically implicitly creates a new key/value pair each time you attempt to read OR write to a value (or any members of a complex value, such as a `struct` or `class`) which belongs to a **non-existing key**! In other words, reading or writing any key/value which does NOT yet exists causes `std::unordered_map<>` to automatically, dynamically, generate it right on the spot for you to access it! This is confusing behavior at first, as it happens implicitly behind the scenes, so it needs to be understood. _Once understood, it is a powerful feature to use, but a one or two-line comment to exlain that you intend dynamic allocation to happen, above any lines in production code where you use this, would be wise._
     1. See ["cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp"](cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp)
 
 ## 2. Python:
 1. How to create, parse, and print YAML files. How to find the directory path a called Python file is in.
-    1. See "python/yaml_import/import_yaml_test.py" and other files in that directory.
+    1. See ["python/yaml_import/import_yaml_test.py"](python/yaml_import/import_yaml_test.py) and other files in that directory.
 
 ## File Structure:
 (Output of `tree`)
