@@ -40,6 +40,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. How to do integer rounding UP, DOWN, and to NEAREST whole integer during division using 3 different techniques: 1) macros, 2) gcc/clang statement expressions, and 3) C++ function templates. This also is a great unit test example using simple hand-written unit tests.
     1. See "c/rounding_integer_division/" directory
     1. If you'd like to see how to use googletest (gtest) and googlemock (gmock) instead of writing custom unit tests, see my other project here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice. It also acts as a good demo of how to get up and running quickly with Google's Bazel build system.
+1. Witness that the C++ `std::unordered_map<T_key, T_value>` unordered map (hash table) class automatically implicitly creates a new key/value pair each time you attempt to read OR write to a value (or any members of a complex value, such as a `struct` or `class`) which belongs to a **non-existing key**! In other words, reading or writing any key/value which does NOT yet exists causes `std::unordered_map<>` to automatically, dynamically, generate it right on the spot for you to access it! This is confusing behavior at first, as it happens implicitly behind the scenes, so it needs to be understood. _Once understood, it is a powerful feature to use, but a one or two-line comment to exlain that you intend dynamic allocation to happen, above any lines in production code where you use this, would be wise._
+    1. See ["cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp"](cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp)
 
 ## 2. Python:
 1. How to create, parse, and print YAML files. How to find the directory path a called Python file is in.
@@ -54,8 +56,11 @@ $ tree
 ├── arduino
 │   └── todo.txt
 ├── bash
+│   ├── Link to ElectricRCAircraftGuy--PDF2SearchablePDF [THIS IS A SOLID BASH EXAMPLE!].desktop
+│   ├── Link to PDF2SearchablePDF--pdf2searchablepdf.sh at master · ElectricRCAircraftGuy--PDF2SearchablePDF.desktop
 │   └── todo.txt
 ├── c
+│   ├── c - Where do we use .i files and how do we generate them? - Stack Overflow.desktop
 │   ├── hello_world
 │   ├── hello_world.c
 │   ├── hello_world_sleep
@@ -88,7 +93,10 @@ $ tree
 │   ├── hello_world.ii
 │   ├── hello_world.o
 │   ├── hello_world.s
-│   └── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
+│   ├── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
+│   └── unordered_map_practice
+│       ├── unordered_map_hash_table_implicit_key_construction_test
+│       └── unordered_map_hash_table_implicit_key_construction_test.cpp
 ├── java
 │   └── todo.txt
 ├── LICENSE
@@ -99,7 +107,8 @@ $ tree
 │       └── my_config2.yaml
 └── README.md
 
-10 directories, 37 files
+11 directories, 42 files
+
 ```
 
 
@@ -120,6 +129,9 @@ MORE MATURE PHASE:
 1. MAJOR version when you make incompatible API changes,  
 2. MINOR version when you add functionality in a backwards compatible manner, and  
 3. PATCH version when you make backwards compatible bug fixes.  
+
+## [v0.2.0] - 2020-04-18
+- Added "cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp"
 
 ## [v0.1.0] - 2020-04-14
 - Added changelog and started tracking a "version" number via the changelog
