@@ -43,15 +43,18 @@ T divide1(T numer, T denom)
     if (denom == 0)
     {
         printf("divide1: cannot divide by zero\n");
-        return 0;
+        return -1;
     }
 
     return numer/denom;
 }
 
 // Template specialization; see: https://en.wikipedia.org/wiki/Template_(C%2B%2B)#Explicit_template_specialization
+// Specialized for whenever type T is **double**!
 template <>
-double divide1(double numer, double denom)
+// double divide1(double numer, double denom)       // WORKS!
+// Can also be written more explicitly by adding in the explicit template type, `<double>`, like this instead!
+double divide1<double>(double numer, double denom)  // WORKS!
 {
     printf("divide1 double type: just returning -0.1419\n");
     return -0.1419;
@@ -72,7 +75,7 @@ int divide2()
     if (denom == 0)
     {
         printf("divide2: cannot divide by zero\n");
-        return 0;
+        return -1;
     }
 
     return numer/denom;
@@ -93,11 +96,19 @@ T divide3()
     if (denom == 0)
     {
         printf("divide3: cannot divide by zero\n");
-        return 0;
+        return -1;
     }
 
     return numer/denom;
 }
+
+// // Template specialization; see: https://en.wikipedia.org/wiki/Template_(C%2B%2B)#Explicit_template_specialization
+// template <>
+// double divide3(double numer, double denom)
+// {
+//     printf("divide1 double type: just returning -0.1419\n");
+//     return -0.1419;
+// }
 
 // // 3. A function template based on static/compile-time **template inputs**, with numer & denom
 // // passed in as **template parameter inputs**, and having their types specified by the **first
@@ -131,7 +142,7 @@ int main()
     int i2;
 
     // 1. 
-    printf("\ndivide1\n============\n");
+    printf("\n============\ndivide1\n============\n");
 
     i1 = divide1<int>(25, 2);
     printf("i1 = %i\n", i1); // 12
@@ -140,15 +151,16 @@ int main()
     printf("i2 = %i\n", i2); 
 
     printf("divide1(25.0, 0.0) = %f\n", divide1(25.0, 0.0));
+    printf("divide1<double>(25, 0) = %f\n", divide1<double>(25, 0));
 
-    // for (int i = 10; i >= 0; i--)
-    // {
-    //     int ans = divide(100, i);
-    //     printf("  ans = %i\n", ans);
-    // }
+    for (int i = 10; i >= 0; i--)
+    {
+        int ans = divide1(100, i);
+        printf("  ans = %i\n", ans);
+    }
 
     // 2. 
-    printf("\ndivide2\n============\n");
+    printf("\n============\ndivide2\n============\n");
 
     i1 = divide2<25, 2>();
     printf("i1 = %i\n", i1); // 12
@@ -157,7 +169,7 @@ int main()
     printf("i2 = %i\n", i2); 
 
     // 3. 
-    printf("\ndivide3\n============\n");
+    printf("\n============\ndivide3\n============\n");
 
     i1 = divide3<int, 31, 2>();
     printf("i1 = %i\n", i1); // 12
