@@ -460,6 +460,10 @@ int main()
     TEST_EQ(divide_roundnearest((uint8_t)6, (uint8_t)4), 2);   // 6/4   = 1.50 --> 2
     TEST_EQ(divide_roundnearest((uint8_t)7, (uint8_t)4), 2);   // 7/4   = 1.75 --> 2
 
+    // Try some explicit template types using the <> operator:
+    /////////////// TODO
+    // TEST_EQ(divide_roundnearest<7>(5, 4), 1);   // 5/4   = 1.25 --> 1
+
 #endif
     
     printf("\nTest failure count = %u\n\n", test_fail_cnt);
