@@ -8,7 +8,9 @@ Gabriel Staples
 Let's play with some explicit template specialization to learn about it.
 
 References:
-1. https://en.wikipedia.org/wiki/Template_(C%2B%2B)#Template_specialization
+1. *****https://en.wikipedia.org/wiki/Template_(C%2B%2B)#Template_specialization
+1. *****+https://en.cppreference.com/w/cpp/language/template_specialization
+1. https://en.cppreference.com/w/cpp/language/partial_specialization
 
 To compile and run:
     ./run_explicit_template_specialization.sh
@@ -56,9 +58,55 @@ template <>
 // Can also be written more explicitly by adding in the explicit template type, `<double>`, like this instead!
 double divide1<double>(double numer, double denom)  // WORKS!
 {
-    printf("divide1 double type: just returning -0.1419\n");
+    printf("divide1 template specialization #1: double type: just returning -0.1419\n");
     return -0.1419;
 }
+
+// Template specialization #2; see: https://en.cppreference.com/w/cpp/language/partial_specialization
+// and *****https://en.cppreference.com/w/cpp/language/template_specialization
+// I learned from the link above that a template specialization can have ANY template parameters!
+// What has to match is simply the function **name** (`divide1` in this case)!
+template<int numer, int denom>
+int divide1()
+{
+    printf("divide1 template specialization #2\n");
+    return numer/denom;
+}
+
+// Template specialization #3
+template<int numer>
+int divide1(int denom)
+{
+    printf("divide1 template specialization #3\n");
+    return numer/denom;
+}
+
+// Template specialization #3 AGAIN, this time FUNCTION OVERLOADED on parameters
+template<int anything>
+int divide1(int numer, int denom)
+{
+    printf("divide1 template specialization #3 AGAIN (function overloaded)\n");
+    return numer/denom;
+}
+
+// Template specialization #4
+template<typename T = int, T numer = 18, T denom = 3>
+T divide1()
+{
+    printf("divide1 template specialization #4\n");
+    return numer/denom;
+}
+
+// // PARTIAL template specialization #1
+// // See: https://en.cppreference.com/w/cpp/language/partial_specialization
+// // OOPS! I WAS WRONG! I think partial template specialization ONLY works for class templates, and
+// // does NOT work for function templates!
+// template<typename T>
+// T divide1<int, 17, 18>()
+// {
+//     printf("divide1 PARTIAL template specialization #1\n");
+//     return 2983.7; // 2983
+// }
 
 
 // 2. A function template based on static/compile-time **template input**, with numer & denom
@@ -103,79 +151,76 @@ T divide3()
 }
 
 // // Template specialization; see: https://en.wikipedia.org/wiki/Template_(C%2B%2B)#Explicit_template_specialization
+// // Specialized for whenever **T denom is zero**!
 // template <>
-// double divide3(double numer, double denom)
+// // double divide1(double numer, double denom)       // WORKS!
+// // Can also be written more explicitly by adding in the explicit template type, `<double>`, like this instead!
+// T divide3<typename T, T numer, 0>()
 // {
-//     printf("divide1 double type: just returning -0.1419\n");
-//     return -0.1419;
+//     printf("divide3 aint gonna never done did divide by zero! numer = %i; denom = %i\n", numer, denom);
+//     return -2;
 // }
-
-// // 3. A function template based on static/compile-time **template inputs**, with numer & denom
-// // passed in as **template parameter inputs**, and having their types specified by the **first
-// // template parameter type, T**
-// template <typename T, T numer, T denom>
-// T divide3()
-// {
-//     // WORKS--compile-time check!
-//     // This works because numer and denom are both **template parameters**, so they get inserted
-//     // into their own versions of this function **at compile time**!
-//     // static_assert(denom != 0, "dividing by zero not allowed");
-    
-//     // WORKS--run-time check!
-//     if (denom == 0)
-//     {
-//         printf("divide3: cannot divide by zero\n");
-//         return 0;
-//     }
-
-//     return numer/denom;
-// }
-
-
 
 
 int main()
 {
-    printf("Hello World\n");
+    printf("Hello World\n\n");
 
     int i1;
     int i2;
 
     // 1. 
-    printf("\n============\ndivide1\n============\n");
+    printf("============\ndivide1\n============\n");
 
     i1 = divide1<int>(25, 2);
-    printf("i1 = %i\n", i1); // 12
+    printf("i1 = %i\n\n", i1); // 12
 
     i2 = divide1<int>(25, 0);
-    printf("i2 = %i\n", i2); 
+    printf("i2 = %i\n\n", i2); 
 
-    printf("divide1(25.0, 0.0) = %f\n", divide1(25.0, 0.0));
-    printf("divide1<double>(25, 0) = %f\n", divide1<double>(25, 0));
+    // Call Template specialization #1
+    printf("divide1(25.0, 0.0) = %f\n\n", divide1(25.0, 0.0));
+    printf("divide1<double>(25, 0) = %f\n\n", divide1<double>(25, 0));
+
+    // Call Template specialization #2
+    printf("divide1<61, 3>() = %i\n\n", divide1<61, 3>());
+
+    // Call Template specialization #3
+    printf("divide1<92>(3) = %i\n\n", divide1<92>(3));
+
+    // Call Template specialization #3 again (function overloaded)
+    // Notice the 92 isn't even used by this function template! It's just there to get the correct
+    // template specialization to be called, and could be *any* number!
+    printf("divide1<92>(16, 3) = %i\n\n", divide1<92>(16, 3)); // 5
+
+    // Call Template specialization #4
+    printf("divide1<>() = %i\n\n", divide1<>()); // 6
+    printf("divide1() = %i\n\n", divide1()); // 6
 
     for (int i = 10; i >= 0; i--)
     {
         int ans = divide1(100, i);
-        printf("  ans = %i\n", ans);
+        printf("ans = %i\n", ans);
     }
+    printf("\n");
 
     // 2. 
-    printf("\n============\ndivide2\n============\n");
+    printf("============\ndivide2\n============\n");
 
     i1 = divide2<25, 2>();
-    printf("i1 = %i\n", i1); // 12
+    printf("i1 = %i\n\n", i1); // 12
 
     i2 = divide2<25, 0>();
-    printf("i2 = %i\n", i2); 
+    printf("i2 = %i\n\n", i2); 
 
     // 3. 
-    printf("\n============\ndivide3\n============\n");
+    printf("============\ndivide3\n============\n");
 
     i1 = divide3<int, 31, 2>();
-    printf("i1 = %i\n", i1); // 12
+    printf("i1 = %i\n\n", i1); // 12
 
     i2 = divide3<int, 31, 0>();
-    printf("i2 = %i\n", i2); 
+    printf("i2 = %i\n\n", i2); 
 
 
     return 0;
