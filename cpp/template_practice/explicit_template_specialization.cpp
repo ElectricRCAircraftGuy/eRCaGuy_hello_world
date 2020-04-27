@@ -97,6 +97,24 @@ T divide1()
     return numer/denom;
 }
 
+// Template specialization #5 (based on "#3 AGAIN")
+template<>
+int divide1<7>(int numer, int denom)
+{
+    printf("divide1 template specialization #5 (based on \"#3 AGAIN\"); your template parameter is 7!\n");
+    return numer/denom;
+}
+
+// // Template specialization #6 (based on #4); DOESN'T WORK!
+// //      explicit_template_specialization.cpp:110:25: error: non-class, non-variable partial 
+// //      specialization ‘divide1<T, numer, 17>’ is not allowed
+// template<typename T = int, T numer = 18, T denom = 3>
+// T divide1<T, numer, 17>()
+// {
+//     printf("divide1 template specialization #6 (based on #4, but denom is 17!)\n");
+//     return numer/denom;
+// }
+
 // // PARTIAL template specialization #1
 // // See: https://en.cppreference.com/w/cpp/language/partial_specialization
 // // OOPS! I WAS WRONG! I think partial template specialization ONLY works for class templates, and
@@ -196,6 +214,12 @@ int main()
     // Call Template specialization #4
     printf("divide1<>() = %i\n\n", divide1<>()); // 6
     printf("divide1() = %i\n\n", divide1()); // 6
+
+    // Call Template specialization #5
+    printf("divide1<7>(16, 5) = %i\n\n", divide1<7>(16, 5)); // 3
+    printf("divide1<7>(16, 3) = %i\n\n", divide1<7>(16, 3)); // 5
+    // Call Template specialization #3 again
+    printf("divide1<8>(16, 5) = %i\n\n", divide1<8>(16, 5)); // 3
 
     for (int i = 10; i >= 0; i--)
     {
