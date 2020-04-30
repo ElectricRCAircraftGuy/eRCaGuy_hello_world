@@ -9,6 +9,10 @@ hello_world
 - a brief practice file
 
 To compile and run:
+    ./run_hello_world.sh
+
+    # OR:
+
     g++ -Wall -Werror -g3 -std=c++17 -o hello_world \
     hello_world.cpp && ./hello_world
 
