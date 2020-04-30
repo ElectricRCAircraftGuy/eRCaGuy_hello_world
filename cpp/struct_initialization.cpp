@@ -21,7 +21,8 @@ References:
 
 */
 
-#include <stdio.h>
+#include <stdio.h>  // printf()
+#include <string.h> // memset()
 
 #ifdef __cplusplus
 typedef struct
@@ -29,6 +30,7 @@ typedef struct
     int num1 = 100;
     int num2 = -100;
     int num3;
+    int num4 = 150;
 } data_t;
 #else // For C only, since C doesn't allow default values in structs 
 typedef struct
@@ -36,6 +38,7 @@ typedef struct
     int num1;
     int num2;
     int num3;
+    int num4;
 } data_t;
 #endif 
 
@@ -59,8 +62,9 @@ int main()
         .num1 = 7,
         .num2 = 8,
     };
-
-    printf("d1.num1 = %i\nd1.num2 = %i\nd1.num3 = %i\n\n", d1.num1, d1.num2, d1.num3);
+    // WORKS! Any values not explicitly set are left to their default values.
+    printf("d1.num1 = %i\nd1.num2 = %i\nd1.num3 = %i\nd1.num4 = %i\n\n",
+           d1.num1, d1.num2, d1.num3, d1.num4);
 
 
     // 2. Zero Initialization
@@ -68,9 +72,11 @@ int main()
     // ******NB: THIS IS A WORK IN PROGRESS! MOST OF THESE ZERO INITIALIZATION TESTS FAIL!******
     printf("TEST 2: zero initialization\n\n");
     
+    // Works! Uses default values.
     data_t d2 = {};
     printf("d2.num1 = %i\nd2.num2 = %i\nd2.num3 = %i\n\n", d2.num1, d2.num2, d2.num3);
     
+    // Only sets the FIRST value in the struct to zero! The rest seem to use default values.
     data_t d3 = {0};
     printf("d3.num1 = %i\nd3.num2 = %i\nd3.num3 = %i\n\n", d3.num1, d3.num2, d3.num3);
     
@@ -100,6 +106,18 @@ int main()
 
     printf("}\n\n");
     #endif
+
+    data_t d9;
+    memset(&d9, 0, sizeof(d9));
+    printf("d9.num1 = %i\nd9.num2 = %i\nd9.num3 = %i\n\n", d9.num1, d9.num2, d9.num3);
+
+    // // Does NOT work
+    // // C++17 error:
+    // //      error: conversion from ‘int’ to non-scalar type ‘data_t’ requested
+    // // C11 error:
+    // //      error: invalid initializer
+    // data_t d10 = 0;
+    // printf("d10.num1 = %i\nd10.num2 = %i\nd10.num3 = %i\n\n", d10.num1, d10.num2, d10.num3);
 
     return 0;
 }
