@@ -7,7 +7,8 @@ Written: 8 Nov. 2019
 Updated: 29 Apr. 2020 
 
 struct_initialization
-- practice aggregate initialization and zero initialization of structs in C++
+- practice aggregate initialization, default initialization, value initialization, and zero 
+  initialization of structs in C++
 
 NB: Not all of these techniques below work or are doing what you might expect. Read the 
 comments above each one to see what the expected results are.
@@ -20,9 +21,16 @@ To compile and run:
     g++ -Wall -Werror -g3 -std=c++17 -o struct_initialization \
     struct_initialization.cpp && ./struct_initialization
 
-References:
-1. https://en.cppreference.com/w/cpp/language/aggregate_initialization
-1. https://en.cppreference.com/w/cpp/language/zero_initialization
+References:  
+1. *****[MY OWN Q & ANSWER] "How to initialize a struct to 0 in C++"
+   https://stackoverflow.com/questions/61240589/how-to-initialize-a-struct-to-0-in-c/61240590#61240590
+1. *****+[MY OWN QUESTION] "Why doesn't initializing a C++ struct to `= {0}` set all of its members to 0?"
+   https://stackoverflow.com/questions/61531928/why-doesnt-initializing-a-c-struct-to-0-set-all-of-its-members-to-0
+1. Main type of initialization I will be showing below
+    1. Default initialization: https://en.cppreference.com/w/cpp/language/default_initialization
+    1. Aggregate initialization: https://en.cppreference.com/w/cpp/language/aggregate_initialization
+    1. Zero initialization: https://en.cppreference.com/w/cpp/language/zero_initialization
+    1. Value initialization: https://en.cppreference.com/w/cpp/language/value_initialization
 
 */
 
@@ -51,9 +59,15 @@ int main()
 {
     printf("Hello World\n\n");
     
-    // 1. Aggregate Initialization
+    // =============================================================================================
+    // SEE MY 2 Q & As on Stack Overflow, in the References above, for a full explanation of 
+    // everything below!
+    // =============================================================================================
+
+
+    // 1. Aggregate Initialization??
     // See: https://en.cppreference.com/w/cpp/language/aggregate_initialization
-    printf("TEST 1: aggregate initialization\n\n");
+    printf("TEST 1: aggregate initialization??\n\n");
     
     // THIS WORKS IN C! 
     // IT ALSO WORKS IN C++! NOTE, HOWEVER, THAT IN C++ IT *MAY* BE A GCC 
@@ -72,11 +86,11 @@ int main()
            d1.num1, d1.num2, d1.num3, d1.num4);
 
 
-    // 2. Zero Initialization
+    // 2. Zero Initialization??
     // See: https://en.cppreference.com/w/cpp/language/zero_initialization
     // NB: Not all of these techniques below work or are doing what you might expect. Read the
     // comments above each one to see what the expected results are.
-    printf("TEST 2: zero initialization\n\n");
+    printf("TEST 2: zero initialization??\n\n");
     
     // Works! Uses default values.
     data_t d2 = {};
@@ -113,6 +127,12 @@ int main()
     data_t d5;
     printf("d5.num1 = %i\nd5.num2 = %i\nd5.num3 = %i\nd5.num4 = %i\n\n",
            d5.num1, d5.num2, d5.num3, d5.num4);
+
+    // Default initialization of **static** objects forces members without defaults to be zero-
+    // initialized, rather than leaving them to be anything (unitialized)
+    static data_t d5b;
+    printf("d5b.num1 = %i\nd5b.num2 = %i\nd5b.num3 = %i\nd5b.num4 = %i\n\n",
+           d5b.num1, d5b.num2, d5b.num3, d5b.num4);
 
     // Sets all values to their default values, but if a value doesn't have a default, it *APPEARS*
     // to set it to zero. Ex:
@@ -176,20 +196,20 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    $ ./run_struct_initialization.sh 
+    $ cpp/run_struct_initialization.sh 
     ======================
     Running first as C++17
     ======================
     Hello World
 
-    TEST 1: aggregate initialization
+    TEST 1: aggregate initialization??
 
     d1.num1 = 7
     d1.num2 = 8
     d1.num3 = 0
     d1.num4 = 150
 
-    TEST 2: zero initialization
+    TEST 2: zero initialization??
 
     d2.num1 = 100
     d2.num2 = -100
@@ -215,6 +235,11 @@ SAMPLE OUTPUT:
     d5.num2 = -100
     d5.num3 = 847115872
     d5.num4 = 150
+
+    d5b.num1 = 100
+    d5b.num2 = -100
+    d5b.num3 = 0
+    d5b.num4 = 150
 
     d6.num1 = 100
     d6.num2 = -100
@@ -243,14 +268,14 @@ SAMPLE OUTPUT:
     ======================
     Hello World
 
-    TEST 1: aggregate initialization
+    TEST 1: aggregate initialization??
 
     d1.num1 = 7
     d1.num2 = 8
     d1.num3 = 0
     d1.num4 = 0
 
-    TEST 2: zero initialization
+    TEST 2: zero initialization??
 
     d2.num1 = 0
     d2.num2 = 0
