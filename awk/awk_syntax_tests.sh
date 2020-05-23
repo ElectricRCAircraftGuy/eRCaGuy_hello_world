@@ -3,13 +3,13 @@
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 # By: Gabriel Staples
-# awk_super_simple.sh
+# awk_syntax_tests.sh
 
 # Run It:
-#   echo -e "hey1\nhello\nhey2" | ./awk_super_simple.sh
+#   echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh
 
 # # 1. FAILS!
-# #   $ echo -e "hey1\nhello\nhey2" | ./awk_super_simple.sh
+# #   $ echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh
 # #   gawk: cmd. line:3: BEGIN blocks must have an action part
 # gawk \
 # '
@@ -20,7 +20,7 @@
 # '
 
 # # 2. PASSES!
-# #   $ echo -e "hey1\nhello\nhey2" | ./awk_super_simple.sh
+# #   $ echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh
 # #   START OF AWK PROGRAM
 # gawk \
 # '
@@ -30,7 +30,7 @@
 # '
 
 # # 3. FAILS TO PROVIDE EXPECTED OUTPUT!
-# #   $ echo -e "hey1\nhello\nhey2" | ./awk_super_simple.sh
+# #   $ echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh
 # #   hey1
 # #   hey1
 # #   hello
@@ -45,7 +45,7 @@
 # '
 
 # # 4. WORKS AS EXPECTED!
-# #   $ echo -e "hey1\nhello\nhey2" | ./awk_super_simple.sh
+# #   $ echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh
 # #   hey1
 # #   hey2
 # gawk \
