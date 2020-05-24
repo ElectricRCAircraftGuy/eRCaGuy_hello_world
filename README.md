@@ -130,6 +130,9 @@ MORE MATURE PHASE:
 2. MINOR version when you add functionality in a backwards compatible manner, and  
 3. PATCH version when you make backwards compatible bug fixes.  
 
+## [v0.3.0] - 2020-05-23
+- Added "awk" folder with two sample programs: "awk_hello_world.sh" and "awk_syntax_tests.sh"
+
 ## [v0.2.0] - 2020-04-18
 - Added "cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp"
 
