@@ -130,9 +130,10 @@
 
 # 9. This works too!
 # Sample output:
-#       $ echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh 
+#       $ echo -e "hey1\nhello\nhey2" | ./awk_syntax_tests.sh
 #       START OF AWK PROGRAM
 #       hey1 Gabriel
+#       hey1 Gabriel #2
 #       hey2 Gabriel
 #       END OF AWK PROGRAM
 gawk \
@@ -163,10 +164,40 @@ name = "Gabriel" {}
     name = "Gabriel"
 }
 
+
 # ========= USE THIS! ========
 /hey/ {
     print $0, name
 }
+
+# # This, however, is NOT allowed!
+# # "syntax error!"
+# {
+#     /hey/ {
+#         # ^ syntax error
+#         print $0, name, " #2"
+#     }
+# }
+
+# # Neither is this!
+# # "syntax error!"
+# {
+#     $0 ~ /hey/ {
+#         #      ^ syntax error
+#         print $0, name, " #2"
+#     }
+# }
+
+# ========= USE THIS! ========
+# This, however, is just fine! Notice how the implicit "if"-less and tilde-less regexp check can
+# ONLY go on the **OUTER-MOST SCOPE**! If you want to do a check on any scope (set of curly
+# braces) inside of that, it MUST be done *explicitly* with `if` and `~` as shown just below!
+/ey1/ {
+    if ($0 ~ /hey/) {
+        print $0, name" #2"
+    }
+}
+
 
 # ========= USE THIS! ========
 END {
