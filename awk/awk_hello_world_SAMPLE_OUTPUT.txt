@@ -1,0 +1,149 @@
+START OF AWK PROGRAM
+Hello World!
+Sat May 23 18:15:44 PDT 2020
+
+field2 = "file"
+field2 again = "file"
+1   : This line is ODD: This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+field2 = ""
+field2 again = ""
+2   : This line is EVEN: 
+field2 = "content"
+field2 again = "content"
+3   : This line is ODD: This content copied from: 
+field2 = ""
+field2 again = ""
+4   : This line is EVEN: https://www.gnu.org/software/gawk/manual/html_node/Sample-Data-Files.html#Sample-Data-Files
+field2 = ""
+field2 again = ""
+5   : This line is ODD: 
+field2 = ""
+field2 again = ""
+6   : This line is EVEN: ----------------------
+field2 = "list"
+field2 again = "list"
+7   : This line is ODD: Mail list
+field2 = ""
+field2 again = ""
+8   : This line is EVEN: ----------------------
+field2 = ""
+field2 again = ""
+9   : This line is ODD: 
+field2 = "555-5553"
+field2 again = "555-5553"
+10  : This line is EVEN: Amelia       555-5553     amelia.zodiacusque@gmail.com    F
+field2 = "555-3412"
+field2 again = "555-3412"
+11  : This line is ODD: Anthony      555-3412     anthony.asserturo@hotmail.com   A
+field2 = "555-7685"
+field2 again = "555-7685"
+12  : This line is EVEN: Becky        555-7685     becky.algebrarum@gmail.com      A
+field2 = "555-1675"
+field2 again = "555-1675"
+13  : This line is ODD: Bill         555-1675     bill.drowning@hotmail.com       A
+field2 = "555-0542"
+field2 again = "555-0542"
+14  : This line is EVEN: Broderick    555-0542     broderick.aliquotiens@yahoo.com R
+field2 = "555-2912"
+field2 again = "555-2912"
+15  : This line is ODD: Camilla      555-2912     camilla.infusarum@skynet.be     R
+field2 = "555-1234"
+field2 again = "555-1234"
+16  : This line is EVEN: Fabius       555-1234     fabius.undevicesimus@ucb.edu    F
+field2 = "555-6699"
+field2 again = "555-6699"
+17  : This line is ODD: Julie        555-6699     julie.perscrutabor@skeeve.com   F
+field2 = "555-6480"
+field2 again = "555-6480"
+18  : This line is EVEN: Martin       555-6480     martin.codicibus@hotmail.com    A
+field2 = "555-3430"
+field2 again = "555-3430"
+19  : This line is ODD: Samuel       555-3430     samuel.lanceolis@shu.edu        A
+field2 = "555-2127"
+field2 again = "555-2127"
+20  : This line is EVEN: Jean-Paul    555-2127     jeanpaul.campanorum@nyu.edu     R
+field2 = ""
+field2 again = ""
+21  : This line is ODD: 
+field2 = ""
+field2 again = ""
+22  : This line is EVEN: =======================
+field2 = ""
+field2 again = ""
+23  : This line is ODD: 
+field2 = ""
+field2 again = ""
+24  : This line is EVEN: ----------------------
+field2 = "Shipped"
+field2 again = "Shipped"
+25  : This line is ODD: Inventory Shipped
+field2 = ""
+field2 again = ""
+26  : This line is EVEN: ----------------------
+field2 = ""
+field2 again = ""
+27  : This line is ODD: 
+field2 = "13"
+field2 again = "13"
+This line (#28) matches regex "/Jan/": Jan  13  25  15 115
+The 4th field, or column, in this line is "15".
+The last field, or column, in this line is "115".
+The number of fields in this line is "5".
+28  : This line is EVEN: Jan  13  25  15 115
+field2 = "15"
+field2 again = "15"
+***Feb***: Feb  15  32  24 226
+         : Feb  15  32  24 226
+29  : This line is ODD: Feb  15  32  24 226
+field2 = "15"
+field2 again = "15"
+30  : This line is EVEN: Mar  15  24  34 228
+field2 = "31"
+field2 again = "31"
+31  : This line is ODD: Apr  31  52  63 420
+field2 = "16"
+field2 again = "16"
+32  : This line is EVEN: May  16  34  29 208
+field2 = "31"
+field2 again = "31"
+33  : This line is ODD: Jun  31  42  75 492
+field2 = "24"
+field2 again = "24"
+34  : This line is EVEN: Jul  24  34  67 436
+field2 = "15"
+field2 again = "15"
+35  : This line is ODD ***and begins with "Aug"***: Aug  15  34  47 316
+field2 = "13"
+field2 again = "13"
+36  : This line is EVEN: Sep  13  55  37 277
+field2 = "29"
+field2 again = "29"
+37  : This line is ODD: Oct  29  54  68 525
+field2 = "20"
+field2 again = "20"
+38  : This line is EVEN: Nov  20  87  82 577
+field2 = "17"
+field2 again = "17"
+39  : This line is ODD: Dec  17  35  61 401
+field2 = ""
+field2 again = ""
+40  : This line is EVEN: 
+field2 = "21"
+field2 again = "21"
+This line (#41) matches regex "/Jan/": Jan  21  36  64 620
+The 4th field, or column, in this line is "64".
+The last field, or column, in this line is "620".
+The number of fields in this line is "5".
+41  : This line is ODD: Jan  21  36  64 620
+field2 = "26"
+field2 again = "26"
+***Feb***: Feb  26  58  80 652
+         : Feb  26  58  80 652
+42  : This line is EVEN: Feb  26  58  80 652
+field2 = "24"
+field2 again = "24"
+43  : This line is ODD: Mar  24  75  70 495
+field2 = "21"
+field2 again = "21"
+44  : This line is EVEN: Apr  21  70  74 514
+END OF AWK PROGRAM
