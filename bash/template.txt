@@ -1,2 +1,0 @@
-For an excellent bash script template, see this file as a starting point:
-https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/useful_scripts/git-dotdotgit.sh
