@@ -16,7 +16,8 @@ See the `tree` output below to see the file/folder structure.
 
 Note that these are NOT just your standard "simple" hello world demos for absolute beginners. Rather, they are simple enough for beginners but also contain some advanced techniques and tips & tricks to act as good reminders or teaching for more expert programmers too. I, myself, regularly reference my own examples here to remind myself of some of these details which are easy to forget. There's no sense stressing about trying to remember everything. _Instead of trying to remember everything, just remember where to look (here in this case)_. 
 
-## Examples of more advanced principles taught herein:
+
+# Examples of more advanced principles taught herein:
 
 ## 1. C and C++:
 1. How to generate intermediate build files, including .ii, .s, and .o.
@@ -47,7 +48,11 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. How to create, parse, and print YAML files. How to find the directory path a called Python file is in.
     1. See ["python/yaml_import/import_yaml_test.py"](python/yaml_import/import_yaml_test.py) and other files in that directory.
 
-## File Structure:
+## 3. markdown:
+1. [github_readme_center_and_align_images.md](markdown/github_readme_center_and_align_images.md): show how to insert and center, align left, align right, etc. images in GitHub readmes in markdown.
+
+
+# File Structure:
 (Output of `tree`)
 
 ```
