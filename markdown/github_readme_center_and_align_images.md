@@ -167,7 +167,7 @@ _Reminder: MAKE SURE TO GIVE THE entire `<p>` paragraph element the full 100% co
 This:
 
 ```html
-33% width each (a little too wide to fit all 3 images side-by-side):
+33% width each (_possibly_ a little too wide to fit all 3 images side-by-side, depending on your markdown viewer):
 <p align="center" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
@@ -198,7 +198,7 @@ This:
 
 Produces this:
 
-33% width each (a little too wide to fit all 3 images side-by-side):
+33% width each (_possibly_ a little too wide to fit all 3 images side-by-side, depending on your markdown viewer):
 <p align="center" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
