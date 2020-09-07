@@ -249,6 +249,57 @@ Align the whole row of images to the right this time:
 </p>
 
 
+## 1.4. Use a markdown table to improve vertical spacing of odd-sized/odd-shaped images:
+
+Sometimes, with odd-sized or different-shaped images, using just the "row of images" methods above produces slightly awkward-looking results.
+
+This code produces two rows of images which have good horizontal spacing, but bad vertical spacing. This code:
+
+```html
+<p align="center" width="100%">
+    <img width="32%" src="photos/pranksta1.jpg"> 
+    <img width="32%" src="photos/pranksta2.jpg"> 
+    <img width="32%" src="photos/pranksta3.jpg"> 
+</p>
+<p align="center" width="100%">
+    <img width="32%" src="photos/pranksta4.jpg"> 
+    <img width="32%" src="photos/pranksta5.jpg"> 
+    <img width="32%" src="photos/pranksta6.jpg"> 
+</p>
+```
+
+Produces this, since the last image in row 1 ("pranksta3.jpg") is a very tall image with 2x the height as the other images:
+
+<p align="center" width="100%">
+    <img width="32%" src="photos/pranksta1.jpg"> 
+    <img width="32%" src="photos/pranksta2.jpg"> 
+    <img width="32%" src="photos/pranksta3.jpg"> 
+</p>
+<p align="center" width="100%">
+    <img width="32%" src="photos/pranksta4.jpg"> 
+    <img width="32%" src="photos/pranksta5.jpg"> 
+    <img width="32%" src="photos/pranksta6.jpg"> 
+</p>
+
+So, placing those two rows of images inside a markdown table forces nice-looking vertical spacing. Notice in the markdown table below that each image is set to have an HTML `width` attribute set to 100%. This is because it is _relative to the table cell the image sits in_, NOT relative to the page column width anymore. Since we want each image to fill the entire width of each cell, we set their widths all to `width="100%"`. 
+
+This markdown table with images in it:
+
+```html
+|                                               |                                               |                                               |
+|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| <img width="100%" src="photos/pranksta1.jpg"> | <img width="100%" src="photos/pranksta2.jpg"> | <img width="100%" src="photos/pranksta3.jpg"> |
+| <img width="100%" src="photos/pranksta4.jpg"> | <img width="100%" src="photos/pranksta5.jpg"> | <img width="100%" src="photos/pranksta6.jpg"> |
+```
+
+Produces this, which looks much nicer and more well-spaced in my opinion, since vertical spacing is also centered for each row of images:
+
+|                                               |                                               |                                               |
+|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|
+| <img width="100%" src="photos/pranksta1.jpg"> | <img width="100%" src="photos/pranksta2.jpg"> | <img width="100%" src="photos/pranksta3.jpg"> |
+| <img width="100%" src="photos/pranksta4.jpg"> | <img width="100%" src="photos/pranksta5.jpg"> | <img width="100%" src="photos/pranksta6.jpg"> |
+
+
 ----
 
 # 2. Centering and aligning images using modern CSS in any markdown document where you also have control over CSS styles:
