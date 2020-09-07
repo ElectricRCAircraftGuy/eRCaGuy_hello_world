@@ -66,7 +66,11 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
+**6 images in a row:**
 <p align="center" width="100%">
+    <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
