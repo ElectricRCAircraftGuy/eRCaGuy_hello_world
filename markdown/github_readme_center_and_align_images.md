@@ -46,7 +46,7 @@ Option 2 only works in places where you have full control over CSS styles, such 
 
 # 1. Centering and aligning images _in GitHub readmes_ using the deprecated HTML `align` attribute:
 
-This works in any GitHub `*.md` markdown file, such as a GitHub `readme.md` file. It relies on the deprecated HTML `align` attribute, but still works fine.
+This works in any GitHub `*.md` markdown file, such as a GitHub `readme.md` file. It relies on the deprecated HTML `align` attribute, but still works fine. You can see a full demo of this in an actual GitHub readme in my eRCaGuy_hello_world repo here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/markdown/github_readme_center_and_align_images.md.
 
 Notes:
 
@@ -231,7 +231,7 @@ I am aligning all paragraph `<p>` elements above to the `center`, but you can al
 This:
 
 ```html
-30% width each:
+Align the whole row of images to the right this time:
 <p align="right" width="100%">
     <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
@@ -241,7 +241,7 @@ This:
 
 Produces this (aligning the whole row of images according to the `align` attribute set above, or to the _right_ in this case). Generally, `center` is preferred, as done in the examples above.
 
-30% width each:
+Align the whole row of images to the right this time:
 <p align="right" width="100%">
     <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
