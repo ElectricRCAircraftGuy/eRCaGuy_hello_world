@@ -60,17 +60,17 @@ Notes:
 This:
 
 ```html
-**Left:**
+**Align left:**
 <p align="left" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
-**Center:**
+**Align center:**
 <p align="center" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
-**Right:**
+**Align right:**
 <p align="right" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
@@ -78,42 +78,134 @@ This:
 
 Produces this:
 
-**Left:**
+**Align left:**
 <p align="left" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
-**Center:**
+**Align center:**
 <p align="center" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
-**Right:**
+**Align right:**
 <p align="right" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
+If you'd like to set the text itself to left, center, or right, you can include the text inside the `<p>` element as well, as regular HTML, like this:
 
-## 1.2. Align images side-by-side:
+```html
+<p align="right" width="100%">
+    This text is also aligned to the right.<br>
+    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
+```
 
-_Reminder: MAKE SURE TO GIVE THE `<p>` tag an entire 100% width or else text gets in-lined around it, botching your vertical alignment and vertical spacing/formatting you may be trying to maintain!_
+To produce this:
+
+<p align="right" width="100%">
+    This text is also aligned to the right.<br>
+    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
+
+
+## 1.2. Align images left, right, or centered, WITH word wrap:
 
 This:
 
 ```html
+**Align left (works fine):**
 
+<img align="left" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+
+[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+
+
+**Align center (doesn't really work):**
+
+<img align="center" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+
+[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+
+
+**Align right (works fine):**
+
+<img align="right" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+
+[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 ```
 
 Produces this:
 
-33% width each (a little too wide to fit all side-by-side):
+**Align left (works fine):**
+
+<img align="left" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+
+[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+
+
+**Align center (doesn't really work):**
+
+<img align="center" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+
+[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+
+
+**Align right (works fine):**
+
+<img align="right" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+
+[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+
+
+## 1.3. Align images side-by-side:
+
+_Reminder: MAKE SURE TO GIVE THE entire `<p>` paragraph element the full 100% column width (`width="100%"`, as shown below) or else text gets word-wrapped around it, botching your vertical alignment and vertical spacing/formatting you may be trying to maintain!_
+
+
+This:
+
+```html
+33% width each (a little too wide to fit all 3 images side-by-side):
 <p align="center" width="100%">
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
-32% width each (perfect size to just barely all fit side-by-side):
+32% width each (perfect size to just barely fit all 3 images side-by-side):
+<p align="center" width="100%">
+    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
+
+31% width each:
+<p align="center" width="100%">
+    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
+
+30% width each:
+<p align="center" width="100%">
+    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
+```
+
+Produces this:
+
+33% width each (a little too wide to fit all 3 images side-by-side):
+<p align="center" width="100%">
+    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
+
+32% width each (perfect size to just barely fit all 3 images side-by-side):
 <p align="center" width="100%">
     <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
     <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
@@ -134,54 +226,27 @@ Produces this:
     <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
-
-## 1.3. Align images left, right, or centered, WITH word wrap:
+I am aligning all paragraph `<p>` elements above to the `center`, but you can also align `left` or `right`, as shown in previous examples, to force the row of images to get aligned that way too. Example:
 
 This:
 
 ```html
-**Left (works fine):**
-
-<img align="left" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-
-[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
-
-
-**Center (doesn't really work):**
-
-<img align="center" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-
-[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
-
-
-**Right (works fine):**
-
-<img align="right" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-
-[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+30% width each:
+<p align="right" width="100%">
+    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
 ```
 
-Produces this:
+Produces this (aligning the whole row of images according to the `align` attribute set above, or to the _right_ in this case). Generally, `center` is preferred, as done in the examples above.
 
-**Left (works fine):**
-
-<img align="left" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-
-[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
-
-
-**Center (doesn't really work):**
-
-<img align="center" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-
-[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
-
-
-**Right (works fine):**
-
-<img align="right" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-
-[Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
+30% width each:
+<p align="right" width="100%">
+    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+</p>
 
 
 ----
