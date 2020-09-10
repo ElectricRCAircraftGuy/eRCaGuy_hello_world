@@ -8,10 +8,11 @@ First Written: 7 Sept. 2020
 **See my original answer online on Stack Overflow here: https://stackoverflow.com/questions/12090472/github-readme-md-center-image/62383408#62383408.**
 
 
-**TLDR:**  
-Just jump straight down to look at the 3 examples (1.1, 1.2, and 1.3) in the section below called **"1. Centering and aligning images _in GitHub readmes_ using the deprecated HTML `align` attribute"**!
+# TLDR:  
+Just jump straight down to look at the 4 examples (1.1, 1.2, 1.3, and 1.4) in the section below called **"1. Centering and aligning images _in GitHub readmes_ using the deprecated HTML `align` attribute"**!
 
-**Full answer:** 
+
+# Full answer:
 
 
 # Background on how to center and align images in markdown:
