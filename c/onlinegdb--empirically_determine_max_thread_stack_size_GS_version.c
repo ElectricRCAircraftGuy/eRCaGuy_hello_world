@@ -24,8 +24,17 @@ I've added some minor changes to it for readability, clarity, and efficiency.
 
 Build and run command:
 
+As a C program:
+
     mkdir -p bin && \
     gcc -Wall -Werror -g3 -O3 -std=c11 -pthread -o bin/tmp \
+    onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c && \
+    time bin/tmp
+
+As a C++ program:
+
+    mkdir -p bin && \
+    g++ -Wall -Werror -g3 -O3 -std=c++17 -pthread -o bin/tmp \
     onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c && \
     time bin/tmp
 
