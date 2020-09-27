@@ -15,7 +15,9 @@ You can run this as a C OR C++ program!
 
 References:
 1. https://stackoverflow.com/questions/1825964/c-c-maximum-stack-size-of-program/1826072#1826072
-1. https://lists.gnu.org/archive/html/bug-coreutils/2009-10/msg00262.html
+2. [MY OWN ANS]
+   https://stackoverflow.com/questions/1825964/c-c-maximum-stack-size-of-program/64085509#64085509
+3. https://lists.gnu.org/archive/html/bug-coreutils/2009-10/msg00262.html
     Originally by Bruno Haible, here, 24 Oct. 2009
 
 I've added some minor changes to it for readability, clarity, and efficiency.
