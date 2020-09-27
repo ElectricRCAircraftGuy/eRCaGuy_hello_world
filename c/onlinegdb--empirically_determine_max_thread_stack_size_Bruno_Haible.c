@@ -27,16 +27,16 @@ Build and run command:
 As a C program:
 
     mkdir -p bin && \
-    gcc -Wall -Werror -g3 -O3 -std=c11 -pthread -o bin/tmp \
+    gcc -Wall -Werror -g3 -O3 -std=c11 -pthread -o bin/stack_size_bruno_c \
     onlinegdb--empirically_determine_max_thread_stack_size_Bruno_Haible.c && \
-    time bin/tmp
+    time bin/stack_size_bruno_c
 
 As a C++ program:
 
     mkdir -p bin && \
-    g++ -Wall -Werror -g3 -O3 -std=c++17 -pthread -o bin/tmp \
+    g++ -Wall -Werror -g3 -O3 -std=c++17 -pthread -o bin/stack_size_bruno_cpp \
     onlinegdb--empirically_determine_max_thread_stack_size_Bruno_Haible.c && \
-    time bin/tmp
+    time bin/stack_size_bruno_cpp
 
 *******************************************************************************/
 
