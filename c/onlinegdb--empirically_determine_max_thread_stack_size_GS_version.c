@@ -25,7 +25,7 @@ Build and run command:
     mkdir -p bin && \
     gcc -Wall -Werror -g3 -O3 -std=c11 -pthread -o bin/tmp \
     onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c && \
-    bin/tmp
+    time bin/tmp
 
 *******************************************************************************/
 
@@ -57,14 +57,22 @@ void* threadfunc(void* bytes_to_allocate_each_loop)
     {
         printf("bytes_allocated = %u\n", bytes_allocated);
         fflush(stdout);
-        alloca(BYTES_TO_ALLOCATE_EACH_LOOP);
+        // NB: it appears that you don't necessarily need `volatile` here,
+        // but you DO definitely need to actually use (ex: write to) the
+        // memory allocated by `alloca()`, as we do below, or else the
+        // `alloca()` call does seem to get optimized out on some systems,
+        // making this whole program just run infinitely forever without
+        // ever hitting the expected segmentation fault.
+        volatile uint8_t * byte_buff =
+                (volatile uint8_t *)alloca(BYTES_TO_ALLOCATE_EACH_LOOP);
+        byte_buff[0] = 0;
         bytes_allocated += BYTES_TO_ALLOCATE_EACH_LOOP;
     }
 }
 
 int main()
 {
-    const uint32_t BYTES_TO_ALLOCATE_EACH_LOOP = 1024;
+    const uint32_t BYTES_TO_ALLOCATE_EACH_LOOP = 128;
 
     pthread_t thread;
     pthread_create(&thread, NULL, threadfunc,
