@@ -1,17 +1,20 @@
 """
+
+This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
 Gabriel Staples
-14 Apr. 2020 
+14 Apr. 2020
 
 Do some yaml file importing to learn how yaml configuration files work.
 
 Run command:
     python3 import_yaml_test.py
 - OR (if in the root dir of this repo):
-    python3 python/yaml_import/import_yaml_test.py 
+    python3 python/yaml_import/import_yaml_test.py
 
 References:
 1. https://rollout.io/blog/yaml-tutorial-everything-you-need-get-started/
-2. PyYAML documentation (scroll down to near the very bottom to see the full reference 
+2. PyYAML documentation (scroll down to near the very bottom to see the full reference
    documentation for all functions): https://pyyaml.org/wiki/PyYAMLDocumentation
 """
 
@@ -55,7 +58,7 @@ if __name__ == '__main__':
 SAMPLE OUTPUT:
 
 
-$ python3 python/yaml_import/import_yaml_test.py 
+$ python3 python/yaml_import/import_yaml_test.py
 Directory this Python file is in = "/home/gabriel/GS/dev/eRCaGuy_hello_world/python/yaml_import"
 
 ====================
