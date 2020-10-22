@@ -2,7 +2,7 @@
 // This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 /*
-onlinegdb--strncmpci.c
+strncmpci.c
 
 Gabriel Staples
 www.ElectricRCAircraftGuy.com
@@ -12,7 +12,7 @@ Updated: 21 Oct. 2020
 
 To compile and run:
 
-    gcc -Wall -Wextra -Werror -ggdb -std=c11 -o ./bin/tmp onlinegdb--strncmpci.c && ./bin/tmp
+    gcc -Wall -Wextra -Werror -ggdb -std=c11 -o ./bin/tmp strncmpci.c && ./bin/tmp
 
 
 References:
