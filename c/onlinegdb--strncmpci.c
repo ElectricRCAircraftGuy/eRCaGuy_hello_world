@@ -32,6 +32,12 @@ WORK-IN-PROGRESS!
 #include <stdio.h>
 #include <string.h>
 
+// For ANSI color codes in a terminal, see my notes to self in my file here:
+// https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-diffn.sh
+#define ANSI_COLOR_OFF "\033[m"
+#define ANSI_COLOR_GRN "\033[32m"
+#define ANSI_COLOR_RED "\033[31m"
+
 typedef struct data_s
 {
     int error_count;
@@ -116,8 +122,8 @@ done:
 ///                 EXPECT_EQUALS(strncmpci(str1, str2, n), 1);
 ///             Sample output:
 ///                 FAILED at line 173 in function main! strncmpci(str1, str2, n) != 1
-///                   strncmpci(str1, str2, n) is 0
-///                   1 is 1
+///                   a: strncmpci(str1, str2, n) is 0
+///                   b: 1 is 1
 #define EXPECT_EQUALS(int_a, int_b) \
     do { \
         expect_equals(int_a, int_b, &globals.error_count, #int_a, #int_b, __LINE__, __func__); \
@@ -161,8 +167,8 @@ bool expect_equals(int a, int b, int * error_count, char * a_str, char * b_str, 
     {
         // both a_str and b_str are NOT null ptrs
         printf("FAILED at line %i in function %s! %s != %s\n"
-               "  %s is %i\n"
-               "  %s is %i\n\n",
+               "  a: %s is %i\n"
+               "  b: %s is %i\n\n",
                line, func, a_str, b_str, a_str, a, b_str, b);
     }
 
@@ -171,13 +177,16 @@ bool expect_equals(int a, int b, int * error_count, char * a_str, char * b_str, 
 
 int main()
 {
-    printf("String Comparison Tests\n\n");
+    printf("-----------------------\n"
+           "String Comparison Tests\n"
+           "-----------------------\n\n");
 
     int num_failures_expected = 0;
 
-    printf("Intentional unit test failure to show what a unit test failure looks like!\n");
+    printf("INTENTIONAL UNIT TEST FAILURE to show what a unit test failure looks like!\n");
     EXPECT_EQUALS(strncmpci("hey", "HEY", 3), 1);
     num_failures_expected++;
+    printf("------ beginning ------\n\n");
 
 
     const char * str1;
@@ -187,68 +196,81 @@ int main()
     str1 = "hey";
     str2 = "HEY";
     n = 3;
-    EXPECT_EQUALS(strncmpci(str1, str2, 3), 0);
-    EXPECT_EQUALS(strncmp(str1, str2, 3), 32);
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'h' - 'H');
 
     str1 = "heY";
     str2 = "HeY";
     n = 3;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'h' - 'H');
 
     str1 = "hey";
     str2 = "HEdY";
     n = 3;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 'y' - 'd');
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'h' - 'H');
 
     str1 = "heY";
-    str2 = "HeYd";
+    str2 = "hEYd";
     n = 3;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'e' - 'E');
 
     str1 = "heY";
-    str2 = "HeYd";
+    str2 = "heyd";
     n = 6;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), -'d');
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'Y' - 'y');
 
     str1 = "hey";
     str2 = "hey";
     n = 6;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 0);
 
     str1 = "hey";
     str2 = "heyd";
     n = 6;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), -'d');
+    EXPECT_EQUALS(strncmp(str1, str2, n), -'d');
 
     str1 = "hey";
     str2 = "heyd";
     n = 3;
-    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
-    // printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
-    printf("\n");
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 0);
 
+    str1 = "hEY";
+    str2 = "heyYOU";
+    n = 3;
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'E' - 'e');
+
+    str1 = "hEY";
+    str2 = "heyYOU";
+    n = 10;
+    EXPECT_EQUALS(strncmpci(str1, str2, n), -'y');
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'E' - 'e');
+
+    str1 = "hEYHowAre";
+    str2 = "heyYOU";
+    n = 10;
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 'h' - 'y');
+    EXPECT_EQUALS(strncmp(str1, str2, n), 'E' - 'e');
+
+
+    if (globals.error_count == num_failures_expected)
+    {
+        printf(ANSI_COLOR_GRN "All unit tests passed!" ANSI_COLOR_OFF "\n");
+    }
+    else
+    {
+        printf(ANSI_COLOR_RED "FAILED UNIT TESTS! NUMBER OF UNEXPECTED FAILURES = %i"
+            ANSI_COLOR_OFF "\n", globals.error_count - num_failures_expected);
+    }
 
     assert(globals.error_count == num_failures_expected);
-
     return globals.error_count;
 }
 
