@@ -21,7 +21,7 @@ References:
 3. http://www.cplusplus.com/reference/cstring/strncmp/
 
 STATUS:
-WORK-IN-PROGRESS!
+IT WORKS! ALL UNIT TESTS PASS!
 
 */
 
@@ -47,6 +47,9 @@ typedef struct data_s
 data_t globals = {
     .error_count = 0,
 };
+
+// TODO: Make a version of this code which also works on Unicode's UTF-8 implementation (character
+// encoding)! Add it to my answer here too: https://stackoverflow.com/a/55293507/4561887.
 
 /// \brief      Perform a case-insensitive string compare (`strncmp()` case-insensitive) to see
 ///             if two C-strings are equal.
