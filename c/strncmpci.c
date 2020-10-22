@@ -201,6 +201,9 @@ int main()
     EXPECT_EQUALS(strncmpci(NULL, "", 0), INT_MIN);
     EXPECT_EQUALS(strncmpci("", NULL, 0), INT_MIN);
     EXPECT_EQUALS(strncmpci(NULL, NULL, 0), INT_MIN);
+    EXPECT_EQUALS(strncmpci(NULL, "", 10), INT_MIN);
+    EXPECT_EQUALS(strncmpci("", NULL, 10), INT_MIN);
+    EXPECT_EQUALS(strncmpci(NULL, NULL, 10), INT_MIN);
 
     EXPECT_EQUALS(strncmpci("", "", 0), 0);
     EXPECT_EQUALS(strncmp("", "", 0), 0);
