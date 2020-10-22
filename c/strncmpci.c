@@ -296,6 +296,19 @@ int main()
 /*
 Sample output:
 
+    $ gcc -Wall -Wextra -Werror -ggdb -std=c11 -o ./bin/tmp strncmpci.c && ./bin/tmp
+    -----------------------
+    String Comparison Tests
+    -----------------------
+
+    INTENTIONAL UNIT TEST FAILURE to show what a unit test failure looks like!
+    FAILED at line 191 in function main! strncmpci("hey", "HEY", 3) != 1
+      a: strncmpci("hey", "HEY", 3) is 0
+      b: 1 is 1
+
+    ------ beginning ------
+
+    All unit tests passed!
 
 
 */
