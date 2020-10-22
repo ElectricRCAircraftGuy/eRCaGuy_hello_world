@@ -12,7 +12,7 @@ Updated: 21 Oct. 2020
 
 To compile and run:
 
-    gcc -Wall -Wextra -Werror -ggdb -std=c11 -o bin/tmp onlinegdb--strncmpci.c && ./tmp
+    gcc -Wall -Wextra -Werror -ggdb -std=c11 -o ./bin/tmp onlinegdb--strncmpci.c && ./bin/tmp
 
 
 References:
@@ -125,65 +125,65 @@ int main()
     str1 = "hey";
     str2 = "HEY";
     n = 3;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "heY";
     str2 = "HeY";
     n = 3;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "hey";
     str2 = "HEdY";
     n = 3;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "heY";
     str2 = "HeYd";
     n = 3;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "heY";
     str2 = "HeYd";
     n = 6;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "hey";
     str2 = "hey";
     n = 6;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "hey";
     str2 = "heyd";
     n = 6;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     str1 = "hey";
     str2 = "heyd";
     n = 3;
-    printf("strncmpci(%s, %s, %u) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
+    printf("strncmpci(%s, %s, %lu) = %i\n", str1, str2, n, strncmpci(str1, str2, n));
     printf("strcicmp(%s, %s) = %i\n", str1, str2, strcicmp(str1, str2));
-    printf("strncmp(%s, %s, %u) = %i\n", str1, str2, n, strncmp(str1, str2, n));
+    printf("strncmp(%s, %s, %lu) = %i\n", str1, str2, n, strncmp(str1, str2, n));
     printf("\n");
 
     return 0;
