@@ -65,7 +65,8 @@ data_t globals = {
 /// \return     A comparison code (identical to `strncmp()`, except with the addition
 ///             of `INT_MIN` as a special sentinel value):
 ///
-///             INT_MIN  Invalid arguments (one or both of the input strings is a NULL pointer).
+///             INT_MIN (usually -2147483648 for int32_t integers)  Invalid arguments (one or both
+///                      of the input strings is a NULL pointer).
 ///             <0       The first character that does not match has a lower value in str1 than
 ///                      in str2.
 ///              0       The contents of both strings are equal.
@@ -73,19 +74,19 @@ data_t globals = {
 ///                      in str2.
 int strncmpci(const char * str1, const char * str2, size_t num)
 {
-    int ret_code = INT_MIN;
-
+    int ret_code = 0;
     size_t chars_compared = 0;
 
     // Check for NULL pointers
     if (!str1 || !str2)
     {
+        ret_code = INT_MIN;
         goto done;
     }
 
-    // Continue doing case-insensitive comparisons, one-character-at-a-time, of str1 to str2,
+    // Continue doing case-insensitive comparisons, one-character-at-a-time, of `str1` to `str2`,
     // as long as at least one of the strings still has more characters in it, and we have
-    // not yet compared num chars.
+    // not yet compared `num` chars.
     while ((*str1 || *str2) && (chars_compared < num))
     {
         ret_code = tolower((int)(*str1)) - tolower((int)(*str2));
@@ -192,6 +193,21 @@ int main()
     const char * str1;
     const char * str2;
     size_t n;
+
+    EXPECT_EQUALS(strncmpci("", "", 0), 0);
+    EXPECT_EQUALS(strncmp("", "", 0), 0);
+
+    str1 = "";
+    str2 = "";
+    n = 0;
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 0);
+
+    str1 = "hey";
+    str2 = "HEY";
+    n = 0;
+    EXPECT_EQUALS(strncmpci(str1, str2, n), 0);
+    EXPECT_EQUALS(strncmp(str1, str2, n), 0);
 
     str1 = "hey";
     str2 = "HEY";
