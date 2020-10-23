@@ -188,7 +188,7 @@ int main()
     int num_failures_expected = 0;
 
     printf("INTENTIONAL UNIT TEST FAILURE to show what a unit test failure looks like!\n");
-    EXPECT_EQUALS(strncmpci("hey", "HEY", 3), 1);
+    EXPECT_EQUALS(strncmpci("hey", "HEY", 3), 'h' - 'H');
     num_failures_expected++;
     printf("------ beginning ------\n\n");
 
@@ -286,6 +286,26 @@ int main()
     EXPECT_EQUALS(strncmpci(str1, str2, n), 'h' - 'y');
     EXPECT_EQUALS(strncmp(str1, str2, n), 'E' - 'e');
 
+    EXPECT_EQUALS(strncmpci("nice to meet you.,;", "NICE TO MEET YOU.,;", 100), 0);
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "NICE TO MEET YOU.,;", 100), 'n' - 'N');
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "nice to meet you.,;", 100), 0);
+
+    EXPECT_EQUALS(strncmpci("nice to meet you.,;", "NICE TO UEET YOU.,;", 100), 'm' - 'u');
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "nice to uEET YOU.,;", 100), 'm' - 'u');
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "nice to UEET YOU.,;", 100), 'm' - 'U');
+
+    EXPECT_EQUALS(strncmpci("nice to meet you.,;", "NICE TO MEET YOU.,;", 5), 0);
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "NICE TO MEET YOU.,;", 5), 'n' - 'N');
+
+    EXPECT_EQUALS(strncmpci("nice to meet you.,;", "NICE eo UEET YOU.,;", 5), 0);
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "nice eo uEET YOU.,;", 5), 0);
+
+    EXPECT_EQUALS(strncmpci("nice to meet you.,;", "NICE eo UEET YOU.,;", 100), 't' - 'e');
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "nice eo uEET YOU.,;", 100), 't' - 'e');
+
+    EXPECT_EQUALS(strncmpci("nice to meet you.,;", "nice-eo UEET YOU.,;", 5), ' ' - '-');
+    EXPECT_EQUALS(strncmp(  "nice to meet you.,;", "nice-eo UEET YOU.,;", 5), ' ' - '-');
+
 
     if (globals.error_count == num_failures_expected)
     {
@@ -310,9 +330,9 @@ Sample output:
     -----------------------
 
     INTENTIONAL UNIT TEST FAILURE to show what a unit test failure looks like!
-    FAILED at line 191 in function main! strncmpci("hey", "HEY", 3) != 1
+    FAILED at line 191 in function main! strncmpci("hey", "HEY", 3) != 'h' - 'H'
       a: strncmpci("hey", "HEY", 3) is 0
-      b: 1 is 1
+      b: 'h' - 'H' is 32
 
     ------ beginning ------
 
