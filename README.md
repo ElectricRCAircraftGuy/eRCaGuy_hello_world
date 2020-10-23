@@ -48,6 +48,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. Example of how to manually write unit tests.
     1. See ["c/onlinegdb--strncmpci.c"](c/onlinegdb--strncmpci.c)
     1. Note: for Google Test (gtest/gmock) examples, including how to use the [Bazel](https://bazel.build/) build system, see my repo here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice.
+1. How to use a `const` reference to a vector, with a default parameter, as an input param to a function!
+    1. See ["cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp"](cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp)
 
 <a name="build-notes"></a>
 ### Additional C and C++ build notes (ex: w/`gcc` or `clang` compilers):
