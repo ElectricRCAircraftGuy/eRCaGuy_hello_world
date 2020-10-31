@@ -13,15 +13,24 @@ GS
 30 Oct. 2020
 
 References:
-1.
+1. Optimization levels: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 
 Build and run command:
+Note: use optimization level `-O3` for normal use, and `-O0` for debugging with gdb.
 
-    mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -std=c++17 -o ./bin/tmp \
+  Normal:
+
+    mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O3 -std=c++17 -o ./bin/tmp \
+    floating_point_and_double_resolution_test.cpp && ./bin/tmp
+
+  Debugging:
+
+    mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O0 -std=c++17 -o ./bin/tmp \
     floating_point_and_double_resolution_test.cpp && ./bin/tmp
 
 */
 
+#include <cmath>
 #include <cstdio>
 #include <iostream>
 
@@ -29,20 +38,40 @@ int main()
 {
     printf("Hello World\n\n");
 
-    double time_sec = 0.0;
     constexpr double NS_PER_SEC = 1e9;
-    // constexpr double NS_PER_SEC = 1e-9;
+    constexpr double SEC_PER_NS = 1.0/NS_PER_SEC;
 
+    printf("NS_PER_SEC = %f\n"
+           "SEC_PER_NS = %3.12f\n",
+           NS_PER_SEC,
+           SEC_PER_NS);
+
+    double time_sec = 0.0;
     uint64_t time_ns = 0;
-
-    printf("NS_PER_SEC = %3.12f\n", NS_PER_SEC);
 
     while (true)
     {
-        time_sec += NS_PER_SEC;
+        static uint64_t loop_cnt = 0;
+        loop_cnt++;
+
+        // Add 1 ns to each
+        time_sec += SEC_PER_NS;
         time_ns += 1;
 
-        if (time_sec * 1e9)
+        // accumulated floating point error
+        double accumulated_error_ns = time_sec*NS_PER_SEC - time_ns;
+        static uint64_t ns_error_bound = 1;
+        if (std::abs(accumulated_error_ns) > (double)ns_error_bound)
+        {
+            ns_error_bound += 1;
+
+            printf("loop_cnt = %lu\n", loop_cnt);
+
+            printf("time_ns = %lu\n"
+                   "accumulated_error_ns = %f\n"
+                   "time_ns in seconds = %3.9f\n\n",
+                   time_ns, accumulated_error_ns, (double)time_ns/NS_PER_SEC);
+        }
     }
 
     return 0;
