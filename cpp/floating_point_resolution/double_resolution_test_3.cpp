@@ -14,6 +14,7 @@ GS
 
 References:
 1. Optimization levels: https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
+2. https://stackoverflow.com/questions/213907/stdendl-vs-n
 
 Build and run command:
 Note: use optimization level `-O3` for normal use, and `-O0` for debugging with gdb.
@@ -21,12 +22,12 @@ Note: use optimization level `-O3` for normal use, and `-O0` for debugging with 
     Normal:
 
         mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O3 -std=c++17 -o ./bin/tmp \
-        double_resolution_test_3.cpp && ./bin/tmp
+        double_resolution_test_3.cpp && time ./bin/tmp
 
     Debugging:
 
         mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O0 -std=c++17 -o ./bin/tmp \
-        double_resolution_test_3.cpp && ./bin/tmp
+        double_resolution_test_3.cpp && time ./bin/tmp
 
 */
 
@@ -58,12 +59,25 @@ int main()
         printf("FAILED TO OPEN FILE; state = %i\n", file.rdstate());
         return file.rdstate();
     }
+    file << "loop_cnt, u64_time_ns, accumulated_error_ns" << std::endl;
 
     double double_time_sec = 0.0;
     uint64_t u64_time_ns = 0;
     while (true)
     {
         static uint64_t loop_cnt = 0;
+
+        // Display progress
+        constexpr uint64_t NUM_INCREMENTS = 1e9;
+        if (loop_cnt % (UINT64_MAX/NUM_INCREMENTS) == 0)
+        {
+            static uint64_t progress_counter = 0;
+            progress_counter++;
+
+            printf("%3.9f%% complete (%lu/%lu)\n",
+                  (double)progress_counter/NUM_INCREMENTS*100, progress_counter, NUM_INCREMENTS);
+            file << std::flush; // flush file to ensure data thus far is written
+        }
 
         // calculate and check accumulated floating point error
         double accumulated_error_ns = double_time_sec*NS_PER_SEC - u64_time_ns;
@@ -97,12 +111,7 @@ int main()
 
         if (print_now)
         {
-            printf("loop_cnt = %lu\n", loop_cnt);
-
-            printf("u64_time_ns = %lu\n"
-                   "accumulated_error_ns = %f\n"
-                   "u64_time_ns in seconds = %3.9f\n\n",
-                   u64_time_ns, accumulated_error_ns, (double)u64_time_ns/NS_PER_SEC);
+            file << loop_cnt << ", " << u64_time_ns << ", " << accumulated_error_ns << "\n";
         }
 
         loop_cnt++;
