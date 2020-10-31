@@ -3,7 +3,7 @@
 
 /*
 
-floating_point_and_double_resolution_test.cpp
+double_resolution_test_1.cpp
 
 - Find out when float += 1 ns (in decimal form, assuming the whole units are seconds) no longer
 equals uint64_t += 1 ns, and so on, printing each time another ns of resolution is lost!
@@ -18,15 +18,15 @@ References:
 Build and run command:
 Note: use optimization level `-O3` for normal use, and `-O0` for debugging with gdb.
 
-  Normal:
+    Normal:
 
-    mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O3 -std=c++17 -o ./bin/tmp \
-    floating_point_and_double_resolution_test.cpp && ./bin/tmp
+        mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O3 -std=c++17 -o ./bin/tmp \
+        double_resolution_test_1.cpp && ./bin/tmp
 
-  Debugging:
+    Debugging:
 
-    mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O0 -std=c++17 -o ./bin/tmp \
-    floating_point_and_double_resolution_test.cpp && ./bin/tmp
+        mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O0 -std=c++17 -o ./bin/tmp \
+        double_resolution_test_1.cpp && ./bin/tmp
 
 */
 
