@@ -59,17 +59,20 @@ int main()
         printf("FAILED TO OPEN FILE; state = %i\n", file.rdstate());
         return file.rdstate();
     }
-    file << "loop_cnt, u64_time_ns, accumulated_error_ns" << std::endl;
+    // file << "loop_cnt, u64_time_ns, accumulated_error_ns" << std::endl;
+    file << "u64_time_ns (also acts as a loop counter), accumulated_error_ns" << std::endl;
 
     double double_time_sec = 0.0;
+    // NB: since `u64_time_ns` will be incremented by 1 ns each loop iteration, it is also **exactly
+    // equivalent** to an integer loop counter!
     uint64_t u64_time_ns = 0;
     while (true)
     {
-        static uint64_t loop_cnt = 0;
+        // static uint64_t loop_cnt = 0;
 
         // Display progress
         constexpr uint64_t NUM_INCREMENTS = 1e9;
-        if (loop_cnt % (UINT64_MAX/NUM_INCREMENTS) == 0)
+        if (u64_time_ns % (UINT64_MAX/NUM_INCREMENTS) == 0)
         {
             static uint64_t progress_counter = 0;
             progress_counter++;
@@ -111,10 +114,10 @@ int main()
 
         if (print_now)
         {
-            file << loop_cnt << ", " << u64_time_ns << ", " << accumulated_error_ns << "\n";
+            file << u64_time_ns << ", " << accumulated_error_ns << "\n";
         }
 
-        loop_cnt++;
+        // loop_cnt++;
 
         // Add 1 ns to each
         double_time_sec += SEC_PER_NS;
