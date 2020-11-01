@@ -37,6 +37,12 @@ Note: use optimization level `-O3` for normal use, and `-O0` for debugging with 
 #include <iostream>
 #include <string>
 
+// Use this if your symbolically-linked `data` folder is not working since you haven't cloned
+// the "eRCaGuy_hello_world_data" repo or something.
+// std::string filename = "double_resolution_test_3.csv";
+// Otherwise, use this:
+std::string filename = "data/temp/double_resolution_test_3.csv";
+
 int main()
 {
     printf("Hello World\n\n");
@@ -51,9 +57,8 @@ int main()
 
 
     // Open file and create CSV file header
-    std::string FILENAME = "double_resolution_test_3.csv";
     std::ofstream file;
-    file.open(FILENAME, std::fstream::out);
+    file.open(filename, std::fstream::out);
     if (!file.good())
     {
         printf("FAILED TO OPEN FILE; state = %i\n", file.rdstate());

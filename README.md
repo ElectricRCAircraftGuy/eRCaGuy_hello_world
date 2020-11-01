@@ -1,6 +1,8 @@
 # eRCaGuy_hello_world
 "hello world" demos &amp; templates for various languages, incl. `gcc` build commands for C &amp; C++ 
 
+See also my [eRCaGuy_hello_world_data](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world_data) project. 
+
 By Gabriel Staples  
 www.ElectricRCAircraftGuy.com
 
