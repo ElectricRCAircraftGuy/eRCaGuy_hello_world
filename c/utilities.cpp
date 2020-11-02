@@ -10,6 +10,8 @@ See the .h file for details.
 
 */
 
+#include "utilities.h"
+
 
 // From WMath.cpp:
 
