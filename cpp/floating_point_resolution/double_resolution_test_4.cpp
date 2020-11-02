@@ -3,7 +3,7 @@
 
 /*
 
-double_resolution_test_3.cpp
+double_resolution_test_4.cpp
 
 - Find out when float += 1 ns (in decimal form, assuming the whole units are seconds) no longer
 equals uint64_t += 1 ns, and so on, printing each time another ns of resolution is lost!
@@ -22,12 +22,12 @@ Note: use optimization level `-O3` for normal use, and `-O0` for debugging with 
     Normal:
 
         mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O3 -std=c++17 -o ./bin/tmp \
-        double_resolution_test_3.cpp && time ./bin/tmp
+        double_resolution_test_4.cpp && time ./bin/tmp
 
     Debugging:
 
         mkdir -p bin && g++ -Wall -Wextra -Werror -ggdb -O0 -std=c++17 -o ./bin/tmp \
-        double_resolution_test_3.cpp && time ./bin/tmp
+        double_resolution_test_4.cpp && time ./bin/tmp
 
 */
 
@@ -39,9 +39,9 @@ Note: use optimization level `-O3` for normal use, and `-O0` for debugging with 
 
 // Use this if your symbolically-linked `data` folder is not working since you haven't cloned
 // the "eRCaGuy_hello_world_data" repo or something.
-// std::string filename = "double_resolution_test_3.csv";
+// std::string filename = "double_resolution_test_4.csv";
 // Otherwise, use this:
-std::string filename = "data/temp/double_resolution_test_3.csv";
+std::string filename = "data/temp/double_resolution_test_4.csv";
 
 int main()
 {
@@ -94,10 +94,12 @@ int main()
         static int64_t error_bound_ns = 0;
         double accumulated_error_ns_change_magnitude = std::abs(accumulated_error_ns_change);
         bool print_now = false;
-        if (accumulated_error_ns_change_magnitude >= error_bound_ns + 1)
+        // Let's collect 1000x times less data than before! 1e3 ns = 1000 ns = 1 us
+        constexpr int64_t ERROR_BOUND_CHANGE_NS = 1e3;
+        if (accumulated_error_ns_change_magnitude >= error_bound_ns + ERROR_BOUND_CHANGE_NS)
         {
             print_now = true;
-            error_bound_ns += 1;
+            error_bound_ns += ERROR_BOUND_CHANGE_NS;
 
             if (error_bound_ns == INT64_MAX)
             {
@@ -105,10 +107,10 @@ int main()
                 break;
             }
         }
-        else if (accumulated_error_ns_change_magnitude <= error_bound_ns - 1)
+        else if (accumulated_error_ns_change_magnitude <= error_bound_ns - ERROR_BOUND_CHANGE_NS)
         {
             print_now = true;
-            error_bound_ns -= 1;
+            error_bound_ns -= ERROR_BOUND_CHANGE_NS;
 
             if (error_bound_ns == INT64_MIN)
             {
