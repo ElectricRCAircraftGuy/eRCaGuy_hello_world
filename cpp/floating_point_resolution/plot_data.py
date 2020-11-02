@@ -28,8 +28,12 @@ Run command:
 import matplotlib.pyplot as pyplot
 # import numpy
 import pandas
+import time
 
+print("Reading file.")
+t_start_sec = time.time()
 data = pandas.read_csv('data/temp/double_resolution_test_3.csv')
+print("read time (sec) = {}".format(time.time() - t_start_sec))
 u64_time_ns_label = data.columns[0]
 error_ns_label = data.columns[1]
 # print(u64_time_ns_label)
@@ -45,5 +49,6 @@ pyplot.ylabel(error_ns_label.strip())
 pyplot.title("Floating Point Error")
 # pyplot.get_legend_handles_labels()
 # pyplot.legend()
+print("Showing plot.")
 pyplot.show()
 
