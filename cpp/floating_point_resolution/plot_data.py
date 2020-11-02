@@ -30,9 +30,13 @@ import matplotlib.pyplot as pyplot
 import pandas
 import time
 
+# filename = "data/temp/double_resolution_test_3.csv"
+# filename = "data/temp/double_resolution_test_3_20201031#2.csv"
+filename = "data/temp/double_resolution_test_3_20201031#3_recombined.csv"
+
 print("Reading file.")
 t_start_sec = time.time()
-data = pandas.read_csv('data/temp/double_resolution_test_3.csv')
+data = pandas.read_csv(filename)
 print("read time (sec) = {}".format(time.time() - t_start_sec))
 u64_time_ns_label = data.columns[0]
 error_ns_label = data.columns[1]
