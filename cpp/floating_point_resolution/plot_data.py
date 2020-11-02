@@ -12,6 +12,7 @@ https://www.google.com/search?q=plot+csv+in+python&oq=plot+csv+in+python&aqs=chr
 2. https://pythonprogramming.net/loading-file-data-matplotlib-tutorial/
 3. https://stackoverflow.com/a/46220898/4561887
 4. https://stackoverflow.com/questions/46219792/how-to-get-labels-by-numpy-loadtext
+    1. *****https://stackoverflow.com/questions/46219792/how-to-get-labels-by-numpy-loadtext/46220898#46220898
 
 Install Python dependencies:
 
@@ -25,15 +26,24 @@ Run command:
 """
 
 import matplotlib.pyplot as pyplot
-import numpy
+# import numpy
+import pandas
 
-x, y = numpy.loadtxt('data/temp/double_resolution_test_3.csv',
-                     delimiter=',', unpack=True)
-pyplot.plot(x,y, label='Loaded from file!')
+data = pandas.read_csv('data/temp/double_resolution_test_3.csv')
+u64_time_ns_label = data.columns[0]
+error_ns_label = data.columns[1]
+# print(u64_time_ns_label)
+# print(error_ns_label)
 
-pyplot.xlabel('x')
-pyplot.ylabel('y')
-pyplot.title('Interesting Graph\nCheck it out')
-pyplot.legend()
+u64_time_ns = data[u64_time_ns_label]
+error_ns = data[error_ns_label]
+
+pyplot.figure()
+pyplot.plot(u64_time_ns, error_ns)
+pyplot.xlabel(u64_time_ns_label.strip())
+pyplot.ylabel(error_ns_label.strip())
+pyplot.title("Floating Point Error")
+# pyplot.get_legend_handles_labels()
+# pyplot.legend()
 pyplot.show()
 
