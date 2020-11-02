@@ -6,9 +6,7 @@
 
 These are my favorite macros and other utility functions I frequently need in both C and C++.
 
-See also:
-1. eRCaGuy_hello_world/c/rounding_integer_division/rounding_integer_division.cpp
-2.https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Arduino.h
+See the .h file for details.
 
 */
 

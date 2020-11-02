@@ -8,7 +8,8 @@ These are my favorite macros and other utility functions I frequently need in bo
 
 See also:
 1. eRCaGuy_hello_world/c/rounding_integer_division/rounding_integer_division.cpp
-2.https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Arduino.h
+2. https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Arduino.h
+3. [my ans] https://stackoverflow.com/questions/3437404/min-and-max-in-c/58532788#58532788
 
 */
 
