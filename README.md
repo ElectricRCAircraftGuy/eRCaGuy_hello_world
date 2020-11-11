@@ -6,21 +6,45 @@ See also my [eRCaGuy_hello_world_data](https://github.com/ElectricRCAircraftGuy/
 By Gabriel Staples  
 www.ElectricRCAircraftGuy.com
 
+<details>
+<summary><b>Table of Contents</b> (click to open)</summary>
+<!-- MarkdownTOC -->
 
-## Status:
+1. [Status:](#status)
+1. [For beginners and experts alike: not your average "hello world" examples](#for-beginners-and-experts-alike-not-your-average-hello-world-examples)
+1. [Examples of more advanced principles taught herein:](#examples-of-more-advanced-principles-taught-herein)
+    1. [1. C and C++:](#1-c-and-c)
+        1. [Additional C and C++ build notes \(ex: w/`gcc` or `clang` compilers\):](#additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers)
+    1. [2. Python:](#2-python)
+    1. [3. markdown:](#3-markdown)
+1. [File Structure:](#file-structure)
+1. [Changelog](#changelog)
+    1. [\[v0.3.0\] - 2020-05-23](#v030---2020-05-23)
+    1. [\[v0.2.0\] - 2020-04-18](#v020---2020-04-18)
+    1. [\[v0.1.0\] - 2020-04-14](#v010---2020-04-14)
+
+<!-- /MarkdownTOC -->
+</details>
+
+
+<a id="status"></a>
+# Status:
 1. Many solid C & C++ demos are done and work! 
 1. A Python demo also is in place to show how to parse a YAML file. 
 
 See the `tree` output below to see the file/folder structure.
 
 
+<a id="for-beginners-and-experts-alike-not-your-average-hello-world-examples"></a>
 # For beginners and experts alike: not your average "hello world" examples
 
 Note that these are NOT just your standard "simple" hello world demos for absolute beginners. Rather, they are simple enough for beginners but also contain some advanced techniques and tips & tricks to act as good reminders or teaching for more expert programmers too. I, myself, regularly reference my own examples here to remind myself of some of these details which are easy to forget. There's no sense stressing about trying to remember everything. _Instead of trying to remember everything, just remember where to look (here in this case)_. 
 
 
+<a id="examples-of-more-advanced-principles-taught-herein"></a>
 # Examples of more advanced principles taught herein:
 
+<a id="1-c-and-c"></a>
 ## 1. C and C++:
 1. How to generate intermediate build files, including .ii, .s, and .o.
     1. See ["cpp/hello_world.cpp"](cpp/hello_world.cpp)
@@ -53,7 +77,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. How to use a `const` reference to a vector, with a default parameter, as an input param to a function!
     1. See ["cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp"](cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp)
 
-<a name="build-notes"></a>
+<a id="build-notes"></a>
+<a id="additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers"></a>
 ### Additional C and C++ build notes (ex: w/`gcc` or `clang` compilers):
 
 1. Use `-Wwarning-name` to turn ON build warning "warning-name", and `-Wno-warning-name` to turn OFF build warning "warning-name". `-W` turns a warning ON, and `-Wno-` turns a warning OFF. Here's what gcc has to say about it (source: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html; emphasis added):
@@ -76,10 +101,12 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 
             > Since `-Weverything` enables every diagnostic, we generally **don’t recommend using it.** **`-Wall -Wextra` are a better choice for most projects.** Using `-Weverything` means that updating your compiler is more difficult because you’re exposed to experimental diagnostics which might be of lower quality than the default ones. If you do use `-Weverything` then we advise that you address all new compiler diagnostics as they get added to Clang, either by fixing everything they find or explicitly disabling that diagnostic with its corresponding `Wno-` option.
 
+<a id="2-python"></a>
 ## 2. Python:
 1. How to create, parse, and print YAML files. How to find the directory path a called Python file is in.
     1. See ["python/yaml_import/import_yaml_test.py"](python/yaml_import/import_yaml_test.py) and other files in that directory.
 
+<a id="3-markdown"></a>
 ## 3. markdown:
 1. [github_readme_center_and_align_images.md](markdown/github_readme_center_and_align_images.md): show how to insert and center, align left, align right, etc. images in GitHub readmes in markdown. Ex: resize this image to 15% auto-resizing width, and:
 
@@ -109,6 +136,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 </p>
 
 
+<a id="file-structure"></a>
 # File Structure:
 (Output of `tree`)
 
@@ -205,6 +233,7 @@ $ tree
 ```
 
 
+<a id="changelog"></a>
 # Changelog
 - Newest on top
 - Follows Semantic Versioning: MAJOR.MINOR.PATCH; see: https://semver.org/ for rules & FAQ.
@@ -223,12 +252,15 @@ MORE MATURE PHASE:
 2. MINOR version when you add functionality in a backwards compatible manner, and  
 3. PATCH version when you make backwards compatible bug fixes.  
 
+<a id="v030---2020-05-23"></a>
 ## [v0.3.0] - 2020-05-23
 - Added "awk" folder with two sample programs: "awk_hello_world.sh" and "awk_syntax_tests.sh"
 
+<a id="v020---2020-04-18"></a>
 ## [v0.2.0] - 2020-04-18
 - Added "cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp"
 
+<a id="v010---2020-04-14"></a>
 ## [v0.1.0] - 2020-04-14
 - Added changelog and started tracking a "version" number via the changelog
 - Added "python/yaml_import/import_yaml_test.py" and related .yaml configuration files to demonstrate importing and using YAML configuration files in Python
