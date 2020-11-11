@@ -32,7 +32,8 @@ import time
 
 # filename = "data/temp/double_resolution_test_3.csv"
 # filename = "data/temp/double_resolution_test_3_20201031#2.csv"
-filename = "data/temp/double_resolution_test_3_20201031#3_recombined.csv"
+# filename = "data/temp/double_resolution_test_3_20201031#3_recombined.csv"
+filename = "data/temp/double_resolution_test_4.csv"
 
 print("Reading file.")
 t_start_sec = time.time()

@@ -1,0 +1,13 @@
+
+GS
+2 Nov. 2020
+
+
+NEXT:
+
+- [x] add "data" folder for many tests.
+- [ ] change this test
+- [ ] do whole seconds test
+- [ ] do **conversion** test!
+- [ ] uint32_t sec . uint32_t ns (in a struct) and see when a **conversion** causes a problem??
+- [ ] SAVE TO CSV FILE!
