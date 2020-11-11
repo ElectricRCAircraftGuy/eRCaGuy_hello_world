@@ -4,6 +4,10 @@
 /*
 strncmpci.c
 
+- A 'c'ase 'i'nsensitive version of `strncmp()`.
+- See references below for more info., including documentation for `strncmp()`, as well as my
+Stack Overflow answer where I present my `strncmpci()` function below.
+
 Gabriel Staples
 www.ElectricRCAircraftGuy.com
 Written: 21 Mar. 2019
