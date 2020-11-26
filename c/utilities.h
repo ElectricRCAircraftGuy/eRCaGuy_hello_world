@@ -15,7 +15,9 @@ See also:
 
 
 // For floating-point comparisons:
-// Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160
+// - Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160
+// - See also the function forms of this in my answer here: 
+//   https://stackoverflow.com/questions/17333/what-is-the-most-effective-way-for-float-and-double-comparison/65015333#65015333
 #define EPSILON 0.0001  // user-defined "small difference" value
 #define FLOAT_EQ(x, y) ((((x) - (y)) < EPSILON) && (((y) - (x)) < EPSILON))
 #define FLOAT_EQ2(x, y, epsilon) ((((x) - (y)) < (epsilon)) && (((y) - (x)) < (epsilon)))
