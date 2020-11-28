@@ -8,13 +8,47 @@ First Written: 7 Sept. 2020
 **See my original answer online on Stack Overflow here: https://stackoverflow.com/questions/12090472/github-readme-md-center-image/62383408#62383408.**
 
 
+# Table of Contents
+<details>
+<summary><b>(click to expand)</b></summary>
+<!-- MarkdownTOC -->
+
+1. [TLDR:](#tldr)
+1. [Full answer:](#full-answer)
+1. [Background on how to center and align images in markdown:](#background-on-how-to-center-and-align-images-in-markdown)
+1. [1. Centering and aligning images _in GitHub readmes_ using the deprecated HTML `align` attribute:](#1-centering-and-aligning-images-in-github-readmes-using-the-deprecated-html-align-attribute)
+    1. [1.1. Align images left, right, or centered, with NO WORD WRAP:](#11-align-images-left-right-or-centered-with-no-word-wrap)
+    1. [1.2. Align images left, right, or centered, WITH word wrap:](#12-align-images-left-right-or-centered-with-word-wrap)
+    1. [1.3. Align images side-by-side:](#13-align-images-side-by-side)
+    1. [1.4. Use a markdown table to improve vertical spacing of odd-sized/odd-shaped images:](#14-use-a-markdown-table-to-improve-vertical-spacing-of-odd-sizedodd-shaped-images)
+1. [2. Centering and aligning images using modern CSS in any markdown document where you also have control over CSS styles:](#2-centering-and-aligning-images-using-modern-css-in-any-markdown-document-where-you-also-have-control-over-css-styles)
+    1. [TLDR;](#tldr-1)
+    1. [Here are various HTML and CSS options which work perfectly inside markdown files, so long as CSS is not explicitly forbidden:](#here-are-various-html-and-css-options-which-work-perfectly-inside-markdown-files-so-long-as-css-is-not-explicitly-forbidden)
+    1. [1. Center and configure \(resize\) ALL images in your markdown file:](#1-center-and-configure-resize-all-images-in-your-markdown-file)
+    1. [2. Center and configure images on a case-by-case basis, one at a time:](#2-center-and-configure-images-on-a-case-by-case-basis-one-at-a-time)
+    1. [3. In addition to all of the above, you can also create CSS style _classes_ to help stylize individual images:](#3-in-addition-to-all-of-the-above-you-can-also-create-css-style-classes-to-help-stylize-individual-images)
+    1. [4. Create 3 CSS classes, but don't change the `img` markdown defaults](#4-create-3-css-classes-but-dont-change-the-img-markdown-defaults)
+    1. [5. Consolidate Common Settings in CSS Classes:](#5-consolidate-common-settings-in-css-classes)
+1. [More Details:](#more-details)
+    1. [1. My thoughts on HTML and CSS in Markdown](#1-my-thoughts-on-html-and-css-in-markdown)
+    1. [2. Standard image insertion in markdown:](#2-standard-image-insertion-in-markdown)
+    1. [3. More details on what's happening in the HTML/CSS when centering and resizing an image in markdown:](#3-more-details-on-whats-happening-in-the-htmlcss-when-centering-and-resizing-an-image-in-markdown)
+1. [References:](#references)
+
+<!-- /MarkdownTOC -->
+</details>
+
+
+<a id="tldr"></a>
 # TLDR:  
 Just jump straight down to look at the 4 examples (1.1, 1.2, 1.3, and 1.4) in the section below called **"1. Centering and aligning images _in GitHub readmes_ using the deprecated HTML `align` attribute"**!
 
 
+<a id="full-answer"></a>
 # Full answer:
 
 
+<a id="background-on-how-to-center-and-align-images-in-markdown"></a>
 # Background on how to center and align images in markdown:
 
 So, it turns out that **GitHub explicitly blocks/filters out _all attempts at editing any form of CSS styles (including [external, internal, and inline](https://www.w3schools.com/css/css_howto.asp))_ inside GitHub `*.md` markdown files, such as readmes.** See here: 
@@ -45,6 +79,7 @@ Option 2 only works in places where you have full control over CSS styles, such 
 ----
 
 
+<a id="1-centering-and-aligning-images-in-github-readmes-using-the-deprecated-html-align-attribute"></a>
 # 1. Centering and aligning images _in GitHub readmes_ using the deprecated HTML `align` attribute:
 
 This works in any GitHub `*.md` markdown file, such as a GitHub `readme.md` file. It relies on the deprecated HTML `align` attribute, but still works fine. You can see a full demo of this in an actual GitHub readme in my eRCaGuy_hello_world repo here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/markdown/github_readme_center_and_align_images.md.
@@ -56,6 +91,7 @@ Notes:
 1. Options for the [(deprecated) HTML `align` attribute](https://www.w3.org/TR/html4/present/graphics.html#h-15.1.2) include `left`, `center`, `right`, and `justify`.
 
 
+<a id="11-align-images-left-right-or-centered-with-no-word-wrap"></a>
 ## 1.1. Align images left, right, or centered, with NO WORD WRAP:
 
 This:
@@ -111,6 +147,7 @@ To produce this:
 </p>
 
 
+<a id="12-align-images-left-right-or-centered-with-word-wrap"></a>
 ## 1.2. Align images left, right, or centered, WITH word wrap:
 
 This:
@@ -160,6 +197,7 @@ Produces this:
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 
 
+<a id="13-align-images-side-by-side"></a>
 ## 1.3. Align images side-by-side:
 
 _Reminder: MAKE SURE TO GIVE THE entire `<p>` paragraph element the full 100% column width (`width="100%"`, as shown below) or else text gets word-wrapped around it, botching your vertical alignment and vertical spacing/formatting you may be trying to maintain!_
@@ -250,6 +288,7 @@ Align the whole row of images to the right this time:
 </p>
 
 
+<a id="14-use-a-markdown-table-to-improve-vertical-spacing-of-odd-sizedodd-shaped-images"></a>
 ## 1.4. Use a markdown table to improve vertical spacing of odd-sized/odd-shaped images:
 
 Sometimes, with odd-sized or different-shaped images, using just the "row of images" methods above produces slightly awkward-looking results.
@@ -303,10 +342,12 @@ Produces this, which looks much nicer and more well-spaced in my opinion, since 
 
 ----
 
+<a id="2-centering-and-aligning-images-using-modern-css-in-any-markdown-document-where-you-also-have-control-over-css-styles"></a>
 # 2. Centering and aligning images using modern CSS in any markdown document where you also have control over CSS styles:
 
 This works in any markdown file, such as a [GitHub Pages](https://pages.github.com/) website maybe?, where you do have full control over CSS styles. This does NOT work in any GitHub `*.md` markdown file, such as a `readme.md`, therefore, because GitHub expliclty scans for and disables all custom CSS styling you attempt to use. See above.
 
+<a id="tldr-1"></a>
 ## TLDR;
 
 Use this HTML/CSS to add and center an image and set its size to 60% of the screen space width inside your markdown file, which is usually a good starting value:
@@ -320,8 +361,10 @@ Done!
 
 Or, keep reading for a lot more information.
 
+<a id="here-are-various-html-and-css-options-which-work-perfectly-inside-markdown-files-so-long-as-css-is-not-explicitly-forbidden"></a>
 ## Here are various HTML and CSS options which work perfectly inside markdown files, so long as CSS is not explicitly forbidden:
 
+<a id="1-center-and-configure-resize-all-images-in-your-markdown-file"></a>
 ## 1. Center and configure (resize) ALL images in your markdown file:
 
 Just copy and paste this to the top of your markdown file to center and resize all images in the file (then just insert any images you want with normal markdown syntax):
@@ -380,6 +423,7 @@ Or HTML in your markdown file:
 
 ...it will be automatically centered and sized to 60% of the screenview width, as described in the comments within the HTML and CSS above. _(Of course the 60% size is really easily changeable too, and I present simple ways below to do it on an image-by-image basis as well)._ 
 
+<a id="2-center-and-configure-images-on-a-case-by-case-basis-one-at-a-time"></a>
 ## 2. Center and configure images on a case-by-case basis, one at a time:
 
 Whether or not you have copied and pasted the above `<style>` block into the top of your markdown file, this will also work, as it overrides and takes precedence over any file-scope style settings you may have set above:
@@ -399,6 +443,7 @@ You can also format it on multiple lines, like this, and it will still work:
                 width:60%; /* optionally resize the image to a screen percentage width if you want too */
                 "> 
 
+<a id="3-in-addition-to-all-of-the-above-you-can-also-create-css-style-classes-to-help-stylize-individual-images"></a>
 ## 3. In addition to all of the above, you can also create CSS style _classes_ to help stylize individual images:
 
 Add this whole thing to the top of your markdown file. 
@@ -458,6 +503,7 @@ And now you'll get this:
 
 [![enter image description here][2]][2]
 
+<a id="4-create-3-css-classes-but-dont-change-the-img-markdown-defaults"></a>
 ## 4. Create 3 CSS classes, but don't change the `img` markdown defaults
 
 Another option to what we just showed above, where we modified the default `img` `property:value` settings and created 2 classes, is to just leave all the default markdown `img` properties alone, but create 3 custom CSS classes, like this:
@@ -514,6 +560,7 @@ Now you can assign multiple classes to the same object, like this. Simply [separ
 
     <img src="https://i.stack.imgur.com/RJj4x.png" class="centerAlign small">
 
+<a id="5-consolidate-common-settings-in-css-classes"></a>
 ## 5. Consolidate Common Settings in CSS Classes:
 
 The last trick is one I learned in this answer here: https://stackoverflow.com/questions/27697549/how-can-i-use-css-to-style-multiple-images-differently/27701152#27701152. As you can see above, all 3 of the CSS `align` classes set the image width to 60%. Therefore, this common setting can be set all at once like this if you wish, then you can set the specific settings for each class afterwards:
@@ -566,8 +613,10 @@ The last trick is one I learned in this answer here: https://stackoverflow.com/q
 
 ----
 
+<a id="more-details"></a>
 # More Details:
 
+<a id="1-my-thoughts-on-html-and-css-in-markdown"></a>
 ## 1. My thoughts on HTML and CSS in Markdown
 
 As far as I'm concerned, anything which can be written in a markdown document and get the desired result is all we are after, not some "pure markdown" syntax. 
@@ -578,6 +627,7 @@ So it is with markdown. Markdown is the high-level language which is interpreted
 
 So, to center an image in markdown, use HTML and CSS.
 
+<a id="2-standard-image-insertion-in-markdown"></a>
 ## 2. Standard image insertion in markdown:
 
 How to add a basic image in markdown with default "behind-the-scenes" HTML and CSS formatting:
@@ -601,6 +651,7 @@ will also produce this output:
 ![this is my hexacopter I built](https://i.stack.imgur.com/RJj4x.png)
 
 
+<a id="3-more-details-on-whats-happening-in-the-htmlcss-when-centering-and-resizing-an-image-in-markdown"></a>
 ## 3. More details on what's happening in the HTML/CSS when centering and resizing an image in markdown:
 
 Centering the image in markdown requires that we use the extra control that HTML and CSS can give us directly. You can insert and center an individual image like this:
@@ -629,6 +680,7 @@ Here's more info. on what is going on here:
 1. CSS uses C-style comments (`/* my comment */`).
 
 
+<a id="references"></a>
 # References:
 1. Read more about CSS Syntax here: https://www.w3schools.com/css/css_syntax.asp
 1. Read about ["HTML Tags vs Elements" here][5].
