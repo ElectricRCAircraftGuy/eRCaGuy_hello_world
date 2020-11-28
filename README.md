@@ -6,8 +6,10 @@ See also my [eRCaGuy_hello_world_data](https://github.com/ElectricRCAircraftGuy/
 By Gabriel Staples  
 www.ElectricRCAircraftGuy.com
 
+
+# Table of Contents
 <details>
-<summary><b>Table of Contents</b> (click to open)</summary>
+<summary><b>(click to expand)</b></summary>
 <!-- MarkdownTOC -->
 
 1. [Status:](#status)
