@@ -22,28 +22,40 @@ See the .h file for details.
 // For background info behind this, see: http://realtimecollisiondetection.net/blog/?p=89
 static float scale_float_epsilon(float a, float b, float epsilon)
 {
+    float scaling_factor;
+
     // For very large `a` and `b`, scale epsilon UP, or else it will eventually become so small
     // relative to `a` and `b` that if falls out in the numerical error.
-    float epsilon_scaled = max(fabsf(a), fabsf(b))*epsilon;
+    scaling_factor = max(fabsf(a), fabsf(b));
 
-    // For very small `a` and `b`, however, ensure `scaled_epsilon` doesn't get too small, or again,
-    // it will fall out in numerical error, so let's clip it to be a minimum value of 1.0f.
-    epsilon_scaled = max(epsilon_scaled, (float)1.0);
+    // For very small `a` and `b`, however, ensure `scaling_factor` doesn't get too small, or again,
+    // `epsilon_scaled` will fall out in numerical error, so let's clip the scaling factor to be a
+    // minimum value of 1.0f, which means the exact `epsilon` passed in is used.
+    scaling_factor = max(scaling_factor, (float)1.0);
 
+    // The end result is that you have `scaling_factor = max(fabsf(a), fabsf(b), (float)1.0)`.
+
+    float epsilon_scaled = epsilon*scaling_factor;
     return epsilon_scaled;
 }
 
 // For background info behind this, see: http://realtimecollisiondetection.net/blog/?p=89
 static double scale_double_epsilon(double a, double b, double epsilon)
 {
+    double scaling_factor;
+
     // For very large `a` and `b`, scale epsilon UP, or else it will eventually become so small
     // relative to `a` and `b` that if falls out in the numerical error.
-    double epsilon_scaled = max(fabs(a), fabs(b))*epsilon;
+    scaling_factor = max(fabs(a), fabs(b));
 
-    // For very small `a` and `b`, however, ensure `scaled_epsilon` doesn't get too small, or again,
-    // it will fall out in numerical error, so let's clip it to be a minimum value of 1.0f.
-    epsilon_scaled = max(epsilon_scaled, (double)1.0);
+    // For very small `a` and `b`, however, ensure `scaling_factor` doesn't get too small, or again,
+    // `epsilon_scaled` will fall out in numerical error, so let's clip the scaling factor to be a
+    // minimum value of 1.0f, which means the exact `epsilon` passed in is used.
+    scaling_factor = max(scaling_factor, (double)1.0);
 
+    // The end result is that you have `scaling_factor = max(fabs(a), fabs(b), (double)1.0)`.
+
+    double epsilon_scaled = epsilon*scaling_factor;
     return epsilon_scaled;
 }
 
