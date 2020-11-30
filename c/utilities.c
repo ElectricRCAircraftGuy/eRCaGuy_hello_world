@@ -22,19 +22,22 @@ See the .h file for details.
 // For background info behind this, see: http://realtimecollisiondetection.net/blog/?p=89
 static float scale_float_epsilon(float a, float b, float epsilon)
 {
-    float scaling_factor;
+    // float scaling_factor;
 
-    // For very large `a` and `b`, scale epsilon UP, or else it will eventually become so small
-    // relative to `a` and `b` that if falls out in the numerical error.
-    scaling_factor = max(fabsf(a), fabsf(b));
+    // // For very large `a` and `b`, scale epsilon UP, or else it will eventually become so small
+    // // relative to `a` and `b` that if falls out in the numerical error.
+    // scaling_factor = max(fabsf(a), fabsf(b));
 
-    // For very small `a` and `b`, however, ensure `scaling_factor` doesn't get too small, or again,
-    // `epsilon_scaled` will fall out in numerical error, so let's clip the scaling factor to be a
-    // minimum value of 1.0f, which means the exact `epsilon` passed in is used.
-    scaling_factor = max(scaling_factor, (float)1.0);
+    // // For very small `a` and `b`, however, ensure `scaling_factor` doesn't get too small, or again,
+    // // `epsilon_scaled` will fall out in numerical error, so let's clip the scaling factor to be a
+    // // minimum value of 1.0f, which means the exact `epsilon` passed in is used.
+    // scaling_factor = max(scaling_factor, (float)1.0);
+
+    /////// TODO: clean this up; apply to the double func below too.
 
     // The end result is that you have `scaling_factor = max(fabsf(a), fabsf(b), (float)1.0)`.
 
+    float scaling_factor = max3(fabsf(a), fabsf(b), (float)1.0);
     float epsilon_scaled = epsilon*scaling_factor;
     return epsilon_scaled;
 }
