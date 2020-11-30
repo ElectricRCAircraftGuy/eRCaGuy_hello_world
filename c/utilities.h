@@ -16,11 +16,50 @@ See also:
 
 // For floating-point comparisons:
 // - Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160
-// - See also the function forms of this in my answer here: 
+// - See also the function forms of this in my answer here:
 //   https://stackoverflow.com/questions/17333/what-is-the-most-effective-way-for-float-and-double-comparison/65015333#65015333
 #define EPSILON 0.0001  // user-defined "small difference" value
 #define FLOAT_EQ(x, y) ((((x) - (y)) < EPSILON) && (((y) - (x)) < EPSILON))
 #define FLOAT_EQ2(x, y, epsilon) ((((x) - (y)) < (epsilon)) && (((y) - (x)) < (epsilon)))
+
+// GS: even better: use a scaled epsilon, and make it a function.
+// See:
+// 1. *****[my ans]
+//    https://stackoverflow.com/questions/17333/what-is-the-most-effective-way-for-float-and-double-comparison/65015333#65015333
+// 2. [this ans]
+//    https://stackoverflow.com/questions/17333/what-is-the-most-effective-way-for-float-and-double-comparison/17341#17341
+// 3. *****+[this blog post, referenced by the above answer--the secrets revealed here!]
+//    http://realtimecollisiondetection.net/blog/?p=89
+// Note: the naming conventions of the below functions roughly follow the Google Test (gtest)
+// macros `EXPECT_FLOAT_EQ()`, `EXPECT_DOUBLE_EQ`, etc. (see:
+// https://github.com/google/googletest/blob/master/googletest/docs/advanced.md), as well as
+// `EXPECT_NE()`, `EXPECT_LT()`, `EXPECT_LE()`, etc. (see:
+// https://github.com/google/googletest/blob/master/googletest/docs/primer.md#binary-comparison).
+
+/// @brief      Equal: returns true if `a` is approximately == `b`, and false otherwise
+bool is_float_eq(float a, float b, float epsilon);
+bool is_double_eq(double a, double b, double epsilon);
+
+/// @brief      Not Equal: returns true if `a` is definitely != `b`, and false otherwise
+bool is_float_ne(float a, float b, float epsilon);
+bool is_double_ne(double a, double b, double epsilon);
+
+/// @brief      Less Than: returns true if `a` is definitively < `b`, and false otherwise
+bool is_float_lt(float a, float b, float epsilon);
+bool is_double_lt(double a, double b, double epsilon);
+
+/// @brief      Less Than or Equal: returns true if `a` is definitively <= `b`, and false otherwise
+bool is_float_le(float a, float b, float epsilon);
+bool is_double_le(double a, double b, double epsilon);
+
+/// @brief      Greater Than: returns true if `a` is definitively > `b`, and false otherwise
+bool is_float_gt(float a, float b, float epsilon);
+bool is_double_gt(double a, double b, double epsilon);
+
+/// @brief      Greater Than or Equal: returns true if `a` is definitively >= `b`, and false
+///             otherwise
+bool is_float_ge(float a, float b, float epsilon);
+bool is_double_ge(double a, double b, double epsilon);
 
 
 // -------------------------------------------------------------------------------------------------
