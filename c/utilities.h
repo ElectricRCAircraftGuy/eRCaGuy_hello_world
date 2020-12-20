@@ -14,6 +14,11 @@ See also:
 */
 
 
+// Get the number of elements in any C array
+// - Usage example: [my own answer]:
+//   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80245#80245
+#define ARRAY_LEN(array) (sizeof(array)/sizeof(array[0]))
+
 // For floating-point comparisons:
 // - Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160
 // - See also the function forms of this in my answer here:
