@@ -64,6 +64,8 @@ bool is_double_ge(double a, double b, double epsilon);
 
 // -------------------------------------------------------------------------------------------------
 // FROM ARDUINO START (GNU LGPL v2.1 or later License)
+///////// TODO: FOR LICENSING REASONS, just break out this Arduino section into a totally separate
+// file named "utilities_arduino.h" or something.
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // From Arduino.h:
@@ -110,4 +112,26 @@ long map(long, long, long, long, long);
 // FROM ARDUINO END
 // -------------------------------------------------------------------------------------------------
 
-#define max3(a, b, c) max(max(a, b), c)
+
+// See my answer: https://stackoverflow.com/questions/3437404/min-and-max-in-c/58532788#58532788
+
+// Macros
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+
+// gcc/clang "statement expressions"
+#define max(a,b)             \
+({                           \
+    __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a > _b ? _a : _b;       \
+})
+#define min(a,b)             \
+({                           \
+    __typeof__ (a) _a = (a); \
+    __typeof__ (b) _b = (b); \
+    _a < _b ? _a : _b;       \
+})
+
+#define MAX max
+#define MAX3(a, b, c) MAX(MAX(a, b), c)
