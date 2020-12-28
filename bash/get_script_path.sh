@@ -12,7 +12,7 @@
 #    https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself/60157372#60157372
 # 2. https://stackoverflow.com/questions/4175264/how-to-retrieve-absolute-path-given-relative/14892459#14892459
 
-FULL_PATH_TO_SCRIPT="$(realpath $0)"
+FULL_PATH_TO_SCRIPT="$(realpath "$0")"
 
 # You can then also get the full path to the directory, and the base
 # filename, like this:
