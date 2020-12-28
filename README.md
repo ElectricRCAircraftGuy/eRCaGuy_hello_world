@@ -19,6 +19,7 @@ www.ElectricRCAircraftGuy.com
         1. [Additional C and C++ build notes \(ex: w/`gcc` or `clang` compilers\):](#additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers)
     1. [2. Python:](#2-python)
     1. [3. markdown:](#3-markdown)
+    1. [4. bash:](#4-bash)
 1. [File Structure:](#file-structure)
 1. [Changelog](#changelog)
     1. [\[v0.3.0\] - 2020-05-23](#v030---2020-05-23)
@@ -137,6 +138,12 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     <img width="15%" src="https://i.stack.imgur.com/RJj4x.png"> 
 </p>
 
+<a id="4-bash"></a>
+## 4. bash:
+1. How to obtain the full file path, full directory, and base filename of any script being run itself.
+    1. See: ["bash/get_script_path.sh"](bash/get_script_path.sh)
+    1. See also [my answer online on Stack Overflow, here](https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself/60157372#60157372).
+
 
 <a id="file-structure"></a>
 # File Structure:
@@ -153,9 +160,15 @@ $ tree
 │   ├── awk_syntax_tests.sh
 │   └── input_file_1.txt
 ├── bash
+│   ├── get_script_path.sh
 │   ├── Link to ElectricRCAircraftGuy--PDF2SearchablePDF [THIS IS A SOLID BASH EXAMPLE!].desktop
 │   ├── Link to PDF2SearchablePDF--pdf2searchablepdf.sh at master · ElectricRCAircraftGuy--PDF2SearchablePDF.desktop
-│   └── todo.txt
+│   ├── practice
+│   │   ├── read_arrays.sh
+│   │   └── README.md
+│   ├── README.md
+│   └── source_and_export
+│       └── source_and_export.sh
 ├── c
 │   ├── c - Where do we use .i files and how do we generate them? - Stack Overflow.desktop
 │   ├── hello_world
@@ -165,6 +178,10 @@ $ tree
 │   ├── Link to c - Prototype of printf and implementation - Stack Overflow%%%%%+ [MY OWN ANS!].desktop
 │   ├── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
 │   ├── Link to Using the GNU Compiler Collection (GCC): Warning Options%%%%% [always use `-Wall -Werror`!].desktop
+│   ├── onlinegdb--atomic_block_in_c_WORKS.c
+│   ├── onlinegdb--empirically_determine_max_thread_stack_size_Bruno_Haible.c
+│   ├── onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c
+│   ├── onlinegdb--empirically_determine_max_thread_stack_size.md
 │   ├── rounding_integer_division
 │   │   ├── c - Rounding integer division (instead of truncating) - Stack Overflow.desktop
 │   │   ├── readme.md
@@ -173,19 +190,48 @@ $ tree
 │   │   ├── rounding_integer_division.md
 │   │   ├── run_tests_sample_output.txt
 │   │   └── run_tests.sh
-│   └── Using the GNU Compiler Collection (GCC): Warning Options-1.desktop
+│   ├── strncmpci.c
+│   ├── Using the GNU Compiler Collection (GCC): Warning Options-1.desktop
+│   ├── utilities.c
+│   └── utilities.h
 ├── cpp
 │   ├── bin
-│   │   ├── struct_initialization
-│   │   ├── struct_initialization.i
-│   │   ├── struct_initialization.ii
-│   │   ├── struct_initialization.o
-│   │   └── struct_initialization.s
+│   │   └── tmp
 │   ├── bin_hello_world
 │   │   ├── hello_world
 │   │   ├── hello_world.ii
 │   │   ├── hello_world.o
 │   │   └── hello_world.s
+│   ├── copy_constructor_and_assignment_operator
+│   │   ├── 170_Copy_Constructor_Assignment_Operator_[Stanford.edu]_GS_edit.pdf
+│   │   ├── 170_Copy_Constructor_Assignment_Operator_[Stanford.edu].pdf
+│   │   ├── Copy assignment operator - cppreference.com.desktop
+│   │   ├── copy_constructor_and_assignment_operator [AKA--the ''Rule of Three'' and the ''Rule of Five'' demo!].txt
+│   │   ├── copy_constructor_and_assignment_operator.cpp
+│   │   ├── Copy constructors, assignment operators, - C++ Articles-1.desktop
+│   │   ├── Copy constructors, assignment operators, - C++ Articles.desktop
+│   │   ├── Copy constructor vs assignment operator in C++ - GeeksforGeeks.desktop
+│   │   ├── c++ - What is The Rule of Three? - Stack Overflow.desktop
+│   │   ├── c++ - What's the difference between assignment operator and copy constructor? - Stack Overflow.desktop
+│   │   ├── Link to 170_Copy_Constructor_Assignment_Operator_[Stanford.edu].pdf.desktop
+│   │   ├── Link to c++ Assignment operator and copy constructor - Google Search%%%%%.desktop
+│   │   ├── Link to Copy constructor vs assignment operator in C++ - GeeksforGeeks%%%%% [see `t2 = t1;  -- calls assignment operator, same as "t2.operator=(t1);" `].desktop
+│   │   ├── Link to c++ - What is The Rule of Three? - Stack Overflow%%%%%.desktop
+│   │   └── Link to When should we write our own assignment operator in C++? - GeeksforGeeks%%%%% [use this code here!].desktop
+│   ├── floating_point_resolution
+│   │   ├── bin
+│   │   │   └── tmp
+│   │   ├── data -> ../../../eRCaGuy_hello_world_data/cpp/floating_point_resolution/data/
+│   │   ├── double_resolution_test_1.cpp
+│   │   ├── double_resolution_test_2.cpp
+│   │   ├── double_resolution_test_3.cpp
+│   │   ├── double_resolution_test_3--Figure_1a.png
+│   │   ├── double_resolution_test_3--Figure_1b_zoomed_in.png
+│   │   ├── double_resolution_test_3--Figure_1c_zoomed_in_really_small_to_very_beginning.png
+│   │   ├── double_resolution_test_4.cpp
+│   │   ├── plot_data.py
+│   │   ├── readme.md
+│   │   └── todo_(what_to_work_on_next).txt
 │   ├── hello_world.cpp
 │   ├── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
 │   ├── Link to How to initialize a struct to 0 in C++ - Stack Overflow%%%%%+ [my own Q & A].desktop
@@ -197,10 +243,21 @@ $ tree
 │   │       ├── advanced_macro_usage_pass_in_entire_func.ii
 │   │       ├── advanced_macro_usage_pass_in_entire_func.o
 │   │       └── advanced_macro_usage_pass_in_entire_func.s
+│   ├── onlinegdb--atomic_block_in_cpp_1_WORKS.cpp
+│   ├── onlinegdb--atomic_block_in_cpp_2_FAILS.cpp
+│   ├── onlinegdb--atomic_block_in_cpp_3_WORKS.cpp
+│   ├── onlinegdb--const_reference_to_vector__default_func_parameter.cpp
 │   ├── run_hello_world.sh
 │   ├── run_struct_initialization.sh
 │   ├── struct_initialization.c -> struct_initialization.cpp
 │   ├── struct_initialization.cpp
+│   ├── template_function_sized_array_param
+│   │   ├── print_array_calls_by_array_size.ods
+│   │   ├── readme.md
+│   │   ├── regular_func
+│   │   ├── regular_func.cpp
+│   │   ├── template_func
+│   │   └── template_func.cpp
 │   ├── template_practice
 │   │   ├── explicit_template_specialization.cpp
 │   │   ├── research
@@ -223,15 +280,27 @@ $ tree
 ├── java
 │   └── todo.txt
 ├── LICENSE
+├── markdown
+│   ├── github_readme_center_and_align_images.md
+│   └── photos
+│       ├── LICENSE.txt
+│       ├── pranksta1.jpg
+│       ├── pranksta2.jpg
+│       ├── pranksta3.jpg
+│       ├── pranksta4.jpg
+│       ├── pranksta5.jpg
+│       ├── pranksta6.jpg
+│       └── pranksta7.jpg
 ├── python
+│   ├── textwrap_practice_1.py
 │   └── yaml_import
 │       ├── import_yaml_test.py
 │       ├── my_config1.yaml
 │       └── my_config2.yaml
-└── README.md
+├── README.md
+└── tree.txt
 
-16 directories, 68 files
-
+25 directories, 122 files
 ```
 
 
@@ -253,6 +322,8 @@ MORE MATURE PHASE:
 1. MAJOR version when you make incompatible API changes,  
 2. MINOR version when you add functionality in a backwards compatible manner, and  
 3. PATCH version when you make backwards compatible bug fixes.  
+
+**UPDATE 27 DEC 2020: CHANGELOG AND RELEASES NOT REALLY UP-TO-DATE ANYMORE. JUST USE THE LATEST MASTER BRANCH!**
 
 <a id="v030---2020-05-23"></a>
 ## [v0.3.0] - 2020-05-23
