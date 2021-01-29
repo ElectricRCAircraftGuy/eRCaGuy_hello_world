@@ -91,10 +91,14 @@ int strncmpci(const char * str1, const char * str2, size_t num)
         return ret_code;
     }
 
-    // Continue doing case-insensitive comparisons, one-character-at-a-time, of `str1` to `str2`,
-    // as long as at least one of the strings still has more characters in it, and we have
-    // not yet compared `num` chars.
-    while ((*str1 || *str2) && (chars_compared < num))
+    // Continue doing case-insensitive comparisons, one-character-at-a-time, of `str1` to `str2`, so
+    // long as 1st: we have not yet compared the requested number of chars, and 2nd: the next char
+    // of at least *one* of the strings is not zero (the null terminator for a C-string), meaning
+    // that string still has more characters in it.
+    // Note: you MUST check `(chars_compared < num)` FIRST or else dereferencing (reading) `str1` or
+    // `str2` via `*str1` and `*str2`, respectively, is undefined behavior if you are reading one or
+    // both of these C-strings outside of their array bounds.
+    while ((chars_compared < num) && (*str1 || *str2))
     {
         ret_code = tolower((int)(*str1)) - tolower((int)(*str2));
         if (ret_code != 0)
@@ -150,10 +154,14 @@ int strncmpci2(const char * str1, const char * str2, size_t num)
         goto done;
     }
 
-    // Continue doing case-insensitive comparisons, one-character-at-a-time, of `str1` to `str2`,
-    // as long as at least one of the strings still has more characters in it, and we have
-    // not yet compared `num` chars.
-    while ((*str1 || *str2) && (chars_compared < num))
+    // Continue doing case-insensitive comparisons, one-character-at-a-time, of `str1` to `str2`, so
+    // long as 1st: we have not yet compared the requested number of chars, and 2nd: the next char
+    // of at least *one* of the strings is not zero (the null terminator for a C-string), meaning
+    // that string still has more characters in it.
+    // Note: you MUST check `(chars_compared < num)` FIRST or else dereferencing (reading) `str1` or
+    // `str2` via `*str1` and `*str2`, respectively, is undefined behavior if you are reading one or
+    // both of these C-strings outside of their array bounds.
+    while ((chars_compared < num) && (*str1 || *str2))
     {
         ret_code = tolower((int)(*str1)) - tolower((int)(*str2));
         if (ret_code != 0)
