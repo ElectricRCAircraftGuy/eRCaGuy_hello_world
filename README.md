@@ -79,6 +79,12 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. Note: for Google Test (gtest/gmock) examples, including how to use the [Bazel](https://bazel.build/) build system, see my repo here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice.
 1. How to use a `const` reference to a vector, with a default parameter, as an input param to a function!
     1. See ["cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp"](cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp)
+1. How to call command-line system calls in C and C++, read piped input from `stdin`, and read command-line output from called process from its `stdout`:
+    1. [StackOverflow.com: how to read from stdout in C](https://stackoverflow.com/q/24214038/4561887)
+    1. [StackOverflow.com: C: Run a System Command and Get Output?](https://stackoverflow.com/q/646241/4561887)
+    1. [StackOverflow.com: How can I run an external program from C and parse its output?](https://stackoverflow.com/q/43116/4561887)
+    1. [StackOverflow.com: Capturing stdout from a system() command optimally](https://stackoverflow.com/q/125828/4561887)
+    1. [the most-thorough C++ answer I think] [StackOverflow.com: How do I execute a command and get the output of the command within C++ using POSIX?](https://stackoverflow.com/q/478898/4561887)
 
 <a id="build-notes"></a>
 <a id="additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers"></a>
