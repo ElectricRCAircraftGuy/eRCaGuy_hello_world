@@ -1,0 +1,1 @@
+../../c/gcc_dash_D_macro_define.c
