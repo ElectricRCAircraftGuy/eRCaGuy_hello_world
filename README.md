@@ -112,6 +112,9 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 
 <a id="2-python"></a>
 ## 2. Python:
+1. How to use the special Python `__slots__` list inside a class to reduce RAM usage during run-time. 
+    1. Also, learn about and use _class variables_ vs. _instance variables_, _private variables_ vs _public variables_, and _internal Python variables_ surrounded by double underscores (`__some_var__`). Also practice passing and using _list args_ to a function (ex: as `*args`), and _keyword key:value dict args_ to a function as well (ex: as `**kwargs`).
+    1. See ["python/slots_practice/slots_practice.py"](python/slots_practice/slots_practice.py).
 1. How to create, parse, and print YAML files. How to find the directory path a called Python file is in.
     1. See ["python/yaml_import/import_yaml_test.py"](python/yaml_import/import_yaml_test.py) and other files in that directory.
 1. How to autogenerate C or C++ headers or code using Python. 
