@@ -60,6 +60,8 @@ REFERENCES:
 
 """
 
+import textwrap
+
 class MyClass():
 
     # 1. Class variables (shared among all instances of this class--must be defined outside all other
@@ -67,6 +69,9 @@ class MyClass():
 
     # arbitrary variable I made up
     animal = "dragon"
+    # Count how many instances of this class have been created.
+    # See: https://stackoverflow.com/a/47610553/4561887
+    instance_counter = 0
 
     # special list of all string names of our instance variables
     # __slots__ = ['var1', 'var2']  # <======== does NOT work because it doesn't define 'var3' which we use and need below too!
@@ -91,11 +96,25 @@ class MyClass():
             NA
         """
 
+        MyClass.instance_counter += 1
+
         # 2. Instance variables (begin with `self.`--these can be defined and/or accessed within ANY
         # method within a class!):
         self.var1 = kwargs['var1']
         self.var2 = kwargs['var2']
         self.var3 = kwargs['var3']
+
+        print("MyClass.instance_counter = {}".format(MyClass.instance_counter))
+
+        if (MyClass.instance_counter == 1):
+            print(textwrap.dedent('''\
+
+                Note to self: to pass in the args list and the dict to another func as if you typed them into the
+                function directly, it would look like this:
+                        func(*args)
+                        # and
+                        func2(**kwargs)
+            '''))
 
         print("Here are all the dictionary items you passed in!:")
         for key, value in kwargs.items():
@@ -136,8 +155,16 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-    $ ./slots_practice.py
+    $ slots_practice/slots_practice.py
     instance1:
+    MyClass.instance_counter = 1
+
+    Note to self: to pass in the args list and the dict to another func as if you typed them into the
+    function directly, it would look like this:
+            func(*args)
+            # and
+            func2(**kwargs)
+
     Here are all the dictionary items you passed in!:
       var1: hello
       var2: 710
@@ -151,6 +178,7 @@ SAMPLE OUTPUT:
       self.var3               = [1, 2, 3]
 
     instance2:
+    MyClass.instance_counter = 2
     Here are all the dictionary items you passed in!:
       var1: world
       var2: 18
