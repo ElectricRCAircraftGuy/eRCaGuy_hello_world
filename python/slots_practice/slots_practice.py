@@ -117,6 +117,8 @@ class MyClass():
             '''))
 
         print("Here are all the dictionary items you passed in!:")
+        print("args = {}".format(args))
+        print("kwargs = {}".format(kwargs))
         for key, value in kwargs.items():
             print("  {}: {}".format(key, value))
 
@@ -166,6 +168,8 @@ SAMPLE OUTPUT:
             func2(**kwargs)
 
     Here are all the dictionary items you passed in!:
+    args = ()
+    kwargs = {'var1': 'hello', 'var2': 710, 'var3': [1, 2, 3]}
       var1: hello
       var2: 710
       var3: [1, 2, 3]
@@ -180,6 +184,8 @@ SAMPLE OUTPUT:
     instance2:
     MyClass.instance_counter = 2
     Here are all the dictionary items you passed in!:
+    args = ()
+    kwargs = {'var1': 'world', 'var2': 18, 'var3': [4, 5, 6]}
       var1: world
       var2: 18
       var3: [4, 5, 6]
