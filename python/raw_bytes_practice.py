@@ -24,12 +24,15 @@ References:
     1. https://docs.python.org/3/library/stdtypes.html#bytearray
     1. https://docs.python.org/3/library/stdtypes.html#bytes-methods
     1. https://docs.python.org/3/library/stdtypes.html#bytes.decode
+    1. https://docs.python.org/3/library/stdtypes.html#bytes.hex
+    1. https://docs.python.org/3/library/stdtypes.html#bytes.fromhex
     1. `errors='replace'` error handler: https://docs.python.org/3/library/codecs.html#error-handlers
 1. new, format "f" strings: https://realpython.com/python-f-strings/
 1. textwrap [my answer] https://stackoverflow.com/questions/10985603/multi-line-string-with-arguments-how-to-declare/64437283#64437283
 
 """
 
+# import codecs  # not used at this time, but may be later
 import textwrap
 import time
 
@@ -41,6 +44,13 @@ print(f"full_uint8_t_range = \n{full_uint8_t_range}\n")
 
 bytes_buffer = bytes(full_uint8_t_range)
 print(f"bytes_buffer = \n{bytes_buffer}\n")
+
+# "You can always convert a bytes object into a list of integers using `list(b)`."
+# See: https://docs.python.org/3/library/stdtypes.html#bytes.hex
+bytes_list = list(bytes_buffer)
+print(f"bytes_list from bytes_buffer = \n{bytes_list}\n")
+
+print("bytes_list == full_uint8_t_range ?: {}\n".format(bytes_list == full_uint8_t_range))
 
 # The following will produce a decoding error, so catch and print it
 try:
@@ -65,7 +75,7 @@ else:
 # - 'replace' will replace all non-utf-8 chars with this replacement question mark char to indicate
 # the char is non-printable and not a valid utf-8 char!: `�`
 bytes_buffer_str1 = bytes_buffer.decode(encoding='utf-8', errors='replace')
-print(f"bytes_buffer_str1 = \n{bytes_buffer_str1}\n")
+print(f"bytes_buffer_str1 (as utf-8) = \n{bytes_buffer_str1}\n")
 
 print("About to make the bell char ('\\a') sound again.")
 time.sleep(0.5)
@@ -78,7 +88,7 @@ time.sleep(0.5)
 # in this case, to the above print). Note that utf-8 is always preferred, in case non-ASCII
 # utf-8 chars exist in any buffer too.
 bytes_buffer_str2 = bytes_buffer.decode(encoding='ascii', errors='replace')
-print(f"bytes_buffer_str2 = \n{bytes_buffer_str2}\n")
+print(f"bytes_buffer_str2 (as ascii) = \n{bytes_buffer_str2}\n")
 
 print("bytes_buffer_str1 == bytes_buffer_str2 ?: {}\n".format(bytes_buffer_str1 == bytes_buffer_str2))
 
@@ -86,17 +96,13 @@ print("bytes_buffer_str1 == bytes_buffer_str2 ?: {}\n".format(bytes_buffer_str1 
 # to replace all invalid chars with their backslashed hex number!
 # See: https://docs.python.org/3/library/codecs.html#error-handlers
 bytes_buffer_str3 = bytes_buffer.decode(encoding='utf-8', errors='backslashreplace')
-print(f"[BEST PRINTING OPTION I THINK!] bytes_buffer_str3 = \n{bytes_buffer_str3}\n")
+print(f"[BEST PRINTING OPTION I THINK!]\nbytes_buffer_str3 = \n{bytes_buffer_str3}\n")
 
-### WORK IN PROGRESS FROM HERE ON ######
-# Ok, now turn a bytes buffer string back into a bytes buffer!
-bytes_buffer3 = bytes(bytes_buffer_str3, encoding='utf-8', errors='namereplace')
-print(f"bytes_buffer3 = \n{bytes_buffer3}\n")
-print(bytes_buffer_str3.encode())
-print(bytes_buffer_str3.encode(errors='backslashreplace'))
-print(bytes_buffer_str3.encode())
-
-
-# print(encode(bytes_buffer_str3))
-from codecs import encode
-print(encode(bytes_buffer_str3, "raw_unicode_escape"))
+# print bytes_buffer as a hex str
+# See: https://docs.python.org/3/library/stdtypes.html#bytes.hex
+bytes_buffer_hex_str = bytes_buffer.hex()
+print(f"bytes_buffer_hex_str = \n{bytes_buffer_hex_str}\n")
+# And convert it back from a hex str to a bytes buffer.
+# See: https://docs.python.org/3/library/stdtypes.html#bytes.fromhex
+bytes_buffer2 = b''.fromhex(bytes_buffer_hex_str)
+print(f"bytes_buffer2 (converted back from `bytes_buffer_hex_str`) = \n{bytes_buffer2}\n")
