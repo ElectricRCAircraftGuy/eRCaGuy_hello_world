@@ -132,7 +132,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. Converting a full hex string back into a bytes buffer.
     1. Also demonstrated in this file:
         1. `textwrap.dedent()`
-        1. New Python "f" format strings.
+        1. New Python "f" format strings. See: https://realpython.com/python-f-strings/.
         1. `time.sleep()`
         1. Exception handling with `try` `except` `else`.
 
