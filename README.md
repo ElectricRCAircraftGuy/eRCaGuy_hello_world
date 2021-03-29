@@ -127,7 +127,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. How to convert bytes back to a list of integers.
     1. Decoding a bytes buffer into a UTF-8 string.
     1. Decoding a bytes buffer into an ASCII string.
-    1. Decoding a bytes buffer into a UTF-8 or ASCII string while replacing invalid chars with the 4 char string sequence `"\xhh"` where `hh` is the valid hex char sequence, as a string.
+    1. Decoding a bytes buffer into a UTF-8 or ASCII string while replacing invalid chars with the 4 char string sequence `"\xhh"` where `hh` is the valid hex char sequence, as a string (via the `errors='backslashreplace'` argument to the bytes `decode()` method).
     1. Converting a bytes buffer into a full hex string.
     1. Converting a full hex string back into a bytes buffer.
     1. Also demonstrated in this file:
