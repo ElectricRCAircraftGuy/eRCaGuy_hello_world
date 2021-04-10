@@ -89,7 +89,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. See ["cpp/process_10_bit_video_data.cpp"](cpp/process_10_bit_video_data.cpp)
     1. See also the problem statement and my answer, with other references, on Stack Overflow here: [Stack Overflow: Add bit padding (bit shifting?) to 10bit values stored in a byte array](https://stackoverflow.com/a/66678338/4561887).
 1. Weak functions (functions with attribute `weak`): prove to myself that weak functions which are declared but not defined really do have addresses equal to nil (ie: zero, or `0`), as this is how the Arduino `serialEvent()` function works and is implemented.
-    1. See ["cpp/check_empty_func_addresses.cpp"](cpp/check_empty_func_addresses.cpp). 
+    1. See ["cpp/check_addr_of_weak_undefined_funcs.cpp"](cpp/check_addr_of_weak_undefined_funcs.cpp). 
     1. See also my Stack Overflow answer here: [Arduino “SerialEvent” example code doesn't work on my Arduino Nano. I can't receive serial data. Why?](https://stackoverflow.com/questions/67013619/arduino-serialevent-example-code-doesnt-work-on-my-arduino-nano-i-cant-rece/67016917#67016917).
     1. gcc `weak` function attribute: https://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Function-Attributes.html
         > weak

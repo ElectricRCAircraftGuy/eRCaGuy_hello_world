@@ -5,7 +5,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 Gabriel Staples
 9 Apr. 2021
 
-check_empty_func_addresses.cpp
+check_addr_of_weak_undefined_funcs.cpp
 - Prove that gcc `weak` functions have a nil (zero) address if they are not defined! This is how
 Arduino implements the weak and strong `serialEvent()` functions and calls to that function! Very
 ingenious! 
@@ -13,8 +13,8 @@ ingenious!
 https://stackoverflow.com/a/67016917/4561887
 
 To compile and run:
-    mkdir -p bin && g++ -Wall -Werror -Wextra -ggdb -std=c++17 -o bin/check_empty_func_addresses \
-    check_empty_func_addresses.cpp && bin/check_empty_func_addresses
+    mkdir -p bin && g++ -Wall -Werror -Wextra -ggdb -std=c++17 -o bin/check_addr_of_weak_undefined_funcs \
+    check_addr_of_weak_undefined_funcs.cpp && bin/check_addr_of_weak_undefined_funcs
 
 References:
 1. My answer: https://stackoverflow.com/a/67016917/4561887
@@ -97,7 +97,7 @@ int main()
 /*
 Sample Output:
 
-    eRCaGuy_hello_world/cpp$ mkdir -p bin && g++ -Wall -Werror -Wextra -ggdb -std=c++17 -o bin/check_empty_func_addresses     check_empty_func_addresses.cpp && bin/check_empty_func_addresses
+    eRCaGuy_hello_world/cpp$ mkdir -p bin && g++ -Wall -Werror -Wextra -ggdb -std=c++17 -o bin/check_addr_of_weak_undefined_funcs     check_addr_of_weak_undefined_funcs.cpp && bin/check_addr_of_weak_undefined_funcs
     Hello World1
     Hello world2
 
