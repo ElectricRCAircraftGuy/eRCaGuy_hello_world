@@ -6,9 +6,9 @@ Gabriel Staples
 9 Apr. 2021
 
 check_addr_of_weak_undefined_funcs.cpp
-- Prove that gcc `weak` functions have a nil (zero) address if they are not defined! This is how
-Arduino implements the weak and strong `serialEvent()` functions and calls to that function! Very
-ingenious! 
+- Prove that gcc `weak` functions have a nil (zero) address if they are declared but not defined! 
+This is how Arduino implements the weak and strong `serialEvent()` functions and calls to that 
+function! Very ingenious! 
 - See my answer here for details and links to the Arduino source code of interest:
 https://stackoverflow.com/a/67016917/4561887
 
