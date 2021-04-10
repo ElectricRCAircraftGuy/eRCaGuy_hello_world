@@ -91,6 +91,10 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. Weak functions (functions with attribute `weak`): prove to myself that weak functions which are declared but not defined really do have addresses equal to nil (ie: zero, or `0`), as this is how the Arduino `serialEvent()` function works and is implemented.
     1. See ["cpp/check_empty_func_addresses.cpp"](cpp/check_empty_func_addresses.cpp). 
     1. See also my Stack Overflow answer here: [Arduino “SerialEvent” example code doesn't work on my Arduino Nano. I can't receive serial data. Why?](https://stackoverflow.com/questions/67013619/arduino-serialevent-example-code-doesnt-work-on-my-arduino-nano-i-cant-rece/67016917#67016917).
+    1. gcc `weak` function attribute: https://gcc.gnu.org/onlinedocs/gcc-3.2/gcc/Function-Attributes.html
+        > weak
+        > 
+        > The `weak` attribute causes the declaration to be emitted as a weak symbol rather than a global. This is primarily useful in defining library functions which can be overridden in user code, though it can also be used with non-function declarations. Weak symbols are supported for ELF targets, and also for a.out targets when using the GNU assembler and linker.
 
 <a id="build-notes"></a>
 <a id="additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers"></a>
