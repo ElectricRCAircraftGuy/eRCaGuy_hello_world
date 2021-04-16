@@ -27,14 +27,21 @@ Build and run command:
 As a C program:
 
     mkdir -p bin && \
-    gcc -Wall -Werror -g3 -O3 -std=c11 -pthread -o bin/stack_size_gs_c \
+    gcc -Wall -Wextra -Werror -ggdb -O3 -std=c11 -pthread -o bin/stack_size_gs_c \
+    onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c && \
+    time bin/stack_size_gs_c
+
+  OR (no debugging output symbols):
+
+    mkdir -p bin && \
+    gcc -Wall -Wextra -Werror -O3 -std=c11 -pthread -o bin/stack_size_gs_c \
     onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c && \
     time bin/stack_size_gs_c
 
 As a C++ program:
 
     mkdir -p bin && \
-    g++ -Wall -Werror -g3 -O3 -std=c++17 -pthread -o bin/stack_size_gs_cpp \
+    g++ -Wall -Wextra -Werror -ggdb -O3 -std=c++17 -pthread -o bin/stack_size_gs_cpp \
     onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c && \
     time bin/stack_size_gs_cpp
 
@@ -54,6 +61,32 @@ As a C++ program:
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h> // sleep
+
+// NB: "The value pointed to by retval [ie: the value returned as `void *` by
+// the `start_routine()`, or `threadfunc()` in my case] should not be located on
+// the calling thread's stack, since the contents of that stack are undefined
+// after the thread terminates." See:
+// https://www.man7.org/linux/man-pages/man3/pthread_exit.3.html and
+// https://www.man7.org/linux/man-pages/man3/pthread_create.3.html (which states
+// that returning from `start_routine()` is the same as calling `pthread_exit()`
+// with the return value).
+//
+// So, instead of doing this:
+// ```
+// typedef enum threadfunc_error_e
+// {
+//     /// No error
+//     THREADFUNC_ERROR_OK = 0,
+//     /// Unknown error
+//     THREADFUNC_ERROR_UNK,
+// } threadfunc_error_t;
+// ```
+//
+// Do this, with global const return values to be used by the thread.
+// (Note: an alternative might be to use a function `static` variable too, since
+// (it should NOT be on the stack I think since it is `static`).
+const uint32_t THREADFUNC_ERROR_OK = 0;  /// No error
+const uint32_t THREADFUNC_ERROR_UNK = 1; /// Unknown error
 
 /// Thread function to repeatedly allocate memory within a thread, printing
 /// the total memory allocated each time, until the program crashes. The last
@@ -86,6 +119,14 @@ void* threadfunc(void* bytes_to_allocate_each_loop)
         byte_buff[0] = 0;
         bytes_allocated += BYTES_TO_ALLOCATE_EACH_LOOP;
     }
+
+    // THIS CODE WILL NEVER BE REACHED SINCE THE STACK WILL OVERFLOW AND
+    // HAVE A SEGMENTATION FAULT (CORE DUMP) ABOVE!
+
+    // NB: this return value must NOT be on the calling thread's stack! See
+    // https://www.man7.org/linux/man-pages/man3/pthread_exit.3.html and the
+    // notes about this above!
+    return (void *)&THREADFUNC_ERROR_UNK;
 }
 
 int main()
