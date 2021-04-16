@@ -97,6 +97,15 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         > weak
         > 
         > The `weak` attribute causes the declaration to be emitted as a weak symbol rather than a global. This is primarily useful in defining library functions which can be overridden in user code, though it can also be used with non-function declarations. Weak symbols are supported for ELF targets, and also for a.out targets when using the GNU assembler and linker.
+1. Empirically measure the max _thread stack size_ permitted on your architecture, in C OR C++. See:
+    1. [onlinegdb--empirically_determine_max_thread_stack_size.md](c/onlinegdb--empirically_determine_max_thread_stack_size.md)
+    1. [onlinegdb--empirically_determine_max_thread_stack_size_Bruno_Haible.c](c/onlinegdb--empirically_determine_max_thread_stack_size_Bruno_Haible.c)
+    1. [onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c](c/onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c)
+    1. See also my answer on Stack Overflow here: [Stack Overflow: C/C++ maximum stack size of program](https://stackoverflow.com/a/64085509/4561887)
+1. Practice using `void *` function arguments to pass in ANY data type, such as a regular `uint32_t`, to a function. 
+    1. `void *` is also the _required_ input parameter `arg` type, passed by `pthread_create()`, to the `start_routine` function, so that `arg` can be ANY type! This allows the Linux `pthread_create()` function to be a _generic function prototype_ which allows _generic callback functions_, to be called by the thread, and which shall receive _generic input parameters._ GOING FURTHER: The cool thing about this is that a `void *` input parameter can literally be A POINTER TO ANY DATA TYPE, so it could even be to a struct containing more function pointers, or a struct containing a bunch of parameters, etc. In this way, a _generic function prototype_ containing a _single_ `void *` input param can actually "wrap", or contain, a ton of input params. There are no limits to what you can pass with this--it's all up to your imagination and ingenuity and desires. See: https://www.man7.org/linux/man-pages/man3/pthread_create.3.html. 
+        1. My example usage of this, passing a simple `uint32_t` type via a `void *` input parameter: [onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c](c/onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c)
+        1. See also my answer on Stack Overflow here: [Stack Overflow: C/C++ maximum stack size of program](https://stackoverflow.com/a/64085509/4561887)
 
 <a id="build-notes"></a>
 <a id="additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers"></a>

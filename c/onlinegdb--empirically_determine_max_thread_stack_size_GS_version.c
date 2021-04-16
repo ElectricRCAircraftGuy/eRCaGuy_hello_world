@@ -58,6 +58,13 @@ As a C++ program:
 /// Thread function to repeatedly allocate memory within a thread, printing
 /// the total memory allocated each time, until the program crashes. The last
 /// value printed before the crash indicates how big a thread's stack size is.
+///
+/// Note: passing in a `uint32_t` as a `void *` type here is for practice,
+/// to learn how to pass in ANY type to a func by using a `void *` parameter.
+/// This is also the required function prototype, as required by the
+/// `pthread_create()` function, for the callback function (this function)
+/// passed to `pthread_create()`. See:
+/// https://www.man7.org/linux/man-pages/man3/pthread_create.3.html
 void* threadfunc(void* bytes_to_allocate_each_loop)
 {
     const uint32_t BYTES_TO_ALLOCATE_EACH_LOOP =
