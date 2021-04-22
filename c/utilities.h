@@ -140,7 +140,7 @@ long map(long, long, long, long, long);
 ///         ```
 /// \details  Similar to Arduino's `lowByte()` and `highByte()` macros just above, where `byte_num`
 ///         is 0 for `lowByte()` and 1 for `highByte()`--thereby assuming a 2-byte `uint16_t` type.
-#define READ_BYTE(value, byte_num) = ((uint8_t)(((value) >> (8*(byte_num))) & 0xff))
+#define READ_BYTE(value, byte_num) ((uint8_t)(((value) >> (8*(byte_num))) & 0xff))
 
 
 // See my answer: https://stackoverflow.com/questions/3437404/min-and-max-in-c/58532788#58532788
