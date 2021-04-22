@@ -117,6 +117,31 @@ long map(long, long, long, long, long);
 // FROM ARDUINO END
 // -------------------------------------------------------------------------------------------------
 
+/// \brief  Get `uint8_t` byte number `byte_num` from variable `value`, where `byte_num` 0 is
+///         the least-significant byte.
+///         See my answer here: https://stackoverflow.com/a/67206563/4561887
+/// \example
+///         ```
+///         uint32_t value = 1234;
+///
+///         uint8_t byte0 = READ_BYTE(value, 0),
+///         uint8_t byte1 = READ_BYTE(value, 1),
+///         uint8_t byte2 = READ_BYTE(value, 2),
+///         uint8_t byte3 = READ_BYTE(value, 3),
+///
+///         // OR
+///
+///         uint8_t bytes[] = {
+///             READ_BYTE(value, 0),
+///             READ_BYTE(value, 1),
+///             READ_BYTE(value, 2),
+///             READ_BYTE(value, 3),
+///         };
+///         ```
+/// \details  Similar to Arduino's `lowByte()` and `highByte()` macros just above, where `byte_num`
+///         is 0 for `lowByte()` and 1 for `highByte()`--thereby assuming a 2-byte `uint16_t` type.
+#define READ_BYTE(value, byte_num) = ((uint8_t)(((value) >> (8*(byte_num))) & 0xff))
+
 
 // See my answer: https://stackoverflow.com/questions/3437404/min-and-max-in-c/58532788#58532788
 
