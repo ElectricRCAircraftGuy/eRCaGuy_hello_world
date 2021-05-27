@@ -3,7 +3,7 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 GS
-22 Apr. 2021
+22 Apr. to 27 May 2021
 
 Show various ways of type punning (reinterpreting multi-byte values as byte arrays) in C and C++.
 
