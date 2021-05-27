@@ -11,6 +11,10 @@ using Python. This is useful to apply to photos taken with your phone of documen
 up.
 
 To run this script:
+    # FIRST: change directories to here
+    cd eRCaGuy_hello_world/python
+
+    # THEN, run this script
     ./auto_white_balance_img.py
     # OR
     python3 auto_white_balance_img.py
