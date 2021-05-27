@@ -158,6 +158,10 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         1. New Python "f" format strings. See: https://realpython.com/python-f-strings/.
         1. `time.sleep()`
         1. Exception handling with `try` `except` `else`.
+1. Image manipulation:
+    1. How to essentially get the equivalent of GIMP's `Colors --> Auto --> White Balance` feature:
+        1. [python/auto_white_balance_img.py](python/auto_white_balance_img.py)
+        1. See also my answer on Stack Overflow here for a demonstration and more details: [How do I do the equivalent of Gimp's Colors, Auto, White Balance in Python-Fu?](https://stackoverflow.com/questions/48268068/how-do-i-do-the-equivalent-of-gimps-colors-auto-white-balance-in-python-fu/67343271#67343271).
 
 <a id="3-markdown"></a>
 ## 3. markdown:
