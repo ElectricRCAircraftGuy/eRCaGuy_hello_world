@@ -5,6 +5,9 @@
 /*
 
 These are my favorite macros and other utility functions I frequently need in both C and C++.
+THIS FILE ISN'T IN A SHAPE TO JUST INCLUDE AS-IS. INSTEAD, COPY-PASTE WHAT YOU NEED.
+
+TODO(gabriel): CONSIDER CLEANING UP THIS FILE TO MAKE IT SO YOU CAN JUST INCLUDE IT DIRECTLY.
 
 See also:
 1. eRCaGuy_hello_world/c/rounding_integer_division/rounding_integer_division.cpp
@@ -13,11 +16,30 @@ See also:
 
 */
 
+#pragma once
+
+#include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+/// Debug printf function.
+/// See: https://stackoverflow.com/a/1941336/4561887
+#ifdef DEBUG
+    #define DEBUG_PRINTF(...) printf("DEBUG: "__VA_ARGS__)
+#else
+    #define DEBUG_PRINTF(...) \
+        do                    \
+        {                     \
+        } while (0)
+#endif
 
 // Get the number of elements in any C array
 // - Usage example: [my own answer]:
 //   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80289#80289
-#define ARRAY_LEN(array) (sizeof(array)/sizeof(array[0]))
+#define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
 // For floating-point comparisons:
 // - Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160
@@ -149,19 +171,91 @@ long map(long, long, long, long, long);
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
-// gcc/clang "statement expressions"
-#define max(a,b)             \
-({                           \
-    __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a > _b ? _a : _b;       \
-})
-#define min(a,b)             \
-({                           \
-    __typeof__ (a) _a = (a); \
-    __typeof__ (b) _b = (b); \
-    _a < _b ? _a : _b;       \
-})
+/// Max and min gcc/clang **statement expressions** (safer than macros) for C. By Gabriel Staples.
+/// See: https://stackoverflow.com/a/58532788/4561887
+#define MAX(a, b)               \
+    ({                          \
+        __typeof__(a) _a = (a); \
+        __typeof__(b) _b = (b); \
+        _a > _b ? _a : _b;      \
+    })
+#define MIN(a, b)               \
+    ({                          \
+        __typeof__(a) _a = (a); \
+        __typeof__(b) _b = (b); \
+        _a < _b ? _a : _b;      \
+    })
 
 #define MAX max
 #define MAX3(a, b, c) MAX(MAX(a, b), c)
+
+/// Get the next `alignment`-aligned address starting from address `base_addr.
+void* utils_get_aligned_address(void* base_addr, size_t alignment);
+
+// For the time macros and functions below, see my (Gabriel Staples's) answer here:
+// https://stackoverflow.com/a/67731965/4561887
+
+/// Convert seconds to milliseconds
+#define SEC_TO_MS(sec) ((sec)*1000)
+/// Convert seconds to microseconds
+#define SEC_TO_US(sec) ((sec)*1000000)
+/// Convert seconds to nanoseconds
+#define SEC_TO_NS(sec) ((sec)*1000000000)
+
+/// Convert nanoseconds to seconds
+#define NS_TO_SEC(ns) ((ns) / 1000000000)
+/// Convert nanoseconds to milliseconds
+#define NS_TO_MS(ns) ((ns) / 1000000)
+/// Convert nanoseconds to microseconds
+#define NS_TO_US(ns) ((ns) / 1000)
+
+// NB: for all 3 timestamp functions below: gcc defines the type of the internal
+// `tv_sec` seconds value inside the `struct timespec`, which is used
+// internally in these functions, as a signed `long int`. For architectures
+// where `long int` is 64 bits, that means it will have undefined
+// (signed) overflow in 2^64 sec = 5.8455 x 10^11 years. For architectures
+// where this type is 32 bits, it will occur in 2^32 sec = 136 years. If the
+// implementation-defined epoch for the timespec is 1970, then your program
+// could have undefined behavior signed time rollover in as little as
+// 136 years - (year 2021 - year 1970) = 136 - 51 = 85 years. If the epoch
+// was 1900 then it could be as short as 136 - (2021 - 1900) = 136 - 121 =
+// 15 years. Hopefully your program won't need to run that long. :). To see,
+// by inspection, what your system's epoch is, simply print out a timestamp and
+// calculate how far back a timestamp of 0 would have occurred. Ex: convert
+// the timestamp to years and subtract that number of years from the present
+// year.
+
+/// Get a time stamp in milliseconds.
+uint64_t millis();
+/// Get a time stamp in microseconds.
+uint64_t micros();
+/// Get a time stamp in nanoseconds.
+uint64_t nanos();
+
+
+/// \brief      Use linear interpolation to rescale, or "map" value `val` from range
+///             `in_min` to `in_max`, inclusive, to range `out_min` to `out_max`, inclusive.
+/// \details    Similar to Arduino's ingenious `map()` function:
+///             https://www.arduino.cc/reference/en/language/functions/math/map/
+///
+/// TODO(gabriel): turn this into a gcc statement expression instead to prevent the potential for
+/// the "double evaluation" bug. See `MIN()` and `MAX()` above.
+#define UTILS_MAP(val, in_min, in_max, out_min, out_max) \
+    (((val) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min))
+
+/// \brief      Obtain a pseudo-random integer value between `min` and `max`, **inclusive**.
+/// \details    1. If `(max - min + 1) > RAND_MAX`, then the range of values returned will be
+///             **scaled** to the range `max - min + 1`, and centered over the center of the
+///             range at `(min + max)/2`. Scaling the numbers means that in the case of scaling,
+///             not all numbers can even be reached. However, you will still be assured to have
+///             a random distribution of numbers across the full range.
+///             2. Also, the first time per program run that you call this function, it will
+///             automatically seed the pseudo-random number generator with your system's
+///             current time in seconds.
+///             3. Source: Gabriel Staples: https://stackoverflow.com/a/67746081/4561887
+/// \param[in]  min         The minimum pseudo-random number you'd like, inclusive. Can be positive
+///                         OR negative.
+/// \param[in]  max         The maximum pseudo-random number you'd like, inclusive. Can be positive
+///                         OR negative.
+/// \return     A pseudo-random integer value between `min` and `max`, **inclusive**.
+int utils_rand(int min, int max);

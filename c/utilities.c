@@ -130,8 +130,80 @@ bool is_double_ge(double a, double b, double epsilon)
 
 
 // From Arduino's WMath.cpp:
-
 long map(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+
+void* utils_get_aligned_address(void* base_addr, size_t alignment)
+{
+    if ((size_t)base_addr % alignment == 0)
+    {
+        // `base_addr` is already aligned
+        return base_addr;
+    }
+
+    // Else we must force `base_addr` to become aligned
+    void* aligned_addr = (void*)((size_t)base_addr + (alignment - (size_t)base_addr % alignment));
+    return aligned_addr;
+}
+
+uint64_t millis()
+{
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    uint64_t ms = SEC_TO_MS((uint64_t)ts.tv_sec) + NS_TO_MS((uint64_t)ts.tv_nsec);
+    return ms;
+}
+
+uint64_t micros()
+{
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    uint64_t us = SEC_TO_US((uint64_t)ts.tv_sec) + NS_TO_US((uint64_t)ts.tv_nsec);
+    return us;
+}
+
+uint64_t nanos()
+{
+    struct timespec ts;
+    timespec_get(&ts, TIME_UTC);
+    uint64_t ns = SEC_TO_NS((uint64_t)ts.tv_sec) + (uint64_t)ts.tv_nsec;
+    return ns;
+}
+
+int utils_rand(int min, int max)
+{
+    static bool first_run = true;
+    if (first_run)
+    {
+        // seed the pseudo-random number generator with the seconds time the very first run
+        time_t time_now_sec = time(NULL);
+        srand(time_now_sec);
+        first_run = false;
+    }
+
+    int range = max - min + 1;
+    int random_num = rand();  // random num from 0 to RAND_MAX, inclusive
+
+    if (range > RAND_MAX)
+    {
+        static_assert(
+            sizeof(long int) > sizeof(int),
+            "This must be true or else the below mapping/scaling may have undefined overflow "
+            "and not work properly. In such a case, try casting to `long long int` instead of "
+            "just `long int`, and update this static_assert accordingly.");
+
+        random_num = UTILS_MAP((long int)random_num, (long int)0, (long int)RAND_MAX, (long int)min,
+                               (long int)max);
+        return random_num;
+    }
+
+    // This is presumably a faster approach than the map/scaling function above, so do this faster
+    // approach below whenever you don't **have** to do the more-complicated approach above.
+    random_num %= range;
+    random_num += min;
+
+    return random_num;
 }
