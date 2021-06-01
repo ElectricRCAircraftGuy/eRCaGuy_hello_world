@@ -88,6 +88,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         #define ANSI_COLOR_RED "\033[31m"
         ```
         ...and how I used them to colorize text in `printf()` calls there.
+    1. See also my other repo here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-diffn.sh#L126
 1. How to use a `const` reference to a vector, with a default parameter, as an input param to a function!
     1. See ["cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp"](cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp)
 1. How to call command-line system calls in C and C++, read piped input from `stdin`, and read command-line output from called process from its `stdout`:
