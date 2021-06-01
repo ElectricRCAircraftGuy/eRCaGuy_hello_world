@@ -75,10 +75,19 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. Witness that the C++ `std::unordered_map<T_key, T_value>` unordered map (hash table) class automatically implicitly creates a new key/value pair each time you attempt to read OR write to a value (or any members of a complex value, such as a `struct` or `class`) which belongs to a **non-existing key**! In other words, reading or writing any key/value which does NOT yet exists causes `std::unordered_map<>` to automatically, dynamically, generate it right on the spot for you to access it! This is confusing behavior at first, as it happens implicitly behind the scenes, so it needs to be understood. _Once understood, it is a powerful feature to use, but a one or two-line comment to exlain that you intend dynamic allocation to happen, above any lines in production code where you use this, would be wise._
     1. See ["cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp"](cpp/unordered_map_practice/unordered_map_hash_table_implicit_key_construction_test.cpp)
 1. Case-insensitive `strncmp()` function, with unit tests.
-    1. See ["c/onlinegdb--strncmpci.c"](c/onlinegdb--strncmpci.c)
+    1. See ["c/strncmpci.c"](c/strncmpci.c)
 1. Example of how to manually write unit tests.
-    1. See ["c/onlinegdb--strncmpci.c"](c/onlinegdb--strncmpci.c)
+    1. See ["c/strncmpci.c"](c/strncmpci.c)
     1. Note: for Google Test (gtest/gmock) examples, including how to use the [Bazel](https://bazel.build/) build system, see my repo here instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_gtest_practice.
+1. Example of how to use ANSI color codes (ex: red and green) in terminal output. 
+    1. It is possible to colorize and stylize/format your text you print to `stdout` or `stderr`, in any programming language, by surrounding the text with special ANSI color codes. This works for _all programming languages_ and _all forms of printing_ to `stdout` or `stderr`, whether via `printf("some text\n");` in C or C++, `std::cout << "some text\n";` in C++, `print("some text")` in Python, `echo "some text"` in bash, etc.
+    1. See these defines in C in ["c/strncmpci.c"](c/strncmpci.c):
+        ```c
+        #define ANSI_COLOR_OFF "\033[m"
+        #define ANSI_COLOR_GRN "\033[32m"
+        #define ANSI_COLOR_RED "\033[31m"
+        ```
+        ...and how I used them to colorize text in `printf()` calls there.
 1. How to use a `const` reference to a vector, with a default parameter, as an input param to a function!
     1. See ["cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp"](cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp)
 1. How to call command-line system calls in C and C++, read piped input from `stdin`, and read command-line output from called process from its `stdout`:
