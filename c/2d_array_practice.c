@@ -110,24 +110,29 @@ void printArray4(int *a, size_t num_rows, size_t num_cols)
 }
 
 
-// /// Same as `printArray3()`, but with slightly-different and less-readable, yet more-versatile
-// ///  prototype--same as the original asker's function prototype style in the Question:
-// /// `void matrixMultiply(int *A[], int *B[])`. See: https://stackoverflow.com/q/67811354/4561887
-// /// NB: `a` is still a 2D array of `int`s.
-// void printArray5(int* a[], size_t num_rows, size_t num_cols)
-// {
-//     printf("printArray5:\n");
-//     for (size_t row = 0; row < num_rows; row++)
-//     {
-
-//         for (size_t col = 0; col < num_cols; col++)
-//         {
-//             printf("a[%zu][%zu]=%i ", row, col, a[row][col]);
-//         }
-//         printf("\n");
-//     }
-//     printf("\n");
-// }
+/// Now let's force some code into the mold (prototype) style the OP requested for completeness. `a`
+/// here is different from all of the cases above. It is NOT a contiguous 2D array of `int`s;
+/// rather, it is an array of pointers to ints, where each pointer in the array can be thought of as
+/// a sub-array. Therefore, the length of the outer array is the number of rows, and the length of
+/// each sub-array, or inner array, is the number of columns. Each sub-array (a single row of
+/// `int`s) DOES have to be in contiguous memory, and the array of _pointers_ DOES have to be in
+/// contiguous memory, but the actual _storage space_ for each row can be in NON-contiguous memory.
+/// Again, this is VERY different from every other function above.
+void printArray5(int* a[], size_t num_rows, size_t num_cols)
+{
+    printf("printArray5:\n");
+    for (size_t row = 0; row < num_rows; row++)
+    {
+        int *row_start = a[row]; // VERY DIFFERENT FROM `printArray4` above!
+        for (size_t col = 0; col < num_cols; col++)
+        {
+            // Identical to `printArray4` above.
+            printf("a[%zu][%zu]=%i ", row, col, row_start[col]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
 
 
 
@@ -150,12 +155,6 @@ int main()
     printf("NUM_COLS(arr) = %zu\n", NUM_COLS(arr));
     printf("\n");
 
-    // int arr2[][1] =
-    // {
-    //     {11},
-    //     {55},
-    // };
-
     printArray1(arr, NUM_ROWS(arr), NUM_COLS(arr));
 
     // Better way WITH array type safety on array size. Notice you MUST pass the **address** of the
@@ -173,6 +172,21 @@ int main()
     printArray4(&arr[0][0], NUM_ROWS(arr), NUM_COLS(arr));
 
 
+    // ===========================
+    printf("Now let's force some code into the mold (prototype) style the OP requested, "
+           "for completeness:\n\n");
+    // ===========================
+
+    // Each row is an array of `int`s.
+    int row1[] = {1, 2};
+    int row2[] = {5, 6};
+    int row3[] = {7, 8};
+    // This is an array of `int *`, or "pointer to int". The blob of all rows together does NOT
+    // have to be in contiguous memory. This is very different from the `arr` array above, which
+    // contains all data in contiguous memory.
+    int* all_rows[] = {row1, row2, row3};
+
+    printArray5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
     return 0;
@@ -182,6 +196,45 @@ int main()
 /*
 SAMPLE OUTPUT (ran on an x86-64 little endian Linux Ubuntu 20.04 machine):
 
+    eRCaGuy_hello_world/c$ mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj 2d_array_practice.c     -o bin/2d_array_practice && bin/2d_array_practice
+    hello
 
+    num_rows = ARRAY_LEN(arr) = 3
+    num_cols = ARRAY_LEN(arr[0]) = 2
+
+    NUM_ROWS(arr) = 3
+    NUM_COLS(arr) = 2
+
+    printArray1:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray2:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray3:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray4:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray4:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    Now let's force some code into the mold (prototype) style the OP requested, for completeness:
+
+    printArray5:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
 
 */

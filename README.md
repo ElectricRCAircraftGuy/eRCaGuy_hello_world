@@ -120,6 +120,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. You can use 1) unions and "type punning", 2) raw pointers, or 3) bit-masks and bit shifting!
     1. See ["c/type_punning.c"](c/type_punning.c)
     1. See also my detailed answer and explanations here: [Stack Overflow: Portability of using union for conversion - my answer: "Using Unions for "type punning" is fine in C, and fine in gcc's C++ as well (as a gcc [g++] extension). But, "type punning" via unions has hardware architecture endianness considerations."](https://stackoverflow.com/questions/67206482/portability-of-using-union-for-conversion/67206563#67206563).
+1. 2D array practice in C and C++. 
+    1. See [c/2d_array_practice.c](c/2d_array_practice.c); runs in both C and C++; see build commands in the comments at the top
 
 
 <a id="build-notes"></a>
