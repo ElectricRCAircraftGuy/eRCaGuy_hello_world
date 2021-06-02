@@ -20,7 +20,68 @@ To compile and run (assuming you've already `cd`ed into this dir):
     -o bin/2d_array_practice && bin/2d_array_practice
 
 References:
+1. The Q I'm answering: https://stackoverflow.com/questions/67811354/passing-a-pointer-to-array-to-my-function
+1. [my ans to another Q] https://stackoverflow.com/questions/6567742/passing-an-array-as-an-argument-to-a-function-in-c/51527502#51527502
+1. another Q & A (where I should answer instead): https://stackoverflow.com/questions/2828648/how-to-pass-a-multidimensional-array-to-a-function-in-c-and-c
 1. https://www.geeksforgeeks.org/pass-2d-array-parameter-c/
+
+
+--------------------------------
+CONCLUSIONS AND RECOMMENDATIONS:
+--------------------------------
+
+ALL APPROACHES BELOW ARE VALID. However, here are my recommendations:
+
+Assume you have the following array:
+```
+int arr[][2] =
+{
+    {1, 2},
+    {5, 6},
+    {7, 8},
+};
+```
+
+1. If the 2D array is ALWAYS the same size each time (3x2 rows x columns in this case), do this:
+    ```
+    void printArray2(int (*a)[3][2]) {}
+    // NB: `&` is REQUIRED! See my answer for why: https://stackoverflow.com/a/51527502/4561887
+    printArray2(&arr);
+    ```
+2. If the 2D array has a VARIABLE number of rows, but a FIXED number of columns (2 in this case),
+    do this:
+    ```
+    void printArray3(int a[][2], size_t num_rows) {}
+    printArray3(arr, NUM_ROWS(arr));
+    ```
+3. If the 2D array has a VARIABLE number of rows AND a VARIABLE number of columns, do this (this
+   approach is the most-versatile and is generally my go-to approach for multidimensional arrays):
+    ```
+    void printArray4(int *a, size_t num_rows, size_t num_cols) {}
+    printArray4((int *)arr, NUM_ROWS(arr), NUM_COLS(arr));
+    // OR: alternative call technique:
+    printArray4(&arr[0][0], NUM_ROWS(arr), NUM_COLS(arr));
+    ```
+
+If you have the following array, however, you must do something different:
+```
+// Each row is an array of `int`s.
+int row1[] = {1, 2};
+int row2[] = {5, 6};
+int row3[] = {7, 8};
+// This is an array of `int *`, or "pointer to int". The blob of all rows together does NOT
+// have to be in contiguous memory. This is very different from the `arr` array above, which
+// contains all data in contiguous memory.
+int* all_rows[] = {row1, row2, row3};
+```
+
+4. If the 2D array is actually built up of a bunch of ptrs to other arrays (as shown just above),
+   do this:
+    ```
+    void printArray5(int* a[], size_t num_rows, size_t num_cols) {}
+    printArray5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+    ```
+
 
 */
 
@@ -34,20 +95,25 @@ References:
 //   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80289#80289
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
+/// Definitions: `rows` = "rows"; `cols` = "columns"
+
 /// Get number of rows in a 2D array
 #define NUM_ROWS(array_2d) ARRAY_LEN(array_2d)
 
 /// Get number of columns in a 2D array
 #define NUM_COLS(array_2d) ARRAY_LEN(array_2d[0])
 
+
+/// Don't use this approach at all, ever. It has a superfluous `num_cols` parameter that we don't
+/// actually need! (see the `printArray3` approach below instead for how we can get rid of this).
+/// So, this approach is shown here for demonstration purposes only.
 /// This works, but there's a better way we will do later.
-/// Note: `rows` = number of rows; `cols` = number of columns
-void printArray1(int a[][2], size_t a_rows, size_t a_cols)
+void printArray1(int a[][2], size_t num_rows, size_t num_cols)
 {
     printf("printArray1:\n");
-    for (size_t row = 0; row < a_rows; row++)
+    for (size_t row = 0; row < num_rows; row++)
     {
-        for (size_t col = 0; col < a_cols; col++)
+        for (size_t col = 0; col < num_cols; col++)
         {
             printf("a[%zu][%zu]=%i ", row, col, a[row][col]);
         }
@@ -75,7 +141,8 @@ void printArray2(int (*a)[3][2])
     printf("\n");
 }
 
-/// Better way (withOUT array size type safety on array size) (my preferred approach)
+/// Better way (withOUT array size type safety on array size) (my preferred approach between this
+/// one and the one above, UNLESS all arrays are the same size, in which case use the one above)
 void printArray3(int a[][2], size_t num_rows)
 {
     printf("printArray3:\n");
@@ -90,7 +157,7 @@ void printArray3(int a[][2], size_t num_rows)
     printf("\n");
 }
 
-/// Much more-versatile approach.
+/// Much more-versatile approach. (My overall preferred approach since it's the most-versatile).
 /// NB: `a` is a pointer to the start of a contiguous 2D array of `int`s. So, treat it as such.
 void printArray4(int *a, size_t num_rows, size_t num_cols)
 {
