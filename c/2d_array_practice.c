@@ -121,7 +121,7 @@ int* all_rows[] = {row1, row2, row3};
 /// \param[out] variable_3  Output parameter
 /// \param[out] variable_4  Another output parameter
 /// \return     None
-void print_array1(int array_2d[][2], size_t num_rows, size_t num_cols)
+void print_array1(const int array_2d[][2], size_t num_rows, size_t num_cols)
 {
     printf("print_array1:\n");
     for (size_t row = 0; row < num_rows; row++)
@@ -140,7 +140,7 @@ void print_array1(int array_2d[][2], size_t num_rows, size_t num_cols)
 /// size. See my answer here: https://stackoverflow.com/a/51527502/4561887
 /// I think this is overly-complicated, however (again, read my answer just above), so let's
 /// do another approach later withOUT type safety.
-void print_array2(int (*array_2d)[3][2])
+void print_array2(const int (*array_2d)[3][2])
 {
     printf("print_array2:\n");
     for (size_t row = 0; row < NUM_ROWS(*array_2d); row++)
@@ -156,7 +156,7 @@ void print_array2(int (*array_2d)[3][2])
 
 /// Better way (withOUT array size type safety on array size) (my preferred approach between this
 /// one and the one above, UNLESS all arrays are the same size, in which case use the one above)
-void print_array3(int array_2d[][2], size_t num_rows)
+void print_array3(const int array_2d[][2], size_t num_rows)
 {
     printf("print_array3:\n");
     for (size_t row = 0; row < num_rows; row++)
@@ -172,12 +172,12 @@ void print_array3(int array_2d[][2], size_t num_rows)
 
 /// Much more-versatile approach. (My overall preferred approach since it's the most-versatile).
 /// NB: `array_2d` is a pointer to the start of a contiguous 2D array of `int`s. So, treat it as such.
-void print_array4(int *array_2d, size_t num_rows, size_t num_cols)
+void print_array4(const int *array_2d, size_t num_rows, size_t num_cols)
 {
     printf("print_array4:\n");
     for (size_t row = 0; row < num_rows; row++)
     {
-        int *row_start = &array_2d[row*num_cols];
+        const int *row_start = &array_2d[row*num_cols];
 
         for (size_t col = 0; col < num_cols; col++)
         {
@@ -198,12 +198,12 @@ void print_array4(int *array_2d, size_t num_rows, size_t num_cols)
 /// `int`s) DOES have to be in contiguous memory, and the array of _pointers_ DOES have to be in
 /// contiguous memory, but the actual _storage space_ for each row can be in NON-contiguous memory.
 /// Again, this is VERY different from every other function above.
-void print_array5(int* array_2d[], size_t num_rows, size_t num_cols)
+void print_array5(const int* array_2d[], size_t num_rows, size_t num_cols)
 {
     printf("print_array5:\n");
     for (size_t row = 0; row < num_rows; row++)
     {
-        int *row_start = array_2d[row]; // VERY DIFFERENT FROM `print_array4` above!
+        const int *row_start = array_2d[row]; // VERY DIFFERENT FROM `print_array4` above!
         for (size_t col = 0; col < num_cols; col++)
         {
             // Identical to `print_array4` above.
@@ -235,6 +235,10 @@ int main()
     printf("NUM_COLS(arr) = %zu\n", NUM_COLS(arr));
     printf("\n");
 
+    // ===========================
+    printf("Print a 2D array in a bunch of different ways:\n\n");
+    // ===========================
+
     print_array1(arr, NUM_ROWS(arr), NUM_COLS(arr));
 
     // Better way WITH array type safety on array size. Notice you MUST pass the **address** of the
@@ -264,14 +268,15 @@ int main()
     // This is an array of `int *`, or "pointer to int". The blob of all rows together does NOT
     // have to be in contiguous memory. This is very different from the `arr` array above, which
     // contains all data in contiguous memory.
-    int* all_rows[] = {row1, row2, row3};
+    const int* all_rows[] = {row1, row2, row3};
 
     print_array5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
     // ===========================
-    printf("What if we need references (pointers) to each of the above arrays? How can we carry "
-           "around and use such pointers in each of the function calls above? Like this:\n\n");
+    printf("Using pointers: what if we need references (pointers) to each of the above arrays? "
+           "How can we carry around and use such pointers in each of the function calls above? "
+           "Like this:\n\n");
     // ===========================
 
     // `print_array1()`.
@@ -303,7 +308,7 @@ int main()
 
     // `print_array5()`.
     // `int* array_2d[]` naturally decays to `int**`
-    int **p5 = all_rows;
+    const int **p5 = all_rows;
     print_array5(p5, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
