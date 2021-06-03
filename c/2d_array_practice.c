@@ -49,23 +49,23 @@ int arr[][2] =
 
 1. If the 2D array is ALWAYS the same size each time (3x2 rows x columns in this case), do this:
     ```
-    void printArray2(int (*a)[3][2]) {}
+    void print_array2(int (*array_2d)[3][2]) {}
     // NB: `&` is REQUIRED! See my answer for why: https://stackoverflow.com/a/51527502/4561887
-    printArray2(&arr);
+    print_array2(&arr);
     ```
 2. If the 2D array has a VARIABLE number of rows, but a FIXED number of columns (2 in this case),
     do this:
     ```
-    void printArray3(int a[][2], size_t num_rows) {}
-    printArray3(arr, NUM_ROWS(arr));
+    void print_array3(int array_2d[][2], size_t num_rows) {}
+    print_array3(arr, NUM_ROWS(arr));
     ```
 3. If the 2D array has a VARIABLE number of rows AND a VARIABLE number of columns, do this (this
    approach is the most-versatile and is generally my go-to approach for multidimensional arrays):
     ```
-    void printArray4(int *a, size_t num_rows, size_t num_cols) {}
-    printArray4((int *)arr, NUM_ROWS(arr), NUM_COLS(arr));
+    void print_array4(int *array_2d, size_t num_rows, size_t num_cols) {}
+    print_array4((int *)arr, NUM_ROWS(arr), NUM_COLS(arr));
     // OR: alternative call technique:
-    printArray4(&arr[0][0], NUM_ROWS(arr), NUM_COLS(arr));
+    print_array4(&arr[0][0], NUM_ROWS(arr), NUM_COLS(arr));
     ```
 
 If you have the following array, however, you must do something different:
@@ -83,8 +83,8 @@ int* all_rows[] = {row1, row2, row3};
 4. If the 2D array is actually built up of a bunch of ptrs to other arrays (as shown just above),
    do this:
     ```
-    void printArray5(int* a[], size_t num_rows, size_t num_cols) {}
-    printArray5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+    void print_array5(int* array_2d[], size_t num_rows, size_t num_cols) {}
+    print_array5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
     ```
 
 
@@ -109,18 +109,26 @@ int* all_rows[] = {row1, row2, row3};
 #define NUM_COLS(array_2d) ARRAY_LEN(array_2d[0])
 
 
-/// Don't use this approach at all, ever. It has a superfluous `num_cols` parameter that we don't
-/// actually need! (see the `printArray3` approach below instead for how we can get rid of this).
-/// So, this approach is shown here for demonstration purposes only.
-/// This works, but there's a better way we will do later.
-void printArray1(int a[][2], size_t num_rows, size_t num_cols)
+/// \brief      Print a 2D array which has a VARIABLE number of rows and
+///             FIXED number of columns.
+/// \details    Don't use this approach at all, ever. It has a superfluous
+///             `num_cols` parameter that we don't actually need! (see the
+///             `print_array3` approach below instead for how we can get rid of
+///             this). So, this approach is shown here for demonstration
+///             purposes only.
+/// \param[in]  array_2d  Input parameter
+/// \param[in]  variable_2  Another input parameter
+/// \param[out] variable_3  Output parameter
+/// \param[out] variable_4  Another output parameter
+/// \return     None
+void print_array1(int array_2d[][2], size_t num_rows, size_t num_cols)
 {
-    printf("printArray1:\n");
+    printf("print_array1:\n");
     for (size_t row = 0; row < num_rows; row++)
     {
         for (size_t col = 0; col < num_cols; col++)
         {
-            printf("a[%zu][%zu]=%i ", row, col, a[row][col]);
+            printf("array_2d[%zu][%zu]=%i ", row, col, array_2d[row][col]);
         }
         printf("\n");
     }
@@ -128,18 +136,18 @@ void printArray1(int a[][2], size_t num_rows, size_t num_cols)
 }
 
 /// Better way (WITH array size type safety on array size)
-/// `a` here is a ptr to an array of size[3][2]. This **forces** type safety in C based on array
+/// `array_2d` here is a ptr to an array of size[3][2]. This **forces** type safety in C based on array
 /// size. See my answer here: https://stackoverflow.com/a/51527502/4561887
 /// I think this is overly-complicated, however (again, read my answer just above), so let's
 /// do another approach later withOUT type safety.
-void printArray2(int (*a)[3][2])
+void print_array2(int (*array_2d)[3][2])
 {
-    printf("printArray2:\n");
-    for (size_t row = 0; row < NUM_ROWS(*a); row++)
+    printf("print_array2:\n");
+    for (size_t row = 0; row < NUM_ROWS(*array_2d); row++)
     {
-        for (size_t col = 0; col < NUM_COLS(*a); col++)
+        for (size_t col = 0; col < NUM_COLS(*array_2d); col++)
         {
-            printf("a[%zu][%zu]=%i ", row, col, (*a)[row][col]);
+            printf("array_2d[%zu][%zu]=%i ", row, col, (*array_2d)[row][col]);
         }
         printf("\n");
     }
@@ -148,14 +156,14 @@ void printArray2(int (*a)[3][2])
 
 /// Better way (withOUT array size type safety on array size) (my preferred approach between this
 /// one and the one above, UNLESS all arrays are the same size, in which case use the one above)
-void printArray3(int a[][2], size_t num_rows)
+void print_array3(int array_2d[][2], size_t num_rows)
 {
-    printf("printArray3:\n");
+    printf("print_array3:\n");
     for (size_t row = 0; row < num_rows; row++)
     {
-        for (size_t col = 0; col < NUM_COLS(a); col++)
+        for (size_t col = 0; col < NUM_COLS(array_2d); col++)
         {
-            printf("a[%zu][%zu]=%i ", row, col, a[row][col]);
+            printf("array_2d[%zu][%zu]=%i ", row, col, array_2d[row][col]);
         }
         printf("\n");
     }
@@ -163,18 +171,18 @@ void printArray3(int a[][2], size_t num_rows)
 }
 
 /// Much more-versatile approach. (My overall preferred approach since it's the most-versatile).
-/// NB: `a` is a pointer to the start of a contiguous 2D array of `int`s. So, treat it as such.
-void printArray4(int *a, size_t num_rows, size_t num_cols)
+/// NB: `array_2d` is a pointer to the start of a contiguous 2D array of `int`s. So, treat it as such.
+void print_array4(int *array_2d, size_t num_rows, size_t num_cols)
 {
-    printf("printArray4:\n");
+    printf("print_array4:\n");
     for (size_t row = 0; row < num_rows; row++)
     {
-        int *row_start = &a[row*num_cols];
+        int *row_start = &array_2d[row*num_cols];
 
         for (size_t col = 0; col < num_cols; col++)
         {
             // NB: THIS PART IS VERY DIFFERENT FROM THE OTHERS! Notice `row_start[col]`.
-            printf("a[%zu][%zu]=%i ", row, col, row_start[col]);
+            printf("array_2d[%zu][%zu]=%i ", row, col, row_start[col]);
         }
         printf("\n");
     }
@@ -182,7 +190,7 @@ void printArray4(int *a, size_t num_rows, size_t num_cols)
 }
 
 
-/// Now let's force some code into the mold (prototype) style the OP requested for completeness. `a`
+/// Now let's force some code into the mold (prototype) style the OP requested for completeness. `array_2d`
 /// here is different from all of the cases above. It is NOT a contiguous 2D array of `int`s;
 /// rather, it is an array of pointers to ints, where each pointer in the array can be thought of as
 /// a sub-array. Therefore, the length of the outer array is the number of rows, and the length of
@@ -190,16 +198,16 @@ void printArray4(int *a, size_t num_rows, size_t num_cols)
 /// `int`s) DOES have to be in contiguous memory, and the array of _pointers_ DOES have to be in
 /// contiguous memory, but the actual _storage space_ for each row can be in NON-contiguous memory.
 /// Again, this is VERY different from every other function above.
-void printArray5(int* a[], size_t num_rows, size_t num_cols)
+void print_array5(int* array_2d[], size_t num_rows, size_t num_cols)
 {
-    printf("printArray5:\n");
+    printf("print_array5:\n");
     for (size_t row = 0; row < num_rows; row++)
     {
-        int *row_start = a[row]; // VERY DIFFERENT FROM `printArray4` above!
+        int *row_start = array_2d[row]; // VERY DIFFERENT FROM `print_array4` above!
         for (size_t col = 0; col < num_cols; col++)
         {
-            // Identical to `printArray4` above.
-            printf("a[%zu][%zu]=%i ", row, col, row_start[col]);
+            // Identical to `print_array4` above.
+            printf("array_2d[%zu][%zu]=%i ", row, col, row_start[col]);
         }
         printf("\n");
     }
@@ -227,21 +235,21 @@ int main()
     printf("NUM_COLS(arr) = %zu\n", NUM_COLS(arr));
     printf("\n");
 
-    printArray1(arr, NUM_ROWS(arr), NUM_COLS(arr));
+    print_array1(arr, NUM_ROWS(arr), NUM_COLS(arr));
 
     // Better way WITH array type safety on array size. Notice you MUST pass the **address** of the
     // array here! `&arr` is of type `int (*)[3][2]`, which means: "pointer to a 3x2 array of ints".
     // See my answer here (https://stackoverflow.com/a/51527502/4561887) under the section
     // "Forcing type safety on arrays in C" for an explanation of this for 1D arrays.
-    printArray2(&arr);
+    print_array2(&arr);
     // Better way withOUT array type safety on array size (my preferred approach)
-    printArray3(arr, NUM_ROWS(arr));
+    print_array3(arr, NUM_ROWS(arr));
 
     // more-versatile approach (can handle 2D arrays of any arbitrary number of rows and cols)
-    printArray4((int *)arr, NUM_ROWS(arr), NUM_COLS(arr));
+    print_array4((int *)arr, NUM_ROWS(arr), NUM_COLS(arr));
     // OR: alternate way to call this function: get the address of the array (ie: a ptr to an int)
     // at [row, col] = [0, 0]
-    printArray4(&arr[0][0], NUM_ROWS(arr), NUM_COLS(arr));
+    print_array4(&arr[0][0], NUM_ROWS(arr), NUM_COLS(arr));
 
 
     // ===========================
@@ -258,7 +266,7 @@ int main()
     // contains all data in contiguous memory.
     int* all_rows[] = {row1, row2, row3};
 
-    printArray5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+    print_array5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
     // ===========================
@@ -266,37 +274,37 @@ int main()
            "around and use such pointers in each of the function calls above? Like this:\n\n");
     // ===========================
 
-    // `printArray1()`.
-    // `int a[][2]` naturally decays to `int* [2]`
+    // `print_array1()`.
+    // `int array_2d[][2]` naturally decays to `int* [2]`
     int (*p1)[2] = arr; // MUST USE THESE PARENTHESIS!
-    printArray1(p1, NUM_ROWS(arr), NUM_COLS(p1));
+    print_array1(p1, NUM_ROWS(arr), NUM_COLS(p1));
     // OR
-    printArray1(p1, NUM_ROWS(arr), NUM_COLS(arr));
+    print_array1(p1, NUM_ROWS(arr), NUM_COLS(arr));
 
-    // `printArray2()`.
-    // `int (*a)[3][2]` is an explicit ptr to a 3x2 array of `int`. This array pointer does NOT
+    // `print_array2()`.
+    // `int (*array_2d)[3][2]` is an explicit ptr to a 3x2 array of `int`. This array pointer does NOT
     // naturally decay to a simpler type.
     int (*p2)[3][2] = &arr; // must use `&` and MUST USE THESE PARENTHESIS!
-    printArray2(p2);
+    print_array2(p2);
 
-    // `printArray3()`.
-    // `int a[][2]` naturally decays to `int* [2]`
+    // `print_array3()`.
+    // `int array_2d[][2]` naturally decays to `int* [2]`
     int (*p3)[2] = arr; // MUST USE THESE PARENTHESIS!
-    printArray3(p3, NUM_ROWS(arr));
+    print_array3(p3, NUM_ROWS(arr));
 
-    // `printArray4()`.
+    // `print_array4()`.
     // The easiest one by far!
     int *p4_1 = (int*)arr;
     // OR
     int *p4_2 = &arr[0][0];
-    printArray4(p4_1, NUM_ROWS(arr), NUM_COLS(arr));
-    printArray4(p4_2, NUM_ROWS(arr), NUM_COLS(arr));
+    print_array4(p4_1, NUM_ROWS(arr), NUM_COLS(arr));
+    print_array4(p4_2, NUM_ROWS(arr), NUM_COLS(arr));
 
 
-    // `printArray5()`.
-    // `int* a[]` naturally decays to `int**`
+    // `print_array5()`.
+    // `int* array_2d[]` naturally decays to `int**`
     int **p5 = all_rows;
-    printArray5(p5, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+    print_array5(p5, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
     // ===========================
@@ -347,71 +355,71 @@ Linux Ubuntu 20.04 machine):
     NUM_ROWS(arr) = 3
     NUM_COLS(arr) = 2
 
-    printArray1:
+    print_array1:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray2:
+    print_array2:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray3:
+    print_array3:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray4:
+    print_array4:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray4:
+    print_array4:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
     Now let's force some code into the mold (prototype) style the OP requested, for completeness:
 
-    printArray5:
+    print_array5:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
     What if we need references (pointers) to each of the above arrays? How can we carry around and use such pointers in each of the function calls above? Like this:
 
-    printArray1:
+    print_array1:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray1:
+    print_array1:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray2:
+    print_array2:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray3:
+    print_array3:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray4:
+    print_array4:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray4:
+    print_array4:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
 
-    printArray5:
+    print_array5:
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
