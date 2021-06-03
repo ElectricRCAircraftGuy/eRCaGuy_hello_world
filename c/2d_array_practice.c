@@ -7,6 +7,11 @@ www.ElectricRCAircraftGuy.com
 2 June 2021
 
 Learn and practice a few ways to use and pass multi-dimensional (ex: 2D) arrays in C.
+See my final answers here:
+1. [my main answer] https://stackoverflow.com/a/67814330/4561887
+2. [my answer which is a snippet of the one above]
+   https://stackoverflow.com/a/67814569/4561887
+
 
 I'm trying to help someone on Stack Overflow...
 See: https://stackoverflow.com/questions/67811354/passing-a-pointer-to-array-to-my-function
@@ -294,6 +299,37 @@ int main()
     printArray5(p5, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
+    // ===========================
+    printf("Don't forget about just using structs and arrays of structs instead, "
+           "which is sometimes much easier!\n\n");
+    // ===========================
+
+    typedef struct data_s
+    {
+        int x;
+        int y;
+    } data_t;
+
+    // Array of the above struct
+    data_t data_array[] =
+    {
+        {1, 2},
+        {5, 6},
+        {7, 8},
+    };
+
+    void print_data(data_t * data, size_t len)
+    {
+        for (size_t i = 0; i < len; i++)
+        {
+            printf("[data[i].x, data[i].y] = [%i, %i]\n", data[i].x, data[i].y);
+        }
+        printf("\n");
+    }
+
+    print_data(data_array, ARRAY_LEN(data_array));
+
+
     return 0;
 }
 
@@ -379,6 +415,12 @@ Linux Ubuntu 20.04 machine):
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
+
+    Don't forget about just using structs and arrays of structs instead, which is sometimes much easier!
+
+    [data[i].x, data[i].y] = [1, 2]
+    [data[i].x, data[i].y] = [5, 6]
+    [data[i].x, data[i].y] = [7, 8]
 
 
 

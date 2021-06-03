@@ -122,6 +122,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. See also my detailed answer and explanations here: [Stack Overflow: Portability of using union for conversion - my answer: "Using Unions for "type punning" is fine in C, and fine in gcc's C++ as well (as a gcc [g++] extension). But, "type punning" via unions has hardware architecture endianness considerations."](https://stackoverflow.com/questions/67206482/portability-of-using-union-for-conversion/67206563#67206563).
 1. (Multidimensional arrays) 2D array practice in C and C++. 
     1. See [c/2d_array_practice.c](c/2d_array_practice.c); it runs in both C and C++; see build commands in the comments at the top
+        1. See my full answer on this on Stack Overflow here: [How to pass a multidimensional array to a function in C and C++](https://stackoverflow.com/a/67814330/4561887)
 
 
 <a id="build-notes"></a>
