@@ -108,6 +108,50 @@ int* all_rows[] = {row1, row2, row3};
 /// Get number of columns in a 2D array
 #define NUM_COLS(array_2d) ARRAY_LEN(array_2d[0])
 
+/*
+LEARNING NOTES:
+
+1. Fixed vs unspecified dimensions:
+
+Arrays must be **fixed size** on all dimensions except the 1st dimension, which
+can be unspecified.
+
+    // OK; 1D arrray with unspecified 1st (and only) dimension
+    int array[] = {1, 2, 3};
+    // OK; 2D array with unspecified 1st dimensions
+    int array[][2] = {{1, 2}, {3, 4}};
+    // NOT allowed; 2D array with both dimensions unspecified!:
+    // `error: array type has incomplete element type ‘int[]’`
+    int array[][] = {{1, 2}, {3, 4}};
+
+2. Type decay:
+
+When used as function parameters, all non-pointer array types A moment to explain type decay: array types with unspecified-size dimensions
+naturally decay down to a pointer in place of that one unspecified-size
+dimension. So, although `int arr[]` (array of ints) and `int * arr` (pointer to
+an int) are NOT the same types, a function definition with either of those in
+it will naturally decay the unspecified-size array dimension down to a pointer,
+resulting in type (`int * arr`) being passed to the function:
+
+// accepts `int *` as `array` parameter
+void my_func2(int * array, size_t len) {}
+// also accepts `int *` as `array` parameter, since the `int []` type (array of
+// ints) naturally decays down to type `int *` (ptr to int`).
+void my_func1(int array[], size_t len) {}
+
+Taking this further, adding a
+
+void my_func3(int array[1], size_t len) {}   // same as above: accepts `int *` as 1st parameter
+void my_func4(int array[10], size_t len) {}  // same as above: accepts `int *` as 1st parameter
+void my_func5(int array[100], size_t len) {} // same as above: accepts `int *` as 1st parameter
+
+
+int array[10];
+my_func1(array); // ok; `array` naturally decays down to type `int *`
+
+*/
+
+
 
 /// \brief      Print a 2D array which has a VARIABLE number of rows and
 ///             FIXED number of columns.
@@ -116,10 +160,12 @@ int* all_rows[] = {row1, row2, row3};
 ///             `print_array3` approach below instead for how we can get rid of
 ///             this). So, this approach is shown here for demonstration
 ///             purposes only.
-/// \param[in]  array_2d  Input parameter
-/// \param[in]  variable_2  Another input parameter
-/// \param[out] variable_3  Output parameter
-/// \param[out] variable_4  Another output parameter
+/// \param[in]  array_2d    a 2D array; `int array_2d[][2]` is a 2D array with
+///     variable 1st dimension (rows) and size-2 2nd dimension (columns).
+///     NB: since the 1st dimension is NOT a fixed size, this array type
+///     naturally decays to type `int (*)[2]`, or ptr to array of 2 ints.
+/// \param[in]  num_rows    The number of rows in the array
+/// \param[in]  num_cols    The number of columns in the array
 /// \return     None
 void print_array1(const int array_2d[][2], size_t num_rows, size_t num_cols)
 {
