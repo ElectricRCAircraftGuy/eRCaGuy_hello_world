@@ -256,12 +256,51 @@ int main()
     printArray5(all_rows, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
+    // ===========================
+    printf("What if we need references (pointers) to each of the above arrays? How can we carry "
+           "around and use such pointers in each of the function calls above? Like this:\n\n");
+    // ===========================
+
+    // `printArray1()`.
+    // `int a[][2]` naturally decays to `int* [2]`
+    int (*p1)[2] = arr; // MUST USE THESE PARENTHESIS!
+    printArray1(p1, NUM_ROWS(arr), NUM_COLS(p1));
+    // OR
+    printArray1(p1, NUM_ROWS(arr), NUM_COLS(arr));
+
+    // `printArray2()`.
+    // `int (*a)[3][2]` is an explicit ptr to a 3x2 array of `int`. This array pointer does NOT
+    // naturally decay to a simpler type.
+    int (*p2)[3][2] = &arr; // must use `&` and MUST USE THESE PARENTHESIS!
+    printArray2(p2);
+
+    // `printArray3()`.
+    // `int a[][2]` naturally decays to `int* [2]`
+    int (*p3)[2] = arr; // MUST USE THESE PARENTHESIS!
+    printArray3(p3, NUM_ROWS(arr));
+
+    // `printArray4()`.
+    // The easiest one by far!
+    int *p4_1 = (int*)arr;
+    // OR
+    int *p4_2 = &arr[0][0];
+    printArray4(p4_1, NUM_ROWS(arr), NUM_COLS(arr));
+    printArray4(p4_2, NUM_ROWS(arr), NUM_COLS(arr));
+
+
+    // `printArray5()`.
+    // `int* a[]` naturally decays to `int**`
+    int **p5 = all_rows;
+    printArray5(p5, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+
+
     return 0;
 }
 
 
 /*
-SAMPLE OUTPUT (ran on an x86-64 little endian Linux Ubuntu 20.04 machine):
+SAMPLE OUTPUT (run on an x86-64 little endian (not that endianness matters here)
+Linux Ubuntu 20.04 machine):
 
     eRCaGuy_hello_world/c$ mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj 2d_array_practice.c     -o bin/2d_array_practice && bin/2d_array_practice
     hello
@@ -303,5 +342,44 @@ SAMPLE OUTPUT (ran on an x86-64 little endian Linux Ubuntu 20.04 machine):
     a[0][0]=1 a[0][1]=2
     a[1][0]=5 a[1][1]=6
     a[2][0]=7 a[2][1]=8
+
+    What if we need references (pointers) to each of the above arrays? How can we carry around and use such pointers in each of the function calls above? Like this:
+
+    printArray1:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray1:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray2:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray3:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray4:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray4:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+    printArray5:
+    a[0][0]=1 a[0][1]=2
+    a[1][0]=5 a[1][1]=6
+    a[2][0]=7 a[2][1]=8
+
+
 
 */
