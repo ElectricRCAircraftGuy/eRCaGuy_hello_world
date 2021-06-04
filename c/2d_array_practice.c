@@ -575,7 +575,7 @@ int main()
     //
     // 2. OR this more-complicated way, for the sake of demonstration:
     // ptr to array of 3 `int*`s
-    const int* (*p5_2)[3] = &all_rows;
+    const int* (*p5_2)[ARRAY_LEN(all_rows)] = &all_rows;
     // Explanation: the type of `p5_2` is `int* (*)[3]` (ptr to array of 3
     // int*), so the type of `*p5_2` is `int* [3]` (array of 3 int*), which
     // decays naturally to `int**`, which is what `*p5_2` ends up passing to
