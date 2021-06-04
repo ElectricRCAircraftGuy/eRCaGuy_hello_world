@@ -301,11 +301,13 @@ void print_array4(const int *array_2d, size_t num_rows, size_t num_cols)
 ///             or inner array, is the number of columns. Each sub-array
 ///             (a single row of `int`s) DOES have to be in contiguous memory,
 ///             and the array of _pointers_ DOES have to be in contiguous
-///             memory, but the actual _storage space_ for each row can be in
-///             NON-contiguous memory. Again, this is VERY different from every
-///             other function above.
+///             memory, but the total _storage space_ for the combined total of
+///             all rows can be in NON-contiguous memory. Again, this is VERY
+///             different from every other function above.
 /// \param[in]  array_2d    a 2D array; is of type `int * []` (array of ptrs to
-///                         int) (where each ptr is a sub-array of ints)
+///                         int) (where each ptr is a sub-array of ints);
+///                         `int * []` naturally decays to type `int**` (ptr to
+///                         "ptr to int")
 /// \param[in]  num_rows    The number of rows in the array (number of elements
 ///                         in the `array_2d` outer array)
 /// \param[in]  num_cols    The number of columns in the array (number of
@@ -314,6 +316,8 @@ void print_array4(const int *array_2d, size_t num_rows, size_t num_cols)
 void print_array5(const int* array_2d[], size_t num_rows, size_t num_cols)
 {
     printf("print_array5:\n");
+
+    printf("--- Technique 1: use `row_start[col]` ---\n");
     for (size_t row = 0; row < num_rows; row++)
     {
         const int *row_start = array_2d[row]; // VERY DIFFERENT FROM `print_array4` above!
@@ -324,6 +328,18 @@ void print_array5(const int* array_2d[], size_t num_rows, size_t num_cols)
         }
         printf("\n");
     }
+
+    printf("--- Technique 2: use `array_2d[row][col]` ---\n");
+    for (size_t row = 0; row < num_rows; row++)
+    {
+        for (size_t col = 0; col < num_cols; col++)
+        {
+            // OR you can simply do this!
+            printf("array_2d[%zu][%zu]=%i ", row, col, array_2d[row][col]);
+        }
+        printf("\n");
+    }
+
     printf("\n");
 }
 
@@ -551,9 +567,21 @@ int main()
 
 
     // `print_array5()`.
-    // `int* array_2d[]` naturally decays to `int**`
-    const int **p5 = all_rows;
-    print_array5(p5, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+    //
+    // 1. Easier way: ptr to "ptr to int"; note: `int* array_2d[]` naturally
+    // decays to `int**`.
+    const int **p5_1 = all_rows;
+    print_array5(p5_1, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
+    //
+    // 2. OR this more-complicated way, for the sake of demonstration:
+    // ptr to array of 3 `int*`s
+    const int* (*p5_2)[3] = &all_rows;
+    // Explanation: the type of `p5_2` is `int* (*)[3]` (ptr to array of 3
+    // int*), so the type of `*p5_2` is `int* [3]` (array of 3 int*), which
+    // decays naturally to `int**`, which is what `*p5_2` ends up passing to
+    // this function call! So, this call to `print_array5()` here and the one
+    // just above are therefore exactly identical!
+    print_array5(*p5_2, ARRAY_LEN(all_rows), ARRAY_LEN(row1));
 
 
     // ===========================
@@ -642,6 +670,11 @@ Linux Ubuntu 20.04 machine):
     for completeness:
 
     print_array5:
+    --- Technique 1: use `row_start[col]` ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: use `array_2d[row][col]` ---
     array_2d[0][0]=1 array_2d[0][1]=2
     array_2d[1][0]=5 array_2d[1][1]=6
     array_2d[2][0]=7 array_2d[2][1]=8
@@ -696,6 +729,21 @@ Linux Ubuntu 20.04 machine):
     array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
     print_array5:
+    --- Technique 1: use `row_start[col]` ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: use `array_2d[row][col]` ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+
+    print_array5:
+    --- Technique 1: use `row_start[col]` ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: use `array_2d[row][col]` ---
     array_2d[0][0]=1 array_2d[0][1]=2
     array_2d[1][0]=5 array_2d[1][1]=6
     array_2d[2][0]=7 array_2d[2][1]=8
@@ -706,6 +754,5 @@ Linux Ubuntu 20.04 machine):
     [data[0].x, data[0].y] = [1, 2]
     [data[1].x, data[1].y] = [5, 6]
     [data[2].x, data[2].y] = [7, 8]
-
 
 */
