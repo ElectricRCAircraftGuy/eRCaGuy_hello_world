@@ -579,8 +579,17 @@ int main()
 SAMPLE OUTPUT (run on an x86-64 little endian (not that endianness matters here)
 Linux Ubuntu 20.04 machine):
 
-    eRCaGuy_hello_world/c$ mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj 2d_array_practice.c     -o bin/2d_array_practice && bin/2d_array_practice
+    eRCaGuy_hello_world/c$ mkdir -p bin && gcc -Wall -Wextra -Werror -O3 \
+    -std=c11 -save-temps=obj 2d_array_practice.c \
+    -o bin/2d_array_practice && bin/2d_array_practice
     hello
+
+    1D array tests:
+
+    sizeof(*arr) = 4
+    sizeof(*arr) = 4
+
+    2D array tests: print a 2D array in a bunch of different ways:
 
     num_rows = ARRAY_LEN(arr) = 3
     num_cols = ARRAY_LEN(arr[0]) = 2
@@ -589,80 +598,112 @@ Linux Ubuntu 20.04 machine):
     NUM_COLS(arr) = 2
 
     print_array1:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
 
     print_array2:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
 
     print_array3:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    --- Technique 1: ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: ---
+    array_2d_ptr[0][0]=1 array_2d_ptr[0][1]=2
+    array_2d_ptr[1][0]=5 array_2d_ptr[1][1]=6
+    array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
     print_array4:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    --- Technique 1: ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: ---
+    array_2d_ptr[0][0]=1 array_2d_ptr[0][1]=2
+    array_2d_ptr[1][0]=5 array_2d_ptr[1][1]=6
+    array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
     print_array4:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    --- Technique 1: ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: ---
+    array_2d_ptr[0][0]=1 array_2d_ptr[0][1]=2
+    array_2d_ptr[1][0]=5 array_2d_ptr[1][1]=6
+    array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
-    Now let's force some code into the mold (prototype) style the OP requested, for completeness:
+    Now let's force some code into the mold (prototype) style the OP requested,
+    for completeness:
 
     print_array5:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
 
-    What if we need references (pointers) to each of the above arrays? How can we carry around and use such pointers in each of the function calls above? Like this:
-
-    print_array1:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    Using pointers: what if we need references (pointers) to each of the above
+    arrays? How can we carry around and use such pointers in each of the
+    function calls above? Like this:
 
     print_array1:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+
+    print_array1:
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
 
     print_array2:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
 
     print_array3:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    --- Technique 1: ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: ---
+    array_2d_ptr[0][0]=1 array_2d_ptr[0][1]=2
+    array_2d_ptr[1][0]=5 array_2d_ptr[1][1]=6
+    array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
     print_array4:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    --- Technique 1: ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: ---
+    array_2d_ptr[0][0]=1 array_2d_ptr[0][1]=2
+    array_2d_ptr[1][0]=5 array_2d_ptr[1][1]=6
+    array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
     print_array4:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    --- Technique 1: ---
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
+    --- Technique 2: ---
+    array_2d_ptr[0][0]=1 array_2d_ptr[0][1]=2
+    array_2d_ptr[1][0]=5 array_2d_ptr[1][1]=6
+    array_2d_ptr[2][0]=7 array_2d_ptr[2][1]=8
 
     print_array5:
-    a[0][0]=1 a[0][1]=2
-    a[1][0]=5 a[1][1]=6
-    a[2][0]=7 a[2][1]=8
+    array_2d[0][0]=1 array_2d[0][1]=2
+    array_2d[1][0]=5 array_2d[1][1]=6
+    array_2d[2][0]=7 array_2d[2][1]=8
 
-    Don't forget about just using structs and arrays of structs instead, which is sometimes much easier!
+    Don't forget about just using structs and arrays of structs instead, which
+    is sometimes much easier!
 
     [data[i].x, data[i].y] = [1, 2]
     [data[i].x, data[i].y] = [5, 6]
     [data[i].x, data[i].y] = [7, 8]
-
-
 
 */
