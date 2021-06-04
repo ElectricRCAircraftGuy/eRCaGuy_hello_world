@@ -285,6 +285,22 @@ void print_array5(const int* array_2d[], size_t num_rows, size_t num_cols)
 }
 
 
+typedef struct data_s
+{
+    int x;
+    int y;
+} data_t;
+
+void print_struct_data(data_t * data, size_t len)
+{
+    for (size_t i = 0; i < len; i++)
+    {
+        printf("[data[i].x, data[i].y] = [%i, %i]\n", data[i].x, data[i].y);
+    }
+    printf("\n");
+}
+
+
 
 
 int main()
@@ -501,12 +517,6 @@ int main()
            "which is sometimes much easier!\n\n");
     // ===========================
 
-    typedef struct data_s
-    {
-        int x;
-        int y;
-    } data_t;
-
     // Array of the above struct
     data_t data_array[] =
     {
@@ -515,16 +525,7 @@ int main()
         {7, 8},
     };
 
-    void print_data(data_t * data, size_t len)
-    {
-        for (size_t i = 0; i < len; i++)
-        {
-            printf("[data[i].x, data[i].y] = [%i, %i]\n", data[i].x, data[i].y);
-        }
-        printf("\n");
-    }
-
-    print_data(data_array, ARRAY_LEN(data_array));
+    print_struct_data(data_array, ARRAY_LEN(data_array));
 
 
     return 0;
