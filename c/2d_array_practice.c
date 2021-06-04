@@ -199,6 +199,9 @@ void print_array2(const int (*array_2d)[3][2])
 void print_array3(const int array_2d[][2], size_t num_rows)
 {
     printf("print_array3:\n");
+
+    // Technique 1: use `array_2d` directly.
+    printf("--- Technique 1: ---\n");
     for (size_t row = 0; row < num_rows; row++)
     {
         for (size_t col = 0; col < NUM_COLS(array_2d); col++)
@@ -207,6 +210,24 @@ void print_array3(const int array_2d[][2], size_t num_rows)
         }
         printf("\n");
     }
+
+    // Technique 2: cast the `array_2d` decayed ptr to a ptr to a sized array of
+    // the correct size, then use that ptr to the properly-sized array
+    // directly! NB: after obtaining this ptr via the cast below, this
+    // technique is **exactly identical** to (I copy/pasted it from, then
+    // renamed the variable) the implementation inside `print_array2()` above!
+    printf("--- Technique 2: ---\n");
+    int (*array_2d_ptr)[num_rows][NUM_COLS(array_2d)] =
+        (int (*)[num_rows][NUM_COLS(array_2d)])array_2d;
+    for (size_t row = 0; row < NUM_ROWS(*array_2d_ptr); row++)
+    {
+        for (size_t col = 0; col < NUM_COLS(*array_2d_ptr); col++)
+        {
+            printf("array_2d_ptr[%zu][%zu]=%i ", row, col, (*array_2d_ptr)[row][col]);
+        }
+        printf("\n");
+    }
+
     printf("\n");
 }
 
@@ -228,6 +249,10 @@ void print_array3(const int array_2d[][2], size_t num_rows)
 void print_array4(const int *array_2d, size_t num_rows, size_t num_cols)
 {
     printf("print_array4:\n");
+
+    // Technique 1: use `array_2d` directly, manually indexing into this
+    // contiguous block of memory holding the 2D array data.
+    printf("--- Technique 1: ---\n");
     for (size_t row = 0; row < num_rows; row++)
     {
         const int *row_start = &array_2d[row*num_cols];
@@ -239,6 +264,24 @@ void print_array4(const int *array_2d, size_t num_rows, size_t num_cols)
         }
         printf("\n");
     }
+
+    // Technique 2: cast the `array_2d` decayed ptr to a ptr to a sized array of
+    // the correct size, then use that ptr to the properly-sized array
+    // directly! NB: after obtaining this ptr via the cast below, this
+    // technique is **exactly identical** to (I copy/pasted it from, then
+    // renamed the variable) the implementation inside `print_array2()` above!
+    printf("--- Technique 2: ---\n");
+    int (*array_2d_ptr)[num_rows][num_cols] =
+        (int (*)[num_rows][num_cols])array_2d;
+    for (size_t row = 0; row < NUM_ROWS(*array_2d_ptr); row++)
+    {
+        for (size_t col = 0; col < NUM_COLS(*array_2d_ptr); col++)
+        {
+            printf("array_2d_ptr[%zu][%zu]=%i ", row, col, (*array_2d_ptr)[row][col]);
+        }
+        printf("\n");
+    }
+
     printf("\n");
 }
 
