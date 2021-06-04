@@ -338,7 +338,8 @@ void print_struct_data(data_t * data, size_t len)
 {
     for (size_t i = 0; i < len; i++)
     {
-        printf("[data[i].x, data[i].y] = [%i, %i]\n", data[i].x, data[i].y);
+        printf("[data[%zu].x, data[%zu].y] = [%i, %i]\n",
+               i, i, data[i].x, data[i].y);
     }
     printf("\n");
 }
@@ -702,8 +703,9 @@ Linux Ubuntu 20.04 machine):
     Don't forget about just using structs and arrays of structs instead, which
     is sometimes much easier!
 
-    [data[i].x, data[i].y] = [1, 2]
-    [data[i].x, data[i].y] = [5, 6]
-    [data[i].x, data[i].y] = [7, 8]
+    [data[0].x, data[0].y] = [1, 2]
+    [data[1].x, data[1].y] = [5, 6]
+    [data[2].x, data[2].y] = [7, 8]
+
 
 */
