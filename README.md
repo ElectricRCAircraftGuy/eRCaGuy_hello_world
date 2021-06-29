@@ -55,6 +55,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. See ["cpp/hello_world.cpp"](cpp/hello_world.cpp)
 1. How to make a single file compile in both C and C++ by using the `#ifdef __cplusplus` `extern "C" {` brace trick
     1. See ["c/hello_world.c"](c/hello_world.c)
+    1. Note: there is also such a thing as `extern "C++"`. Search the GNU gcc documentation here for that search string: https://gcc.gnu.org/onlinedocs/gcc.pdf. Ex: the top of p489, under the paragraph titled "_Language-linkage module attachment_", mentions `(extern "C" or extern "C++")`.
 1. How to use a forward declaration of `printf` rather than including `stdio.h` to make it link
     1. See ["c/hello_world.c"](c/hello_world.c)
 1. How to do cross-platform sleep in Windows or Linux
