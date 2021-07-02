@@ -124,6 +124,15 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. (Multidimensional arrays) 2D array practice in C and C++. 
     1. See [c/2d_array_practice.c](c/2d_array_practice.c); it runs in both C and C++; see build commands in the comments at the top
         1. See my full answer on this on Stack Overflow here: [How to pass a multidimensional array to a function in C and C++](https://stackoverflow.com/a/67814330/4561887)
+1. Asserts in C:
+    1. [c/assert_practice.c](c/assert_practice.c) - practice using the `assert()` and `static_assert()` macro wrappers in C11, as well as a custom `ASSERT_TRUE()` macro I wrote which also prints the filename, function name, and line number using built-in _macros_ `__FILE__` and `__LINE__`, and the special built-in static C-string (char array) _variable_ `__func__`.   
+1. Pre-main() and post-main() function call injection:
+    1. [VERY interesting and neat concept!] Dynamically inject function calls before and after another executable's `main()` function.
+        1. AKA: program "constructors" and "destructors" in C.
+        1. AKA: how to use gcc function attributes `constructor` and `destructor`, and C function `atexit()`. 
+    1. See [c/dynamic_func_call_before_and_after_main.c](c/dynamic_func_call_before_and_after_main.c). 
+1. Dynamic library (shared object `lib*.so`) creation and use, including with the Linux `LD_PRELOAD` preloader trick at call time. 
+    1. See [c/dynamic_func_call_before_and_after_main_build_and_run.sh](c/dynamic_func_call_before_and_after_main_build_and_run.sh)
 
 
 <a id="build-notes"></a>

@@ -19,6 +19,7 @@ References:
 
 */
 
+// #include <assert.h>  // For `assert()` and `static_assert()` macro wrappers in C11
 #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
@@ -26,7 +27,9 @@ References:
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
-    printf("Hello world.\n");
+    printf("This is the start of `main()`.\n");
+    printf("  Hello world.\n");
+    printf("This is the end of `main()`.\n");
 
     return 0;
 }
