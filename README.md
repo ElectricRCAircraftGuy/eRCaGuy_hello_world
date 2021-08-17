@@ -22,6 +22,7 @@ www.ElectricRCAircraftGuy.com
     1. [2. Python:](#2-python)
     1. [3. markdown:](#3-markdown)
     1. [4. bash:](#4-bash)
+    1. [5. awk:](#5-awk)
 1. [File Structure:](#file-structure)
 1. [Changelog](#changelog)
     1. [\[v0.3.0\] - 2020-05-23](#v030---2020-05-23)
@@ -217,26 +218,45 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 
 <a id="4-bash"></a>
 ## 4. bash:
+1. See the [bash](bash) folder.
+1. See also various \*.sh bash scripts I've written in my [eRCaGuy_dotfiles][dotfiles] repo here: [eRCaGuy_dotfiles/useful_scripts](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/tree/master/useful_scripts).
 1. How to obtain the full file path, full directory, and base filename of any script being run itself.
     1. See: ["bash/get_script_path.sh"](bash/get_script_path.sh)
     1. See also [my answer online on Stack Overflow, here](https://stackoverflow.com/questions/59895/how-to-get-the-source-directory-of-a-bash-script-from-within-the-script-itself/60157372#60157372).
+1. Learn how to use the `source` (AKA `.`) command to "import" variables, and the `export` command to "export" them. 
+    1. See my answer: [`source` (`.`) vs `export` (and also some file lock [`flock`] stuff at the end)](https://stackoverflow.com/a/62626515/4561887).
+    1. [bash/source_and_export.sh](bash/source_and_export.sh)
+1. How to escape `$` and `'`: [bash/character_escaping_demo.sh](bash/character_escaping_demo.sh)
+1. How to do "array slicing" (like in Python) in bash, meaning: how to grab _an element_ or a desired _range of elements_ from within a bash array. This also covers the bare basics of printing arrays, creating arrays, etc.
+    1. [bash/array_slicing_demo.sh](bash/array_slicing_demo.sh)
+
+
+<a id="5-awk"></a>
+## 5. awk:
+1. See the [awk](awk) folder.
+1. See also: [git-diffn.sh](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-diffn.sh) in another repo of mine, my [readme here](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/README_git-diffn.md), and [my answer to how to do "Git diff with line numbers (Git log with line numbers)" here](https://stackoverflow.com/questions/24455377/git-diff-with-line-numbers-git-log-with-line-numbers/61997003#61997003).
 
 
 <a id="file-structure"></a>
 # File Structure:
-(Output of `tree`)
+(Output of `tree`. Run this cmd yourself to make sure what you see is up-to-date! I don't update the output below very often.)
 
 ```
-$ tree
+eRCaGuy_hello_world$ tree
 .
 ├── arduino
-│   └── todo.txt
+│   └── Leonardo_type_once_per_second
+│       └── Leonardo_type_once_per_second.ino
+├── avr
+│   └── avr_ATmega328_blink--UNTESTED.c
 ├── awk
 │   ├── awk_hello_world_SAMPLE_OUTPUT.txt
 │   ├── awk_hello_world.sh
 │   ├── awk_syntax_tests.sh
 │   └── input_file_1.txt
 ├── bash
+│   ├── array_slicing_demo.sh
+│   ├── character_escaping_demo.sh
 │   ├── get_script_path.sh
 │   ├── Link to ElectricRCAircraftGuy--PDF2SearchablePDF [THIS IS A SOLID BASH EXAMPLE!].desktop
 │   ├── Link to PDF2SearchablePDF--pdf2searchablepdf.sh at master · ElectricRCAircraftGuy--PDF2SearchablePDF.desktop
@@ -244,17 +264,31 @@ $ tree
 │   │   ├── read_arrays.sh
 │   │   └── README.md
 │   ├── README.md
-│   └── source_and_export
-│       └── source_and_export.sh
+│   └── source_and_export.sh
+├── bin
 ├── c
+│   ├── 2d_array_practice.c
+│   ├── assert_practice.c
+│   ├── bin
+│   │   ├── D_define
+│   │   ├── stack_size_bruno_c
+│   │   ├── stack_size_bruno_cpp
+│   │   ├── stack_size_gs_c
+│   │   ├── stack_size_gs_cpp
+│   │   └── tmp
 │   ├── c - Where do we use .i files and how do we generate them? - Stack Overflow.desktop
+│   ├── dynamic_func_call_before_and_after_main_build_and_run.sh
+│   ├── dynamic_func_call_before_and_after_main.c
+│   ├── gcc_dash_D_macro_define.c
 │   ├── hello_world
+│   ├── hello_world_basic.c
 │   ├── hello_world.c
 │   ├── hello_world_sleep
 │   ├── hello_world_sleep.c
 │   ├── Link to c - Prototype of printf and implementation - Stack Overflow%%%%%+ [MY OWN ANS!].desktop
 │   ├── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
 │   ├── Link to Using the GNU Compiler Collection (GCC): Warning Options%%%%% [always use `-Wall -Werror`!].desktop
+│   ├── malloc_override_test.c
 │   ├── onlinegdb--atomic_block_in_c_WORKS.c
 │   ├── onlinegdb--empirically_determine_max_thread_stack_size_Bruno_Haible.c
 │   ├── onlinegdb--empirically_determine_max_thread_stack_size_GS_version.c
@@ -268,17 +302,28 @@ $ tree
 │   │   ├── run_tests_sample_output.txt
 │   │   └── run_tests.sh
 │   ├── strncmpci.c
+│   ├── type_punning.c
 │   ├── Using the GNU Compiler Collection (GCC): Warning Options-1.desktop
 │   ├── utilities.c
 │   └── utilities.h
 ├── cpp
 │   ├── bin
+│   │   ├── integer_literals
+│   │   ├── onlinegdb--cpp_default_args_practice
+│   │   ├── onlinegdb--process_10_bit_video_data
+│   │   ├── process_10_bit_video_data
+│   │   ├── struct_initialization
+│   │   ├── struct_initialization.i
+│   │   ├── struct_initialization.ii
+│   │   ├── struct_initialization.o
+│   │   ├── struct_initialization.s
 │   │   └── tmp
 │   ├── bin_hello_world
 │   │   ├── hello_world
 │   │   ├── hello_world.ii
 │   │   ├── hello_world.o
 │   │   └── hello_world.s
+│   ├── check_addr_of_weak_undefined_funcs.cpp
 │   ├── copy_constructor_and_assignment_operator
 │   │   ├── 170_Copy_Constructor_Assignment_Operator_[Stanford.edu]_GS_edit.pdf
 │   │   ├── 170_Copy_Constructor_Assignment_Operator_[Stanford.edu].pdf
@@ -296,8 +341,6 @@ $ tree
 │   │   ├── Link to c++ - What is The Rule of Three? - Stack Overflow%%%%%.desktop
 │   │   └── Link to When should we write our own assignment operator in C++? - GeeksforGeeks%%%%% [use this code here!].desktop
 │   ├── floating_point_resolution
-│   │   ├── bin
-│   │   │   └── tmp
 │   │   ├── data -> ../../../eRCaGuy_hello_world_data/cpp/floating_point_resolution/data/
 │   │   ├── double_resolution_test_1.cpp
 │   │   ├── double_resolution_test_2.cpp
@@ -310,20 +353,24 @@ $ tree
 │   │   ├── readme.md
 │   │   └── todo_(what_to_work_on_next).txt
 │   ├── hello_world.cpp
+│   ├── integer_literals.cpp
 │   ├── Link to c - Where do we use .i files and how do we generate them - Stack Overflow%%%%% [MY OWN ANS!].desktop
 │   ├── Link to How to initialize a struct to 0 in C++ - Stack Overflow%%%%%+ [my own Q & A].desktop
 │   ├── Link to Why doesn't initializing a C++ struct to `= {0}` set all of its members to 0? - Stack Overflow%%%%%++ [my own Q; very good answers here!].desktop
 │   ├── macro_practice
 │   │   ├── advanced_macro_usage_pass_in_entire_func.cpp
-│   │   └── bin_adv_macro
-│   │       ├── advanced_macro_usage_pass_in_entire_func
-│   │       ├── advanced_macro_usage_pass_in_entire_func.ii
-│   │       ├── advanced_macro_usage_pass_in_entire_func.o
-│   │       └── advanced_macro_usage_pass_in_entire_func.s
+│   │   ├── bin_adv_macro
+│   │   │   ├── advanced_macro_usage_pass_in_entire_func
+│   │   │   ├── advanced_macro_usage_pass_in_entire_func.ii
+│   │   │   ├── advanced_macro_usage_pass_in_entire_func.o
+│   │   │   └── advanced_macro_usage_pass_in_entire_func.s
+│   │   └── gcc_dash_D_macro_define.c -> ../../c/gcc_dash_D_macro_define.c
 │   ├── onlinegdb--atomic_block_in_cpp_1_WORKS.cpp
 │   ├── onlinegdb--atomic_block_in_cpp_2_FAILS.cpp
 │   ├── onlinegdb--atomic_block_in_cpp_3_WORKS.cpp
 │   ├── onlinegdb--const_reference_to_vector__default_func_parameter.cpp
+│   ├── onlinegdb--cpp_default_args_practice.cpp
+│   ├── process_10_bit_video_data.cpp
 │   ├── run_hello_world.sh
 │   ├── run_struct_initialization.sh
 │   ├── struct_initialization.c -> struct_initialization.cpp
@@ -354,6 +401,8 @@ $ tree
 │       ├── unordered_map_hash_table_implicit_key_construction_test
 │       └── unordered_map_hash_table_implicit_key_construction_test.cpp
 ├── eRCaGuy_hello_world--what to work on next--Gabriel.odt
+├── git_branch_hash_backups
+│   └── eRCaGuy_hello_world_git_branch_bak--20200628-1856hrs-45sec.txt
 ├── java
 │   └── todo.txt
 ├── LICENSE
@@ -369,15 +418,27 @@ $ tree
 │       ├── pranksta6.jpg
 │       └── pranksta7.jpg
 ├── python
+│   ├── autogenerate_c_or_cpp_code.py
+│   ├── autogenerated
+│   │   └── myheader.h
+│   ├── auto_white_balance_img.py
+│   ├── raw_bytes_practice.py
+│   ├── slots_practice
+│   │   ├── Class and Instance Attributes – Real Python.desktop
+│   │   ├── Link to 10. __slots__ Magic — Python Tips 0.1 documentation%%%%%+.desktop
+│   │   └── slots_practice.py
 │   ├── textwrap_practice_1.py
 │   └── yaml_import
 │       ├── import_yaml_test.py
 │       ├── my_config1.yaml
 │       └── my_config2.yaml
 ├── README.md
+├── test_photos
+│   ├── README.md
+│   └── test1.jpg
 └── tree.txt
 
-25 directories, 122 files
+30 directories, 163 files
 ```
 
 
@@ -418,3 +479,4 @@ MORE MATURE PHASE:
 
 
   [pthread_create]: https://www.man7.org/linux/man-pages/man3/pthread_create.3.html
+  [dotfiles]: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles
