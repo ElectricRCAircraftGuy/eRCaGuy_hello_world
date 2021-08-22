@@ -9,6 +9,10 @@ By Gabriel Staples
 www.ElectricRCAircraftGuy.com
 
 
+# Also very useful:
+1. My [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo.
+
+
 # Table of Contents
 <details>
 <summary><b>(click to expand)</b></summary>
