@@ -190,6 +190,14 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. How to essentially get the equivalent of GIMP's `Colors --> Auto --> White Balance` feature:
         1. [python/auto_white_balance_img.py](python/auto_white_balance_img.py)
         1. See also my answer on Stack Overflow here for a demonstration and more details: [How do I do the equivalent of Gimp's Colors, Auto, White Balance in Python-Fu?](https://stackoverflow.com/questions/48268068/how-do-i-do-the-equivalent-of-gimps-colors-auto-white-balance-in-python-fu/67343271#67343271).
+1. File [python/enum_practice.py](python/enum_practice.py) contains:
+    1. How to use the hash-bang (ex: `#!/usr/bin/python3`) at the top of a Python script to make it a callable file. Note: you must still make the file executable in addition to this too.
+    1. How to use [enums](https://docs.python.org/3/library/enum.html) (ie: "`Enum` classes") in Python.
+    1. Demonstrates that Python enums can have values which are either integers or strings (or other types I think too).
+    1. Shows how to _left-align prints_ in Python using the `%` operator, as well as specify their _width_. This is like the [`printf()`-style prints in C and C++](http://www.cplusplus.com/reference/cstdio/printf/). _Keywords: python print alignment, python print width, python left or right align prints, python C or C++-like prints, python %s prints._
+    1. How to inspect and print _all members of any class in Python_ using the `.__dict__` member accessor; ex: `my_obj.__dict__`. 
+    1. How to access the full, scoped name of an enum with just `my_enum`, or its name with `my_enum.name`, or its value with `my_enum.value`.
+    1. etc.
 
 <a id="3-markdown"></a>
 ## 3. markdown:
