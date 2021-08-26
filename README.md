@@ -197,6 +197,10 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. Shows how to _left-align prints_ in Python using the `%` operator, as well as specify their _width_. This is like the [`printf()`-style prints in C and C++](http://www.cplusplus.com/reference/cstdio/printf/). _Keywords: python print alignment, python print width, python left or right align prints, python C or C++-like prints, python %s prints._
     1. How to inspect and print _all members of any class in Python_ using the `.__dict__` member accessor; ex: `my_obj.__dict__`. 
     1. How to access the full, scoped name of an enum with just `my_enum`, or its name with `my_enum.name`, or its value with `my_enum.value`.
+    1. How to access an enum _via a variable_ (ex: `fruit`, where previously fruit was set like this: `fruit = Fruit.APPLE`) OR _directly via its scoped class name_ (ex: `Fruit.APPLE` directly).
+    1. How to create an enum class which contains ONLY strings, for instance, by inheriting from BOTH the `str` class _and_ the `Enum` class. 
+        1. Pay attention!: if you try to store an integer into such an Enum class the integer value gets automatically converted into a string! This is demonstrated.
+    1. How to iterate over Enums in Python (meaning: over all enum members in an Enum class).
     1. etc.
 
 <a id="3-markdown"></a>
