@@ -22,10 +22,10 @@ Run command:
 
 """
 
-from enum import Enum
+from enum import Enum, IntEnum
 
 # ==============================
-print("======= EXAMPLE 1 =======\n")
+print("======= EXAMPLE 1: enum basics, incl. member attributes =======\n")
 
 # Create an enum class called "Fruit", with the following enum **names** and **values**
 # inside of it.
@@ -87,7 +87,7 @@ print(type(fruit))  # same as above in this case
 print()
 
 # ==============================
-print("======= EXAMPLE 2 =======\n")
+print("======= EXAMPLE 2: enum multi-class inheritance, and iteration =======\n")
 
 # Note: just like with any class, your custom Enum class can inherit from other class types too,
 # such as `int` or `str`, in addition to `Enum`. If you inherit from `str` as well, it forces
@@ -129,12 +129,127 @@ print("%-15s %8s = %-8s type(fruit.value) is str?       %s" % (fruit, fruit.name
 print("%-15s %8s = %-8s type(Fruit.APPLE.value) is str? %s" % (Fruit.APPLE, Fruit.APPLE.name,
     Fruit.APPLE.value, type(Fruit.APPLE.value) is str))
 
+print()
+
+# ==============================
+print("======= EXAMPLE 3: enum comparisons, with regular enums, string enums, and integer " +
+      "enums =======\n")
+
+# REGULAR ENUMS:
+# Regular enums are Enum types, NOT string types, so they are NOT equal to enums or strings.
+#
+# STRING ENUMS:
+# However, when you inherit from both the `str` AND `Enum` classes you get the `str` implementation
+# of `__eq__`(), which means `strEnum.COLOR1 == "red"` returns True, instead of False like it would
+# do for regular enums.
+#
+# INTEGER ENUMS:
+# Similar behavior exists for the `IntEnum` class, which is the same as inheriting from both the
+# `int` and `Enum` classes. Therefore `intEnum` types can act like both enums AND integers, kind of
+# like enums in C, but NOT enum classes in C++ (unless cast to `int`s).
+# - See also: https://docs.python.org/3/library/enum.html#intenum
+
+# A regular enum: inherits from the `Enum` class
+class regularEnum(Enum):
+    COLOR1 = "red"   # value "red" is of type `str`
+    COLOR2 = "blue"  # value "blue" is of type `str`
+    COLOR3 = 7       # value 7 is of type `int`
+
+# A string enum: inherits from the `str` and `Enum` classes
+class strEnum(str, Enum):
+    COLOR1 = "red"   # value "red" is of type `str`
+    COLOR2 = "blue"  # value "blue" is of type `str`
+    COLOR3 = 7       # value 7 is of type `str`  <==== NOTICE THIS ONE IS A str TOO!
+
+
+# An integer enum: inherits from the `int` and `Enum` classes
+class intEnum1(int, Enum):
+    # COLOR1 = "red"   # ValueError: invalid literal for int() with base 10: 'red'
+    COLOR1 = 9
+    COLOR2 = 8
+    COLOR3 = 7
+
+# OR (same thing as above, I think) an integer enum inherits from the `intEnum` class
+class intEnum2(IntEnum):
+    # COLOR1 = "red"   # ValueError: invalid literal for int() with base 10: 'red'
+    COLOR1 = 9
+    COLOR2 = 8
+    COLOR3 = 7
+
+print("Enums themselves are NOT strings or integers! They are of type enum!")
+print(type(regularEnum.COLOR1) is str) # False
+print(type(regularEnum.COLOR2) is str) # False
+print(type(regularEnum.COLOR3) is int) # False
+print(type(regularEnum.COLOR1))
+print(type(regularEnum.COLOR2))
+print(type(regularEnum.COLOR3))
+print()
+
+print("However, their **values** can be `str` or `int` types")
+print(type(regularEnum.COLOR1.value) is str) # True, its value is a string
+print(type(regularEnum.COLOR2.value) is str) # True, its value is a string
+print(type(regularEnum.COLOR3.value) is int) # True, its value is an integer
+print("types of their values can be `str` or `int`")
+print(type(regularEnum.COLOR1.value))
+print(type(regularEnum.COLOR2.value))
+print(type(regularEnum.COLOR3.value))
+print("types of their names are `str`")
+print(type(regularEnum.COLOR1.name))
+print(type(regularEnum.COLOR2.name))
+print(type(regularEnum.COLOR3.name))
+print()
+
+print("Therefore, since regular enums are enums, NOT strings or ints, the following are all False")
+print(regularEnum.COLOR1 == "red")   # False
+print(regularEnum.COLOR2 == "blue")  # False
+print(regularEnum.COLOR3 == 7)       # False
+print()
+
+print("BUT, the strEnum is different! Only the last one is False")
+print(strEnum.COLOR1 == "red")   # True
+print(strEnum.COLOR2 == "blue")  # True
+print(strEnum.COLOR3 == 7)       # False
+print("...and this is True")
+print(strEnum.COLOR3 == "7")     # True
+print()
+
+print("And, integer enums can compare as integers too, as shown here")
+print("intEnum1:")
+print(intEnum1.COLOR1 == 9)   # True
+print(intEnum1.COLOR2 == 8)   # True
+print(intEnum1.COLOR3 == 7)   # True
+print("intEnum2:")
+print(intEnum2.COLOR1 == 9)   # True
+print(intEnum2.COLOR2 == 8)   # True
+print(intEnum2.COLOR3 == 7)   # True
+print("intEnum1 compared to intEnum2:")
+print(intEnum1.COLOR1 == intEnum2.COLOR1)     # True
+print(intEnum1.COLOR2 == intEnum2.COLOR2)     # True
+print(intEnum1.COLOR3 == intEnum2.COLOR3)     # True
+print("BUT, regular enums do NOT compare as integers even when they store integer values, so " +
+      "this is False!")
+print(regularEnum.COLOR3 == intEnum2.COLOR3)  # False! Even though both of these have integer values
+                                              # equal to 7, this is False because a regular enum
+                                              # is an enum type, NOT an integer type.
+print("...these are all True though (both of their integer values are 7)")
+print(regularEnum.COLOR3.value == intEnum2.COLOR3.value)  # True
+print(regularEnum.COLOR3.value == 7)                      # True
+print(intEnum2.COLOR3.value == 7)                         # True
+print()
+
+print("type information (just for general awareness):")
+print(type(intEnum1.COLOR1))
+print(type(intEnum2.COLOR1))
+print(type(intEnum1))
+print(type(intEnum2))
+print()
+
 
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world$ python/enum_practice.py
-    ======= EXAMPLE 1 =======
+    eRCaGuy_hello_world/python$ ./enum_practice.py
+    ======= EXAMPLE 1: enum basics, incl. member attributes =======
 
     enum scoped name = Fruit.APPLE     enum name = APPLE      enum value = 1
     enum scoped name = Fruit.PEAR      enum name = PEAR       enum value = 2
@@ -160,7 +275,7 @@ SAMPLE OUTPUT:
     <enum 'Fruit'>
     <enum 'Fruit'>
 
-    ======= EXAMPLE 2 =======
+    ======= EXAMPLE 2: enum multi-class inheritance, and iteration =======
 
     12341234
 
@@ -178,5 +293,66 @@ SAMPLE OUTPUT:
 
     Fruit.APPLE        APPLE = 1        type(fruit.value) is str?       False
     Fruit.APPLE        APPLE = 1        type(Fruit.APPLE.value) is str? False
+
+    ======= EXAMPLE 3: enum comparisons, with regular enums, string enums, and integer enums =======
+
+    Enums themselves are NOT strings or integers! They are of type enum!
+    False
+    False
+    False
+    <enum 'regularEnum'>
+    <enum 'regularEnum'>
+    <enum 'regularEnum'>
+
+    However, their **values** can be `str` or `int` types
+    True
+    True
+    True
+    types of their values can be `str` or `int`
+    <class 'str'>
+    <class 'str'>
+    <class 'int'>
+    types of their names are `str`
+    <class 'str'>
+    <class 'str'>
+    <class 'str'>
+
+    Therefore, since regular enums are enums, NOT strings or ints, the following are all False
+    False
+    False
+    False
+
+    BUT, the strEnum is different! Only the last one is False
+    True
+    True
+    False
+    ...and this is True
+    True
+
+    And, integer enums can compare as integers too, as shown here
+    intEnum1:
+    True
+    True
+    True
+    intEnum2:
+    True
+    True
+    True
+    intEnum1 compared to intEnum2:
+    True
+    True
+    True
+    BUT, regular enums do NOT compare as integers even when they store integer values, so this is False!
+    False
+    ...these are all True though (both of their integer values are 7)
+    True
+    True
+    True
+
+    type information (just for general awareness):
+    <enum 'intEnum1'>
+    <enum 'intEnum2'>
+    <class 'enum.EnumMeta'>
+    <class 'enum.EnumMeta'>
 
 """
