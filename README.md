@@ -201,6 +201,11 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. How to create an enum class which contains ONLY strings, for instance, by inheriting from BOTH the `str` class _and_ the `Enum` class. 
         1. Pay attention!: if you try to store an integer into such an Enum class the integer value gets automatically converted into a string! This is demonstrated.
     1. How to iterate over Enums in Python (meaning: over all enum members in an Enum class).
+    1. Introduce 3 types of enums:
+        1. regular enums
+        1. string enums
+        1. integer enums
+    1. Compare and contrast three types of enums (1. _regular enums_ vs. 2. _string enums_ vs. 3. _integer enums_), and show and compare how each works and how each treats the `=` operator.
     1. etc.
 
 <a id="3-markdown"></a>
