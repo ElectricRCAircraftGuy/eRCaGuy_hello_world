@@ -68,11 +68,11 @@ For multiple files:
 
 */
 
-// C includes
-#include <stdio.h>
-
 // C++ includes
 #include <iostream>
+
+// C includes
+#include <stdio.h>
 
 // using namespace std;
 
