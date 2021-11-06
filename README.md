@@ -140,6 +140,13 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. See [c/dynamic_func_call_before_and_after_main.c](c/dynamic_func_call_before_and_after_main.c). 
 1. Dynamic library (shared object `lib*.so`) creation and use, including with the Linux `LD_PRELOAD` preloader trick at call time. 
     1. See [c/dynamic_func_call_before_and_after_main_build_and_run.sh](c/dynamic_func_call_before_and_after_main_build_and_run.sh)
+1. How to use [`std::initializer_list<>`](https://en.cppreference.com/w/cpp/utility/initializer_list) as an input arg to a function, like [`std::max()`](https://en.cppreference.com/w/cpp/algorithm/max) does, so you can easily pass in a variable number of input arguments inside curly braces in order to perform operations on them. In this case, I concatenate any number of input argument strings with `/` chars between them in order to build a file path from multiple directory names and the filename at the end. 
+    1. See [cpp/make_path_to_file.cpp](cpp/make_path_to_file.cpp)
+        1. Sample usage:
+            ```cpp
+            // output: `"/dir1/dir2/dir3"`
+            std::string file_path = make_path({"/dir1", "dir2", "dir3"}); 
+            ```
 
 
 <a id="build-notes"></a>

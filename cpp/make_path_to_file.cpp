@@ -48,7 +48,7 @@ std::string make_path(std::initializer_list<std::string> str_list)
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
-    std::string file_path = make_path({"/dir1", "dir2", "dir3"}); // output: `/dir1/dir2/dir3`
+    std::string file_path = make_path({"/dir1", "dir2", "dir3"}); // output: `"/dir1/dir2/dir3"`
     std::cout << file_path << std::endl;
 
     return 0;
