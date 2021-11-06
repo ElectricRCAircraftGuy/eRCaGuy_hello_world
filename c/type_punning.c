@@ -9,11 +9,16 @@ Show various ways of type punning (reinterpreting multi-byte values as byte arra
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
-    mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj type_punning.c \
-    -o bin/type_punning && bin/type_punning
+   Build and run it:
+        mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj type_punning.c \
+        -o bin/type_punning && bin/type_punning
+   OR: build it with optimization OFF and debugging symbols ON, and run it in the gdb debugger
+   - See my ans. here: https://stackoverflow.com/a/69547096/4561887
+        mkdir -p bin && gcc -Wall -Wextra -Werror -O0 -ggdb -std=c11 -save-temps=obj \
+        type_punning.c -o bin/type_punning && gdb bin/type_punning
 2. In C++
-    mkdir -p bin && g++ -Wall -Wextra -Werror -O3 -std=c++17 -save-temps=obj type_punning.c \
-    -o bin/type_punning && bin/type_punning
+        mkdir -p bin && g++ -Wall -Wextra -Werror -O3 -std=c++17 -save-temps=obj type_punning.c \
+        -o bin/type_punning && bin/type_punning
 
 References:
 1. [my answer--READ THIS FOR A DETAILED EXPLANATION OF THE BELOW CODE!]
