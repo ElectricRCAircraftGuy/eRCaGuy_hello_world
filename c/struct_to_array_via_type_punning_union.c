@@ -4,6 +4,8 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 15 Nov. 2021
 
+Answer 1/3: use a union and a packed struct
+
 Convert a struct to an array in C via a union.
 
 To compile and run (assuming you've already `cd`ed into this dir):
