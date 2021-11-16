@@ -69,12 +69,12 @@ int main()
     // Use a raw pointer
     uint8_t * bytes = (uint8_t*)(&message);
 
-    // Print the bytes
+    // Print the bytes of `message`
     printf("bytes = [");
-    for (size_t i = 0; i < sizeof(bytes); i++)
+    for (size_t i = 0; i < sizeof(message); i++)
     {
         printf("0x%02X", bytes[i]);
-        if (i < sizeof(bytes) - 1)
+        if (i < sizeof(message) - 1)
         {
             printf(", ");
         }
