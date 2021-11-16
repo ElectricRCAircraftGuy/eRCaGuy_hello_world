@@ -57,6 +57,7 @@ int main()
 {
     printf("This is the start of `main()`.\n");
 
+    // demonstrate that packing the struct matters
     printf("sizeof(message_data_unpacked_t) = %zu bytes\n", sizeof(message_data_unpacked_t)); // 10 bytes due to padding
     printf("sizeof(message_data_t) = %zu bytes\n", sizeof(message_data_t)); // 8 bytes
 
