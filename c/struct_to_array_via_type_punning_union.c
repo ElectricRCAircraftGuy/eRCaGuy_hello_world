@@ -67,6 +67,10 @@ int main()
     };
 
     message_converter_t converter;
+    // Note: copying `message` into `converter.message` here is unnecessarily inefficient. A
+    // more-efficient way is to simply construct the union type alone and populate the struct
+    // data inside the union directly. See "struct_to_array_via_type_punning_union_more_efficient.c"
+    // for that demo.
     converter.message = message;
 
     // Print the bytes
