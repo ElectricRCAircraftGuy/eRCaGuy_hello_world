@@ -4,17 +4,18 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 15 Nov. 2021
 
-Answer 1/3: use a union and a packed struct
+Answer 3/3: use a packed struct and a raw `uint8_t` pointer to it
 
-Convert a struct to an array in C via a union. This has architecture endianness concerns.
+Convert a struct to an array in C via a raw pointer without doing the unnecessary copy from a struct to a
+union. This also has architecture endianness concerns, just like using a union.
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
-    mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj struct_to_array_via_type_punning_union.c \
-    -o bin/struct_to_array_via_type_punning_union && bin/struct_to_array_via_type_punning_union
+    mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj struct_to_array_via_type_punning_raw_pointer.c \
+    -o bin/struct_to_array_via_type_punning_raw_pointer && bin/struct_to_array_via_type_punning_raw_pointer
 2. In C++
-    mkdir -p bin && g++ -Wall -Wextra -Werror -O3 -std=c++17 -save-temps=obj struct_to_array_via_type_punning_union.c \
-    -o bin/struct_to_array_via_type_punning_union && bin/struct_to_array_via_type_punning_union
+    mkdir -p bin && g++ -Wall -Wextra -Werror -O3 -std=c++17 -save-temps=obj struct_to_array_via_type_punning_raw_pointer.c \
+    -o bin/struct_to_array_via_type_punning_raw_pointer && bin/struct_to_array_via_type_punning_raw_pointer
 
 References:
 1. [my answer with this code below] https://stackoverflow.com/a/69984037/4561887
@@ -36,6 +37,7 @@ typedef struct message_unpacked_s
     uint8_t ew;
 } message_unpacked_t;
 
+// This MUST be packed to work properly without having padding bytes in the byte array!
 typedef struct __attribute__ ((__packed__)) message_s
 {
     uint16_t time;
@@ -45,17 +47,13 @@ typedef struct __attribute__ ((__packed__)) message_s
     uint8_t ew;
 } message_t;
 
-typedef union message_converter_u
-{
-    message_t message;
-    uint8_t bytes[sizeof(message_t)];
-} message_converter_t;
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
-    printf("This is the start of `main()`.\n");
+    printf("Answer 3/3: use a packed struct and a raw `uint8_t` pointer to it`.\n");
 
+    // demonstrate that packing the struct matters
     printf("sizeof(message_unpacked_t) = %zu bytes\n", sizeof(message_unpacked_t)); // 10 bytes due to padding
     printf("sizeof(message_t) = %zu bytes\n", sizeof(message_t)); // 8 bytes
 
@@ -68,19 +66,15 @@ int main()
         .ew = 'e', // 0x65
     };
 
-    message_converter_t converter;
-    // Note: copying `message` into `converter.message` here is unnecessarily inefficient. A
-    // more-efficient way is to simply construct the union type alone and populate the struct
-    // data inside the union directly. See "struct_to_array_via_type_punning_union_more_efficient.c"
-    // for that demo.
-    converter.message = message;
+    // Use a raw pointer
+    uint8_t * bytes = (uint8_t*)(&message);
 
     // Print the bytes
     printf("bytes = [");
-    for (size_t i = 0; i < sizeof(converter.bytes); i++)
+    for (size_t i = 0; i < sizeof(bytes); i++)
     {
-        printf("0x%02X", converter.bytes[i]);
-        if (i < sizeof(converter.bytes) - 1)
+        printf("0x%02X", bytes[i]);
+        if (i < sizeof(bytes) - 1)
         {
             printf(", ");
         }
@@ -93,11 +87,11 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/c$ mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj struct_to_array_via_type_punning_union.c \
-    >     -o bin/struct_to_array_via_type_punning_union && bin/struct_to_array_via_type_punning_union
-    This is the start of `main()`.
+    eRCaGuy_hello_world/c$ mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj struct_to_array_via_type_punning_raw_pointer.c     -o bin/struct_to_array_via_type_punning_raw_pointer && bin/struct_to_array_via_type_punning_raw_pointer
+    Answer 3/3: use a packed struct and a raw `uint8_t` pointer to it`.
     sizeof(message_unpacked_t) = 10 bytes
     sizeof(message_t) = 8 bytes
     bytes = [0x34, 0x12, 0x22, 0x21, 0x6E, 0x34, 0x18, 0x65]
+
 
 */
