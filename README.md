@@ -128,6 +128,14 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. You can use 1) unions and "type punning", 2) raw pointers, or 3) bit-masks and bit shifting!
     1. See ["c/type_punning.c"](c/type_punning.c)
     1. See also my detailed answer and explanations here: [Stack Overflow: Portability of using union for conversion - my answer: "Using Unions for "type punning" is fine in C, and fine in gcc's C++ as well (as a gcc [g++] extension). But, "type punning" via unions has hardware architecture endianness considerations."](https://stackoverflow.com/questions/67206482/portability-of-using-union-for-conversion/67206563#67206563).
+    1. More of my answers:
+        1. [Answer 1/3: use a union and a packed struct](https://stackoverflow.com/a/69984037/4561887). Code:
+            1. [c/struct_to_array_via_type_punning_union.c](c/struct_to_array_via_type_punning_union.c)
+            1. [c/struct_to_array_via_type_punning_union_more_efficient.c](c/struct_to_array_via_type_punning_union_more_efficient.c)
+        1. [Answer 2/3: convert a struct to an array of bytes via manual bit-shifting](https://stackoverflow.com/a/69984464/4561887). Code:
+            1. [c/struct_to_array_via_bit_shifting.c](c/struct_to_array_via_bit_shifting.c)
+        1. [Answer 3/3: use a packed struct and a raw uint8_t pointer to it](https://stackoverflow.com/a/69984614/4561887). Code:
+            1. [c/struct_to_array_via_type_punning_raw_pointer.c](c/struct_to_array_via_type_punning_raw_pointer.c)
 1. (Multidimensional arrays) 2D array practice in C and C++. 
     1. See [c/2d_array_practice.c](c/2d_array_practice.c); it runs in both C and C++; see build commands in the comments at the top
         1. See my full answer on this on Stack Overflow here: [How to pass a multidimensional array to a function in C and C++](https://stackoverflow.com/a/67814330/4561887)
