@@ -100,11 +100,13 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. How to use a `const` reference to a vector, with a default parameter, as an input param to a function!
     1. See ["cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp"](cpp/onlinegdb--const_reference_to_vector__default_func_parameter.cpp)
 1. How to call command-line system calls in C and C++, read piped input from `stdin`, and read command-line output from called process from its `stdout`:
-    1. [StackOverflow.com: how to read from stdout in C](https://stackoverflow.com/q/24214038/4561887)
-    1. [StackOverflow.com: C: Run a System Command and Get Output?](https://stackoverflow.com/q/646241/4561887)
-    1. [StackOverflow.com: How can I run an external program from C and parse its output?](https://stackoverflow.com/q/43116/4561887)
-    1. [StackOverflow.com: Capturing stdout from a system() command optimally](https://stackoverflow.com/q/125828/4561887)
-    1. [the most-thorough C++ answer I think] [StackOverflow.com: How do I execute a command and get the output of the command within C++ using POSIX?](https://stackoverflow.com/q/478898/4561887)
+    1. [c/system_call_list_files.c](c/system_call_list_files.c): basic example to call `ls -l` in C, but _not_ read back the output. Rather, it just prints to stdout instead. 
+    1. See also:
+        1. [StackOverflow.com: how to read from stdout in C](https://stackoverflow.com/q/24214038/4561887)
+        1. [StackOverflow.com: C: Run a System Command and Get Output?](https://stackoverflow.com/q/646241/4561887)
+        1. [StackOverflow.com: How can I run an external program from C and parse its output?](https://stackoverflow.com/q/43116/4561887)
+        1. [StackOverflow.com: Capturing stdout from a system() command optimally](https://stackoverflow.com/q/125828/4561887)
+        1. [the most-thorough C++ answer I think] [StackOverflow.com: How do I execute a command and get the output of the command within C++ using POSIX?](https://stackoverflow.com/q/478898/4561887)
 1. Advanced bit-masks and bit-shifting. 
     1. See ["cpp/process_10_bit_video_data.cpp"](cpp/process_10_bit_video_data.cpp)
     1. See also the problem statement and my answer, with other references, on Stack Overflow here: [Stack Overflow: Add bit padding (bit shifting?) to 10bit values stored in a byte array](https://stackoverflow.com/a/66678338/4561887).
