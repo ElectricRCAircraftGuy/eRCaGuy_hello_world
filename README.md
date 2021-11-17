@@ -227,7 +227,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         1. integer enums
     1. Compare and contrast three types of enums (1. _regular enums_ vs. 2. _string enums_ vs. 3. _integer enums_), and show and compare how each works and how each treats the `=` operator.
     1. etc.
-1. Controlling and communicating with Ethernet devices via UDP and TCP communication packets over `socket`s:
+1. Controlling and communicating with Ethernet devices via UDP and TCP communication packets over `socket`s.
+    1. These examples demonstrate how to use the built-in Ethernet `socket` module, for instance, to communicate with an Ethernet-controlled device via UDP or TCP. This is very useful for controlling and talking to laboratory equipment, for instance, such as digital power supplies, multimeters, etc.
     1. [python/socket_talk_to_ethernet_device.py](python/socket_talk_to_ethernet_device.py)
 
 
