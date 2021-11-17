@@ -230,6 +230,10 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. Controlling and communicating with Ethernet devices via UDP and TCP communication packets over `socket`s.
     1. These examples demonstrate how to use the built-in Ethernet `socket` module, for instance, to communicate with an Ethernet-controlled device via UDP or TCP. This is very useful for controlling and talking to laboratory equipment, for instance, such as digital power supplies, multimeters, etc.
     1. [python/socket_talk_to_ethernet_device.py](python/socket_talk_to_ethernet_device.py)
+        1. Note: `netcat` (`nc`) can be used at the command-line to send commands over TCP and UDP as well. To do essentially the same thing as the code in the file above over TCP, do this:
+            ```bash
+            echo "my command to send" | nc -w1 192.168.0.1 9999
+            ```
 
 
 <a id="3-markdown"></a>
