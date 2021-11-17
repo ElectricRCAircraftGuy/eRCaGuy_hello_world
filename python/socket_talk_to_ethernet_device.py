@@ -23,6 +23,13 @@ Run command:
 
         python3 socket_talk_to_ethernet_device.py
 
+Note:
+
+1. `netcat` (`nc`) can be used at the command-line to do essentially the same thing as the code
+below over TCP like this:
+        echo "my command to send" | nc -w1 192.168.0.1 9999
+
+
 """
 
 import socket
