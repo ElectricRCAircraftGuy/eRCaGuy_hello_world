@@ -183,6 +183,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 
             > Since `-Weverything` enables every diagnostic, we generally **don’t recommend using it.** **`-Wall -Wextra` are a better choice for most projects.** Using `-Weverything` means that updating your compiler is more difficult because you’re exposed to experimental diagnostics which might be of lower quality than the default ones. If you do use `-Weverything` then we advise that you address all new compiler diagnostics as they get added to Clang, either by fixing everything they find or explicitly disabling that diagnostic with its corresponding `Wno-` option.
 
+
 <a id="2-python"></a>
 ## 2. Python:
 1. How to use the special Python `__slots__` list inside a class to reduce RAM usage during run-time. 
@@ -226,6 +227,9 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         1. integer enums
     1. Compare and contrast three types of enums (1. _regular enums_ vs. 2. _string enums_ vs. 3. _integer enums_), and show and compare how each works and how each treats the `=` operator.
     1. etc.
+1. Controlling and communicating with Ethernet devices via UDP and TCP communication packets over `socket`s:
+    1. [python/socket_talk_to_ethernet_device.py](python/socket_talk_to_ethernet_device.py)
+
 
 <a id="3-markdown"></a>
 ## 3. markdown:
