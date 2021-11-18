@@ -11,6 +11,13 @@ Ethernet-controlled device (UDP or TCP can be used; this example shows TCP). Thi
 for controlling and talking to laboratory equipment, for instance, such as digital power supplies,
 multimeters, etc.
 
+SEE ALSO:
+1. The many example netcat commands in my "git & Linux cmds doc" in my eRCaGuy_dotfiles repo below.
+Search the document for "netcat". Search also for this section: "Example of power supply control
+via string commands over Ethernet TCP using netcat". It will be in the document somewhere around
+here:
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt#L3192-L3219
+
 References:
 1. [Official Python3 documentation] https://docs.python.org/3/library/socket.html
     1. See other examples here: https://docs.python.org/3/library/socket.html#example  <========
