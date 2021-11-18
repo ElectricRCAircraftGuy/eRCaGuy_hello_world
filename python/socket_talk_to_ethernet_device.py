@@ -13,22 +13,26 @@ multimeters, etc.
 
 References:
 1. [Official Python3 documentation] https://docs.python.org/3/library/socket.html
-    1. Examples: https://docs.python.org/3/library/socket.html#example
+    1. See other examples here: https://docs.python.org/3/library/socket.html#example  <========
+1. Netcat timeout in floating point < 1 second: https://unix.stackexchange.com/a/492796/114401
+1. [my Q&A on using `printf` instead of `echo` with netcat (`nc`)]
+   https://stackoverflow.com/q/70001189/4561887
 
 Run command:
-
         ./socket_talk_to_ethernet_device.py
-
   OR:
-
         python3 socket_talk_to_ethernet_device.py
 
 Note:
-
 1. `netcat` (`nc`) can be used at the command-line to do essentially the same thing as the code
-below over TCP like this:
-        echo "my command to send" | nc -w1 192.168.0.1 9999
+below over TCP like this.
 
+        printf '%s' "my command to send" | timeout 0.2 nc 192.168.0.1 9999
+
+- Note: do NOT use `echo` in place of `printf` above, as `echo` appends a trailing newline character
+  (`\n`) which can mess up parsing. `echo` is also not very portable and has other limitations such
+  as being unable to send a string which begins with `-`.
+  - [See my detailed answer here]: https://stackoverflow.com/a/70001270/4561887
 
 """
 
@@ -47,22 +51,29 @@ s.settimeout(1)
 # 1. Send a text command to the device you are controlling
 s.sendall("my command to send".encode())
 # OR (same thing--specify the command as a byte array object directly)
-s.sendall(b"my command to send")
+#   s.sendall(b"my command to send")
 # OR (same thing)
-cmd = "my command to send"
-s.sendall(cmd.encode())
+#   cmd = "my command to send"
+#   s.sendall(cmd.encode())
 
 # 2. Read the response back from the device, up to this many bytes from the receive buffer
-s.recv(4096)
+data = s.recv(4096)
+
+print('Received', repr(data))
+# alternative way to print
+print('Received ', end='')
+print(data)
 
 # Close the connection when done. Leaving a TCP connection open in an infinite loop, for instance,
 # will block other users on the computer from opening a socket to communicate with the same device.
 s.close()
 
 
+
 """
 SAMPLE OUTPUT:
 
-
+Received b'some response string from the device here\n'
+Received b'some response string from the device here\n'
 
 """
