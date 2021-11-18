@@ -236,7 +236,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
             ```
             1. Do NOT use `echo` in place of `printf` above, as `echo` appends a trailing newline character (`\n`) which can prevent the device from parsing the message properly. `echo` is also not very portable and has other limitations such as being unable to send a string which begins with `-`.
             1. See my detailed answer here: [Stack Overflow: Piping echo to netcat fails while piping printf passes](https://stackoverflow.com/a/70001270/4561887)
-            1. See also the many example `netcat` commands in my "git & Linux cmds doc" in my [eRCaGuy_dotfiles][dotfiles] repo below. Search the document for "netcat". Search also for this section: "_Example of power supply control via string commands over Ethernet TCP using netcat_". It will be in the document somewhere around here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt#L3192-L3219.
+            1. See also the many example `netcat` commands in my ["git & Linux cmds doc"](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt) in my [eRCaGuy_dotfiles][dotfiles] repo below. Search the document for "netcat". Search also for this section: "_Example of power supply control via string commands over Ethernet TCP using netcat_". It will be in the document somewhere around here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt#L3192-L3219.
 
 
 <a id="3-markdown"></a>
