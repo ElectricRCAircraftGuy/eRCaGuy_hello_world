@@ -157,6 +157,11 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
             // output: `"/dir1/dir2/dir3"`
             std::string file_path = make_path({"/dir1", "dir2", "dir3"}); 
             ```
+1. Demonstrate how to "remove an element" from an array in C. You might also call this "filtering an array" in C. 
+    1. See: [c/array_filter_and_remove_element.c](c/array_filter_and_remove_element.c). I demonstrate 2 approaches:
+        1. [better] copy the array into a new array (the clean and easy approach), but takes 2x array memory
+        1. filter the array in-pace (the hard and copy-intensive approach), but takes no extra array memory
+        1. See also my answer on this here: [Stack Overflow: Removing elements from array in C](https://stackoverflow.com/a/70043744/4561887).
 
 
 <a id="build-notes"></a>
