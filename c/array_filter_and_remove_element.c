@@ -56,6 +56,32 @@ void print_array(const int arr[], size_t len)
 
 int main()
 {
+    /////////////////// THIS ANSWER IS A BIT OF A WORK-IN-PROGRESS STILL, BUT IT IS CORRECT AND
+    ////////// DOES WORK AS-IS. I JUST NEED TO CLEAN IT UP A BIT IS ALL.
+
+    printf("\n====================================\n"
+           "APPROACH 0: MODIFY ARRAY IN-PLACE IN O(1) TIME\n"
+           "====================================\n");
+    {
+        int arr[] = {-3, -2, -1, 0, 1, 2, 3};
+        print_array(arr, ARRAY_LEN(arr));
+        size_t arr_len; // this will store the array's new length after modifications to it
+
+        // Remove values -1, 0, and +1 from the array
+        size_t i_write = 0;
+        for (size_t i_read = 0; i_read < ARRAY_LEN(arr); i_read++)
+        {
+            if (is_it_right(arr[i_read]))
+            {
+                arr[i_write] = arr[i_read];
+                i_write++;
+            }
+        }
+        arr_len = i_write;
+
+        print_array(arr, arr_len);
+    }
+
     printf("\n====================================\n"
            "APPROACH 1 [BETTER APPROACH]: FILTER AN ARRAY INTO ANOTHER ARRAY\n"
            "====================================\n");
