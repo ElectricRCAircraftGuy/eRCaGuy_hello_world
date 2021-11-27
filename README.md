@@ -162,6 +162,13 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         1. [better] copy the array into a new array (the clean and easy approach), but takes 2x array memory
         1. filter the array in-pace (the hard and copy-intensive approach), but takes no extra array memory
         1. See also my answer on this here: [Stack Overflow: Removing elements from array in C](https://stackoverflow.com/a/70043744/4561887).
+1. Demonstrate prefix (`++i` and `--i`) vs postfix (`i--` and `i++`) operators and how they differ. 
+    1. See: [c/preincrement_and_postincrement_demo.c](c/preincrement_and_postincrement_demo.c)
+    1. In short: 
+        * `++i` increments the value first, and THEN reads the value.
+        * `i++` reads the value first, and THEN increments it!
+        - The same order goes for prefix and postfix decrements (`--i`, and `i--`, respectively).
+        - That's it!
 
 
 <a id="build-notes"></a>
