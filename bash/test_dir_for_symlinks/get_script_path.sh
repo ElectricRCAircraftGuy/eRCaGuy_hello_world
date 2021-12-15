@@ -1,0 +1,1 @@
+../get_script_path.sh
