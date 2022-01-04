@@ -10,6 +10,7 @@
 # 1. my own memory
 # 1. https://github.com/ElectricRCAircraftGuy/PDF2SearchablePDF/blob/master/pdf2searchablepdf.sh
 # 1. back_up_all_input_args.sh
+# 1. combining (merging) arrays in bash: https://stackoverflow.com/a/38579195/4561887
 
 
 # 1. Build up one element at-a-time
@@ -77,6 +78,24 @@ echo "========================================================================"
 ls "${my_args_array[@]}"
 
 
+echo ""
+echo "========================================================================"
+echo "array summation"
+echo "========================================================================"
+
+array1=("1" "2" "3" "4")
+array2=("5" "6" "7" "8")
+array3=("${array1[@]}" "${array2[@]}")  # see: https://stackoverflow.com/a/38579195/4561887
+
+array3_len=${#array3[@]}
+echo ""
+echo "Number of elements = $array3_len"
+echo "array3 contains:"
+for i in "${array3[@]}"; do
+    echo "    $i"
+done
+
+
 
 # SAMPLE OUTPUT:
 #
@@ -113,3 +132,19 @@ ls "${my_args_array[@]}"
 #       via our custom array directly, "${my_args_array[@]}"
 #       ========================================================================
 #       ls: cannot access 'some path': No such file or directory
+#
+#       ========================================================================
+#       array summation
+#       ========================================================================
+#
+#       Number of elements = 8
+#       array3 contains:
+#           1
+#           2
+#           3
+#           4
+#           5
+#           6
+#           7
+#           8
+
