@@ -6,7 +6,7 @@
 #       ./array_practice.sh
 
 # References:
-# 1. https://stackoverflow.com/a/70572787/4561887
+# 1. *****[VERY IMPORTANT AND USEFUL ANSWER!] https://stackoverflow.com/a/70572787/4561887
 # 1. my own memory
 # 1. https://github.com/ElectricRCAircraftGuy/PDF2SearchablePDF/blob/master/pdf2searchablepdf.sh
 # 1. back_up_all_input_args.sh
@@ -40,13 +40,15 @@ for i in "${my_array2[@]}"; do
 done
 
 
-# Now use an array as the input arguments to another command!
+# Now use an array as the input arguments to another command! For this demo, let the command be
+# `ls`. Here is an array of arguments to this command:
 
-my_array=("-a" "-l" "-F" "some path")
+my_args_array=("-a" "-l" "-F" "some path")
 
-echo "==================================================="
-echo 'OPTION 1: via "$@"'
-echo "==================================================="
+echo "========================================================================"
+echo 'OPTION 1: pass the contents of the array as arguments to our command \
+via the input array, "$@", which we set from our custom array'
+echo "========================================================================"
 # See: https://stackoverflow.com/a/70572787/4561887
 
 # First, show what is in the magic input args array, `"$@"`:
@@ -55,8 +57,8 @@ echo '$1 = '"$1"
 echo '$2 = '"$2"
 echo '$3 = '"$3"
 echo '$4 = '"$4"
-# Now, set it to what's in `my_array`
-set -- "${my_array[@]}"
+# Now, set it to what's in `my_args_array`
+set -- "${my_args_array[@]}"
 # And prove it is set to this
 echo '$@ = '"$@"
 echo '$1 = '"$1"
@@ -67,25 +69,47 @@ echo '$4 = '"$4"
 # Now call the cmd with these arguments!
 ls "$@"
 
-echo "==================================================="
-echo 'OPTION 2: via a manually-built-up command string'
-echo "==================================================="
+echo "========================================================================"
+echo 'OPTION 2: pass the contents of the array as arguments to our command \
+via our custom array directly, "${my_args_array[@]}"'
+echo "========================================================================"
 
-ls "${my_array[@]}"
-
-# args=""
-# for i in "${my_array[@]}"; do
-#     args="$args \"$i\""
-# done
-# cmd="ls $args"   # create the full command
-# echo "cmd = '$cmd'"  # print the full command
-# $cmd               # call the command
-# echo "---"
-# ls $args
-
-
+ls "${my_args_array[@]}"
 
 
 
 # SAMPLE OUTPUT:
-
+#
+#       eRCaGuy_hello_world$ bash/array_practice.sh
+#
+#       Number of elements = 3
+#       my_array contains:
+#           element 1
+#           element 2
+#           element 3
+#
+#       Number of elements = 3
+#       my_array2 contains:
+#           element 1
+#           element 2
+#           element 3
+#       ========================================================================
+#       OPTION 1: pass the contents of the array as arguments to our command \
+#       via the input array, "$@", which we set from our custom array
+#       ========================================================================
+#       $@ =
+#       $1 =
+#       $2 =
+#       $3 =
+#       $4 =
+#       $@ = -a -l -F some path
+#       $1 = -a
+#       $2 = -l
+#       $3 = -F
+#       $4 = some path
+#       ls: cannot access 'some path': No such file or directory
+#       ========================================================================
+#       OPTION 2: pass the contents of the array as arguments to our command \
+#       via our custom array directly, "${my_args_array[@]}"
+#       ========================================================================
+#       ls: cannot access 'some path': No such file or directory
