@@ -95,6 +95,17 @@ for i in "${array3[@]}"; do
     echo "    $i"
 done
 
+# slightly more-complicated example with multiple arrays plus some more individual elements added;
+# this is very useful for building up an arguments array to pass to a command!
+array4=("${array1[@]}" "100" "101" "${array2[@]}" "102")
+array4_len=${#array4[@]}
+echo ""
+echo "Number of elements = $array4_len"
+echo "array4 contains:"
+for i in "${array4[@]}"; do
+    echo "    $i"
+done
+
 
 
 # SAMPLE OUTPUT:
@@ -147,4 +158,19 @@ done
 #           6
 #           7
 #           8
+#
+#       Number of elements = 11
+#       array4 contains:
+#           1
+#           2
+#           3
+#           4
+#           100
+#           101
+#           5
+#           6
+#           7
+#           8
+#           102
+
 
