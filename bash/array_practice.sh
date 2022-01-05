@@ -11,6 +11,10 @@
 # 1. https://github.com/ElectricRCAircraftGuy/PDF2SearchablePDF/blob/master/pdf2searchablepdf.sh
 # 1. back_up_all_input_args.sh
 # 1. combining (merging) arrays in bash: https://stackoverflow.com/a/38579195/4561887
+# 1. *****EXCELLENT BASH ARRAYS TUTORIAL!
+#    https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
+# 1. [my own answer] bash slicing and array indexing demo:
+#    https://unix.stackexchange.com/a/664956/114401
 
 
 # 1. Build up one element at-a-time
@@ -107,10 +111,55 @@ for i in "${array4[@]}"; do
 done
 
 
+echo ""
+echo "========================================================================"
+echo "array indexing (into array4)"
+echo "========================================================================"
+# - See this tutorial for help:
+#   https://opensource.com/article/18/5/you-dont-know-bash-intro-bash-arrays
+# - and my own answer on bash array indexing and slicing too:
+#   https://unix.stackexchange.com/a/664956/114401
+
+echo "index  0: ${array4[0]}"
+echo "index  1: ${array4[1]}"
+echo "index  2: ${array4[2]}"
+echo "index  3: ${array4[3]}"
+echo "index  4: ${array4[4]}"
+echo "index  5: ${array4[5]}"
+echo "index  6: ${array4[6]}"
+echo "index  7: ${array4[7]}"
+echo "index  8: ${array4[8]}"
+echo "index  9: ${array4[9]}"
+echo "index 10: ${array4[10]}"
+echo "index 11: ${array4[11]}"  # intentionally out-of-bounds
+echo ""
+echo "index  -1 ( 1st element from the right): ${array4[-1]}"
+echo "index  -2 ( 2nd element from the right): ${array4[-2]}"
+echo "index  -3 ( 3rd element from the right): ${array4[-3]}"
+echo "index  -4 ( 4th element from the right): ${array4[-4]}"
+echo "index  -5 ( 5th element from the right): ${array4[-5]}"
+echo "index  -6 ( 6th element from the right): ${array4[-6]}"
+echo "index  -7 ( 7th element from the right): ${array4[-7]}"
+echo "index  -8 ( 8th element from the right): ${array4[-8]}"
+echo "index  -9 ( 9th element from the right): ${array4[-9]}"
+echo "index -10 (10th element from the right): ${array4[-10]}"
+echo "index -11 (11th element from the right): ${array4[-11]}"
+echo "index -12 (12th element from the right): ${array4[-12]}"  # intentionally out-of-bounds
+echo ""
+echo "all elements: ${array4[@]}"
+echo ""
+echo "all array indices: ${!array4[@]}"
+echo ""
+echo "array size (number of elements): ${#array4[@]}"
+echo ""
+echo '${array4[@]:3:5} (starting at index 3, retrieve 5 elements): '"${array4[@]:3:5}"
+echo ""
+
+
 
 # SAMPLE OUTPUT:
 #
-#       eRCaGuy_hello_world$ bash/array_practice.sh
+#       eRCaGuy_hello_world/bash$ ./array_practice.sh
 #
 #       Number of elements = 3
 #       my_array contains:
@@ -172,5 +221,45 @@ done
 #           7
 #           8
 #           102
+#
+#       ========================================================================
+#       array indexing (into array4)
+#       ========================================================================
+#       index  0: 1
+#       index  1: 2
+#       index  2: 3
+#       index  3: 4
+#       index  4: 100
+#       index  5: 101
+#       index  6: 5
+#       index  7: 6
+#       index  8: 7
+#       index  9: 8
+#       index 10: 102
+#       index 11:
+#
+#       index  -1 ( 1st element from the right): 102
+#       index  -2 ( 2nd element from the right): 8
+#       index  -3 ( 3rd element from the right): 7
+#       index  -4 ( 4th element from the right): 6
+#       index  -5 ( 5th element from the right): 5
+#       index  -6 ( 6th element from the right): 101
+#       index  -7 ( 7th element from the right): 100
+#       index  -8 ( 8th element from the right): 4
+#       index  -9 ( 9th element from the right): 3
+#       index -10 (10th element from the right): 2
+#       index -11 (11th element from the right): 1
+#       ./array_practice.sh: line 143: array4: bad array subscript
+#       index -12 (12th element from the right):
+#
+#       all elements: 1 2 3 4 100 101 5 6 7 8 102
+#
+#       all array indices: 0 1 2 3 4 5 6 7 8 9 10
+#
+#       array size (number of elements): 11
+#
+#       ${array4[@]:3:5} (starting at index 3, retrieve 5 elements): 4 100 101 5 6
+#
+
 
 
