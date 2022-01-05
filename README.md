@@ -169,6 +169,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         * `i++` reads the value first, and THEN increments it!
         - The same order goes for prefix and postfix decrements (`--i`, and `i--`, respectively).
         - That's it!
+1. [c/system_call_python.c](c/system_call_python.c) - this program is pretty cool! It has C write and call a Python program using `system()` calls. 
+    1. In short, it's a C program which uses system calls to write and call a Python script which then uses a system call to ping. Pretty neat. I posted the code also in my answer here: https://stackoverflow.com/a/70285228/4561887.
 
 
 <a id="build-notes"></a>
@@ -293,6 +295,9 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. How to escape `$` and `'`: [bash/character_escaping_demo.sh](bash/character_escaping_demo.sh)
 1. How to do "array slicing" (like in Python) in bash, meaning: how to grab _an element_ or a desired _range of elements_ from within a bash array. This also covers the bare basics of printing arrays, creating arrays, etc.
     1. [bash/array_slicing_demo.sh](bash/array_slicing_demo.sh)
+1. Bash array demo, as well as building and passing arguments to new commands via arrays. See:
+    1. [bash/back_up_all_input_args.sh](bash/back_up_all_input_args.sh)
+    1. [bash/array_practice.sh](bash/array_practice.sh) - also shows using negative index numbers to index from the right/end, like in Python.
 
 
 <a id="5-awk"></a>
