@@ -299,6 +299,9 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. Bash array demo, as well as building and passing arguments to new commands via arrays. See:
     1. [bash/back_up_all_input_args.sh](bash/back_up_all_input_args.sh)
     1. [bash/array_practice.sh](bash/array_practice.sh) - also shows using negative index numbers to index from the right/end, like in Python.
+1. [bash/check_if_sourced_or_executed.sh](bash/check_if_sourced_or_executed.sh)
+    1. Identify if a bash script is being _executed_ or [_sourced_](https://stackoverflow.com/questions/15474650/unix-what-is-the-difference-between-source-and-export/62626515#62626515), and act accordingly.
+    1. This is the bash-equivalent to Python's `if __name__ == "__main__":` check.
 
 
 <a id="5-awk"></a>
