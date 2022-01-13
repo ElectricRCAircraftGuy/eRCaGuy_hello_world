@@ -8,6 +8,10 @@
 # Demonstrate how to back up and use the input arguments array, which is normally accessed as
 # `"$@"`.
 #
+# ===> SEE ALSO "array_practice.sh" for other examples of how to pass an array to a command as
+#      arguments to the command! Ex:
+#           ls "${my_args_array[@]}"
+#
 # Run cmd:
 #       ./back_up_all_input_args.sh arg1 "arg 2" "arg 3"
 #
