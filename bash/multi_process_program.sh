@@ -7,7 +7,7 @@
 # By Gabriel Staples
 # First written: 11 Jan. 2022
 
-# Test a "multi-threaded" (multi-process, actually) bash program, and learn how to start the
+# Create a "multi-threaded" (multi-process, actually) bash program, and learn how to start the
 # processes and determine when each is done!
 
 # References:
