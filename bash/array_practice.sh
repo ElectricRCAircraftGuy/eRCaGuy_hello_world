@@ -164,6 +164,7 @@ echo "all array indices: ${!array4[@]}"
 echo ""
 echo "array size (number of elements): ${#array4[@]}"
 echo ""
+echo "Bash array slicing:"
 echo '${array4[@]:3:5} (starting at index 3, retrieve 5 elements): '"${array4[@]:3:5}"
 echo ""
 
@@ -171,7 +172,7 @@ echo ""
 
 # SAMPLE OUTPUT:
 #
-#       eRCaGuy_hello_world$ bash/array_practice.sh
+#       eRCaGuy_hello_world/bash$ ./array_practice.sh
 #
 #       Number of elements = 3
 #       my_array contains:
@@ -268,7 +269,7 @@ echo ""
 #       index  -9 ( 9th element from the right): 3
 #       index -10 (10th element from the right): 2
 #       index -11 (11th element from the right): 1
-#       bash/array_practice.sh: line 159: array4: bad array subscript
+#       ./array_practice.sh: line 159: array4: bad array subscript
 #       index -12 (12th element from the right):
 #
 #       all elements: 1 2 3 4 100 101 5 6 7 8 102
@@ -277,8 +278,10 @@ echo ""
 #
 #       array size (number of elements): 11
 #
+#       Bash array slicing:
 #       ${array4[@]:3:5} (starting at index 3, retrieve 5 elements): 4 100 101 5 6
 #
+
 
 
 
