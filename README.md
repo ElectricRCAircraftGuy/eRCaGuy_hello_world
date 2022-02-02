@@ -171,6 +171,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         - That's it!
 1. [c/system_call_python.c](c/system_call_python.c) - this program is pretty cool! It has C write and call a Python program using `system()` calls. 
     1. In short, it's a C program which uses system calls to write and call a Python script which then uses a system call to ping. Pretty neat. I posted the code also in my answer here: https://stackoverflow.com/a/70285228/4561887.
+1. Iterate over C `enum` and C++ `enum class`: [Stack Overflow: How can I iterate over an enum?](https://stackoverflow.com/a/69774217/4561887)
 
 
 <a id="build-notes"></a>
