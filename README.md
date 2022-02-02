@@ -306,6 +306,10 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 1. [bash/multi_process_program.sh](bash/multi_process_program.sh)
     1. Create a "multi-threaded" (multi-process, actually) bash program, and learn how to start the processes and determine when each is done!
     1. See also my answer on this here: [Stack Overflow: How to wait in bash for several subprocesses to finish, and return exit code !=0 when any subprocess ends with code !=0?](https://stackoverflow.com/a/70670852/4561887)
+1. [bash/array_pass_as_bash_parameter.sh](bash/array_pass_as_bash_parameter.sh)
+    1. How to pass arrays as bash parameters to functions or bash scripts in bash. 
+    1. This also extensively uses bash _array slicing_.
+    1. See also my answer here: [Stack Overflow: Passing arrays as parameters in bash](https://stackoverflow.com/a/70855715/4561887)
 
 
 <a id="5-awk"></a>
