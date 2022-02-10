@@ -29,6 +29,7 @@ www.ElectricRCAircraftGuy.com
     1. [3. markdown:](#3-markdown)
     1. [4. bash:](#4-bash)
     1. [5. awk:](#5-awk)
+    1. [6. Arduino:](#6-arduino)
 1. [File Structure:](#file-structure)
 1. [Changelog](#changelog)
     1. [\[v0.3.0\] - 2020-05-23](#v030---2020-05-23)
@@ -317,6 +318,11 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 ## 5. awk:
 1. See the [awk](awk) folder.
 1. See also: [git-diffn.sh](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-diffn.sh) in another repo of mine, my [readme here](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/README_git-diffn.md), and [my answer to how to do "Git diff with line numbers (Git log with line numbers)" here](https://stackoverflow.com/questions/24455377/git-diff-with-line-numbers-git-log-with-line-numbers/61997003#61997003).
+
+
+<a id="6-arduino"></a>
+## 6. Arduino:
+1. [arduino/Blink/Blink.ino](arduino/Blink/Blink.ino) - see how to blink built-in LED 13, how to manually "bit-bang" PWM it to dim it, and how to plot a couple opposing sawtooth waves you can view in the Arduino Serial Plotter. Pretty cool!
 
 
 <a id="file-structure"></a>
