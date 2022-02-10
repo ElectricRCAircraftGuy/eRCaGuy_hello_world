@@ -5,7 +5,7 @@
 # Learn to pass bash arrays as a parameter to a function which requires multiple parameters
 
 # Run command:
-#       ./array_pass_as_bash_parameter.sh
+#       ./array_pass_as_bash_parameter_1_indexed.sh
 
 # References:
 # 1. [MY ANSWER ON THIS] https://stackoverflow.com/a/70855715/4561887
@@ -178,7 +178,7 @@ echo ""
 
 # SAMPLE OUTPUT:
 #
-#       eRCaGuy_hello_world/bash$ ./array_pass_as_bash_parameter.sh
+#       eRCaGuy_hello_world/bash$ ./array_pass_as_bash_parameter_1_indexed.sh
 #       Printing array1
 #           one
 #           two
