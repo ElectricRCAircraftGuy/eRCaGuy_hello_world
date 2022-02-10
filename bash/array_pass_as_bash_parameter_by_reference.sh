@@ -2,6 +2,9 @@
 
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+# GS
+# 9 Feb. 2022
+
 # Practice passing regular bash "indexed" arrays, as well as bash "associative arrays" (ie:
 # "hash tables", "dictionaries", or "unordered maps") _by reference_ as parameters to other bash
 # functions.
@@ -10,6 +13,8 @@
 #       ./array_pass_as_bash_parameter_by_reference.sh
 
 # References:
+# 1. BIG THANKS to @Todd Lehman, whose answer I modified to get the code below. See:
+#    https://stackoverflow.com/a/55170447/4561887
 # 1. [my answer with this code] https://stackoverflow.com/a/71060036/4561887
     # 1. See also the several referenced underneath this answer!
 
