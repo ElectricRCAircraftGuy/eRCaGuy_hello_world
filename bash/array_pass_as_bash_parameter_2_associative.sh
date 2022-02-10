@@ -13,15 +13,27 @@
 # References:
 # 1. *****+ For a BETTER technique, pass them by reference! See:
 #    "array_pass_as_bash_parameter_by_reference.sh"  <============ BETTER WAY: PASS BY REFERENCE ==========
-# 1. *****+ [my answer with this code!] TBD
+# 1. *****+ [my answer with this code!] https://stackoverflow.com/a/71060913/4561887
 
-# Print an associative array using
+
+
+# Let's create and load up an associative array and print it
+declare -A array1
+array1["a"]="cat"
+array1["b"]="dog"
+array1["c"]="mouse"
+
+# --------------------------------------------------------------------------------------------------
+# Manually serialize/deserialize the array
+# --------------------------------------------------------------------------------------------------
+
+# Print an associative array using manual serialization/deserialization
 # Usage:
 #       # General form:
-#       print_associative_array array_length array_keys array_values
+#       print_associative_array1 array_length array_keys array_values
 #       # Example
-#       print_associative_array "${#array1[@]}" "${!array1[@]}" "${array1[@]}"
-print_associative_array() {
+#       print_associative_array1 "${#array1[@]}" "${!array1[@]}" "${array1[@]}"
+print_associative_array1() {
     i=1
 
     # read 1st argument, the array length
@@ -49,20 +61,57 @@ print_associative_array() {
     done
 }
 
-# Let's create and load up an associative array and print it
-declare -A array1
-array1["a"]="cat"
-array1["b"]="dog"
-array1["c"]="mouse"
-
+echo 'print_associative_array1 "${#array1[@]}" "${!array1[@]}" "${array1[@]}"'
 #                         length         indices (keys)    values
-print_associative_array "${#array1[@]}" "${!array1[@]}" "${array1[@]}"
+print_associative_array1 "${#array1[@]}" "${!array1[@]}" "${array1[@]}"
+echo ""
 
 
+# --------------------------------------------------------------------------------------------------
+# [BETTER] Pass the array by reference!
+# --------------------------------------------------------------------------------------------------
 
+# Print an associative array by passing the array by reference
+# Usage:
+#       # General form:
+#       print_associative_array2 array
+#       # Example
+#       print_associative_array2 array1
+print_associative_array2() {
+    local -n array_reference="$1"
+
+    # print the array by iterating through all of the keys now
+    for key in "${!array_reference[@]}"; do
+        value="${array_reference["$key"]}"
+        echo "  $key: $value"
+    done
+}
+
+echo 'print_associative_array2 array1'
+print_associative_array2 array1
+echo ""
+echo "OR (same thing--quotes don't matter in this case):"
+echo 'print_associative_array2 "array1"'
+print_associative_array2 "array1"
+
+
+# --------------------------------------------------------------------------------------------------
 # SAMPLE OUTPUT:
+# --------------------------------------------------------------------------------------------------
 #
 #       eRCaGuy_hello_world$ bash/array_pass_as_bash_parameter_2_associative.sh
+#       print_associative_array1 "${#array1[@]}" "${!array1[@]}" "${array1[@]}"
+#         a: cat
+#         b: dog
+#         c: mouse
+#
+#       print_associative_array2 array1
+#         a: cat
+#         b: dog
+#         c: mouse
+#
+#       OR (same thing--quotes don't matter in this case):
+#       print_associative_array2 "array1"
 #         a: cat
 #         b: dog
 #         c: mouse
