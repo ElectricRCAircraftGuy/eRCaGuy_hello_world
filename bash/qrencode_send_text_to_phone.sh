@@ -21,15 +21,18 @@
 # 1. https://stackoverflow.com/a/59521674/4561887
 # 1. [my answer about this] https://stackoverflow.com/a/70934014/4561887
 # 1. How to get path to the running script [my answer]: https://stackoverflow.com/a/60157372/4561887
+# 1. Max input file size for QR codes:
+#    https://github.com/fukuchi/libqrencode/issues/31#issuecomment-1034603750
 
 # See my answer: https://stackoverflow.com/a/60157372/4561887
 FULL_PATH_TO_THIS_SCRIPT="$(realpath "$0")"
-filename_to_encode="$FULL_PATH_TO_THIS_SCRIPT"
+SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_THIS_SCRIPT")"
+filename_to_encode="${SCRIPT_DIRECTORY}/qrcode_input.txt"
 
 # Option 1: save as an image and open in Ubuntu's default `eog` (Eye of Gnome) image viewer.
 echo "Running Option 1 (close the open windows to get the next option to run)"
-cat "$filename_to_encode" | qrencode -m 4 -o "qrcode.png"
-eog "qrcode.png"
+cat "$filename_to_encode" | qrencode -m 4 -o "${SCRIPT_DIRECTORY}/qrcode.png"
+eog "${SCRIPT_DIRECTORY}/qrcode.png"
 
 # Option 2: pipe directly to the `feh` image viewer (this uses temporary files anyway, under the
 # hood).

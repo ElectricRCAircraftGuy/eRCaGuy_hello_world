@@ -1,0 +1,25 @@
+This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
+Here is some random text to put into a QR code. Max size apparently is 2953 chars: https://github.com/fukuchi/libqrencode/issues/31#issuecomment-756621602
+
+Let's make this file *exactly* that! Nope! Doesn't work. Reducing text. Max is just over 2800.
+
+
+
+https://en.wikipedia.org/wiki/QR_code
+
+A QR code (an initialism for quick response code) is a type of matrix barcode (or two-dimensional barcode)[1][2] invented in 1994 by the Japanese automotive company Denso Wave.[3][4] A barcode is a machine-readable optical label that can contain information about the item to which it is attached. In practice, QR codes often contain data for a locator, identifier, or tracker that points to a website or application. A QR code uses four standardized encoding modes (numeric, alphanumeric, byte/binary, and kanji) to store data efficiently; extensions may also be used.[5]
+
+The Quick Response system became popular outside the automotive industry due to its fast readability and greater storage capacity compared to standard UPC barcodes. Applications include product tracking, item identification, time tracking, document management, and general marketing.[6]
+
+A QR code consists of black squares arranged in a square grid on a white background, which can be read by an imaging device such as a camera, and processed using Reed–Solomon error correction until the image can be appropriately interpreted. The required data is then extracted from patterns that are present in both horizontal and vertical components of the image.[6]
+
+Adoption
+QR codes are now used in a much broader context, including both commercial tracking applications and convenience-oriented applications aimed at mobile-phone users (termed mobile tagging). QR codes may be used to display text to the user, to open a webpage on the user's device, to add a vCard contact to the user's device, to open a Uniform Resource Identifier (URI), to connect to a wireless network, or to compose an email or text message. There are a great many QR code generators available as software or as online tools that are either free, or require a paid subscription.[10] The QR code has become one of the most-used types of two-dimensional code.[11]
+
+During the month of June 2011, 14 million American mobile users scanned a QR code or a barcode. Some 58% of those users scanned a QR or barcode from their homes, while 39% scanned from retail stores; 53% of the 14 million users were men between the ages of 18 and 34.[12]
+
+A September 2020 survey found that 18.8 percent of consumers in the United States and United Kingdom strongly agreed that they had noticed an increase of QR code use since the begin of COVID-19 related shelter-in-place orders in March 2020.[13]
+
+Standards
+
