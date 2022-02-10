@@ -16,7 +16,10 @@
 # 1. BIG THANKS to @Todd Lehman, whose answer I modified to get the code below. See:
 #    https://stackoverflow.com/a/55170447/4561887
 # 1. [my answer with this code] https://stackoverflow.com/a/71060036/4561887
-    # 1. See also the several referenced underneath this answer!
+#    1. See also the several referenced underneath this answer!
+# 1. [my question] Why do the `man bash` pages state the `declare` and `local` `-n`
+#    attribute "cannot be applied to array variables", and yet it can?:
+#    https://stackoverflow.com/q/71059826/4561887
 
 
 # 1. Regular "indexed" array
