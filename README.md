@@ -44,6 +44,7 @@ www.ElectricRCAircraftGuy.com
 # Status:
 1. Many solid C & C++ demos are done and work! 
 1. A Python demo also is in place to show how to parse a YAML file. 
+1. [bash/argument_parsing__3_advanced__gen_prog_template.sh](bash/argument_parsing__3_advanced__gen_prog_template.sh) is a _really good_ advanced bash demo of a full program with advanced features, help menu, full argument parsing. Etc. See the [bash](#4-bash) section below.
 
 See the `tree` output below to see the file/folder structure.
 
