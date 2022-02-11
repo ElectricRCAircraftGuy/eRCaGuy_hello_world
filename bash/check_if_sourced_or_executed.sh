@@ -25,9 +25,9 @@
 #    https://unix.stackexchange.com/questions/424492/how-to-define-a-shell-script-to-be-sourced-not-run
 # 1. What is the bash equivalent to Python's `if __name__ == '__main__'`?:
 #    https://stackoverflow.com/questions/29966449/what-is-the-bash-equivalent-to-pythons-if-name-main
-
+#
 # My own answers where I've posted all or some of this code:
-# 1. https://stackoverflow.com/a/70662049/4561887
+# 1. *****+ How to detect if a script is being sourced: https://stackoverflow.com/a/70662049/4561887
 # 1. https://stackoverflow.com/a/70662116/4561887
 # 1. https://unix.stackexchange.com/a/685857/114401
 

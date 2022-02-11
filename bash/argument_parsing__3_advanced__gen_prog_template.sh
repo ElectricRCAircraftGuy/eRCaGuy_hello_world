@@ -2,7 +2,10 @@
 
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-# STATUS: work-in-progress; not yet ready for use.
+# Gabriel Staples
+# Feb. 2022
+
+# STATUS: It works! Done and ready for use!
 
 # - Demonstrate advanced argument parsing in bash.
 # - Use this program as a general program template for most bash programs I write, especially for
@@ -10,6 +13,17 @@
 
 # Basic run command:
 #       ./argument_parsing__3_advanced__gen_prog_template.sh
+# Test commands:
+#       ./argument_parsing__3_advanced__gen_prog_template.sh -h
+#   Then run the "EXAMPLE USAGES" commands shown in the help menu! Ex:
+#       ./argument_parsing__3_advanced__gen_prog_template.sh -h
+#       ./argument_parsing__3_advanced__gen_prog_template.sh --help
+#       ./argument_parsing__3_advanced__gen_prog_template.sh -a 'hello world'
+#       ./argument_parsing__3_advanced__gen_prog_template.sh --arga 'hello world' --argb 'Nice to meet you!' --argc 789
+#       ./argument_parsing__3_advanced__gen_prog_template.sh -a 'hello world' -b 'Nice to meet you!' -c 789
+#       ./argument_parsing__3_advanced__gen_prog_template.sh --argc 789 one two
+#       ./argument_parsing__3_advanced__gen_prog_template.sh one --argc 789 two
+#       ./argument_parsing__3_advanced__gen_prog_template.sh one two --argc 789
 
 # INSTALLATION INSTRUCTIONS:
 # 1. Create a symlink in ~/bin to this script so you can run it from anywhere.
@@ -36,9 +50,6 @@
 #    https://stackoverflow.com/a/70662049/4561887
 #   1. check_if_sourced_or_executed.sh
 
-# Test commands:
-#       arg_parse_demo -h
-
 # TODO:
 # 1.
 
@@ -49,7 +60,7 @@ RETURN_CODE_ERROR=1
 VERSION="0.1.0"
 AUTHOR="Gabriel Staples"
 
-DEBUG_PRINTS_ON="false"  # "true" or "false"; can also be passed in as an option: `-d` or `--debug`
+DEBUG_PRINTS_ON="true"  # "true" or "false"; can also be passed in as an option: `-d` or `--debug`
 
 SCRIPT_NAME="$(basename "$0")"
 VERSION_SHORT_STR="'$SCRIPT_NAME' version $VERSION"
@@ -68,7 +79,7 @@ use to write your program. Please provide a URL in your program to link back to 
 eRCaGuy_hello_world repo.
 
 USAGE
-    $SCRIPT_NAME [options]
+    $SCRIPT_NAME [options] [positional_arg1] [positional_arg2]
 
 OPTIONS
     -h, -?, --help
@@ -97,6 +108,14 @@ EXAMPLE USAGES:
         Pass in 'hello world' for custom argument a.
     $SCRIPT_NAME --arga 'hello world' --argb 'Nice to meet you!' --argc 789
         Pass in custom arguments a, b, and c.
+    $SCRIPT_NAME -a 'hello world' -b 'Nice to meet you!' -c 789
+        Same as above.
+    $SCRIPT_NAME --argc 789 one two
+        Pass in '789' as custom argument c, 'one' as posiitonal_arg1, and 'two' as positional_arg2
+    $SCRIPT_NAME one --argc 789 two
+        Same as above, just in a different order.
+    $SCRIPT_NAME one two --argc 789
+        Same as above, just in a different order again.
 
 This program is part of eRCaGuy_dotfiles: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles
 by Gabriel Staples.
@@ -133,35 +152,44 @@ run_tests() {
     # Fill this in. Ex: call `my_unit_tests.sh`
 }
 
+# Print a regular bash "indexed" array
+# See:
+# 1. my answer: https://stackoverflow.com/a/71060036/4561887 and
+# 1. my answer: https://stackoverflow.com/a/71060913/4561887
+print_array() {
+    local -n array_reference="$1"
+    for element in "${array_reference[@]}"; do
+        echo "  $element"
+    done
+}
+
+# Print a regular bash "indexed" array only if `DEBUG_PRINTS_ON` is set to "true".
+print_array_debug() {
+    local -n array_reference="$1"
+    for element in "${array_reference[@]}"; do
+        echo_debug "  $element"
+    done
+}
+
 parse_args() {
     # For advanced argument parsing help and demo, see:
     # https://stackoverflow.com/a/14203146/4561887
 
-    num_args="$#"
-    if [ "$num_args" -eq 0 ]; then
+    if [ $# -eq 0 ]; then
         echo "No arguments supplied"
         print_help
         exit $RETURN_CODE_ERROR
     fi
 
     all_args_array=("$@")  # See: https://stackoverflow.com/a/70572787/4561887
-    regex=""  # regular expression search pattern to look for
-    replacement_text=""
-    overwrite_file="false"
-    paths_array=()  # array of paths to search in for the `regex` pattern
-    ripgrep_args_array=()  # arguments to always be passed to ripgrep
-    stats_on="false"
-
+    positional_args_array=()
     while [ $# -gt 0 ]; do
         arg="$1"
-        # first letter of `arg`; see: https://stackoverflow.com/a/10218528/4561887
+        # first letter of `arg` (in case you ever need this)
+        # see: https://stackoverflow.com/a/10218528/4561887
         first_letter="${arg:0:1}"
 
         case $arg in
-            # --------------------------------------------------------------------------------------
-            # 1. Parse options handled by this rgr wrapper
-            # --------------------------------------------------------------------------------------
-
             # Help menu
             "-h"|"-?"|"--help")
                 print_help
@@ -179,221 +207,91 @@ parse_args() {
                 ;;
             # Debug prints on
             "-d"|"--debug")
+                echo_debug "Debug on."
                 DEBUG_PRINTS_ON="true"
-                ripgrep_args_array+=("--debug")  # also forward this arg to ripgrep
                 shift # past argument
                 ;;
-            # Replacement text; perform in-place to overwrite file
-            "-R"|"--Replace")
-                overwrite_file="true"
-                echo "ACTUAL CONTENT WILL BE REPLACED IN YOUR FILESYSTEM."
-                echo "If you'd like to do a dry-run instead, cancel the program and run with '-r' instead of '-R'."
-
-                # See: https://stackoverflow.com/a/226724/4561887
-                read -p "Are you sure you'd like to continue? (Y or y to continue; any other key or just Enter to exit) " \
-                    yes_or_no
-                case "$yes_or_no" in
-                    [Yy]* )
-                        # nothing to do
-                        ;;
-                    *)
-                        exit $RETURN_CODE_SUCCESS
-                        ;;
-                esac
-
-                if [ $# -gt 1 ]; then
-                    replacement_text="$2"
-                    ripgrep_args_array+=("-r" "$replacement_text")
-                    shift # past argument
-                    shift # past value
-                else
-                    echo "ERROR: Missing value for argument '-R' or '--Replace'."
-                    exit $RETURN_CODE_ERROR
-                fi
+            # Custom argument a
+            "-a"|"--arga")
+                echo_debug "arga passed in"
+                arga="$2"
+                shift # past argument (`$1`)
+                shift # past value (`$2`)
                 ;;
-            # Ripgrep Statistics on
-            "--stats")
-                stats_on="true"
-                shift # past argument
+            # Custom argument b
+            "-b"|"--argb")
+                echo_debug "argb passed in"
+                argb="$2"
+                shift # past argument (`$1`)
+                shift # past value (`$2`)
                 ;;
-
-            # --------------------------------------------------------------------------------------
-            # 2. Parse Ripgrep options
-            # --------------------------------------------------------------------------------------
-
-            # All ripgrep arguments which require a value after the option (see `rg -h`)
-            "-A"|"--after-context"| \
-            "-B"|"--before-context"| \
-            "--color"| \
-            "--colors"| \
-            "-C"|"--context"| \
-            "--context-separator"| \
-            "--dfa-size-limit"| \
-            "-E"|"--encoding"| \
-            "--engine"| \
-            "-f"|"--file"| \
-            "-g"|"--glob"| \
-            "--iglob"| \
-            "--ignore-file"| \
-            "-M"|"--max-columns"| \
-            "-m"|"--max-count"| \
-            "--max-depth"| \
-            "--max-filesize"| \
-            "--path-separator"| \
-            "--pre"| \
-            "--pre-glob"| \
-            "--regex-size-limit"| \
-            "-e"|"--regexp"| \
-            "-r"|"--replace"| \
-            "--sort"| \
-            "--sortr"| \
-            "-j"|"--threads"| \
-            "-t"|"--type"| \
-            "--type-add"| \
-            "--type-clear"| \
-            "-T"|"--type-not")
-                if [ $# -gt 1 ]; then
-                    ripgrep_args_array+=("$1")
-                    ripgrep_args_array+=("$2")
-                    shift # past argument
-                    shift # past value
-                else
-                    echo "ERROR: Missing value for Ripgrep argument."
-                    exit $RETURN_CODE_ERROR
-                fi
+            # Custom argument c
+            "-c"|"--argc")
+                echo_debug "argc passed in"
+                argc="$2"
+                shift # past argument (`$1`)
+                shift # past value (`$2`)
                 ;;
-
-
-            # All other '-' or '--' options (ie: unmatched in the switch cases above)
-            -*|--*)
-                ripgrep_args_array+=("$1")
-                shift # past argument
-                ;;
-
-            # --------------------------------------------------------------------------------------
-            # 3. Parse positional arguments (regex_search_pattern, and paths)
-            # --------------------------------------------------------------------------------------
-
             # All positional args (ie: unmatched in the switch cases above)
             *)
-                # The first positional arg is the regex search pattern
-                if [ -z "$regex" ]; then
-                    regex="$1"
-                # All other positional args are paths to search in
-                else
-                    paths_array+=("$1")
-                fi
-
-                shift # past argument
+                positional_args_array+=("$1")  # save positional arg into array
+                shift # past argument (`$1`)
                 ;;
         esac
     done
 
-    # Print argument stats
+    positional_arg1="${positional_args_array[0]}"
+    positional_arg2="${positional_args_array[1]}"
 
-    all_args_array_len=${#all_args_array[@]}
+    # Do debug prints of all argument stats
+
+    all_args_array_len="${#all_args_array[@]}"
     echo_debug "Total number of args = $all_args_array_len"
     echo_debug "all_args_array contains:"
-    for path in "${all_args_array[@]}"; do
-        echo_debug "    $path"
-    done
+    print_array_debug all_args_array
+    echo_debug ""
 
-    echo_debug "regex = '$regex'"
-    echo_debug "replacement_text = '$replacement_text'"
-    echo_debug "overwrite_file = '$overwrite_file'"
-
-    paths_array_len=${#paths_array[@]}
-    echo_debug "Number of paths = $paths_array_len"
-    echo_debug "paths_array contains:"
-    for path in "${paths_array[@]}"; do
-        echo_debug "    $path"
-    done
-
-    ripgrep_args_array_len=${#ripgrep_args_array[@]}
-    echo_debug "Number of general ripgrep args = $ripgrep_args_array_len"
-    echo_debug "ripgrep_args_array contains:"
-    for arg in "${ripgrep_args_array[@]}"; do
-        echo_debug "    $arg"
-    done
+    positional_args_array_len="${#positional_args_array[@]}"
+    echo_debug "Number of positional args = $positional_args_array_len"
+    echo_debug "positional_args_array contains:"
+    print_array_debug positional_args_array
+    echo_debug ""
+    echo_debug "positional_arg1 = '$positional_arg1'"
+    echo_debug "positional_arg2 = '$positional_arg2'"
+    echo_debug ""
 } # parse_args
 
 main() {
     echo_debug "Running 'main'."
 
-    if [ "$overwrite_file" == "false" ]; then
-        # There are no special things this wrapper program needs to do, so just run regular ripgrep!
-        rg "${all_args_array[@]}"
-        exit $RETURN_CODE_SUCCESS
-    fi
-
-
-    # otherwise, run the special find-and-replace in place
-
-    NUM_STATS_LINES=9  # number of extra lines printed at the end by the ripgrep `--stats` option
-
-    args_array=("${ripgrep_args_array[@]}" "--stats" "-l" "$regex" "${paths_array[@]}")
-
-    filenames_list_and_stats="$(rg "${args_array[@]}")"
-    filenames_list="$(printf "%s" "$filenames_list_and_stats" | head -n -$NUM_STATS_LINES)"
-    filenames_stats="$(printf "%s" "$filenames_list_and_stats" | tail -n $NUM_STATS_LINES)"
-
-    echo ""
-    # echo "TOTAL SUMMARY:"
-    # printf "${COLOR_MGN}%s${COLOR_OFF}" "${filenames_list}"
-    # echo "$filenames_stats"
-    # echo ""
-
-    # Convert list of files to array of files.
-    # See:
-    # 1. "eRCaGuy_dotfiles/useful_scripts/find_and_replace.sh" for an example of this
-    # 1. ***** https://stackoverflow.com/a/24628676/4561887
-    SAVEIFS=$IFS   # Save current IFS (Internal Field Separator)
-    IFS=$'\n'      # Change IFS (Internal Field Separator) to newline char
-    filenames_array=($filenames_list) # split long string into array, separating by IFS (newline chars)
-    IFS=$SAVEIFS   # Restore IFS
-
-    # Now do the replacement one file at a time, using `rg` only! (no need for `sed`)
-
-    args_array_base=("${ripgrep_args_array[@]}" "--passthru" "$regex")
-    args_array_base_with_color=("${ripgrep_args_array[@]}" "--stats" "--color" "always" \
-        "-n" "$regex")
-
-    for filename in "${filenames_array[@]}"; do
-        echo -e "${COLOR_MGN}${filename}${COLOR_OFF}"
-
-        args_array_final=("${args_array_base[@]}" "$filename")
-        args_array_final_with_color=("${args_array_base_with_color[@]}" "$filename")
-
-        file_changes_and_stats_in_color="$(rg "${args_array_final_with_color[@]}")"
-        file_changes_in_color="$(printf "%s" "$file_changes_and_stats_in_color" | head -n -$NUM_STATS_LINES)"
-
-        file_contents="$(rg "${args_array_final[@]}")"
-
-        if [ "$stats_on" == "true" ]; then
-            printf "%s\n\n" "$file_changes_and_stats_in_color"
-        else
-            printf "%s\n\n" "$file_changes_in_color"
-        fi
-
-        # WARNING WARNING WARNING! This is the line that makes the actual changes to your
-        # file system!
-        printf "%s" "$file_contents" > "$filename"
-    done
-
-    # print the summary output one more time so that if the output is really long the user doesn't
-    # have to scroll up forever to see it
-    filenames_array_len=${#filenames_array[@]}
-    if [ "$filenames_array_len" -gt 1 ] && [ "$stats_on" == "true" ]; then
-        echo ""
-        printf "${COLOR_MGN}%s${COLOR_OFF}" "${filenames_list}"
-        echo "$filenames_stats"
-    fi
+    # Debug print some arguments to prove that parsed arguments are globally available here
+    echo_debug "arga = '$arga'"
+    echo_debug "argb = '$argb'"
+    echo_debug "argc = '$argc'"
 } # main
+
+# Set the global variable `run` to "true" if the script is being **executed** (not sourced) and
+# `main` should run, and set `run` to "false" otherwise. One might source this script but intend
+# NOT to run it if they wanted to import functions from the script.
+# See:
+# 1. my answer: https://stackoverflow.com/a/70662049/4561887
+# 1. https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/check_if_sourced_or_executed.sh
+run_check() {
+    # This is akin to `if __name__ == "__main__":` in Python.
+    if [ "${FUNCNAME[-1]}" == "main" ]; then
+        # This script is being EXECUTED, not sourced
+        run="true"
+    fi
+}
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Main program entry point
 # ----------------------------------------------------------------------------------------------------------------------
 
-parse_args "$@"
-time main
-# main
+# Only run main function if this file is being executed, NOT sourced.
+run="false"
+run_check
+if [ "$run" == "true" ]; then
+    parse_args "$@"
+    time main
+fi

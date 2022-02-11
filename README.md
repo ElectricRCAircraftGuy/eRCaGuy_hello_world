@@ -312,6 +312,14 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
     1. How to pass arrays as bash parameters to functions or bash scripts in bash. 
     1. This also extensively uses bash _array slicing_.
     1. See also my answer here: [Stack Overflow: Passing arrays as parameters in bash](https://stackoverflow.com/a/70855715/4561887)
+1. **[VERY USEFUL]** [bash/argument_parsing__3_advanced__gen_prog_template.sh](bash/argument_parsing__3_advanced__gen_prog_template.sh) - very complete full program demo. Copy/paste this as a template for all medium to large bash programs! Features:
+    1. Advanced optional and positional argument parsing.
+    1. Full help menu. 
+    1. Option to print version info.
+    1. Debug prints which can be turned on/off.
+    1. Function to print arrays.
+    1. `main` function.
+    1. Automatic run vs source detection: if the program detects it is being _executed_, it will parse arguments and run `main`, but if it detects it is being _sourced_ it will NOT! This way, you can source the program with `. path/to/program` or `source path/to/program` to "import" functions and variables you may want from it, but withOUT running it. This is akin to `if __name__ == "__main__":` in Python.
 
 
 <a id="5-awk"></a>
