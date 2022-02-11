@@ -116,6 +116,10 @@ EXAMPLE USAGES:
         Same as above, just in a different order.
     $SCRIPT_NAME one two --argc 789
         Same as above, just in a different order again.
+    $SCRIPT_NAME -a 'hello world' one two -b 'Nice to meet you!' -c 789 three
+        Pass in custom arguments a, b, and c, as well as 'one' for 'posiitonal_arg1', 'two' for
+        'positional_arg2', and 'three' as a 3rd positional argument which is unused but will also
+        get captured into the 'POSITIONAL_ARGS_ARRAY'.
 
 This program is part of eRCaGuy_dotfiles: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles
 by Gabriel Staples.
@@ -181,12 +185,25 @@ parse_args() {
         exit $RETURN_CODE_ERROR
     fi
 
-    all_args_array=("$@")  # See: https://stackoverflow.com/a/70572787/4561887
-    positional_args_array=()
+    # All possible input arguments we expect to see.
+
+    # Note: pre-declaring these variables like this is NOT required in bash. This is optional, and
+    # is only done for human-readability and "aesthetic" purposes, to remind us that all of these
+    # variables 1) **exist**, and 2) **are empty by default** if not written to below.
+    ARGA=""
+    ARGB=""
+    ARGC=""
+    POSITIONAL_ARG1=""
+    POSITIONAL_ARG2=""
+
+    ALL_ARGS_ARRAY=("$@")  # See: https://stackoverflow.com/a/70572787/4561887
+    POSITIONAL_ARGS_ARRAY=()
     while [ $# -gt 0 ]; do
         arg="$1"
-        # first letter of `arg` (in case you ever need this)
-        # see: https://stackoverflow.com/a/10218528/4561887
+        # get first letter of `arg`; see: https://stackoverflow.com/a/10218528/4561887
+        # This is a form of bash "array slicing", treating the string like an array of chars,
+        # so see also my answer about array slicing here:
+        # https://unix.stackexchange.com/a/664956/114401
         first_letter="${arg:0:1}"
 
         case $arg in
@@ -214,50 +231,56 @@ parse_args() {
             # Custom argument a
             "-a"|"--arga")
                 echo_debug "arga passed in"
-                arga="$2"
+                ARGA="$2"
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
             # Custom argument b
             "-b"|"--argb")
                 echo_debug "argb passed in"
-                argb="$2"
+                ARGB="$2"
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
             # Custom argument c
             "-c"|"--argc")
                 echo_debug "argc passed in"
-                argc="$2"
+                ARGC="$2"
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
             # All positional args (ie: unmatched in the switch cases above)
             *)
-                positional_args_array+=("$1")  # save positional arg into array
+                # error out for any unexpected options passed in
+                if [ "$first_letter" = "-" ]; then
+                    echo "ERROR: invalid optional argument ('$1'). See help menu for valid options."
+                    exit $RETURN_CODE_ERROR
+                fi
+
+                POSITIONAL_ARGS_ARRAY+=("$1")  # save positional arg into array
                 shift # past argument (`$1`)
                 ;;
         esac
     done
 
-    positional_arg1="${positional_args_array[0]}"
-    positional_arg2="${positional_args_array[1]}"
+    POSITIONAL_ARG1="${POSITIONAL_ARGS_ARRAY[0]}"
+    POSITIONAL_ARG2="${POSITIONAL_ARGS_ARRAY[1]}"
 
     # Do debug prints of all argument stats
 
-    all_args_array_len="${#all_args_array[@]}"
+    all_args_array_len="${#ALL_ARGS_ARRAY[@]}"
     echo_debug "Total number of args = $all_args_array_len"
-    echo_debug "all_args_array contains:"
-    print_array_debug all_args_array
+    echo_debug "ALL_ARGS_ARRAY contains:"
+    print_array_debug ALL_ARGS_ARRAY
     echo_debug ""
 
-    positional_args_array_len="${#positional_args_array[@]}"
+    positional_args_array_len="${#POSITIONAL_ARGS_ARRAY[@]}"
     echo_debug "Number of positional args = $positional_args_array_len"
-    echo_debug "positional_args_array contains:"
-    print_array_debug positional_args_array
+    echo_debug "POSITIONAL_ARGS_ARRAY contains:"
+    print_array_debug POSITIONAL_ARGS_ARRAY
     echo_debug ""
-    echo_debug "positional_arg1 = '$positional_arg1'"
-    echo_debug "positional_arg2 = '$positional_arg2'"
+    echo_debug "POSITIONAL_ARG1 = '$POSITIONAL_ARG1'"
+    echo_debug "POSITIONAL_ARG2 = '$POSITIONAL_ARG2'"
     echo_debug ""
 } # parse_args
 
@@ -265,9 +288,9 @@ main() {
     echo_debug "Running 'main'."
 
     # Debug print some arguments to prove that parsed arguments are globally available here
-    echo_debug "arga = '$arga'"
-    echo_debug "argb = '$argb'"
-    echo_debug "argc = '$argc'"
+    echo_debug "ARGA = '$ARGA'"
+    echo_debug "ARGB = '$ARGB'"
+    echo_debug "ARGC = '$ARGC'"
 } # main
 
 # Set the global variable `run` to "true" if the script is being **executed** (not sourced) and
