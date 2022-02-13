@@ -120,6 +120,9 @@ EXAMPLE USAGES:
         Pass in custom arguments a, b, and c, as well as 'one' for 'posiitonal_arg1', 'two' for
         'positional_arg2', and 'three' as a 3rd positional argument which is unused but will also
         get captured into the 'POSITIONAL_ARGS_ARRAY'.
+    $SCRIPT_NAME -a 'some invalid argument' one two -b 'Nice to meet you!' -c 789 three
+        Same as above, except make argument a be invalid so the code will exit early and print an
+        error about it.
 
 This program is part of eRCaGuy_dotfiles: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles
 by Gabriel Staples.
@@ -131,6 +134,11 @@ echo_debug() {
         printf "%s" "DEBUG: "
         echo "$@"
     fi
+}
+
+echo_error() {
+    printf "%s" "ERROR: "
+    echo "$@"
 }
 
 # A function to do printf-style debug prints only if `DEBUG_PRINTS_ON` is set to "true".
@@ -253,7 +261,7 @@ parse_args() {
             *)
                 # error out for any unexpected options passed in
                 if [ "$first_letter" = "-" ]; then
-                    echo "ERROR: invalid optional argument ('$1'). See help menu for valid options."
+                    echo_error "Invalid optional argument ('$1'). See help menu for valid options."
                     exit $RETURN_CODE_ERROR
                 fi
 
@@ -284,13 +292,104 @@ parse_args() {
     echo_debug ""
 } # parse_args
 
+# Check arguments and print errors and exit if any critical ones are invalid
+check_if_arguments_are_valid() {
+    arga_is_ok="false"
+    argb_is_ok="false"
+    argc_is_ok="false"
+
+    # Here are some made-up examples for demonstration purposes
+
+    # Example 1: exit if args are invalid
+
+    if [ "$ARGA" = "some invalid argument" ]; then
+        echo_error "ARGA is invalid. See help menu for valid options."
+        exit $RETURN_CODE_ERROR
+    fi
+
+    if [ "$ARGB" = "some invalid argument" ]; then
+        echo_error "ARGB is invalid. See help menu for valid options."
+        exit $RETURN_CODE_ERROR
+    fi
+
+    if [ "$ARGC" = "some invalid argument" ]; then
+        echo_error "ARGC is invalid. See help menu for valid options."
+        exit $RETURN_CODE_ERROR
+    fi
+
+    # Example 2: set some flags if args are invalid
+
+    if [ "$ARGA" != "some invalid argument" ]; then
+        arga_is_ok="true"
+    fi
+
+    if [ "$ARGB" != "some invalid argument" ]; then
+        argb_is_ok="true"
+    fi
+
+    if [ "$ARGC" != "some invalid argument" ]; then
+        argc_is_ok="true"
+    fi
+}
+
+# Exit if the last command failed.
+exit_if_last_command_failed() {
+    error_code="$?"
+    if [ "$error_code" -ne 0 ]; then
+        echo_error "Last command failed with error code $error_code."
+        exit $RETURN_CODE_ERROR
+    fi
+}
+
+# Print and run the passed-in command
+# USAGE:
+#       cmd_array=(ls -a -l -F /)
+#       print_and_run_cmd cmd_array
+# See:
+# 1. My answer on how to pass regular "indexed" and associative arrays by reference:
+#    https://stackoverflow.com/a/71060036/4561887 and
+# 1. My answer on how to pass associative arrays: https://stackoverflow.com/a/71060913/4561887
+print_and_run_cmd() {
+    local -n array_reference="$1"
+    echo "Running cmd:  ${cmd_array[@]}"
+    # run the command by calling all elements of the command array at once
+    ${cmd_array[@]}
+}
+
 main() {
     echo_debug "Running 'main'."
+
+    check_if_arguments_are_valid
 
     # Debug print some arguments to prove that parsed arguments are globally available here
     echo_debug "ARGA = '$ARGA'"
     echo_debug "ARGB = '$ARGB'"
     echo_debug "ARGC = '$ARGC'"
+
+    # Run whatever commands you want to here, to do what your program needs to do. Frequently,
+    # we want to also print our command we are running before we run it, so that the user can
+    # easily copy/paste it to re-run just that part if they want to after the script runs.
+    # It can also be used to more-easily debug the program. Here are some examples of
+    # storing a command into an array, and then printing and running it.
+
+    echo "== Example command 1: =="
+    cmd_array=(ls -a -l -F /)
+    print_and_run_cmd cmd_array
+    exit_if_last_command_failed
+    echo ""
+
+    echo "== Example command 2: =="
+    cmd_array=(df -h)
+    print_and_run_cmd cmd_array
+    exit_if_last_command_failed
+    echo ""
+
+    # echo "== Example command 3: =="
+    # # Doesn't work; need to figure out how to make this work with spaces
+    # cmd_array=(ls -1 "$HOME/temp/some folder with spaces")
+    # print_and_run_cmd cmd_array
+    # exit_if_last_command_failed
+    # echo ""
 } # main
 
 # Set the global variable `run` to "true" if the script is being **executed** (not sourced) and
