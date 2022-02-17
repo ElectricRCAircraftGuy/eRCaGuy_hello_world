@@ -160,27 +160,34 @@ print_version() {
 # Unit Tests
 # Cmd: `<this_script_name> --run_tests`
 run_tests() {
-    echo "Running unit tests"
+    echo "Running unit tests [none yet]."
+    echo "You can have your unit test file source this script using" \
+         "'. path/to/this/script.sh' to then test each of its functions."
     # Fill this in. Ex: call `my_unit_tests.sh`
 }
 
-# Print a regular bash "indexed" array
+# Print a regular bash "indexed" array, passed by reference
 # See:
 # 1. my answer: https://stackoverflow.com/a/71060036/4561887 and
 # 1. my answer: https://stackoverflow.com/a/71060913/4561887
 print_array() {
     local -n array_reference="$1"
+
+    if [ "${#array_reference[@]}" -eq 0 ]; then
+        echo "No elements found."
+    fi
+
     for element in "${array_reference[@]}"; do
         echo "  $element"
     done
 }
 
-# Print a regular bash "indexed" array only if `DEBUG_PRINTS_ON` is set to "true".
+# Print a regular bash "indexed" array, passed by reference, only if `DEBUG_PRINTS_ON` is set
+# to "true".
 print_array_debug() {
-    local -n array_reference="$1"
-    for element in "${array_reference[@]}"; do
-        echo_debug "  $element"
-    done
+    if [ "$DEBUG_PRINTS_ON" = "true" ]; then
+        print_array "$1"
+    fi
 }
 
 parse_args() {
