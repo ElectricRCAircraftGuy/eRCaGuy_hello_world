@@ -9,8 +9,7 @@
 
 # keywords: print and run arrays, array cmds, array commands; print and run bash commands cmds
 
-# Check this script with:
-#       shellcheck print_and_run.sh
+# Check this script with: `shellcheck print_and_run.sh`
 
 # Run command:
 #       ./print_and_run.sh
