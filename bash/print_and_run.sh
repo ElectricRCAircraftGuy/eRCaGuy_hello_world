@@ -18,10 +18,17 @@
 # 1. *****+ THIS IS THE ANSWER THIS CODE IS BASED ON!:
 #    https://stackoverflow.com/a/71151669/4561887
 # 1. See also: eRCaGuy_hello_world/bash/sandbox/print_and_run2.sh
+# 1. [my own answer with this code] https://stackoverflow.com/a/71165011/4561887
 
 
-# Print and run the passed-in command, which is passed in as an array **by reference**
-# See here for a full explanation: https://stackoverflow.com/a/71151669/4561887
+# Print and run the passed-in command, which is passed in as an array
+# **by reference**.
+# See:
+# - here for the original answer this is based on, and a full explanation:
+#   https://stackoverflow.com/a/71151669/4561887
+# - here for my answer with this code:
+#   https://stackoverflow.com/a/71165011/4561887
+#
 # USAGE:
 #       cmd_array=(ls -a -l -F /)
 #       print_and_run1 cmd_array
@@ -34,8 +41,14 @@ print_and_run1() {
     "${array_reference[@]}"
 }
 
-# Print and run the passed-in command, which is passed in as members of an array **by value**
-# See here for a full explanation: https://stackoverflow.com/a/71151669/4561887
+# Print and run the passed-in command, which is passed in as members of
+# an array **by value**.
+# See:
+# - here for the original answer this is based on, and a full explanation:
+#   https://stackoverflow.com/a/71151669/4561887
+# - here for my answer with this code:
+#   https://stackoverflow.com/a/71165011/4561887
+#
 # USAGE:
 #       cmd_array=(ls -a -l -F /)
 #       print_and_run2 "${cmd_array[@]}"
@@ -53,9 +66,6 @@ print_and_run1 cmd_array
 echo ""
 print_and_run2 "${cmd_array[@]}"
 echo ""
-
-
-
 
 
 
