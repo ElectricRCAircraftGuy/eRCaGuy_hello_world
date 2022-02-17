@@ -145,6 +145,8 @@ echo_error() {
 printf_debug() {
     if [ "$DEBUG_PRINTS_ON" = "true" ]; then
         printf "%s" "DEBUG: "
+        # See: https://github.com/koalaman/shellcheck/wiki/SC2059
+        # shellcheck disable=SC2059
         printf "$@"
     fi
 }
@@ -398,6 +400,9 @@ main() {
     echo ""
 
     echo "== Example command 3: =="
+    # Disable unused check for this variable since it is used by reference below.
+    # See: https://github.com/koalaman/shellcheck/wiki/SC2034
+    # shellcheck disable=SC2034
     cmd_array=(ls -1 "$HOME/temp/some folder with spaces")
     print_and_run_cmd cmd_array
     exit_if_last_command_failed

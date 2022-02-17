@@ -19,6 +19,10 @@ hexToAscii() {
 }
 ```
 
+For a info. on the shellcheck "check" errors, per their codes, see here: https://github.com/koalaman/shellcheck/wiki/Checks  
+A full list is here: https://gist.github.com/nicerobot/53cee11ee0abbdc997661e65b348f375
+Example page: https://github.com/koalaman/shellcheck/wiki/SC1000
+
 
 # bash script generic templates:
 
