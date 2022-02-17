@@ -349,11 +349,17 @@ exit_if_last_command_failed() {
 # 1. My answer on how to pass regular "indexed" and associative arrays by reference:
 #    https://stackoverflow.com/a/71060036/4561887 and
 # 1. My answer on how to pass associative arrays: https://stackoverflow.com/a/71060913/4561887
+# 1. ***** This answer to me which tells me to **run `shellcheck`** on my bash script to fix it!:
+#    https://stackoverflow.com/a/71118015/4561887
+# 1. See also my comment here:
+#    https://stackoverflow.com/questions/71117953/how-to-write-bash-function-to-print-and-run-command-when-the-command-has-argumen/71118445?noredirect=1#comment125716247_71118015
+# 1. My answer to my follow-up question here: Bash: how to print and run a cmd array which has
+#    the pipe operator, |, in it: https://stackoverflow.com/a/71151092/4561887
 print_and_run_cmd() {
     local -n array_reference="$1"
-    echo "Running cmd:  ${cmd_array[@]}"
+    echo "Running cmd:  ${array_reference[*]}"
     # run the command by calling all elements of the command array at once
-    ${cmd_array[@]}
+    "${array_reference[@]}"
 }
 
 main() {
@@ -384,12 +390,11 @@ main() {
     exit_if_last_command_failed
     echo ""
 
-    # echo "== Example command 3: =="
-    # # Doesn't work; need to figure out how to make this work with spaces
-    # cmd_array=(ls -1 "$HOME/temp/some folder with spaces")
-    # print_and_run_cmd cmd_array
-    # exit_if_last_command_failed
-    # echo ""
+    echo "== Example command 3: =="
+    cmd_array=(ls -1 "$HOME/temp/some folder with spaces")
+    print_and_run_cmd cmd_array
+    exit_if_last_command_failed
+    echo ""
 } # main
 
 # Set the global variable `run` to "true" if the script is being **executed** (not sourced) and
@@ -416,4 +421,8 @@ run_check
 if [ "$run" == "true" ]; then
     parse_args "$@"
     time main
+    # Explicitly exit after `main` to prevent any code from running afterwards
+    # in case someone modifies this script and adds more code below.
+    # See: https://unix.stackexchange.com/a/449508/114401
+    exit $RETURN_CODE_SUCCESS
 fi
