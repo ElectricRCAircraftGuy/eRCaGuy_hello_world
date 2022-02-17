@@ -4,6 +4,8 @@
 
 # (description)
 
+# keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
+
 # Run command:
 #       ./hello_world_basic.sh
 
