@@ -6,6 +6,9 @@
 
 # keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
 
+# Check this script with:
+#       shellcheck hello_world_basic.sh
+
 # Run command:
 #       ./hello_world_basic.sh
 
