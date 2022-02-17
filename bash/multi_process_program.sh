@@ -21,12 +21,22 @@
 # Run it
 #       time ./multi_process_program.sh
 
+
+# This is a special sleep function which returns the number of seconds slept as
+# the "error code" or return code" so that we can easily see that we are in
+# fact actually obtaining the return code of each process as it finishes.
+my_sleep() {
+    seconds_to_sleep="$1"
+    sleep "$seconds_to_sleep"
+    return "$seconds_to_sleep"
+}
+
 # Create an array of whatever commands you want to run as subprocesses
 procs=()  # bash array
-procs+=("sleep 5")
-procs+=("sleep 2")
-procs+=("sleep 3")
-procs+=("sleep 4")
+procs+=("my_sleep 5")
+procs+=("my_sleep 2")
+procs+=("my_sleep 3")
+procs+=("my_sleep 4")
 
 num_procs=${#procs[@]}  # number of processes
 echo "num_procs = $num_procs"
@@ -45,6 +55,8 @@ done
 # # OPTION 1 (comment this option out if using Option 2 below): wait for all pids
 # for pid in "${pids[@]}"; do
 #     wait "$pid"
+#     return_code="$?"
+#     echo "PID = $pid; return_code = $return_code"
 # done
 # echo "All $num_procs processes have ended."
 
@@ -60,17 +72,23 @@ while true; do
         ps --pid "$pid" > /dev/null
         if [ "$?" -ne 0 ]; then
             # PID doesn't exist anymore, meaning it terminated
-            # remove it from the `pids` array by `unset`ting the element at this
-            # index; NB: due to how bash arrays work, this does NOT actually
-            # remove this element from the array. Rather, it removes this index
-            # from the `"${!pids[@]}"` list of indices, adjusts the array count
-            # (`"${#pids[@]}"`) accordingly, and it sets the value at this
-            # index to either a null value of some sort, or an empty string
-            # (I'm not exactly sure).
+
+            # 1st, read its return code
+            wait "$pid"
+            return_code="$?"
+
+            # 2nd, remove this PID from the `pids` array by `unset`ting the
+            # element at this index; NB: due to how bash arrays work, this does
+            # NOT actually remove this element from the array. Rather, it
+            # removes its index from the `"${!pids[@]}"` list of indices,
+            # adjusts the array count(`"${#pids[@]}"`) accordingly, and it sets
+            # the value at this index to either a null value of some sort, or
+            # an empty string (I'm not exactly sure).
             unset "pids[$i]"
 
             num_pids="${#pids[@]}"
-            echo "PID $pid is done. $num_pids PIDs remaining."
+            echo "PID $pid is done; return_code = $return_code;" \
+                 "$num_pids PIDs remaining."
         fi
     done
 
@@ -88,38 +106,49 @@ done
 
 # SAMPLE OUTPUT:
 #
-# OPTION 1 (with Option 2 commented out)
+# OPTION 1 (with Option 2 NOT commented out)
 #
 #       eRCaGuy_hello_world/bash$ time ./multi_process_program.sh
 #       num_procs = 4
-#       cmd = sleep 1
-#           pid = 26573
-#       cmd = sleep 2
-#           pid = 26574
-#       cmd = sleep 3
-#           pid = 26575
-#       cmd = sleep 4
-#           pid = 26576
+#       cmd = my_sleep 5
+#           pid = 21694
+#       cmd = my_sleep 2
+#           pid = 21695
+#       cmd = my_sleep 3
+#           pid = 21697
+#       cmd = my_sleep 4
+#           pid = 21699
+#       PID = 21694; return_code = 5
+#       PID = 21695; return_code = 2
+#       PID = 21697; return_code = 3
+#       PID = 21699; return_code = 4
+#       All 4 processes have ended.
+#       PID 21694 is done; return_code = 5; 3 PIDs remaining.
+#       PID 21695 is done; return_code = 2; 2 PIDs remaining.
+#       PID 21697 is done; return_code = 3; 1 PIDs remaining.
+#       PID 21699 is done; return_code = 4; 0 PIDs remaining.
 #
-#       real    0m4.013s
-#       user    0m0.015s
-#       sys 0m0.010s
+#       real    0m5.084s
+#       user    0m0.025s
+#       sys 0m0.061s
+#
 #
 # OPTION 2 (with Option 1 commented out)
 #
 #       eRCaGuy_hello_world/bash$ ./multi_process_program.sh
 #       num_procs = 4
-#       cmd = sleep 5
-#           pid = 14736
-#       cmd = sleep 2
-#           pid = 14737
-#       cmd = sleep 3
-#           pid = 14738
-#       cmd = sleep 4
-#           pid = 14739
-#       PID 14737 is done. 3 PIDs remaining.
-#       PID 14738 is done. 2 PIDs remaining.
-#       PID 14739 is done. 1 PIDs remaining.
-#       PID 14736 is done. 0 PIDs remaining.
+#       cmd = my_sleep 5
+#           pid = 22275
+#       cmd = my_sleep 2
+#           pid = 22276
+#       cmd = my_sleep 3
+#           pid = 22277
+#       cmd = my_sleep 4
+#           pid = 22280
+#       PID 22276 is done; return_code = 2; 3 PIDs remaining.
+#       PID 22277 is done; return_code = 3; 2 PIDs remaining.
+#       PID 22280 is done; return_code = 4; 1 PIDs remaining.
+#       PID 22275 is done; return_code = 5; 0 PIDs remaining.
+#
 
 
