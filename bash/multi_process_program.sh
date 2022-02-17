@@ -15,6 +15,9 @@
 
 # References:
 # 1. [my own answer where I posted this code!] https://stackoverflow.com/a/70670852/4561887
+# 1. *****+ How I learned that you can use `wait` to read back the return code of a completed
+#    subprocess even **after** the subprocess has already completed!
+#    https://stackoverflow.com/a/1570356/4561887
 # 1. how I first learned the basics of this approach: https://stackoverflow.com/a/356154/4561887
 # 1. [Remove an element from a Bash array](https://stackoverflow.com/q/16860877/4561887)
 
