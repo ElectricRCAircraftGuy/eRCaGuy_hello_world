@@ -1,6 +1,23 @@
-# Notes
+# Shellcheck
 
 Use the `shellcheck` static code analyzer to analyze your bash scripts for errors before running them. Learn a little bit more about `shellcheck` in this answer which helped me here: [Stack Overflow: How to write bash function to print and run command when the command has arguments with spaces or things to be expanded](https://stackoverflow.com/a/71118015/4561887).
+
+```bash
+# Install shellcheck
+sudo apt update && sudo apt install shellcheck 
+
+# Use it to scan a bash .sh program
+shellcheck path/to/my_script.sh
+```
+
+If you ever need to disable a shellcheck warning or error, see here: https://github.com/koalaman/shellcheck/wiki/Ignore. The syntax would look like this. The `# shellcheck disable=SC2059` syntax is what disables that `shellcheck` error code on the line immediately following it. 
+
+```bash
+hexToAscii() {
+  # shellcheck disable=SC2059
+  printf "\x$1"
+}
+```
 
 
 # bash script generic templates:
