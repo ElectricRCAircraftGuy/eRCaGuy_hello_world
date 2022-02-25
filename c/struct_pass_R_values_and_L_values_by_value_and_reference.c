@@ -28,6 +28,7 @@ References:
     - Demonstrates "designator" initialization syntax (`.member1 = whatever`)
 1. [my answer]
    [Use of 'const' for function parameters](https://stackoverflow.com/a/60823004/4561887)
+1. SEE ALSO: eRCaGuy_hello_world/cpp/struct_pass_R_values_by_cpp_reference_and_ptr.c
 
 */
 
@@ -324,7 +325,10 @@ int main()
         #ifdef __cplusplus
         printf("No valid R-value ptr examples for C++ (although passing R-values by C++\n"
                "const reference is fine; see: https://stackoverflow.com/a/16481660/4561887) due\n"
-               "to `error: taking address of temporary [-fpermissive]`\n");
+               "to `error: taking address of temporary [-fpermissive]`\n"
+               "SEE FULL DEMO HERE: "
+               "\"eRCaGuy_hello_world/cpp/struct_pass_R_values_by_cpp_reference_and_ptr.c\"\n"
+               "and see MY ANSWER HERE: https://stackoverflow.com/a/71270918/4561887\n");
         #else // For C, run the following:
 
         // Example 1: standard construction
@@ -565,6 +569,8 @@ OR, in C++:
     No valid R-value ptr examples for C++ (although passing R-values by C++
     const reference is fine; see: https://stackoverflow.com/a/16481660/4561887) due
     to `error: taking address of temporary [-fpermissive]`
+    SEE FULL DEMO HERE: "eRCaGuy_hello_world/cpp/struct_pass_R_values_by_cpp_reference_and_ptr.c"
+    and see MY ANSWER HERE: https://stackoverflow.com/a/71270918/4561887
 
 
 */
