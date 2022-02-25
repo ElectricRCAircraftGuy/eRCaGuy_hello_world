@@ -322,8 +322,9 @@ int main()
         // and efficiency IS possible in C++ as well, it's just different is all: you must use a
         // C++ "const reference" for the input struct parameter instead of a ptr.
         #ifdef __cplusplus
-        printf("No valid examples for C++ due to "
-               "`error: taking address of temporary [-fpermissive]`\n");
+        printf("No valid R-value ptr examples for C++ (although passing R-values by C++\n"
+               "const reference is fine; see: https://stackoverflow.com/a/16481660/4561887) due\n"
+               "to `error: taking address of temporary [-fpermissive]`\n");
         #else // For C, run the following:
 
         // Example 1: standard construction
@@ -561,7 +562,9 @@ OR, in C++:
     ------------------------------
     As R-value
     ------------------------------
-    No valid examples for C++ due to `error: taking address of temporary [-fpermissive]`
+    No valid R-value ptr examples for C++ (although passing R-values by C++
+    const reference is fine; see: https://stackoverflow.com/a/16481660/4561887) due
+    to `error: taking address of temporary [-fpermissive]`
 
 
 */
