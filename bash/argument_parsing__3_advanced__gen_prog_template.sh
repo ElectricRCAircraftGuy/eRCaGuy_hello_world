@@ -164,7 +164,7 @@ print_version() {
 run_tests() {
     echo "Running unit tests [none yet]."
     echo "You can have your unit test file source this script using" \
-         "'. path/to/this/script.sh' to then test each of its functions."
+         "'. \"$SCRIPT_NAME\"' to then be able to call and test each of its functions."
     # Fill this in. Ex: call `my_unit_tests.sh`
 }
 
