@@ -4,7 +4,11 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 8 Dec. 2021
 
-Quadruple system abstraction demo (show `system()` calls in C): this is a program in C which:
+A C program which writes and calls Python, which Python program then converts text into executable
+Python code (via `exec()`), which Python code calls the bash/system call executable `ping`.
+4 layers: (1) C --> (2) Python --> (3) Text-to-Python via `exec()` --> (4) system/bash `ping` call.
+
+A quadruple system abstraction demo (show `system()` calls in C): this is a program in C which:
 1. writes a program in Python
 2. which the C program then calls via a system call,
 3. and the Python program runs and converts some text into a call which it `exec`s, and then it
@@ -14,6 +18,7 @@ Quadruple system abstraction demo (show `system()` calls in C): this is a progra
 In short, it's a C program which uses system calls to write and call a Python script which then uses
 a system call to ping. Pretty neat. I posted the code below in my answer here:
 https://stackoverflow.com/a/70285228/4561887
+
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
