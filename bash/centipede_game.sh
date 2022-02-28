@@ -18,6 +18,12 @@
 # 1. Something is wrong with trying to exit the game. It seems to mess up the terminal and we have
 #    to type `reset` to fix it, withOUT the chars showing up as you type, as I explain here:
 #    https://askubuntu.com/a/1238357/327339
+#
+# Run command:
+#       ./centipede_game.sh
+#
+# References:
+# 1. Source code: https://askubuntu.com/a/835994/327339
 
 drawborder() {
    # Draw top
