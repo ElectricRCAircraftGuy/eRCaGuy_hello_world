@@ -98,7 +98,7 @@ typedef struct file_s
 } file_t;
 
 /// Copy the file path pointed to by `path` into the `file_t` object.
-void store_path(file_t* file, const char *path)
+void file_store_path(file_t* file, const char *path)
 {
     if (file == NULL || path == NULL)
     {
@@ -111,7 +111,7 @@ void store_path(file_t* file, const char *path)
 
 /// Print the entire line at 1-based line number `line_number` in file `file`, including the
 /// '\n' at the end of the line.
-void print_line(const file_t* file, size_t line_number)
+void file_print_line(const file_t* file, size_t line_number)
 {
     if (file == NULL)
     {
@@ -166,7 +166,7 @@ void print_line(const file_t* file, size_t line_number)
 /// Print `num_lines` number of lines in a file, starting at 1-based line number `first_line`,
 /// and including the '\n' at the end of each line.
 /// At the start of each line, the line number is also printed, followed by a colon (:).
-void print_lines(const file_t* file, size_t first_line, size_t num_lines)
+void file_print_lines(const file_t* file, size_t first_line, size_t num_lines)
 {
     if (file == NULL)
     {
@@ -187,22 +187,22 @@ void print_lines(const file_t* file, size_t first_line, size_t num_lines)
     for (size_t line_number = first_line; line_number <= last_line; line_number++)
     {
         printf("%4lu: ", line_number);
-        print_line(file, line_number);
+        file_print_line(file, line_number);
     }
 }
 
 /// Print an entire file.
-void print_file(const file_t* file)
+void file_print_all(const file_t* file)
 {
     printf("num_chars to print = %zu\n", file->num_chars);
     printf("num_lines to print = %zu\n", file->num_lines);
     printf("========== FILE START ==========\n");
-    print_lines(file, 1, file->num_lines);
+    file_print_lines(file, 1, file->num_lines);
     printf("=========== FILE END ===========\n");
 }
 
 /// Read all characters from a file on your system at the path specified in the file object.
-void load_file(file_t* file)
+void file_load(file_t* file)
 {
     if (file == NULL)
     {
@@ -285,27 +285,27 @@ int main()
            sizeof(file.file_str), ARRAY_LEN(file.line_array));
 
     const char FILENAME[] = __FILE__;
-    store_path(&file, FILENAME);
+    file_store_path(&file, FILENAME);
     printf("Loading file at path \"%s\".\n", file.path);
-    load_file(&file);
-    print_file(&file);
+    file_load(&file);
+    file_print_all(&file);
     printf("\n");
 
     printf("Printing just one line now:\n");
-    print_lines(&file, 254, 1);
+    file_print_lines(&file, 256, 1);
     printf("\n");
 
     // FOR TESTING: intentionally cause some errors by trying to print some lines for an unpopulated
     // file object. Example errors:
-    //      243: ERROR in function print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
-    //      244: ERROR in function print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
-    //      245: ERROR in function print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
-    //      246: ERROR in function print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+    //      243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
+    //      244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
+    //      245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
+    //      246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
     // Note: for kicks (since I didn't realize this was possible), I'm also using the variable name
     // `$` for this `file_t` object.
     printf("Causing some intentional errors here:\n");
     file_t $;
-    print_lines(&$, 243, 4);
+    file_print_lines(&$, 243, 4);
 
 
     return 0;
@@ -367,15 +367,15 @@ int main()
 //   274:
 //   275:     // FOR TESTING: intentionally cause some errors by trying to print some lines for an unpopulated
 //   276:     // file object. Example errors:
-//   277:     //      243: ERROR in function print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
-//   278:     //      244: ERROR in function print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
-//   279:     //      245: ERROR in function print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
-//   280:     //      246: ERROR in function print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+//   277:     //      243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
+//   278:     //      244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
+//   279:     //      245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
+//   280:     //      246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
 //   281:     // Note: for kicks (since I didn't realize this was possible), I'm also using the variable name
 //   282:     // `$` for this `file_t` object.
 //   283:     printf("Causing some intentional errors here:\n");
 //   284:     file_t $;
-//   285:     print_lines(&$, 243, 4);
+//   285:     file_print_lines(&$, 243, 4);
 //   286:
 //   287:
 //   288:     return 0;
@@ -401,10 +401,10 @@ int main()
 //   255:
 //
 //  Causing some intentional errors here:
-//   243: ERROR in function print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
-//   244: ERROR in function print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
-//   245: ERROR in function print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
-//   246: ERROR in function print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+//   243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
+//   244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
+//   245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
+//   246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
 //
 //
 // OR, in C++:
