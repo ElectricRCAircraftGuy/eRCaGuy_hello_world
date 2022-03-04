@@ -3,6 +3,7 @@
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 # (description)
+# Status: (status)
 
 # keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
 

@@ -8,11 +8,14 @@
 # Practice capturing newline-separated string output from `ls -1` and `find` into regular
 # bash "indexed" arrays, then printing it.
 
+# Status: works!
+
 # keywords: bash arrays; mapfile; read -r; here string; herestring; bash arrays; bash
 # regular "indexed" arrays; printing bash arrays; bash array length; bash array indices; bash array
 # practice
 
 # Check this script with: `shellcheck array_list_all_files_and_directories.sh`
+# PASSED!
 
 # Run command:
 #       ./array_list_all_files_and_directories.sh
