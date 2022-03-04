@@ -80,6 +80,9 @@ References:
 
 typedef struct file_s
 {
+    /// The path to the file to open.
+    const char* path;
+
     /// All characters read from the file.
     char file_str[MAX_NUM_CHARS];     // array of `char`
 
@@ -185,10 +188,16 @@ void print_file(const file_t* file)
     printf("=========== FILE END ===========\n");
 }
 
-/// Read all characters from a file on your system at path `path` into file object `file`.
-void load_file(file_t* file, const char* path)
+/// Read all characters from a file on your system at the path specified in the file object.
+void load_file(file_t* file)
 {
-    FILE* fp = fopen(path, "r");
+    if (file == NULL)
+    {
+        printf("ERROR in function %s(): NULL ptr.\n", __func__);
+        return;
+    }
+
+    FILE* fp = fopen(file->path, "r");
     if (fp == NULL)
     {
         printf("ERROR in function %s(): Failed to open file (%s).\n", __func__, strerror(errno));
@@ -263,8 +272,9 @@ int main()
            sizeof(file.file_str), ARRAY_LEN(file.line_array));
 
     const char FILENAME[] = __FILE__;
-    printf("Loading file \"%s\".\n", FILENAME);
-    load_file(&file, FILENAME);
+    file.path = FILENAME;
+    printf("Loading file at path \"%s\".\n", file.path);
+    load_file(&file);
     print_file(&file);
     printf("\n");
 
