@@ -77,11 +77,12 @@ References:
 
 #define MAX_NUM_LINES 10000UL
 #define MAX_NUM_CHARS (MAX_NUM_LINES*200UL) // 2 MB
+#define MAX_PATH_LEN (1000)
 
 typedef struct file_s
 {
     /// The path to the file to open.
-    const char* path;
+    char path[MAX_PATH_LEN];
 
     /// All characters read from the file.
     char file_str[MAX_NUM_CHARS];     // array of `char`
@@ -95,6 +96,18 @@ typedef struct file_s
     /// The total number of lines in the file, and hence in the `line_array` above.
     size_t num_lines;
 } file_t;
+
+/// Copy the file path pointed to by `path` into the `file_t` object.
+void store_path(file_t* file, const char *path)
+{
+    if (file == NULL || path == NULL)
+    {
+        printf("ERROR in function %s(): NULL ptr.\n", __func__);
+        return;
+    }
+
+    strncpy(file->path, path, sizeof(file->path));
+}
 
 /// Print the entire line at 1-based line number `line_number` in file `file`, including the
 /// '\n' at the end of the line.
@@ -272,7 +285,7 @@ int main()
            sizeof(file.file_str), ARRAY_LEN(file.line_array));
 
     const char FILENAME[] = __FILE__;
-    file.path = FILENAME;
+    store_path(&file, FILENAME);
     printf("Loading file at path \"%s\".\n", file.path);
     load_file(&file);
     print_file(&file);
