@@ -13,6 +13,7 @@ individually-addressable lines. Use static memory allocation, not dynamic, for t
    safety-critical, memory-constrained, real-time, deterministic, embedded devices and programs.
 1. It can access the first character of any line in the file in O(1) time via a simple index into
    an array.
+1. It's extensible via dynamic memory allocation if needed.
 
 STATUS: works!
 
@@ -29,7 +30,7 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 read_file_into_c_string_and_array_of_li
 References:
 1. I'm seeking to answer this question, more or less:
    [C function to load file content in string array](https://stackoverflow.com/q/71330345/4561887)
-1. [my answer] TODO
+    1. *****+[my answer] https://stackoverflow.com/a/71346853/4561887
 1. https://en.cppreference.com/w/c/io/fopen
 1. https://en.cppreference.com/w/c/string/byte/strerror - shows a good usage example of
    `printf("File opening error: %s\n", strerror(errno));` if `fopen()` fails when opening a file.
@@ -87,13 +88,15 @@ typedef struct file_s
     /// All characters read from the file.
     char file_str[MAX_NUM_CHARS];     // array of `char`
 
-    /// The total number of chars read into the `file_str` string, including null terminator.
+    /// The total number of chars read into the `file_str` string, including
+    //  null terminator.
     size_t num_chars;
 
     /// A ptr to each line in the file.
     char* line_array[MAX_NUM_LINES];  // array of `char*` (ptr to char)
 
-    /// The total number of lines in the file, and hence in the `line_array` above.
+    /// The total number of lines in the file, and hence in the `line_array`
+    //  above.
     size_t num_lines;
 } file_t;
 
@@ -201,7 +204,8 @@ void file_print_all(const file_t* file)
     printf("=========== FILE END ===========\n");
 }
 
-/// Read all characters from a file on your system at the path specified in the file object.
+/// Read all characters from a file on your system at the path specified in the
+/// file object and copy this file data **into** the passed-in `file` object.
 void file_load(file_t* file)
 {
     if (file == NULL)
@@ -213,7 +217,8 @@ void file_load(file_t* file)
     FILE* fp = fopen(file->path, "r");
     if (fp == NULL)
     {
-        printf("ERROR in function %s(): Failed to open file (%s).\n", __func__, strerror(errno));
+        printf("ERROR in function %s(): Failed to open file (%s).\n",
+            __func__, strerror(errno));
         return;
     }
 
@@ -229,8 +234,8 @@ void file_load(file_t* file)
         // 1. Write the char
         if (i_write_char > I_WRITE_CHAR_MAX)
         {
-            printf("ERROR in function %s(): file is full (i_write_char = %zu, but "
-                   "I_WRITE_CHAR_MAX is only %zu).\n",
+            printf("ERROR in function %s(): file is full (i_write_char = "
+                   "%zu, but I_WRITE_CHAR_MAX is only %zu).\n",
                    __func__, i_write_char, I_WRITE_CHAR_MAX);
             break;
         }
@@ -243,8 +248,8 @@ void file_load(file_t* file)
 
             if (i_write_line > I_WRITE_LINE_MAX)
             {
-                printf("ERROR in function %s(): file is full (i_write_line = %zu, but "
-                       "I_WRITE_LINE_MAX is only %zu).\n",
+                printf("ERROR in function %s(): file is full (i_write_line = "
+                       "%zu, but I_WRITE_LINE_MAX is only %zu).\n",
                        __func__, i_write_line, I_WRITE_LINE_MAX);
                 break;
             }
@@ -255,8 +260,8 @@ void file_load(file_t* file)
         // end of line
         if (c == '\n')
         {
-            // '\n' indicates the end of a line, so prepare to start a new line on the next
-            // iteration
+            // '\n' indicates the end of a line, so prepare to start a new line
+            // on the next iteration
             start_of_line = true;
         }
 
@@ -286,13 +291,21 @@ int main()
 
     const char FILENAME[] = __FILE__;
     file_store_path(&file, FILENAME);
+
     printf("Loading file at path \"%s\".\n", file.path);
+    // open the file and copy its entire contents into the `file` object
     file_load(&file);
+
+    printf("Printing the entire file:\n");
     file_print_all(&file);
     printf("\n");
 
-    printf("Printing just one line now:\n");
-    file_print_lines(&file, 256, 1);
+    printf("Printing just this 1 line number:\n");
+    file_print_line(&file, 256);
+    printf("\n");
+
+    printf("Printing 4 lines starting at this line number:\n");
+    file_print_lines(&file, 256, 4);
     printf("\n");
 
     // FOR TESTING: intentionally cause some errors by trying to print some lines for an unpopulated
@@ -315,96 +328,115 @@ int main()
 //
 // In C:
 //
-//  eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
-//  The size of the `file_t` struct is 2080016 bytes (2.080016 MB; 1.983658 MiB).
-//  Max file size that can be read into this struct is 2000000 bytes or 10000 lines, whichever limit is hit first.
+//      eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
+//      The size of the `file_t` struct is 2081016 bytes (2.081016 MB; 1.984612 MiB).
+//      Max file size that can be read into this struct is 2000000 bytes or 10000 lines, whichever limit is hit first.
 //
-//  Loading file "read_file_into_c_string_and_array_of_lines.c".
-//  num_chars to print = 10311
-//  num_lines to print = 304
-//  ========== FILE START ==========
-//     1: /*
-//     2: This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
-//     3:
-//     4: GS
-//     5: 2 Mar. 2022
-//     6:
-//     7: Read a file in C into a C-string (array of chars), while also placing pointers to the start of each
-//     8: line into another array of `char *`. This way you have all the data plus the
-//     9: individually-addressable lines. Use static memory allocation, not dynamic, for these reasons:
-//    10: 1. It's a good demo.
-//    11: 1. It's faster at run-time since lots of dynamic memory allocation can add substantial overhead.
-//    12: 1. It's deterministic to use static memory allocation, making this implementation style good for
-//    13:    safety-critical, memory-constrained, real-time, deterministic, embedded devices and programs.
-//    14: 1. It can access the first character of any line in the file in O(1) time via a simple index into
-//    15:    an array.
-//    16:
-//    17: STATUS: works!
-//    18:
-//    19: To compile and run (assuming you've already `cd`ed into this dir):
-//    20: 1. In C:
-//    21: ```bash
-//    22: gcc -Wall -Wextra -Werror -O3 -std=c17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
-//    23: ```
-//    24: 2. In C++
-//    25: ```bash
-//    26: g++ -Wall -Wextra -Werror -O3 -std=c++17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
-//    27: ```
-//    28:
-//    29: References:
-//    30: 1. I'm seeking to answer this question, more or less:
-//    31:    [C function to load file content in string array](https://stackoverflow.com/q/71330345/4561887)
-//    32: 1. [my answer] TODO
-//    33: 1. https://en.cppreference.com/w/c/io/fopen
-//    34: 1. https://en.cppreference.com/w/c/string/byte/strerror - shows a good usage example of
-//    35:    `printf("File opening error: %s\n", strerror(errno));` if `fopen()` fails when opening a file.
-//    36: 1. https://en.cppreference.com/w/c/io/fgetc
-//    37:
-//    38:
+//      Loading file at path "read_file_into_c_string_and_array_of_lines.c".
+//      Printing the entire file:
+//      num_chars to print = 15714
+//      num_lines to print = 425
+//      ========== FILE START ==========
+//         1: /*
+//         2: This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+//         3:
+//         4: GS
+//         5: 2 Mar. 2022
+//         6:
+//         7: Read a file in C into a C-string (array of chars), while also placing pointers to the start of each
+//         8: line into another array of `char *`. This way you have all the data plus the
+//         9: individually-addressable lines. Use static memory allocation, not dynamic, for these reasons:
+//        10: 1. It's a good demo.
+//        11: 1. It's faster at run-time since lots of dynamic memory allocation can add substantial overhead.
+//        12: 1. It's deterministic to use static memory allocation, making this implementation style good for
+//        13:    safety-critical, memory-constrained, real-time, deterministic, embedded devices and programs.
+//        14: 1. It can access the first character of any line in the file in O(1) time via a simple index into
+//        15:    an array.
+//        16: 1. It's extensible via dynamic memory allocation if needed.
+//        17:
+//        18: STATUS: works!
+//        19:
+//        20: To compile and run (assuming you've already `cd`ed into this dir):
+//        21: 1. In C:
+//        22: ```bash
+//        23: gcc -Wall -Wextra -Werror -O3 -std=c17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
+//        24: ```
+//        25: 2. In C++
+//        26: ```bash
+//        27: g++ -Wall -Wextra -Werror -O3 -std=c++17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
+//        28: ```
+//        29:
+//        30: References:
+//        31: 1. I'm seeking to answer this question, more or less:
+//        32:    [C function to load file content in string array](https://stackoverflow.com/q/71330345/4561887)
+//        33:     1. *****+[my answer] https://stackoverflow.com/a/71346853/4561887
+//        34: 1. https://en.cppreference.com/w/c/io/fopen
+//        35: 1. https://en.cppreference.com/w/c/string/byte/strerror - shows a good usage example of
+//        36:    `printf("File opening error: %s\n", strerror(errno));` if `fopen()` fails when opening a file.
+//        37: 1. https://en.cppreference.com/w/c/io/fgetc
+//        38:
+//        39:
+//        40: */
 //      .
 //      .
 //      .
-//   274:
-//   275:     // FOR TESTING: intentionally cause some errors by trying to print some lines for an unpopulated
-//   276:     // file object. Example errors:
-//   277:     //      243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
-//   278:     //      244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
-//   279:     //      245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
-//   280:     //      246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
-//   281:     // Note: for kicks (since I didn't realize this was possible), I'm also using the variable name
-//   282:     // `$` for this `file_t` object.
-//   283:     printf("Causing some intentional errors here:\n");
-//   284:     file_t $;
-//   285:     file_print_lines(&$, 243, 4);
-//   286:
-//   287:
-//   288:     return 0;
-//   289: }
-//   290:
-//   291: /*
-//   292: SAMPLE OUTPUT:
-//   293:
-//   294: In C:
-//   295:
-//   296:     eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
-//   297:
-//   298:
-//   299: OR, in C++:
-//   300:
-//   301:     eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
-//   302:
-//   303:
-//   304: */
-//  =========== FILE END ===========
+//       386: //   280:     //      246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+//       387: //   281:     // Note: for kicks (since I didn't realize this was possible), I'm also using the variable name
+//       388: //   282:     // `$` for this `file_t` object.
+//       389: //   283:     printf("Causing some intentional errors here:\n");
+//       390: //   284:     file_t $;
+//       391: //   285:     file_print_lines(&$, 243, 4);
+//       392: //   286:
+//       393: //   287:
+//       394: //   288:     return 0;
+//       395: //   289: }
+//       396: //   290:
+//       397: //   291: /*
+//       398: //   292: SAMPLE OUTPUT:
+//       399: //   293:
+//       400: //   294: In C:
+//       401: //   295:
+//       402: //   296:     eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
+//       403: //   297:
+//       404: //   298:
+//       405: //   299: OR, in C++:
+//       406: //   300:
+//       407: //   301:     eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 read_file_into_c_string_and_array_of_lines.c -o bin/a && bin/a
+//       408: //   302:
+//       409: //   303:
+//       410: //   304: */
+//       411: //  =========== FILE END ===========
+//       412: //
+//       413: //  Printing just one line now:
+//       414: //   255:
+//       415: //
+//       416: //  Causing some intentional errors here:
+//       417: //   243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
+//       418: //   244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
+//       419: //   245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
+//       420: //   246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+//       421: //
+//       422: //
+//       423: // OR, in C++:
+//       424: //
+//       425: // [SAME AS THE C OUTPUT]
+//      =========== FILE END ===========
 //
-//  Printing just one line now:
-//   255:
+//      Printing just this 1 line number:
+//                  file->line_array[i_write_line] = &(file->file_str[i_write_char]);
 //
-//  Causing some intentional errors here:
-//   243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
-//   244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
-//   245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
-//   246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+//      Printing 4 lines starting at this line number:
+//       256:             file->line_array[i_write_line] = &(file->file_str[i_write_char]);
+//       257:             i_write_line++;
+//       258:         }
+//       259:
+//
+//      Causing some intentional errors here:
+//       243: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 243 at index = 242.
+//       244: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 244 at index = 243.
+//       245: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 245 at index = 244.
+//       246: ERROR in function file_print_line(): line_array contains NULL ptr for line_number = 246 at index = 245.
+//
 //
 //
 // OR, in C++:
