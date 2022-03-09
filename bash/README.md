@@ -1,3 +1,8 @@
+# Notes
+
+`wip` means "work-in-progress".
+
+
 # Shellcheck
 
 Use the `shellcheck` static code analyzer to analyze your bash scripts for errors before running them. Learn a little bit more about `shellcheck` in this answer which helped me here: [Stack Overflow: How to write bash function to print and run command when the command has arguments with spaces or things to be expanded](https://stackoverflow.com/a/71118015/4561887).
