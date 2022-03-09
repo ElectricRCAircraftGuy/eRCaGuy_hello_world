@@ -17,7 +17,11 @@
 #    https://unix.stackexchange.com/a/664956/114401
 
 
+# Test multiple ways to build and print regular bash "indexed" arrays
+
+# ----------------------------------------
 # 1. Build up one element at-a-time
+# ----------------------------------------
 
 my_array=()
 my_array+=("element 1")
@@ -25,25 +29,27 @@ my_array+=("element 2")
 my_array+=("element 3")
 
 my_array_len=${#my_array[@]}
-echo ""
 echo "Number of elements = $my_array_len"
 echo "my_array contains:"
 for i in "${my_array[@]}"; do
     echo "    $i"
 done
+echo ""
 
+# ----------------------------------------
 # 2. Build up all at once
+# ----------------------------------------
 
 my_array2=("element 1" "element 2" "element 3")
 
 my_array2_len=${#my_array2[@]}
-echo ""
 echo "Number of elements = $my_array2_len"
 
 echo "my_array2 contains (using loop technique 1: range-based for loop):"
 for element in "${my_array2[@]}"; do
     echo "    $element"
 done
+echo ""
 
 # Alternative `for` loop! Iterate using indices to obtain the array elements, instead of iterating
 # over elements directly using the "range-based for loop" as shown above.
@@ -54,7 +60,27 @@ echo "  and [my answer where I used this] https://stackoverflow.com/a/70670852/4
 for (( i=0; i<"$my_array2_len"; i++ )); do
     echo '    ${my_array2['"$i"']} = '"${my_array2[$i]}"
 done
+echo ""
 
+# ----------------------------------------
+# 3. Build the array all at once, but use a different format from above,
+# specifying the elements on multiple lines.
+# ----------------------------------------
+
+my_array3=(
+    "element A"
+    "element B"
+    "element C"
+    "element D"
+)
+
+# yet another way to print the array: print using the array's **indices**
+echo "Number of elements = ${#my_array3[@]}"
+echo "my_array3 contains (by printing via its indices):"
+for i in "${!my_array3[@]}"; do
+    echo "    ${my_array3["$i"]}"
+done
+echo ""
 
 
 # Now use an array as the input arguments to another command! For this demo, let the command be
@@ -173,7 +199,6 @@ echo ""
 # SAMPLE OUTPUT:
 #
 #       eRCaGuy_hello_world/bash$ ./array_practice.sh
-#
 #       Number of elements = 3
 #       my_array contains:
 #           element 1
@@ -185,6 +210,7 @@ echo ""
 #           element 1
 #           element 2
 #           element 3
+#
 #       my_array2 contains (using loop technique 2: C-style index-based for loop):
 #       - See: https://stackoverflow.com/a/356154/4561887 and
 #         [better] https://www.cyberciti.biz/faq/bash-for-loop-array/
@@ -192,6 +218,14 @@ echo ""
 #           ${my_array2[0]} = element 1
 #           ${my_array2[1]} = element 2
 #           ${my_array2[2]} = element 3
+#
+#       Number of elements = 4
+#       my_array3 contains (by printing via its indices):
+#           element A
+#           element B
+#           element C
+#           element D
+#
 #       ========================================================================
 #       OPTION 1: pass the contents of the array as arguments to our command \
 #       via the input array, "$@", which we set from our custom array
@@ -269,7 +303,7 @@ echo ""
 #       index  -9 ( 9th element from the right): 3
 #       index -10 (10th element from the right): 2
 #       index -11 (11th element from the right): 1
-#       ./array_practice.sh: line 159: array4: bad array subscript
+#       ./array_practice.sh: line 185: array4: bad array subscript
 #       index -12 (12th element from the right):
 #
 #       all elements: 1 2 3 4 100 101 5 6 7 8 102
@@ -281,6 +315,7 @@ echo ""
 #       Bash array slicing:
 #       ${array4[@]:3:5} (starting at index 3, retrieve 5 elements): 4 100 101 5 6
 #
+
 
 
 
