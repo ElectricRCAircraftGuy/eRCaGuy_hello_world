@@ -31,6 +31,13 @@ References:
    https://www.google.com/search?q=linux+socket+ethernet+packet+example&oq=linux+socket+ethernet+packet+example&aqs=chrome..69i57.8472j0j4&sourceid=chrome&ie=UTF-8
     1. sendRawEth.c: Send a raw Ethernet frame in Linux:
        https://gist.github.com/austinmarton/1922600
+1. ***** Google search for "Ethernet sockets demo in c":
+   https://www.google.com/search?q=Ethernet+sockets+demo+in+c&oq=Ethernet+sockets+demo+in+c&aqs=chrome..69i57.156j0j9&sourceid=chrome&ie=UTF-8
+    1. LOOKS LIKE A GREAT DEMO!:
+       https://www.codeproject.com/Articles/586000/Networking-and-Socket-Programming-Tutorial-in-C
+    1. https://www.csd.uoc.gr/~hy556/material/tutorials/cs556-3rd-tutorial.pdf
+    1. Looks very useful!: https://www.geeksforgeeks.org/socket-programming-cc/
+
 
 */
 
