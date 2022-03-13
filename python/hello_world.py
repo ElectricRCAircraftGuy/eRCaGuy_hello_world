@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 
 """
-This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+This file is part of eRCaGuy_hello_world:
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 (description)
 Status: (status)
 
 keywords: (keywords)
 
-Check this script with `pylint` v2.0.0 or later.
-- See "eRCaGuy_hello_world/python/README.md" for installation instructions.
+Check this script with `pylint` v2.0.0 or later. See "eRCaGuy_hello_world/python/README.md" for
+installation instructions to install the latest version from GitHub.
 ```bash
 pylint hello_world.py
 ```
@@ -28,6 +29,9 @@ References:
 
 
 def main():
+    """
+    The main function of this program.
+    """
     print("Hello world!")
 
 
@@ -43,4 +47,4 @@ SAMPLE OUTPUT:
     eRCaGuy_hello_world/python$ ./hello_world.py
     Hello world!
 
-"""
+""" # pylint: disable=pointless-string-statement

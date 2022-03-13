@@ -68,3 +68,8 @@ Source: Tutorial: https://pylint.pycqa.org/en/latest/tutorial.html.
 >   further processing.
 
 **>> For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here: https://pylint.pycqa.org/en/latest/messages/messages_list.html <<**
+
+
+## Disable `pylint` errors
+
+See here: https://pylint.pycqa.org/en/latest/user_guide/message-control.htm
