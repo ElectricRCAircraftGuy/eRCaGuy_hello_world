@@ -49,3 +49,22 @@ See my answer here: [Ask Ubuntu: Installing Pylint for Python3 on Ubuntu](https:
 >     
 >     -----------------------------------
 >     Your code has been rated at 4.00/10
+
+
+## List of all error codes
+
+`pylint` output shows these **5 types of messages** (emphasis added):  
+Source: Tutorial: https://pylint.pycqa.org/en/latest/tutorial.html. 
+
+> Output:  
+>    Using the default text output, the message format is :  
+>   MESSAGE_TYPE: LINE_NUM:[OBJECT:] MESSAGE  
+>   There are **5 kind of message types** :  
+>   * **(C) convention**, for programming standard violation
+>   * **(R) refactor**, for bad code smell
+>   * **(W) warning**, for python specific problems
+>   * **(E) error**, for probable bugs in the code
+>   * **(F) fatal**, if an error occurred which prevented pylint from doing
+>   further processing.
+
+**>> For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here: https://pylint.pycqa.org/en/latest/messages/messages_list.html <<**
