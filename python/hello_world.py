@@ -8,7 +8,11 @@ Status: (status)
 
 keywords: (keywords)
 
-Check this script with: `shellcheck hello_world_basic.sh`
+Check this script with `pylint` v2.0.0 or later.
+- See "eRCaGuy_hello_world/python/README.md" for installation instructions.
+```bash
+pylint hello_world.py
+```
 
 Run command:
 ```bash
