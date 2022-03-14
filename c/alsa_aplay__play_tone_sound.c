@@ -30,12 +30,18 @@ References:
 1. Arduino `toneAC()` library
     1. https://www.arduino.cc/reference/en/libraries/toneac/
     1. https://github.com/teckel12/arduino-toneac
+1. https://en.cppreference.com/w/c/string/byte/strncat
 
 MINIMUM AMOUNT OF RAW DATA THAT PLAYS!:
+```bash
+# Unsigned 8-bit:
+echo -n "0x00 0xff 0x00 0xff 0x00 0xff" | aplay
+# OR
+printf "%s" "0x00 0xff 0x00 0xff 0x00 0xff" | aplay
 
-    echo -n "0x00 0xff 0x00 0xff 0x00 0xff" | aplay
-    # OR
-    printf "%s" "0x00 0xff 0x00 0xff 0x00 0xff" | aplay
+# Signed 16-bit Big-endian:
+echo -n "0x0000 0xffff 0x0000 0xffff 0x0000 0xffff" | aplay -f S16_BE
+```
 
 */
 
@@ -55,6 +61,7 @@ MINIMUM AMOUNT OF RAW DATA THAT PLAYS!:
 #define PI 3.14159265358979323846
 
 #define SAMPLES_PER_SEC 8000
+#define PLAY_LENGTH_SEC 1//60
 
 /// From utilities.h.
 /// Perform linear interpolation on x to scale it from an input range between in_min and in_max
@@ -64,59 +71,154 @@ MINIMUM AMOUNT OF RAW DATA THAT PLAYS!:
     (((x) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min))
 ///////// ^^ for volume control!
 
-/////// doxygen
-/// Make a **single period***
-// void make_period_sinewave(uint16_t* audio_samples, size_t audio_samples_len, uint16_t freq_hz)
+/// Struct to contain all data for a single audio waveform to play.
+typedef struct waveform_s
+{
+    /// One period of the waveform, up to 1 second max length of data. For frequencies > 1 Hz,
+    /// only a portion of this array will be used. For a frequency as low as 1 Hz, however, the
+    /// whole array will be used.
+    uint8_t single_period[SAMPLES_PER_SEC];
+
+    /// Number of samples required to make 1 period of the waveform which is stored in the array
+    /// above.
+    uint32_t period_num_samples;
+
+    /// Enough audio data to play `PLAY_LENGTH_SEC` seconds.
+    uint8_t full_waveform[SAMPLES_PER_SEC*PLAY_LENGTH_SEC];
+
+    /// Bash command string to play the `full_waveform` above.
+    /// 1 sample (1 byte) becomes a string like "0xab ", which is 5 chars. Add some extra chars as
+    /// well to allow for the rest of the command string.
+    char cmd[SAMPLES_PER_SEC*PLAY_LENGTH_SEC*5 + 50];
+} waveform_t;
+
+/// \brief          Generate a single period of a sine wave at the desired frequency and store it
+///                 into the `waveform_t`'s `single_period` array.
+/// \param[in]      waveform        The struct to store the data into.
+/// \param[in]      freq_hz         The frequency of the waveform to store. Valid values are 1 to
+///                                 SAMPLES_PER_SEC/2 Hz.
+/// \return         None
+void make_period_sinewave(waveform_t *waveform, uint16_t freq_hz)
+{
+    if (waveform == NULL)
+    {
+        printf("ERROR: NULL ptr.\n");
+        return;
+    }
+
+    if (freq_hz < 1)
+    {
+        printf("WARNING: freq_hz of %u is too low. Setting to 1.\n", freq_hz);
+        freq_hz = 1;
+        // do NOT return
+    }
+    else if (freq_hz > SAMPLES_PER_SEC/2)
+    {
+        printf("WARNING: freq_hz of %u is too high. The maximum frequency possible, per Nyquist, "
+               "at a sample rate of %u samples/sec, is %u. Truncating specified frequency to "
+               "%u Hz.\n", freq_hz, SAMPLES_PER_SEC, SAMPLES_PER_SEC/2, SAMPLES_PER_SEC/2);
+        freq_hz = SAMPLES_PER_SEC/2;
+        // do NOT return
+    }
+
+    waveform->period_num_samples = SAMPLES_PER_SEC/freq_hz;
+    for (size_t i = 0; i < waveform->period_num_samples; i++)
+    {
+        double val = sin((double)2*PI*i/waveform->period_num_samples);
+        waveform->single_period[i] = SCALE(val, -1, 1, 0, 255);
+        // debugging
+        // printf("%1.3f (%u; 0x%02X)  ", val, waveform->single_period[i], waveform->single_period[i]);
+    }
+    // printf("\n\n"); // debugging
+}
+
+// TODO: make other wave shapes:
+
+// void make_period_squarewave(waveform_t *waveform, uint16_t freq_hz)
 // {
-//     if (freq > SAMPLES_PER_SEC/2)
-//     {
-//         /////////
-//         // printf("WARNING: freq (max frequency limitPer Nyquist, the highest frequency that can be generated ")
-//     }
 // }
 
-void make_period_squarewave(uint16_t* audio_samples, size_t audio_samples_len, uint16_t freq_hz)
-{
+// void make_period_sawtoothwave(waveform_t *waveform, uint16_t freq_hz)
+// {
+// }
 
+// void make_period_trianglewave(waveform_t *waveform, uint16_t freq_hz)
+// {
+// }
+
+/// Copy the single period waveform repeatedly into the full waveform array until it is full.
+void make_full_waveform(waveform_t *waveform)
+{
+    size_t i_single_period = 0;
+    for (size_t i = 0; i < ARRAY_LEN(waveform->full_waveform); i++)
+    {
+        waveform->full_waveform[i] = waveform->single_period[i_single_period];
+        i_single_period++;
+        if (i_single_period >= waveform->period_num_samples)
+        {
+            i_single_period = 0;
+        }
+    }
 }
 
-void make_period_sawtoothwave(uint16_t* audio_samples, size_t audio_samples_len, uint16_t freq_hz)
+/// Convert the contents of the full waveform array into a bash command string and load it into the
+/// cmd string in the same struct.
+void make_cmd(waveform_t *waveform)
 {
+    size_t i_cmd = 0;
+    const size_t I_CMD_MAX = ARRAY_LEN(waveform->cmd) - 1;
 
+    // 1. write the cmd prefix
+    const char CMD_PREFIX[] = "printf \"%s\" \"";
+    snprintf(&(waveform->cmd[i_cmd]), I_CMD_MAX - i_cmd, "%s", CMD_PREFIX);
+    i_cmd += sizeof(CMD_PREFIX) - 1; // -1 so we will overwrite the null terminator next time
+
+    // 2. write the cmd body (all of the binary audio data)
+    for (size_t i = 0; i < ARRAY_LEN(waveform->full_waveform); i++)
+    {
+        const char FORMAT_STR[] = "0x%02X ";
+        snprintf(&(waveform->cmd[i_cmd]), I_CMD_MAX - i_cmd,
+            FORMAT_STR, waveform->full_waveform[i]);
+        i_cmd += 5;
+    }
+
+    // 3. write the cmd suffix
+    const char CMD_SUFFIX[] = "\" | aplay -f U8 -r 8000";
+    snprintf(&(waveform->cmd[i_cmd]), I_CMD_MAX - i_cmd, "%s", CMD_SUFFIX);
+    i_cmd += sizeof(CMD_SUFFIX) - 1; // -1 so we will overwrite the null terminator next time
+
+    // printf("cmd = %s\n", waveform->cmd); // debugging
 }
 
-void make_period_trianglewave(uint16_t* audio_samples, size_t audio_samples_len, uint16_t freq_hz)
+void play_sound(const waveform_t *waveform)
 {
-
+    int retval = system(waveform->cmd);
+    if (retval != 0)
+    {
+        printf("INFO: retval from `system()` call = %i.\n", retval);
+    }
 }
 
-
-//////// doxygen
-void make_cmd(uint16_t* audio_samples, size_t audio_samples_len, char* cmd, size_t cmd_len)
-{
-
-}
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
-    // uint16_t audio_samples[SAMPLES_PER_SEC];
-    uint8_t audio_samples[SAMPLES_PER_SEC];
-    // 1 sample (2 bytes) becomes a string like "0xabcd ", which is 7 chars, so just make it 8 to
-    // be safe
-    char cmd[SAMPLES_PER_SEC*8];
+    static waveform_t waveform;
+    make_period_sinewave(&waveform, 100);
+    make_full_waveform(&waveform);
+    make_cmd(&waveform);
+    play_sound(&waveform);
 
-
-    // for (size_t i = 0; i < ARRAY_LEN(audio_samples); i++)
-    size_t i = 0;
-    while (i < ARRAY_LEN(cmd) - 50)
-    {
-        const char str[] = "0x00 0xff ";
-        strcpy(&cmd[i], str);
-        i += sizeof(str) - 1;
-    }
-    strcpy(&cmd[i], " | aplay")
-    printf("cmd: %s\n", cmd);
+    // // for (size_t i = 0; i < ARRAY_LEN(audio_samples); i++)
+    // size_t i = 0;
+    // while (i < ARRAY_LEN(cmd) - 50)
+    // {
+    //     const char str[] = "0x00 0xff ";
+    //     strcpy(&cmd[i], str);
+    //     i += sizeof(str) - 1;
+    // }
+    // strcpy(&cmd[i], " | aplay")
+    // printf("cmd: %s\n", cmd);
 
     // for (size_t i = 0; i < ARRAY_LEN(cmd); i++)
     // {
