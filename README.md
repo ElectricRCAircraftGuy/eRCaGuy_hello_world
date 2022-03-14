@@ -200,6 +200,7 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
         - **See my answer here:** https://stackoverflow.com/questions/64147706/what-does-the-clang-compilers-weverything-option-include-and-where-is-it-doc/64147755#64147755. Clang does NOT recommend using `-Weverything`! They say it's better to use just `-Wall -Wextra` instead. See their quote here (emphasis added): 
 
             > Since `-Weverything` enables every diagnostic, we generally **don’t recommend using it.** **`-Wall -Wextra` are a better choice for most projects.** Using `-Weverything` means that updating your compiler is more difficult because you’re exposed to experimental diagnostics which might be of lower quality than the default ones. If you do use `-Weverything` then we advise that you address all new compiler diagnostics as they get added to Clang, either by fixing everything they find or explicitly disabling that diagnostic with its corresponding `Wno-` option.
+<a id="-lm"></a>
 1. **If you include the C math library with `#include <math.h>`,** you must add `-lm` to the very end of your gcc build command to link to the math library! _Technically_, you only need `-lm` after any .o object file or .c source file which needs it, but it's a good idea to _just put all libraries to link against at the very end of the gcc build command._ 
     1. So, do this:
         ```bash
