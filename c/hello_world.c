@@ -18,9 +18,9 @@ Examples of how to compile & run:
     https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
   C:
     gcc -Wall -Werror -g3 -o hello_world hello_world.c && ./hello_world
-    gcc -Wall -Werror -g3 -std=c90 -o hello_world hello_world.c && ./hello_world
-    gcc -Wall -Werror -g3 -std=c99 -o hello_world hello_world.c && ./hello_world
-    gcc -Wall -Werror -g3 -std=c11 -o hello_world hello_world.c && ./hello_world
+    gcc -Wall -Werror -g3 -std=c90 -o hello_world hello_world.c -lm && ./hello_world
+    gcc -Wall -Werror -g3 -std=c99 -o hello_world hello_world.c -lm && ./hello_world
+    gcc -Wall -Werror -g3 -std=c11 -o hello_world hello_world.c -lm && ./hello_world
   C++:
     g++ -Wall -Werror -g3 -o hello_world hello_world.c && ./hello_world
     g++ -Wall -Werror -g3 -std=c++98 -o hello_world hello_world.c && ./hello_world
