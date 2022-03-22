@@ -57,9 +57,17 @@ num=46
 num_in_binary="$(decimal_to_binary "$num" 8)"
 echo "$num_in_binary"
 
+# ================= UPDATE: DON'T USE MY FUNCTION ABOVE! ======================
+# DO THIS INSTEAD!
+# Source: David Rankin: https://stackoverflow.com/a/71568608/4561887
+# =============================================================================
+printf "%08d\n" $(echo "obase=2; $num" | bc)
+
+
 
 # SAMPLE OUTPUT:
 #
 #       eRCaGuy_hello_world/bash$ ./decimal_to_binary_string.sh
+#       00101110
 #       00101110
 
