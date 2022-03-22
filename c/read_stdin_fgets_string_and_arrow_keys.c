@@ -4,7 +4,13 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 3 Feb. 2022
 
-Read in a string OR ARROW KEY PRESSES! This uses `getc()`, so you must end with Enter.
+Read in a string OR ARROW KEY PRESSES! This uses `fgets()`, which, like `getc()`, requires you press
+Enter to end it and return.
+
+See here:
+It says: https://en.cppreference.com/w/c/io/fgets
+> Parsing stops if a newline character is found, in which case str will contain that newline
+  character, or if end-of-file occurs.
 
 STATUS: WORKS
 
