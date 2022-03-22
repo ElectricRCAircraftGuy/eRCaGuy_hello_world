@@ -4,7 +4,11 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 3 Feb. 2022
 
-Lean how to read in an Enter key press, and all preceding keystrokes up to that, in C.
+Lean how to read in an Enter key press, and all preceding keystrokes up to that, in C. The downside
+of using `getc()` is that you MUST press Enter at the end in order to make `getc()` return.
+If this behavior is NOT desired, and you want to read key-presses live withOUT having to press
+Enter at the end, see "read_keypress_system_call.c" and "read_string_and_arrow_keys.c".
+
 STATUS: WORKS
 
 To compile and run (assuming you've already `cd`ed into this dir):
