@@ -63,3 +63,12 @@ go help build
 
 1. https://learnxinyminutes.com/docs/go/
 1. Tutorial: Get started with Go: https://go.dev/doc/tutorial/getting-started
+1. https://go.dev/ - official Go website
+
+
+## TODO
+
+1. finish the hello_world.go demo
+1. Figure out and add a shebang line which will compile and run go
+    1. [Google search for "hashbang for go"](https://www.google.com/search?q=hashbang+for+go&oq=hashbang+for+go&aqs=chrome..69i57.2310j0j7&sourceid=chrome&ie=UTF-8)
+    1. [What's the appropriate Go shebang line?](https://stackoverflow.com/q/7707178/4561887)
