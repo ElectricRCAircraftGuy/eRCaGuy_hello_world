@@ -11,8 +11,30 @@ By Gabriel Staples
 www.ElectricRCAircraftGuy.com
 
 
-## Also very useful:
+## Other, very-useful repos:
 1. My [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo.
+
+
+## Also very useful:
+1. **Learn X in Y minutes**: for _most-excellent_ software tutorials written in code in the language itself which you are learning!
+    1. Main Website: https://learnxinyminutes.com/
+    1. GitHub: https://github.com/adambard/learnxinyminutes-docs
+    1. Example tutorials:
+        1. Ones I'd like to study next are marked with a star: ⭐. Ones I have fully studied are marked with a check (none so far): ✅.
+        1. Languages:
+            1. C - https://learnxinyminutes.com/docs/c/
+            1. C++ - https://learnxinyminutes.com/docs/c++/
+            1. Python - https://learnxinyminutes.com/docs/python/
+            1. Go - https://learnxinyminutes.com/docs/go/
+        1. Tools [I know I know!...I consider some of these programming languages too!--like `bash` and `awk`]:
+            1. Bash - https://learnxinyminutes.com/docs/bash/
+            1. awk - https://learnxinyminutes.com/docs/awk/
+            1. cmake⭐ - https://learnxinyminutes.com/docs/cmake/
+            1. ansible - https://learnxinyminutes.com/docs/ansible/
+            1. git - https://learnxinyminutes.com/docs/git/
+            1. make⭐ - https://learnxinyminutes.com/docs/make/
+            1. linker scripts (Russian only--use Google Translate) - https://learnxinyminutes.com/docs/linker/
+            1. vim - https://learnxinyminutes.com/docs/vim/
 
 
 # Table of Contents
@@ -22,6 +44,7 @@ www.ElectricRCAircraftGuy.com
 
 1. [Status:](#status)
 1. [For beginners and experts alike: not your average "hello world" examples](#for-beginners-and-experts-alike-not-your-average-hello-world-examples)
+1. [How to clone this repo and all git submodules](#how-to-clone-this-repo-and-all-git-submodules)
 1. [Examples of more advanced principles taught herein:](#examples-of-more-advanced-principles-taught-herein)
     1. [1. C and C++:](#1-c-and-c)
         1. [Additional C and C++ build notes \(ex: w/`gcc` or `clang` compilers\):](#additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers)
@@ -53,6 +76,39 @@ See the `tree` output below to see the file/folder structure.
 # For beginners and experts alike: not your average "hello world" examples
 
 Note that these are NOT just your standard "simple" hello world demos for absolute beginners. Rather, they are simple enough for beginners but also contain some advanced techniques and tips & tricks to act as good reminders or teaching for more expert programmers too. I, myself, regularly reference my own examples here to remind myself of some of these details which are easy to forget. There's no sense stressing about trying to remember everything. _Instead of trying to remember everything, just remember where to look (here in this case)_. 
+
+
+<a id="how-to-clone-this-repo-and-all-git-submodules"></a>
+# How to clone this repo and all git submodules
+
+This repo contains [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which simply means that this is a git repo which contains other git repos. 
+
+So, **to clone this repo plus all sub-repos (git submodules)**, you must do the following:
+```bash
+# Clone this repo
+git clone https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world.git
+# Recursively clone and update all subrepos (git submodules) it may contain
+git submodule update --init --recursive
+```
+
+**To update this repo:**
+```bash
+# Update the main repo by pulling the latest from upstream
+git pull
+# Recursively update all git submodules (use the same cmd as previously above)
+git submodule update --init --recursive
+```
+
+Note: if you ever need **to add a repo as a submodule inside another repo:**
+```bash
+# General format
+git submodule add URL_to_repo
+
+# Ex:
+git submodule add https://gitlab.com/ElectricRCAircraftGuy/systemd-by-example.git
+```
+
+For more on git submodules, see the `= git submodules: =` section of my "git & Linux cmds doc" notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [eRCaGuy_dotfiles/git & Linux cmds, help, tips & tricks - Gabriel.txt](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt).
 
 
 <a id="examples-of-more-advanced-principles-taught-herein"></a>
