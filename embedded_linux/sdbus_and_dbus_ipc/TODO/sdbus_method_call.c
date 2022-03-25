@@ -1,8 +1,15 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-(description)
-STATUS: (status)
+Learn to call an sdbus method (function) from a C program.
+
+This C program simply does in C what is the equivalent of this call from the command-line:
+```bash
+busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager StartUnit ss "cups.service" "replace"
+```
+See: http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html
+
+STATUS: wip
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
@@ -15,7 +22,7 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.c -o bin/a && b
 ```
 
 References:
-1. http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html - see
+1. *****http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html - see
   "Invoking a Method, from C, with sd-bus"
 
 */
