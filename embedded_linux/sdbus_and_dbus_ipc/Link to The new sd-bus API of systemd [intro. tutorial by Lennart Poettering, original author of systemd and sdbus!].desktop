@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Link to The new sd-bus API of systemd
+Type=Link
+URL=http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html
+Icon=text-html
+Name[en_US]=Link to The new sd-bus API of systemd [intro. tutorial by Lennart Poettering, original author of systemd and sdbus!]

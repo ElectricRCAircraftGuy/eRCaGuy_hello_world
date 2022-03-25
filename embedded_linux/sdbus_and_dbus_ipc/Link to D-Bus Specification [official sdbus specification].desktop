@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Link to D-Bus Specification
+Type=Link
+URL=https://dbus.freedesktop.org/doc/dbus-specification.html#message-protocol-marshaling-object-path
+Icon=text-html
+Name[en_US]=Link to D-Bus Specification [official sdbus specification]
