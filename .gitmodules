@@ -1,5 +1,5 @@
 [submodule "embedded_linux/systemd-by-example"]
-	path = linux
+	path = linux2
 	# my fork
 	url = https://gitlab.com/ElectricRCAircraftGuy/systemd-by-example.git
 	# upstream
