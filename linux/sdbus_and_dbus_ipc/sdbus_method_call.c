@@ -11,10 +11,12 @@ What that command-line command above does is call a method to a separate, runnin
 same PC, via an sdbus method call.
 See: http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html
 
-STATUS: wip
+STATUS: done! works!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 NOTE: RUNNING THIS PROGRAM WILL REQUEST a sudo pw from you to run it! That is expected.
+From the 1st reference below:
+> Make sure to run it as root though, since access to the StartUnit method is privileged:
 1. In C:
 ```bash
 gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a
