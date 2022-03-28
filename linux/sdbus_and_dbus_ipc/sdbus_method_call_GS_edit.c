@@ -1,5 +1,6 @@
 /*
-This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+This file is part of eRCaGuy_hello_world:
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 GS
 27 Mar. 2022
@@ -11,7 +12,8 @@ Learn to call an sdbus method (separate/remote-process function) from a C progra
 
 This C program simply does in C what is the equivalent of this call from the command-line:
 ```bash
-busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager StartUnit ss "cups.service" "replace"
+busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager
+StartUnit ss "cups.service" "replace"
 ```
 What that command-line command above does is call a method to a separate, running process on the
 same PC, via an sdbus method call.
@@ -25,11 +27,13 @@ From the 1st reference below:
 > Make sure to run it as root though, since access to the StartUnit method is privileged:
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config
+--cflags --libs libsystemd) && bin/a
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags --libs libsystemd) && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags
+--libs libsystemd) && bin/a
 ```
 
 Notes:
@@ -46,56 +50,59 @@ References:
 #include <stdlib.h>
 #include <systemd/sd-bus.h>
 
+int main(int argc, char *argv[])
+{
+    // GS: prevent "unused parameter" errors
+    (void)argc;
+    (void)argv;
 
-int main(int argc, char *argv[]) {
-        // GS: prevent "unused parameter" errors
-        (void)argc;
-        (void)argv;
+    sd_bus_error error = SD_BUS_ERROR_NULL;
+    sd_bus_message *message = NULL;
+    sd_bus *bus = NULL;
+    const char *path;
+    int retcode;
 
-        sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus_message *message = NULL;
-        sd_bus *bus = NULL;
-        const char *path;
-        int retcode;
+    // Connect to the system bus
+    retcode = sd_bus_open_system(&bus);
+    if (retcode < 0)
+    {
+        fprintf(stderr, "Failed to connect to system bus: %s\n", strerror(-retcode));
+        goto finish;
+    }
 
-        // Connect to the system bus
-        retcode = sd_bus_open_system(&bus);
-        if (retcode < 0) {
-                fprintf(stderr, "Failed to connect to system bus: %s\n", strerror(-retcode));
-                goto finish;
-        }
+    // Issue the method call and store the response message in `message`
+    retcode = sd_bus_call_method(bus,
+                                 "org.freedesktop.systemd1",          // service to contact
+                                 "/org/freedesktop/systemd1",         // object path
+                                 "org.freedesktop.systemd1.Manager",  // interface name
+                                 "StartUnit",                         // method name
+                                 &error,                              // object to return error in
+                                 &message,                            // return message on success
+                                 "ss",                                // input signature
+                                 "cups.service",                      // first argument
+                                 "replace");                          // second argument
+    if (retcode < 0)
+    {
+        fprintf(stderr, "Failed to issue method call: %s\n", error.message);
+        goto finish;
+    }
 
-        // Issue the method call and store the response message in `message`
-        retcode = sd_bus_call_method(bus,
-                               "org.freedesktop.systemd1",           // service to contact
-                               "/org/freedesktop/systemd1",          // object path
-                               "org.freedesktop.systemd1.Manager",   // interface name
-                               "StartUnit",                          // method name
-                               &error,                               // object to return error in
-                               &message,                             // return message on success
-                               "ss",                                 // input signature
-                               "cups.service",                       // first argument
-                               "replace");                           // second argument
-        if (retcode < 0) {
-                fprintf(stderr, "Failed to issue method call: %s\n", error.message);
-                goto finish;
-        }
+    // Parse the response message
+    retcode = sd_bus_message_read(message, "o", &path);
+    if (retcode < 0)
+    {
+        fprintf(stderr, "Failed to parse response message: %s\n", strerror(-retcode));
+        goto finish;
+    }
 
-        // Parse the response message
-        retcode = sd_bus_message_read(message, "o", &path);
-        if (retcode < 0) {
-                fprintf(stderr, "Failed to parse response message: %s\n", strerror(-retcode));
-                goto finish;
-        }
-
-        printf("Queued service job as %s.\n", path);
+    printf("Queued service job as %s.\n", path);
 
 finish:
-        sd_bus_error_free(&error);
-        sd_bus_message_unref(message);
-        sd_bus_unref(bus);
+    sd_bus_error_free(&error);
+    sd_bus_message_unref(message);
+    sd_bus_unref(bus);
 
-        return retcode < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+    return retcode < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
 /*
@@ -105,21 +112,24 @@ In C:
 
 If you do NOT type in your sudo password to run it, when prompted:
 
-    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a
-    Failed to issue method call: Permission denied
+    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17
+sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a Failed to
+issue method call: Permission denied
 
 If you DO type in your sudo password when prompted:
 
-    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a
-    Queued service job as /org/freedesktop/systemd1/job/3404.
+    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17
+sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a Queued
+service job as /org/freedesktop/systemd1/job/3404.
 
 
 OR, in C++:
 
 If I DO type in the sudo password when prompted:
 
-    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags --libs libsystemd) && bin/a
-    Queued service job as /org/freedesktop/systemd1/job/3576.
+    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ g++ -Wall -Wextra -Werror -O3 -std=c++17
+sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags --libs libsystemd) && bin/a Queued
+service job as /org/freedesktop/systemd1/job/3576.
 
 
 */

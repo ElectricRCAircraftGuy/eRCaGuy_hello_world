@@ -115,10 +115,18 @@ For more on git submodules, see the `= git submodules: =` section of my "git & L
 <a id="a-few-folder--file-notes"></a>
 # A Few Folder & File Notes
 
-You can add this as an Eclipse project--for source code navigation _only_, NOT for building! The Eclipse project files/folders are:
-1. `.cproject` file
-1. `.project` file
-1. `.settings` dir
+1. You can add this as an **Eclipse project**--for source code navigation _only_, NOT for building! The Eclipse project files/folders are:
+    1. `.cproject` file
+    1. `.project` file
+    1. `.settings` dir
+1. `.clang-format` is the format definition file for auto-formatting C and C++ files with `clang-format`. 
+    1. For full installation and usage instructions for `clang-format`, see the readme in my other repo here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_CodeFormatter.
+    1. Quick usage example: 
+        ```bash
+        # Format this file in-place (`-i`)
+        clang-format --verbose -i --style=file "path/to/file.c"
+        ```
+    1. See the other repo here (https://github.com/ElectricRCAircraftGuy/eRCaGuy_CodeFormatter#usage) for more info on what `--style=file` means and how you can place the `.clang-format` configuration file at different levels.
 
 
 <a id="examples-of-more-advanced-principles-taught-herein"></a>
