@@ -12,7 +12,7 @@ Learn to call an sdbus method (separate/remote-process function) from a C progra
 
 This C program simply does in C what is the equivalent of this call from the command-line:
 ```bash
-busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager
+busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager \
 StartUnit ss "cups.service" "replace"
 ```
 What that command-line command above does is call a method to a separate, running process on the
@@ -27,13 +27,13 @@ From the 1st reference below:
 > Make sure to run it as root though, since access to the StartUnit method is privileged:
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config
---cflags --libs libsystemd) && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm \
+$(pkg-config --cflags --libs libsystemd) && bin/a
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags
---libs libsystemd) && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a \
+$(pkg-config --cflags --libs libsystemd) && bin/a
 ```
 
 Notes:
@@ -112,24 +112,21 @@ In C:
 
 If you do NOT type in your sudo password to run it, when prompted:
 
-    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17
-sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a Failed to
-issue method call: Permission denied
+    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a
+    Failed to issue method call: Permission denied
 
 If you DO type in your sudo password when prompted:
 
-    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17
-sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a Queued
-service job as /org/freedesktop/systemd1/job/3404.
+    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && bin/a
+    Queued service job as /org/freedesktop/systemd1/job/3404.
 
 
 OR, in C++:
 
 If I DO type in the sudo password when prompted:
 
-    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ g++ -Wall -Wextra -Werror -O3 -std=c++17
-sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags --libs libsystemd) && bin/a Queued
-service job as /org/freedesktop/systemd1/job/3576.
+    eRCaGuy_hello_world/linux/sdbus_and_dbus_ipc/TODO$ g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags --libs libsystemd) && bin/a
+    Queued service job as /org/freedesktop/systemd1/job/3576.
 
 
 */
