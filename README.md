@@ -45,6 +45,7 @@ www.ElectricRCAircraftGuy.com
 1. [Status:](#status)
 1. [For beginners and experts alike: not your average "hello world" examples](#for-beginners-and-experts-alike-not-your-average-hello-world-examples)
 1. [How to clone this repo and all git submodules](#how-to-clone-this-repo-and-all-git-submodules)
+1. [A Few Folder & File Notes](#a-few-folder--file-notes)
 1. [Examples of more advanced principles taught herein:](#examples-of-more-advanced-principles-taught-herein)
     1. [1. C and C++:](#1-c-and-c)
         1. [Additional C and C++ build notes \(ex: w/`gcc` or `clang` compilers\):](#additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers)
@@ -109,6 +110,15 @@ git submodule add https://gitlab.com/ElectricRCAircraftGuy/systemd-by-example.gi
 ```
 
 For more on git submodules, see the `= git submodules: =` section of my "git & Linux cmds doc" notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [eRCaGuy_dotfiles/git & Linux cmds, help, tips & tricks - Gabriel.txt](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt).
+
+
+<a id="a-few-folder--file-notes"></a>
+# A Few Folder & File Notes
+
+You can add this as an Eclipse project--for source code navigation _only_, NOT for building! The Eclipse project files/folders are:
+1. `.cproject` file
+1. `.project` file
+1. `.settings` dir
 
 
 <a id="examples-of-more-advanced-principles-taught-herein"></a>
