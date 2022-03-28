@@ -1,0 +1,5 @@
+# See: [How can I add a blank directory to a Git repository?](https://stackoverflow.com/a/932982/4561887)
+# Ignore everything in this directory
+*
+# Except this file
+!.gitignore

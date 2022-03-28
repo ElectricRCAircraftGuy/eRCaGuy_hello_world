@@ -11,7 +11,6 @@
 #   !/ignored_dir/special_file_to_include   # EXCEPT for this file--DO include it!
 #   ```
 
-bin/
 /git_branch_hash_backups/
 
 # Temporary LibreOffice Writer & Calc files
