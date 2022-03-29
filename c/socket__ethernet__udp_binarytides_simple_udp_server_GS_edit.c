@@ -1,6 +1,9 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+GS
+Mar. 2022
+
 Simple UDP server from: https://www.binarytides.com/programming-udp-sockets-c-linux/. Let's fix all
 the compile errors and clean up the code.
 ---------------------------------------------------------------
@@ -21,7 +24,41 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__ethernet__udp_binarytides_simpl
 
 References:
 1. *****https://www.binarytides.com/programming-udp-sockets-c-linux/
+1. Oracle:
+   1. What Are Sockets?: https://docs.oracle.com/cd/E19620-01/805-4041/6j3r8iu2k/index.html
+   1. *****[LOOKS REALLY USEFUL!] Oracle "Socket Tutorial":
+      https://docs.oracle.com/cd/E19620-01/805-4041/6j3r8iu2l/index.html
+   1. *****Advanced Topics: https://docs.oracle.com/cd/E19620-01/805-4041/6j3r8iu2o/index.html
+      Ex:
+      1. Asynchronous IO
+      1. Signals (interrupt-driven IO) to notify when sending is complete, etc.
+======
 1. [my answer] What is SOCK_DGRAM and SOCK_STREAM?: https://stackoverflow.com/a/71417876/4561887
+1. ***** Google search for "Ethernet sockets demo in c":
+   https://www.google.com/search?q=Ethernet+sockets+demo+in+c&oq=Ethernet+sockets+demo+in+c&aqs=chrome..69i57.156j0j9&sourceid=chrome&ie=UTF-8
+    1. *****+ LOOKS LIKE THE BEST DEMO!: https://people.cs.rutgers.edu/~pxk/rutgers/notes/sockets/
+    1. LOOKS LIKE A GREAT DEMO!:
+       https://www.codeproject.com/Articles/586000/Networking-and-Socket-Programming-Tutorial-in-C
+    1. https://www.csd.uoc.gr/~hy556/material/tutorials/cs556-3rd-tutorial.pdf
+    1. Looks very useful!: https://www.geeksforgeeks.org/socket-programming-cc/
+------
+1. How to Code Raw Sockets in C on Linux: https://www.binarytides.com/raw-sockets-c-code-linux/
+1. Google search for "linux socket ethernet packet example":
+   https://www.google.com/search?q=linux+socket+ethernet+packet+example&oq=linux+socket+ethernet+packet+example&aqs=chrome..69i57.8472j0j4&sourceid=chrome&ie=UTF-8
+    1. sendRawEth.c: Send a raw Ethernet frame in Linux:
+       https://gist.github.com/austinmarton/1922600
+------
+1. https://linux.die.net/man/7/ip
+1. https://linux.die.net/man/7/socket
+1. https://linux.die.net/man/7/udp
+1. https://www.ibm.com/docs/en/aix/7.1?topic=s-socket-subroutine
+1. https://www.ibm.com/docs/en/aix/7.1?topic=domains-address-families
+1. https://www.ibm.com/docs/en/aix/7.1?topic=protocols-socket-types
+1. https://www.ibm.com/docs/en/aix/7.1?topic=s-send-subroutine
+1. https://linux.die.net/man/3/htonl: convert hostlong type from host byte order to network
+   byte order
+1. https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+
 
 */
 
@@ -29,7 +66,7 @@ References:
 #include<stdio.h>       // `printf()`
 #include<string.h>      // `memset()`
 #include<stdlib.h>      // `exit()`
-#include<arpa/inet.h>
+#include<arpa/inet.h>   // `htonl()`
 #include<sys/socket.h>
 
 #define BUFLEN 512   //Max length of buffer
