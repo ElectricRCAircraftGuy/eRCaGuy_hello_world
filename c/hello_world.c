@@ -42,6 +42,12 @@ References:
 #ifdef __cplusplus
 extern "C" {
 #endif
+// A hacky alternative to including stdio.h above! Writing the prototype, or declaration, to a
+// function like this in order to declare its existence and be able to use it is called a
+// "forward declaration", and it allows you to use this function withOUT including its header file
+// so long as the forward-declared function **definition** is also found by the linker as a symbol
+// within the compiled gcc GNU LibC object/binary file, which library the linker links to during
+// the `gcc` compilation process.
 int printf ( const char * format, ... ); // a hacky alternative to including stdio.h above! 
 #ifdef __cplusplus
 }
