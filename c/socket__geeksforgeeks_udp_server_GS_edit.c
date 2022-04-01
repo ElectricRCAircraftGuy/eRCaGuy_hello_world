@@ -2,22 +2,27 @@
 This file is part of eRCaGuy_hello_world:
 https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-Run the GeeksforGeeks UDP Server-Client code exactly as-is, from here:
+Edit and learn the GeeksforGeeks UDP Server-Client code, from here:
 https://www.geeksforgeeks.org/udp-server-client-implementation-c/.
 This is the UDP **server** code.
 
-STATUS: works, but could use some clean-up in my own edited version.
+STATUS: wip
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
-# Removed -Werror to compile; put it back!
-gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_server.c -o bin/server -lm && bin/server
+gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server -lm && bin/server
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server.c -o bin/server && bin/server
+g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server && bin/server
 ```
+
+Steps to make a UDP Server:
+1. create a socket
+2. bind it to an interface
+3. call receive (block on this)
+4. call send once we have received
 
 References:
 1. UDP server/client: https://www.geeksforgeeks.org/udp-server-client-implementation-c/
@@ -25,7 +30,8 @@ References:
 
 */
 
-// Server side implementation of UDP client-server model
+// Server-side implementation of UDP server-client model
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -90,13 +96,13 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_server.c -o bin/server -lm && bin/server
-    socket__geeksforgeeks_udp_server.c: In function ‘main’:
-    socket__geeksforgeeks_udp_server.c:73:17: warning: pointer targets in passing argument 6 of ‘recvfrom’ differ in signedness [-Wpointer-sign]
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server -lm && bin/server
+    socket__geeksforgeeks_udp_server_GS_edit.c: In function ‘main’:
+    socket__geeksforgeeks_udp_server_GS_edit.c:73:17: warning: pointer targets in passing argument 6 of ‘recvfrom’ differ in signedness [-Wpointer-sign]
                      &len);
                      ^~~~
     In file included from /usr/include/x86_64-linux-gnu/sys/socket.h:269,
-                     from socket__geeksforgeeks_udp_server.c:31:
+                     from socket__geeksforgeeks_udp_server_GS_edit.c:31:
     /usr/include/x86_64-linux-gnu/bits/socket2.h:64:1: note: expected ‘socklen_t * restrict’ {aka ‘unsigned int * restrict’} but argument is of type ‘int *’
      recvfrom (int __fd, void *__restrict __buf, size_t __n, int __flags,
      ^~~~~~~~
@@ -108,7 +114,7 @@ In C:
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server.c -o bin/a && bin/a
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/a && bin/a
     Hello World.
 
 
