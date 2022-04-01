@@ -28,7 +28,7 @@ Steps to make a UDP Server:
 2. Bind the socket object to a socket internet namespace (sin) address (which consists of a socket
 internet namespace A) family, B) port, and C) IP address) via `bind()`.
 3. Call `recvfrom()` to block until a message is received.
-4. Process the received message and printout the sender's address info, as well as the message.
+4. Process the received message and print out the sender's address info, as well as the message.
 5. Call `sendto()` to send a message reply back to the sender of the message we just received.
 
 References:
@@ -234,7 +234,7 @@ int main()
     //    definitions.
     const char* sender_ip_addr = inet_ntoa(addr_client.sin_addr);
 
-    printf("Sender address information:\n"
+    printf("Sender (client) address information:\n"
            "  socket internet namespace (sin) family name = %s\n"
            "  port                                        = %u\n"
            "  IP address                                  = %s\n",
@@ -242,7 +242,8 @@ int main()
 
     // B. print the message received from the sender
 
-    printf("Msg received from sender (client) (%zi bytes):\n  %s\n", num_bytes_received, receive_buf);
+    printf("Msg received from sender (client) (%zi bytes):\n  %s\n",
+        num_bytes_received, receive_buf);
 
     // =============================================================================================
     printf("5. Send a response back to the sender of the message we just received.\n");

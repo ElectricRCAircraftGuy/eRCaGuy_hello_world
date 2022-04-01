@@ -6,7 +6,7 @@ Edit and learn the GeeksforGeeks UDP Server-Client code, from here:
 https://www.geeksforgeeks.org/udp-server-client-implementation-c/.
 This is the UDP **client** code.
 
-STATUS: WIP: I still need to carefully go through it all!
+STATUS: DONE AND WORKS! THIS IS A GREAT DEMO!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
@@ -22,7 +22,10 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_client_GS_edi
 ------------------------------
 Steps to make a UDP Client:
 ------------------------------
-1. TODO
+1. Create a socket with `socket()`.
+2. Call `sendto()` to send a message to the server to begin communication.
+3. Call `recvfrom()` to block until a message is received back from the server.
+4. Process the received message and print out the sender's address info, as well as the message.
 
 References:
 1. UDP server/client: https://www.geeksforgeeks.org/udp-server-client-implementation-c/
@@ -30,55 +33,179 @@ References:
 
 */
 
-// Client side implementation of UDP client-server model
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
+// Client-side implementation of UDP server-client model
+
+// local includes
+// None
+
+// Linux Includes
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#define PORT     20000
-#define MAXLINE 1024
+// C includes
+#include <assert.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>  // `strerror()`
 
-// Driver code
-int main() {
-    int sockfd;
-    char buffer[MAXLINE];
-    char *hello = "Hello from client.";
-    struct sockaddr_in   servaddr;
 
-    // Creating socket file descriptor
-    if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
+// See: https://linux.die.net/man/7/ip
+// AF = "Address Family"
+// INET = "Internet"
+// AF_INET = IPv4 internet protocols
+// AF_INET6 = IPv6 internet protocols; see: https://linux.die.net/man/2/socket
+// DGRAM = "Datagram" (UDP)
+#define SOCKET_TYPE_TCP              AF_INET, SOCK_STREAM, 0
+#define SOCKET_TYPE_UDP              AF_INET, SOCK_DGRAM, 0
+#define SOCKET_TYPE_RAW(protocol)    AF_INET, SOCK_RAW, (protocol)
+// Usage examples:
+// ```c
+// int socket_tcp = socket(SOCKET_TYPE_TCP);
+// int socket_udp = socket(SOCKET_TYPE_UDP);
+// // See also: https://www.binarytides.com/raw-sockets-c-code-linux/
+// int socket_raw = socket(SOCKET_TYPE_RAW(IPPROTO_RAW));
+// ```c
+
+#define MAX_RECEIVE_BUFFER_SIZE 4096  // in bytes
+
+static const uint16_t PORT = 20000;
+_Static_assert(sizeof(uint16_t) == sizeof(unsigned short),
+    "`htons()` expects an unsigned short, and the PORT is uint16_t, so let's ensure they match "
+    "for this system or else you'll have to replace `htons()` with a different function "
+    "call.\n");
+
+
+int main()
+{
+    // FOR MORE COMMENTS AND REFERENCE LINKS IN THE CODE, SEE THE SERVER CODE! Not all reference
+    // links and comments have been copied from the server code to this client code.
+
+    printf("STARTING UDP CLIENT:\n");
+
+    // =============================================================================================
+    printf("1. Create a socket object and obtain a file descriptor to it.\n");
+    // =============================================================================================
+    // See:
+    // 1. https://linux.die.net/man/2/socket
+    // 1. https://man7.org/linux/man-pages/man2/socket.2.html
+    int socket_fd = socket(SOCKET_TYPE_UDP);
+    if (socket_fd == -1)
+    {
+        printf("Failed to create socket. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
     }
 
-    memset(&servaddr, 0, sizeof(servaddr));
+    struct sockaddr_in addr_server;
+    memset(&addr_server, 0, sizeof(addr_server));
 
-    // Filling server information
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(PORT);
-    servaddr.sin_addr.s_addr = INADDR_ANY;
+    // Fill in the server address information.
+    addr_server.sin_family = AF_INET;  // IPv4
+    addr_server.sin_port = htons(PORT);
+    addr_server.sin_addr.s_addr = INADDR_ANY;
 
-    int n, len;
+    // =============================================================================================
+    printf("2. Send a message to the server.\n");
+    // =============================================================================================
 
-    sendto(sockfd, (const char *)hello, strlen(hello),
-        MSG_CONFIRM, (const struct sockaddr *) &servaddr,
-            sizeof(servaddr));
-    printf("Hello message sent.\n");
+    const char msg_to_send[] = "Hello from client.";
 
-    n = recvfrom(sockfd, (char *)buffer, MAXLINE,
-                MSG_WAITALL, (struct sockaddr *) &servaddr,
-                &len);
-    buffer[n] = '\0';
-    printf("Server : %s\n", buffer);
+    ssize_t num_bytes_sent = sendto(socket_fd, msg_to_send, sizeof(msg_to_send), 0,
+        (const struct sockaddr *)&addr_server, sizeof(addr_server));
+    if (num_bytes_sent == -1)
+    {
+        printf("Failed to send to server. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
+    }
 
-    close(sockfd);
+    printf("Done! This msg was just sent to the server:\n"
+           "  %s\n", msg_to_send);
+
+    // =============================================================================================
+    printf("3. Block until a message is received.\n");
+    // =============================================================================================
+
+    char receive_buf[MAX_RECEIVE_BUFFER_SIZE];
+    // This is an input/output ("value-result") argument to the `recvfrom()` call below. See the
+    // documentation links. That means we must first set it to the length of the address,
+    // but then we must read it after the call to check for address length errors as well, because
+    // the function will write to it!
+    socklen_t addr_len = sizeof(addr_server);
+    ssize_t num_bytes_received = recvfrom(socket_fd, receive_buf, sizeof(receive_buf), MSG_WAITALL,
+        (struct sockaddr *)&addr_server, &addr_len);
+    if (num_bytes_received == -1)
+    {
+        printf("Failed to receive data. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
+    }
+    else if (num_bytes_received == 0)
+    {
+        printf("No bytes received. The sender has performed an orderly shutdown.\n");
+    }
+
+    if (addr_len > sizeof(addr_server))
+    {
+        printf("Error: the `addr_server` address buffer provided to the receive call was too "
+               "small, and therefore the address written into it was truncated. Actual address "
+               "size provided to the function was %zu bytes, but %u bytes were needed.\n",
+               sizeof(addr_server), addr_len);
+    }
+    else if (addr_len < sizeof(addr_server))
+    {
+        printf("Note: the `addr_server` address buffer provided to the receive call was bigger "
+               "than necessary. Actual address size provided to the function was %zu bytes, "
+               "but only %u bytes were needed.\n", sizeof(addr_server), addr_len);
+    }
+
+    // =============================================================================================
+    printf("4. Process the received message, & print out address info. of the sender, followed by "
+           "the message!\n");
+    // =============================================================================================
+
+    // A. get and print sender address information
+
+    // Socket internet namespace name
+    const char* sender_sin_family_name = "unknown";
+    switch (addr_server.sin_family)
+    {
+    case AF_INET:
+        sender_sin_family_name = "AF_INET (IPv4 address)";
+        break;
+    case AF_INET6:
+        sender_sin_family_name = "AF_INET6 (IPv6 address)";
+    }
+    // Use `ntohs()` ("network to host for short type") to convert the port number from network
+    // (Big-endian) to host (Little-endian) byte order.
+    uint16_t sender_port = ntohs(addr_server.sin_port);
+    // See:
+    // 1. https://linux.die.net/man/3/inet_aton
+    // 1. https://linux.die.net/man/7/ip - for the `struct sockaddr_in` and `struct in_addr` struct
+    //    definitions.
+    const char* sender_ip_addr = inet_ntoa(addr_server.sin_addr);
+
+    printf("Sender (server) address information:\n"
+           "  socket internet namespace (sin) family name = %s\n"
+           "  port                                        = %u\n"
+           "  IP address                                  = %s\n",
+           sender_sin_family_name, sender_port, sender_ip_addr);
+
+    // B. print the message received from the sender
+
+    printf("Msg received from sender (server) (%zi bytes):\n  %s\n",
+        num_bytes_received, receive_buf);
+
+
+cleanup:
+    if (socket_fd != -1)
+    {
+        close(socket_fd);
+    }
     return 0;
 }
+
 
 
 /*
