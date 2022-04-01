@@ -14,11 +14,11 @@ and short these 5 steps are if you don't do any error checking!
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server -lm && bin/server
+gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server -lm && bin/server
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server && bin/server
+g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server && bin/server
 ```
 
 ------------------------------
@@ -291,7 +291,7 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server -lm && bin/server
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server -lm && bin/server
     STARTING UDP SERVER:
     1. Create a socket object and obtain a file descriptor to it.
     2. Bind the socket object with the server address specified above so that it can be used.
