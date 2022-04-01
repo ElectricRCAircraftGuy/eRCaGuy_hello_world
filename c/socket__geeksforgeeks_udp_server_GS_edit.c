@@ -32,23 +32,30 @@ References:
 
 // Server-side implementation of UDP server-client model
 
+// local includes
+// None
+
+// Linux Includes
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-#define PORT 8080
-#define MAXLINE 1024
+// C includes
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+#define PORT 20000
+#define MAX_RECEIVE_BUFFER_SIZE 4096  // in bytes
 
 // Driver code
 int main()
 {
     int sockfd;
-    char buffer[MAXLINE];
+    char buffer[MAX_RECEIVE_BUFFER_SIZE];
     char *hello = "Hello from server";
     struct sockaddr_in servaddr, cliaddr;
 
@@ -74,11 +81,12 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    int len, n;
+    unsigned int len;
+    ssize_t n;
 
     len = sizeof(cliaddr);  // len is value/resuslt
 
-    n = recvfrom(sockfd, (char *)buffer, MAXLINE, MSG_WAITALL, (struct sockaddr *)&cliaddr, &len);
+    n = recvfrom(sockfd, (char *)buffer, MAX_RECEIVE_BUFFER_SIZE, MSG_WAITALL, (struct sockaddr *)&cliaddr, &len);
     buffer[n] = '\0';
     printf("Client : %s\n", buffer);
     sendto(sockfd, (const char *)hello, strlen(hello), MSG_CONFIRM,
