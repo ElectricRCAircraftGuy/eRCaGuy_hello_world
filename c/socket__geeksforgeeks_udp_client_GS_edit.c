@@ -19,6 +19,11 @@ gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_client_GS_edit.c -o bin
 g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_client_GS_edit.c -o bin/client && bin/client
 ```
 
+------------------------------
+Steps to make a UDP Client:
+------------------------------
+1. TODO
+
 References:
 1. UDP server/client: https://www.geeksforgeeks.org/udp-server-client-implementation-c/
 1. TCP server/client: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
@@ -42,7 +47,7 @@ References:
 int main() {
     int sockfd;
     char buffer[MAXLINE];
-    char *hello = "Hello from client";
+    char *hello = "Hello from client.";
     struct sockaddr_in   servaddr;
 
     // Creating socket file descriptor

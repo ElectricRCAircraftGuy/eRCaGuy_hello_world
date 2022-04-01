@@ -6,7 +6,10 @@ Edit and learn the GeeksforGeeks UDP Server-Client code, from here:
 https://www.geeksforgeeks.org/udp-server-client-implementation-c/.
 This is the UDP **server** code.
 
-STATUS: wip
+STATUS: DONE AND WORKS! THIS IS A GREAT DEMO!
+
+TODO: make a super simple version of this that ignores ALL error checking, just to show how simple
+and short these 5 steps are if you don't do any error checking!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
@@ -18,11 +21,15 @@ gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.
 g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server && bin/server
 ```
 
+------------------------------
 Steps to make a UDP Server:
-1. create a socket
-2. bind it to an interface
-3. call receive (block on this)
-4. call send once we have received
+------------------------------
+1. Create a socket with `socket()`.
+2. Bind the socket object to a socket internet namespace (sin) address (which consists of a socket
+internet namespace A) family, B) port, and C) IP address) via `bind()`.
+3. Call `recvfrom()` to block until a message is received.
+4. Process the received message and printout the sender's address info, as well as the message.
+5. Call `sendto()` to send a message reply back to the sender of the message we just received.
 
 References:
 
@@ -100,11 +107,13 @@ _Static_assert(sizeof(uint16_t) == sizeof(unsigned short),
 
 int main()
 {
+    int flags;
+
     printf("STARTING UDP SERVER:\n");
 
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
     printf("1. Create a socket object and obtain a file descriptor to it.\n");
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
     // See:
     // 1. https://linux.die.net/man/2/socket
     // 1. https://man7.org/linux/man-pages/man2/socket.2.html
@@ -131,8 +140,10 @@ int main()
     // Fill in the server address information.
     // sin = "socket internet namespace"
     addr_server.sin_family = AF_INET;  // IPv4
-    // NB: `htons()` converts "host to network" byte order for unsigned 's'hort types, since
-    // `sin_port` must be in **network byte order**! See: https://linux.die.net/man/3/htons
+    // NB: `htons()` converts "host to network" byte order for unsigned 's'hort types
+    // (usually uint16_t), since `sin_port` must be in **network byte order**! Since the port is
+    // always a 2-byte uint16_t number, use `htons()` to convert it.
+    // See: https://linux.die.net/man/3/htons
     addr_server.sin_port = htons(PORT);
     // `INADDR_ANY` means "accept any incoming address". See:
     // https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-INADDR_005fANY
@@ -140,10 +151,10 @@ int main()
     // network" function, `inet_aton()`, here: https://linux.die.net/man/3/inet_aton
     addr_server.sin_addr.s_addr = INADDR_ANY;
 
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
     printf("2. Bind the socket object with the server address specified above so that it "
            "can be used.\n");
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
     // See:
     // 1. https://linux.die.net/man/7/ip - this link also explains what happens when you try to use
     //    "unbound" sockets!
@@ -155,9 +166,9 @@ int main()
         goto cleanup;
     }
 
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
     printf("3. Block until a message is received.\n");
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
     // See:
     // 1. *****https://linux.die.net/man/2/recv - NB: receive calls are all **blocking** by default
     //    but can be made **nonblocking** by passing flag `MSG_DONTWAIT` to the calls!:
@@ -197,19 +208,79 @@ int main()
                "but only %u bytes were needed.\n", sizeof(addr_client), addr_len);
     }
 
-    // ---------------------------------------------------------------------------------------------
-    printf("4. Send a response back to the sender of the message we just received.\n");
-    // ---------------------------------------------------------------------------------------------
+    // =============================================================================================
+    printf("4. Process the received message, & print out address info. of the sender, followed by "
+           "the message!\n");
+    // =============================================================================================
 
+    // A. get and print sender address information
 
-//    buffer[n] = '\0';
-//    printf("Client : %s\n", buffer);
-//    const char* msg_to_send = "Hello from server";
-//    sendto(socket_fd, msg_to_send, strlen(msg_to_send), MSG_CONFIRM,
-//           (const struct sockaddr *)&addr_client, len);
-//    printf("Hello message sent.\n");
+    // Socket internet namespace name
+    const char* sender_sin_family_name = "unknown";
+    switch (addr_client.sin_family)
+    {
+    case AF_INET:
+        sender_sin_family_name = "AF_INET (IPv4 address)";
+        break;
+    case AF_INET6:
+        sender_sin_family_name = "AF_INET6 (IPv6 address)";
+    }
+    // Use `ntohs()` ("network to host for short type") to convert the port number from network
+    // (Big-endian) to host (Little-endian) byte order.
+    uint16_t sender_port = ntohs(addr_client.sin_port);
+    // See:
+    // 1. https://linux.die.net/man/3/inet_aton
+    // 1. https://linux.die.net/man/7/ip - for the `struct sockaddr_in` and `struct in_addr` struct
+    //    definitions.
+    const char* sender_ip_addr = inet_ntoa(addr_client.sin_addr);
+
+    printf("Sender address information:\n"
+           "  socket internet namespace (sin) family name = %s\n"
+           "  port                                        = %u\n"
+           "  IP address                                  = %s\n",
+           sender_sin_family_name, sender_port, sender_ip_addr);
+
+    // B. print the message received from the sender
+
+    printf("Msg received from sender (client) (%zi bytes):\n  %s\n", num_bytes_received, receive_buf);
+
+    // =============================================================================================
+    printf("5. Send a response back to the sender of the message we just received.\n");
+    // =============================================================================================
+
+    const char msg_to_send[] = "Hello from server.";
+    // See: https://linux.die.net/man/2/sendto
+    //
+    // If you're wondering about when to use the `MSG_CONFIRM` flag, essentially, all it does is
+    // tell the underlying ARP network layer to NOT periodically verify the MAC of the recipient
+    // IP, because we are confident the IP we are sending to is the device we think it is, since
+    // this message are are sending is in **direct response to** a message we just **received**
+    // from them! In other words, if in doubt, leave OUT the `MSG_CONFIRM` flag. Put it in ONLY if
+    // the message we are sending is a direct response to a message received, and therefore we want
+    // to increase the network efficiency a tiny bit by NOT verifying the MAC again periodically,
+    // at the risk that the destination MAC could change and be wrong and no loner match the IP
+    // address for the device we think we are sending this message to!
+    // - See my answer here: https://stackoverflow.com/a/71712033/4561887
+
+    // flags = MSG_CONFIRM;
+    flags = 0;
+    ssize_t num_bytes_sent = sendto(socket_fd, msg_to_send, sizeof(msg_to_send), flags,
+        (const struct sockaddr *)&addr_client, sizeof(addr_client));
+    if (num_bytes_sent == -1)
+    {
+        printf("Failed to send to client. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
+    }
+
+    printf("Done! This msg was just sent to the client:\n"
+           "  %s\n", msg_to_send);
+
 
 cleanup:
+    if (socket_fd != -1)
+    {
+        close(socket_fd);
+    }
 
     return 0;
 }
@@ -219,27 +290,26 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.c
--o bin/server -lm && bin/server socket__geeksforgeeks_udp_server_GS_edit.c: In function ‘main’:
-    socket__geeksforgeeks_udp_server_GS_edit.c:73:17: warning: pointer targets in passing argument 6
-of ‘recvfrom’ differ in signedness [-Wpointer-sign] &len);
-                     ^~~~
-    In file included from /usr/include/x86_64-linux-gnu/sys/socket.h:269,
-                     from socket__geeksforgeeks_udp_server_GS_edit.c:31:
-    /usr/include/x86_64-linux-gnu/bits/socket2.h:64:1: note: expected ‘socklen_t * restrict’ {aka
-‘unsigned int * restrict’} but argument is of type ‘int *’ recvfrom (int __fd, void *__restrict
-__buf, size_t __n, int __flags,
-     ^~~~~~~~
-
-    Client : Hello from client
-    Hello message sent.
-
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit.c -o bin/server -lm && bin/server
+    STARTING UDP SERVER:
+    1. Create a socket object and obtain a file descriptor to it.
+    2. Bind the socket object with the server address specified above so that it can be used.
+    3. Block until a message is received.
+    4. Process the received message, & print out address info. of the sender, followed by the message!
+    Sender address information:
+      socket internet namespace (sin) family name = AF_INET (IPv4 address)
+      port                                        = 55862
+      IP address                                  = 127.0.0.1
+    Msg received from sender (client) (18 bytes):
+      Hello from client.
+    5. Send a response back to the sender of the message we just received.
+    Done! This msg was just sent to the client:
+      Hello from server.
 
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17
-socket__geeksforgeeks_udp_server_GS_edit.c -o bin/a && bin/a Hello World.
+
 
 
 */
