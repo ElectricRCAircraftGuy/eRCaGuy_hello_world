@@ -100,9 +100,11 @@ _Static_assert(sizeof(uint16_t) == sizeof(unsigned short),
 
 int main()
 {
-    int retcode; // return code
+    printf("STARTING UDP SERVER:\n");
 
+    // ---------------------------------------------------------------------------------------------
     printf("1. Create a socket object and obtain a file descriptor to it.\n");
+    // ---------------------------------------------------------------------------------------------
     // See:
     // 1. https://linux.die.net/man/2/socket
     // 1. https://man7.org/linux/man-pages/man2/socket.2.html
@@ -138,34 +140,74 @@ int main()
     // network" function, `inet_aton()`, here: https://linux.die.net/man/3/inet_aton
     addr_server.sin_addr.s_addr = INADDR_ANY;
 
+    // ---------------------------------------------------------------------------------------------
     printf("2. Bind the socket object with the server address specified above so that it "
            "can be used.\n");
+    // ---------------------------------------------------------------------------------------------
     // See:
     // 1. https://linux.die.net/man/7/ip - this link also explains what happens when you try to use
     //    "unbound" sockets!
     // 1. https://linux.die.net/man/2/bind
-    retcode = bind(socket_fd, (const struct sockaddr *)&addr_server, sizeof(addr_server));
+    int retcode = bind(socket_fd, (const struct sockaddr *)&addr_server, sizeof(addr_server));
     if (retcode == -1)
     {
         printf("Failed to bind socket. errno = %i: %s\n", errno, strerror(errno));
         goto cleanup;
     }
 
+    // ---------------------------------------------------------------------------------------------
+    printf("3. Block until a message is received.\n");
+    // ---------------------------------------------------------------------------------------------
+    // See:
+    // 1. *****https://linux.die.net/man/2/recv - NB: receive calls are all **blocking** by default
+    //    but can be made **nonblocking** by passing flag `MSG_DONTWAIT` to the calls!:
+    //    "If no messages are available at the socket, the receive calls wait for a message to
+    //    arrive".
+    // 1. https://man7.org/linux/man-pages/man2/recv.2.html
+    // 1. https://www.cs.cmu.edu/~srini/15-441/F01.full/www/assignments/P2/htmlsim_split/node12.html
+    char receive_buf[MAX_RECEIVE_BUFFER_SIZE];
+    // This is an input/output ("value-result") argument to the `recvfrom()` call below. See the
+    // documentation links above. That means we must first set it to the length of the address,
+    // but then we must read it after the call to check for address length errors as well, because
+    // the function will write to it!
+    socklen_t addr_len = sizeof(addr_client);
+    ssize_t num_bytes_received = recvfrom(socket_fd, receive_buf, sizeof(receive_buf), MSG_WAITALL,
+        (struct sockaddr *)&addr_client, &addr_len);
+    if (num_bytes_received == -1)
+    {
+        printf("Failed to receive data. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
+    }
+    else if (num_bytes_received == 0)
+    {
+        printf("No bytes received. The sender has performed an orderly shutdown.\n");
+    }
+
+    if (addr_len > sizeof(addr_client))
+    {
+        printf("Error: the `addr_client` address buffer provided to the receive call was too "
+               "small, and therefore the address written into it was truncated. Actual address "
+               "size provided to the function was %zu bytes, but %u bytes were needed.\n",
+               sizeof(addr_client), addr_len);
+    }
+    else if (addr_len < sizeof(addr_client))
+    {
+        printf("Note: the `addr_client` address buffer provided to the receive call was bigger "
+               "than necessary. Actual address size provided to the function was %zu bytes, "
+               "but only %u bytes were needed.\n", sizeof(addr_client), addr_len);
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    printf("4. Send a response back to the sender of the message we just received.\n");
+    // ---------------------------------------------------------------------------------------------
 
 
-    unsigned int len;
-    ssize_t n;
-
-    len = sizeof(addr_client);  // len is value/resuslt
-
-    char buffer[MAX_RECEIVE_BUFFER_SIZE];
-    n = recvfrom(socket_fd, (char *)buffer, MAX_RECEIVE_BUFFER_SIZE, MSG_WAITALL, (struct sockaddr *)&addr_client, &len);
-    buffer[n] = '\0';
-    printf("Client : %s\n", buffer);
-    const char* msg_to_send = "Hello from server";
-    sendto(socket_fd, msg_to_send, strlen(msg_to_send), MSG_CONFIRM,
-           (const struct sockaddr *)&addr_client, len);
-    printf("Hello message sent.\n");
+//    buffer[n] = '\0';
+//    printf("Client : %s\n", buffer);
+//    const char* msg_to_send = "Hello from server";
+//    sendto(socket_fd, msg_to_send, strlen(msg_to_send), MSG_CONFIRM,
+//           (const struct sockaddr *)&addr_client, len);
+//    printf("Hello message sent.\n");
 
 cleanup:
 
