@@ -14,7 +14,8 @@ I've done a _lot_ of Googling and looked at a lot of resources now, and none of 
     1. https://www.geeksforgeeks.org/user-datagram-protocol-udp/
     1. https://www.geeksforgeeks.org/why-does-dns-use-udp-and-not-tcp/
 1. Google search for ["c socket client server demo"](https://www.google.com/search?q=c+socket+client+server+demo&oq=c+socket+client+server+demo&aqs=chrome..69i57j69i64l3.6367j0j7&sourceid=chrome&ie=UTF-8)
-1.  
+1. TCP **server** example: see the bottom of this man page here: https://linux.die.net/man/2/bind. They cover all of these steps:
+    1. Create the socket, bind it, listen, accept an incoming connection.
 1.
 1.  
 
@@ -26,3 +27,5 @@ I've done a _lot_ of Googling and looked at a lot of resources now, and none of 
 [UDP Server/Client flow:](https://www.geeksforgeeks.org/udp-server-client-implementation-c/)
 
 [![](docs/udpfuncdiag.png)](docs/udpfuncdiag.png)
+
+

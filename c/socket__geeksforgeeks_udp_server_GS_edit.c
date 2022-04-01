@@ -25,8 +25,30 @@ Steps to make a UDP Server:
 4. call send once we have received
 
 References:
-1. UDP server/client: https://www.geeksforgeeks.org/udp-server-client-implementation-c/
-1. TCP server/client: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
+
+1. *****+UDP server/client: https://www.geeksforgeeks.org/udp-server-client-implementation-c/
+1. *****+TCP server/client: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/
+
+1. https://www.binarytides.com/programming-udp-sockets-c-linux/
+
+1. https://linux.die.net/man/7/socket
+1. https://linux.die.net/man/2/socket
+1. https://linux.die.net/man/2/recvfrom
+1. https://man7.org/linux/man-pages/man7/ip.7.html
+1. https://linux.die.net/man/7/ip
+1.
+
+
+What happens if you try to use **unbound sockets**!?
+Ans: https://linux.die.net/man/7/ip
+> When a process wants to receive new incoming packets or connections, it should bind a socket to a
+  local interface address using bind(2). In this case, only one IP socket may be bound to any given
+  local (address, port) pair. When INADDR_ANY is specified in the bind call, the socket will be
+  bound to all local interfaces. When listen(2) is called on an unbound socket, the socket is
+  automatically bound to a random free port with the local address set to INADDR_ANY. When connect
+  (2) is called on an unbound socket, the socket is automatically bound to a random free port or to
+  a usable shared port with the local address set to INADDR_ANY.
+
 
 */
 
@@ -43,55 +65,109 @@ References:
 #include <unistd.h>
 
 // C includes
+#include <assert.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h>  // `strerror()`
 
 
-#define PORT 20000
+// See: https://linux.die.net/man/7/ip
+// AF = "Address Family"
+// INET = "Internet"
+// AF_INET = IPv4 internet protocols
+// AF_INET6 = IPv6 internet protocols; see: https://linux.die.net/man/2/socket
+// DGRAM = "Datagram" (UDP)
+#define SOCKET_TYPE_TCP              AF_INET, SOCK_STREAM, 0
+#define SOCKET_TYPE_UDP              AF_INET, SOCK_DGRAM, 0
+#define SOCKET_TYPE_RAW(protocol)    AF_INET, SOCK_RAW, (protocol)
+// Usage examples:
+// ```c
+// int socket_tcp = socket(SOCKET_TYPE_TCP);
+// int socket_udp = socket(SOCKET_TYPE_UDP);
+// // See also: https://www.binarytides.com/raw-sockets-c-code-linux/
+// int socket_raw = socket(SOCKET_TYPE_RAW(IPPROTO_RAW));
+// ```c
+
 #define MAX_RECEIVE_BUFFER_SIZE 4096  // in bytes
 
-// Driver code
+static const uint16_t PORT = 20000;
+_Static_assert(sizeof(uint16_t) == sizeof(unsigned short),
+    "`htons()` expects an unsigned short, and the PORT is uint16_t, so let's ensure they match "
+    "for this system or else you'll have to replace `htons()` with a different function "
+    "call.\n");
+
+
 int main()
 {
-    int sockfd;
-    char buffer[MAX_RECEIVE_BUFFER_SIZE];
-    char *hello = "Hello from server";
-    struct sockaddr_in servaddr, cliaddr;
+    int retcode; // return code
 
-    // Creating socket file descriptor
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    printf("1. Create a socket object and obtain a file descriptor to it.\n");
+    // See:
+    // 1. https://linux.die.net/man/2/socket
+    // 1. https://man7.org/linux/man-pages/man2/socket.2.html
+    int socket_fd = socket(SOCKET_TYPE_UDP);
+    if (socket_fd == -1)
     {
-        perror("socket creation failed");
-        exit(EXIT_FAILURE);
+        printf("Failed to create socket. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
     }
 
-    memset(&servaddr, 0, sizeof(servaddr));
-    memset(&cliaddr, 0, sizeof(cliaddr));
+    // Internet namespace socket addresses
+    // sockaddr_in = "socket address internet namespace"
+    // See:
+    // 1. GNU LibC one-page user manual:
+    //    https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-struct-sockaddr_005fin
+    // 1. https://linux.die.net/man/7/ip
+    struct sockaddr_in addr_server;
+    struct sockaddr_in addr_client;
+    // It's a good idea to memset the addresses to zero, so that all fields, including hidden ones
+    // or padding ones, are zero as well. See: https://stackoverflow.com/a/36088131/4561887.
+    memset(&addr_server, 0, sizeof(addr_server));
+    memset(&addr_client, 0, sizeof(addr_client));
 
-    // Filling server information
-    servaddr.sin_family = AF_INET;  // IPv4
-    servaddr.sin_addr.s_addr = INADDR_ANY;
-    servaddr.sin_port = htons(PORT);
+    // Fill in the server address information.
+    // sin = "socket internet namespace"
+    addr_server.sin_family = AF_INET;  // IPv4
+    // NB: `htons()` converts "host to network" byte order for unsigned 's'hort types, since
+    // `sin_port` must be in **network byte order**! See: https://linux.die.net/man/3/htons
+    addr_server.sin_port = htons(PORT);
+    // `INADDR_ANY` means "accept any incoming address". See:
+    // https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-INADDR_005fANY
+    // To make your own address from an IPv4 string such as "127.0.0.1", use the "internet ascii to
+    // network" function, `inet_aton()`, here: https://linux.die.net/man/3/inet_aton
+    addr_server.sin_addr.s_addr = INADDR_ANY;
 
-    // Bind the socket with the server address
-    if (bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
+    printf("2. Bind the socket object with the server address specified above so that it "
+           "can be used.\n");
+    // See:
+    // 1. https://linux.die.net/man/7/ip - this link also explains what happens when you try to use
+    //    "unbound" sockets!
+    // 1. https://linux.die.net/man/2/bind
+    retcode = bind(socket_fd, (const struct sockaddr *)&addr_server, sizeof(addr_server));
+    if (retcode == -1)
     {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
+        printf("Failed to bind socket. errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
     }
+
+
 
     unsigned int len;
     ssize_t n;
 
-    len = sizeof(cliaddr);  // len is value/resuslt
+    len = sizeof(addr_client);  // len is value/resuslt
 
-    n = recvfrom(sockfd, (char *)buffer, MAX_RECEIVE_BUFFER_SIZE, MSG_WAITALL, (struct sockaddr *)&cliaddr, &len);
+    char buffer[MAX_RECEIVE_BUFFER_SIZE];
+    n = recvfrom(socket_fd, (char *)buffer, MAX_RECEIVE_BUFFER_SIZE, MSG_WAITALL, (struct sockaddr *)&addr_client, &len);
     buffer[n] = '\0';
     printf("Client : %s\n", buffer);
-    sendto(sockfd, (const char *)hello, strlen(hello), MSG_CONFIRM,
-           (const struct sockaddr *)&cliaddr, len);
+    const char* msg_to_send = "Hello from server";
+    sendto(socket_fd, msg_to_send, strlen(msg_to_send), MSG_CONFIRM,
+           (const struct sockaddr *)&addr_client, len);
     printf("Hello message sent.\n");
+
+cleanup:
 
     return 0;
 }
