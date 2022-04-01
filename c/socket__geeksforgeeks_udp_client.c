@@ -2,8 +2,11 @@
 This file is part of eRCaGuy_hello_world:
 https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-(description)
-STATUS: (status)
+Run the GeeksforGeeks UDP Server-Client code exactly as-is, from here:
+https://www.geeksforgeeks.org/udp-server-client-implementation-c/.
+This is the UDP **client** code.
+
+STATUS: works, but could use some clean-up in my own edited version.
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
@@ -78,8 +81,19 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_client.c -o bin/a -lm && bin/a
-    Hello World.
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_client.c -o bin/client -lm && bin/client
+    socket__geeksforgeeks_udp_client.c: In function ‘main’:
+    socket__geeksforgeeks_udp_client.c:67:17: warning: pointer targets in passing argument 6 of ‘recvfrom’ differ in signedness [-Wpointer-sign]
+                     &len);
+                     ^~~~
+    In file included from /usr/include/x86_64-linux-gnu/sys/socket.h:269,
+                     from socket__geeksforgeeks_udp_client.c:31:
+    /usr/include/x86_64-linux-gnu/bits/socket2.h:64:1: note: expected ‘socklen_t * restrict’ {aka ‘unsigned int * restrict’} but argument is of type ‘int *’
+     recvfrom (int __fd, void *__restrict __buf, size_t __n, int __flags,
+     ^~~~~~~~
+    Hello message sent.
+    Server : Hello from server
+
 
 
 OR, in C++:
