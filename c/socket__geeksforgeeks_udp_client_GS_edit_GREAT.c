@@ -11,8 +11,7 @@ STATUS: DONE AND WORKS! THIS IS A GREAT DEMO!
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
-# Removed -Werror to compile; put it back!
-gcc -Wall -Wextra -O3 -std=c17 socket__geeksforgeeks_udp_client_GS_edit_GREAT.c -o bin/client -lm && bin/client
+gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_client_GS_edit_GREAT.c -o bin/client -lm && bin/client
 ```
 2. In C++
 ```bash
