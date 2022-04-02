@@ -195,6 +195,12 @@ int utils_rand(int min, int max)
             "and not work properly. In such a case, try casting to `long long int` instead of "
             "just `long int`, and update this static_assert accordingly.");
 
+        // Note/todo: instead of scaling the output with `UTILS_MAP()`, I could also just obtain
+        // multiple random numbers (preferably, many, so as to avoid potential [I'm hypothesizing
+        // here] poor distribution near the extreme limits of the range) with the normal range
+        // (preferably each with a different seed), then sum them to get a random number with a
+        // much higher max range!
+
         random_num = UTILS_MAP((long int)random_num, (long int)0, (long int)RAND_MAX, (long int)min,
                                (long int)max);
         return random_num;

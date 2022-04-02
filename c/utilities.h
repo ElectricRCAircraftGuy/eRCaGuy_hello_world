@@ -135,6 +135,12 @@ bool is_double_ge(double a, double b, double epsilon);
 
 long map(long, long, long, long, long);
 
+/// Perform linear interpolation on x to scale it from an input range between in_min and in_max
+/// to an output range between out_min and out_max. This is similar to Arduino's `map`
+/// function found in Arduino's WMath.cpp.
+#define SCALE(x, in_min, in_max, out_min, out_max)  \
+    (((x) - (in_min)) * ((out_max) - (out_min)) / ((in_max) - (in_min)) + (out_min))
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // FROM ARDUINO END
 // -------------------------------------------------------------------------------------------------
