@@ -19,13 +19,16 @@ I've done a _lot_ of Googling and looked at a lot of resources now, and none of 
 1.
 1.  
 
-[TCP Server/Client flow:](https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/)
+
+## [TCP Server/Client flow:](https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c/)
 
 [![](docs/Socket_server-1.png)](docs/Socket_server-1.png)
 
 
-[UDP Server/Client flow:](https://www.geeksforgeeks.org/udp-server-client-implementation-c/)
+## [UDP Server/Client flow:](https://www.geeksforgeeks.org/udp-server-client-implementation-c/)
 
 [![](docs/udpfuncdiag.png)](docs/udpfuncdiag.png)
 
-
+1. Excellent example of this!: 
+    1. UDP server: [socket__geeksforgeeks_udp_server_GS_edit_GREAT.c](socket__geeksforgeeks_udp_server_GS_edit_GREAT.c)
+    1. UDP client: [socket__geeksforgeeks_udp_client_GS_edit_GREAT.c](socket__geeksforgeeks_udp_client_GS_edit_GREAT.c)
