@@ -5,12 +5,11 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 STATUS: (status)
 
 To compile and run (assuming you've already `cd`ed into this dir):
-1. In C:
 ```bash
+# 1. In C:
 gcc -Wall -Wextra -Werror -O3 -std=c17 hello_world_extra_basic.c -o bin/a -lm && bin/a
-```
-2. In C++
-```bash
+
+# 2. In C++
 g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.c -o bin/a && bin/a
 ```
 
