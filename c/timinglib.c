@@ -7,8 +7,29 @@ References:
 1. <time.h> header: https://en.cppreference.com/w/c/chrono
 1. https://en.cppreference.com/w/c/chrono/timespec_get
 1. https://linux.die.net/man/3/clock_gettime
+1. https://man7.org/linux/man-pages/man3/clock_gettime.3.html
+    1. Shows the requirement for "_POSIX_C_SOURCE >= 199309L" in order to obtain
+       access to these functions!: `clock_getres()`, `clock_gettime()`, `clock_settime()`.
 
 */
+
+
+/// Comment this define out to use the C `timespec_get()` instead of the better Linux and POSIX
+/// `clock_gettime()`.
+/// Note: `clock_gettime()` (see references above) is better that `timespec_get()`. However,
+/// `clock_gettime()` is only available on Linux and POSIX systems, whereas `timespec_get()` is a
+/// generic C function.
+#define USE_CLOCK_GETTIME
+
+#ifdef USE_CLOCK_GETTIME
+    // This line **must** come **before** including <time.h> in order to bring in the POSIX
+    // functions such as `clock_gettime()`!
+    #define _POSIX_C_SOURCE 199309L // this brings in `clock_gettime()` in <time.h>
+
+    #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_MONOTONIC, (timespec_ptr))
+#else
+    #define GET_TIME(timespec_ptr) timespec_get((timespec_ptr), TIME_UTC)
+#endif
 
 // Local includes
 #include "timinglib.h"
@@ -21,19 +42,6 @@ References:
 #include <stdio.h>  // `printf()`
 #include <string.h> // `strerror(errno)`
 #include <time.h>   // `clock_gettime()` and `timespec_get()`
-
-/// Comment this define out to use the C `timespec_get()` instead of the better Linux and POSIX
-/// `clock_gettime()`.
-/// Note: `clock_gettime()` (see references above) is better that `timespec_get()`. However,
-/// `clock_gettime()` is only available on Linux and POSIX systems, whereas `timespec_get()` is a
-/// generic C function.
-#define USE_CLOCK_GETTIME
-
-#ifdef USE_CLOCK_GETTIME
-    #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_MONOTONIC, (timespec_ptr))
-#else
-    #define GET_TIME(timespec_ptr) timespec_get((timespec_ptr), TIME_UTC)
-#endif
 
 
 uint64_t millis()
