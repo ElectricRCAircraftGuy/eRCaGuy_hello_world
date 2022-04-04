@@ -55,7 +55,7 @@ int main()
     printf("Practice sleeping!\n\n");
 
     // =============================================================================================
-    printf("Sleeping 1 second using `nanosleep()`.\n");
+    printf("Sleeping 1 second using `nanosleep()` (relative sleep).\n");
     // See: https://man7.org/linux/man-pages/man2/nanosleep.2.html
     // =============================================================================================
 
@@ -81,9 +81,47 @@ int main()
     }
 
     // =============================================================================================
-    printf("Sleeping 1 second using `clock_nanosleep()` with the `TIMER_ABSTIME` flag for "
-           "absolute time!\n");
+    printf("Sleeping 1 second using `clock_nanosleep()` (relative sleep).\n");
     // See: https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+    // =============================================================================================
+
+    ts_requested.tv_sec = 1;
+    ts_requested.tv_nsec = 0;
+    retcode = EINTR; // force to run once
+    while (retcode == EINTR)
+    {
+        retcode = clock_nanosleep(CLOCK_MONOTONIC, 0, &ts_requested, &ts_remaining);
+        if (retcode != 0)
+        {
+            printf("`clock_nanosleep()` failed! retcode = %i: ", retcode);
+            // See all error codes here: https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+            switch (retcode)
+            {
+            case EFAULT:
+                printf("EFAULT: `request` or `remain` specified an invalid address.\n");
+                break;
+            case EINTR:
+                printf("EINTR: The sleep was interrupted by a signal handler.\n");
+                break;
+            case EINVAL:
+                printf("EINVAL: The value in the `tv_nsec` field was not in the range 0 to "
+                       "999999999 or `tv_sec` was negative.\n");
+                break;
+            case ENOTSUP:
+                printf("ENOTSUP: The kernel does not support sleeping against this `clockid`.\n");
+                break;
+            }
+
+            ts_requested = ts_remaining; // prepare for the next loop iteration
+        }
+    }
+
+    // =============================================================================================
+    printf("Sleeping 1 second using `clock_nanosleep()` with the `TIMER_ABSTIME` flag for "
+           "absolute time (sleep until)!\n");
+    // See: https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+    // Using this function with flag `TIMER_ABSTIME` has similarities to `vTaskDelayUntil()` in
+    // FreeRTOS!: `https://www.freertos.org/vtaskdelayuntil.html`
     // =============================================================================================
     // > Using an absolute timer is useful for preventing timer drift
     // > problems of the type described in nanosleep(2).  (Such problems
@@ -147,12 +185,14 @@ In C:
     eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep.c -o bin/a -lm && time bin/a
     Practice sleeping!
 
-    Sleeping 1 second using `nanosleep()`.
-    Sleeping 1 second using `clock_nanosleep()` with the `TIMER_ABSTIME` flag for absolute time!
+    Sleeping 1 second using `nanosleep()` (relative sleep).
+    Sleeping 1 second using `clock_nanosleep()` (relative sleep).
+    Sleeping 1 second using `clock_nanosleep()` with the `TIMER_ABSTIME` flag for absolute time (sleep until)!
 
-    real    0m2.001s
+    real    0m3.002s
     user    0m0.000s
     sys 0m0.001s
+
 
 
 
