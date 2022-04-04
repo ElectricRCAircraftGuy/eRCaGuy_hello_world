@@ -24,6 +24,11 @@ References:
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 
 
+/// Get the number of elements in any C array
+/// - Usage example: [my own answer]:
+///   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80289#80289
+#define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
+
 /// Convert seconds to milliseconds
 #define SEC_TO_MS(sec) ((sec)*1000)
 /// Convert seconds to microseconds
@@ -47,3 +52,7 @@ uint64_t micros();
 
 /// Get a time stamp in nanoseconds.
 uint64_t nanos();
+
+/// Obtain an estimate, in nanoseconds, of the resolution of the underlying clock used to obtain all
+/// of the timestamps above. This estimate is determined empirically through testing.
+uint64_t get_resolution();
