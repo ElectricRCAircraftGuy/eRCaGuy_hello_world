@@ -25,12 +25,19 @@ References:
 /// generic C function.
 #define USE_CLOCK_GETTIME
 
+/// The clock to use for underlying timing functions. I recommend `CLOCK_MONOTONIC` or
+/// `CLOCK_MONOTONIC_RAW`. For details on the various clock types, see:
+/// https://man7.org/linux/man-pages/man3/clock_gettime.3.html.
+/// Note that `CLOCK_MONOTONIC_RAW` does NOT work with `clock_nanosleep()`, or else I'd prefer the
+/// `CLOCK_MONOTONIC_RAW` clock over the `CLOCK_MONOTONIC` clock.
+#define CLOCK_TYPE CLOCK_MONOTONIC
+
 #ifdef USE_CLOCK_GETTIME
     // This line **must** come **before** including <time.h> in order to bring in the POSIX
     // functions such as `clock_gettime()`!
     #define _POSIX_C_SOURCE 199309L // this brings in `clock_gettime()` in <time.h>
 
-    #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_MONOTONIC_RAW, (timespec_ptr))
+    #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_TYPE, (timespec_ptr))
 #else
     #define GET_TIME(timespec_ptr) timespec_get((timespec_ptr), TIME_UTC)
 #endif
@@ -126,7 +133,7 @@ uint64_t get_specified_resolution()
 #endif
 
     struct timespec ts;
-    int retcode = clock_getres(CLOCK_MONOTONIC_RAW, &ts);
+    int retcode = clock_getres(CLOCK_TYPE, &ts);
     if (retcode == -1)
     {
         printf("Failed to get resolution. errno = %i: %s\n", errno, strerror(errno));
