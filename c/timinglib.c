@@ -33,9 +33,10 @@ References:
 #define CLOCK_TYPE CLOCK_MONOTONIC
 
 #ifdef USE_CLOCK_GETTIME
-    // This line **must** come **before** including <time.h> in order to bring in the POSIX
-    // functions such as `clock_gettime()`!
-    #define _POSIX_C_SOURCE 199309L // this brings in `clock_gettime()` in <time.h>
+    // This line **must** come **before** including <time.h> in order to bring in
+    // the POSIX functions such as `clock_gettime()`, `nanosleep()`, etc., from
+    // `<time.h>`! See: https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+    #define _POSIX_C_SOURCE 200112L
 
     #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_TYPE, (timespec_ptr))
 #else
@@ -145,4 +146,124 @@ uint64_t get_specified_resolution()
     }
 
     return resolution_ns;
+}
+
+void sleep_ms(uint64_t sleep_time_ms)
+{
+    sleep_ns(MS_TO_NS(sleep_time_ms));
+}
+
+void sleep_us(uint64_t sleep_time_us)
+{
+    sleep_ns(US_TO_NS(sleep_time_us));
+}
+
+static void print_nanosleep_failed(int return_code)
+{
+    printf("`clock_nanosleep()` failed! return_code = %i: ", return_code);
+    // See all error codes here:
+    // https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+    switch (return_code)
+    {
+    case EFAULT:
+        printf("EFAULT: `request` or `remain` specified an invalid address.\n");
+        break;
+    case EINTR:
+        printf("EINTR: The sleep was interrupted by a signal handler.\n");
+        break;
+    case EINVAL:
+        printf("EINVAL: The value in the `tv_nsec` field was not in the range 0 to "
+               "999999999 or `tv_sec` was negative.\n");
+        break;
+    case ENOTSUP:
+        printf("ENOTSUP: The kernel does not support sleeping against this `clockid`.\n");
+        break;
+    }
+}
+
+void sleep_ns(uint64_t sleep_time_ns)
+{
+    // See "sleep_nanosleep.c" and "sleep_nanosleep_minimum_time_interval.c" for sleep examples.
+
+    struct timespec ts_requested;
+    struct timespec ts_remaining;
+
+    ts_requested.tv_sec = sleep_time_ns / NS_PER_SEC;
+    ts_requested.tv_nsec = sleep_time_ns % NS_PER_SEC;
+
+    // If the sleep is interrupted, it may take a couple attempts to sleep the full
+    // amount--hence the while loop.
+    int retcode = EINTR; // force to run once
+    while (retcode == EINTR)
+    {
+        retcode = clock_nanosleep(CLOCK_TYPE, 0, &ts_requested, &ts_remaining);
+        if (retcode != 0)
+        {
+            print_nanosleep_failed(retcode);
+            ts_requested = ts_remaining; // prepare for the next loop iteration
+        }
+    }
+}
+
+void sleep_until_ms(uint64_t * previous_wake_time_ms, uint64_t period_ms)
+{
+    if (previous_wake_time_ms == NULL)
+    {
+        printf("ERROR: NULL ptr.\n");
+        return;
+    }
+
+    uint64_t previous_wake_time_ns = MS_TO_NS(*previous_wake_time_ms);
+    uint64_t period_ns = MS_TO_NS(period_ms);
+
+    sleep_until_ns(&previous_wake_time_ns, period_ns);
+    *previous_wake_time_ms = NS_TO_MS(previous_wake_time_ns);
+}
+
+void sleep_until_us(uint64_t * previous_wake_time_us, uint64_t period_us)
+{
+    if (previous_wake_time_us == NULL)
+    {
+        printf("ERROR: NULL ptr.\n");
+        return;
+    }
+
+    uint64_t previous_wake_time_ns = US_TO_NS(*previous_wake_time_us);
+    uint64_t period_ns = US_TO_NS(period_us);
+
+    sleep_until_ns(&previous_wake_time_ns, period_ns);
+    *previous_wake_time_us = NS_TO_US(previous_wake_time_ns);
+}
+
+void sleep_until_ns(uint64_t * previous_wake_time_ns, uint64_t period_ns)
+{
+    // See "sleep_nanosleep.c" and "sleep_nanosleep_minimum_time_interval.c" for sleep examples.
+
+    if (previous_wake_time_ns == NULL)
+    {
+        printf("ERROR: NULL ptr.\n");
+        return;
+    }
+
+    // Generate an absolute timestamp at a future point in time, at which point we want to
+    // wake up after sleeping.
+    uint64_t time_wakeup_ns = *previous_wake_time_ns + period_ns;
+    *previous_wake_time_ns = time_wakeup_ns; // update the user's input variable
+    const struct timespec TS_WAKEUP =
+    {
+        .tv_sec = time_wakeup_ns / NS_PER_SEC,
+        .tv_nsec = time_wakeup_ns % NS_PER_SEC,
+    };
+
+    // If the sleep is interrupted, it may take a couple attempts to sleep the full
+    // amount--hence the while loop.
+    int retcode = EINTR; // force to run once
+    while (retcode == EINTR)
+    {
+        retcode = clock_nanosleep(CLOCK_TYPE, TIMER_ABSTIME, &TS_WAKEUP, NULL);
+        if (retcode != 0)
+        {
+            print_nanosleep_failed(retcode);
+        }
+    }
 }
