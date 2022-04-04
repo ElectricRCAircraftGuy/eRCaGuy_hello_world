@@ -46,6 +46,8 @@ int main()
 SAMPLE OUTPUT:
 
 In both C and C++, typical resolutions for me are ~14~27 ns.
+For `clock_gettime()`, this is only when using `CLOCK_MONOTONIC`:
+`clock_gettime(CLOCK_MONOTONIC, &ts)`
 
 In C:
 
@@ -67,6 +69,36 @@ OR, in C++:
     Hello World.
 
     estimated_resolution_ns = 15 ns
+    specified_resolution_ns = 1 ns
+
+    real    0m0.001s
+    user    0m0.001s
+    sys 0m0.000s
+
+
+**********************************************
+For `clock_gettime(CLOCK_MONOTONIC_RAW, &ts)`:
+**********************************************
+
+Here are a few runs:
+
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 timinglib_get_resolution.c timinglib.c -o bin/a && time bin/a
+    Hello World.
+
+    estimated_resolution_ns = 97 ns
+    specified_resolution_ns = 1 ns
+
+    real    0m0.001s
+    user    0m0.001s
+    sys 0m0.000s
+
+
+
+
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 timinglib_get_resolution.c timinglib.c -o bin/a && time bin/a
+    Hello World.
+
+    estimated_resolution_ns = 92 ns
     specified_resolution_ns = 1 ns
 
     real    0m0.001s

@@ -4,12 +4,16 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 See the .h file for details.
 
 References:
+1. MY ANSWER WITH THIS CODE: Get a timestamp in C in microseconds? -
+   https://stackoverflow.com/a/67731965/4561887
 1. <time.h> header: https://en.cppreference.com/w/c/chrono
 1. https://en.cppreference.com/w/c/chrono/timespec_get
 1. https://linux.die.net/man/3/clock_gettime
-1. https://man7.org/linux/man-pages/man3/clock_gettime.3.html
+1. *****+https://man7.org/linux/man-pages/man3/clock_gettime.3.html
     1. Shows the requirement for "_POSIX_C_SOURCE >= 199309L" in order to obtain
        access to these functions!: `clock_getres()`, `clock_gettime()`, `clock_settime()`.
+    1. See definitions for all of the clock types here, too, such as `CLOCK_REALTIME`,
+       `CLOCK_MONOTONIC`, `CLOCK_MONOTONIC_RAW`, etc.
 
 */
 
@@ -26,7 +30,7 @@ References:
     // functions such as `clock_gettime()`!
     #define _POSIX_C_SOURCE 199309L // this brings in `clock_gettime()` in <time.h>
 
-    #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_MONOTONIC, (timespec_ptr))
+    #define GET_TIME(timespec_ptr) clock_gettime(CLOCK_MONOTONIC_RAW, (timespec_ptr))
 #else
     #define GET_TIME(timespec_ptr) timespec_get((timespec_ptr), TIME_UTC)
 #endif
@@ -122,7 +126,7 @@ uint64_t get_specified_resolution()
 #endif
 
     struct timespec ts;
-    int retcode = clock_getres(CLOCK_MONOTONIC, &ts);
+    int retcode = clock_getres(CLOCK_MONOTONIC_RAW, &ts);
     if (retcode == -1)
     {
         printf("Failed to get resolution. errno = %i: %s\n", errno, strerror(errno));
