@@ -1,5 +1,5 @@
 /*
-hello_world_sleep
+sleep
 
 Gabriel Staples
 www.ElectricRCAircraftGuy.com
@@ -9,15 +9,15 @@ Examples of how to compile & run:
 - NB: c90 requires C-style comments (slash star, star slash) and does NOT work with modern
       C++-style // comments!
   C:
-    gcc -Wall -g3 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
-    gcc -Wall -g3 -std=c90 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
-    gcc -Wall -g3 -std=c99 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
-    gcc -Wall -g3 -std=c11 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep   <====== I'M BUILDING WITH THIS ONE!
+    gcc -Wall -g3 -o bin/sleep sleep.c && bin/sleep
+    gcc -Wall -g3 -std=c90 -o bin/sleep sleep.c && bin/sleep
+    gcc -Wall -g3 -std=c99 -o bin/sleep sleep.c && bin/sleep
+    gcc -Wall -g3 -std=c11 -o bin/sleep sleep.c && bin/sleep   <====== I'M BUILDING WITH THIS ONE!
   C++:
-    g++ -Wall -g3 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
-    g++ -Wall -g3 -std=c++98 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
-    g++ -Wall -g3 -std=c++03 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
-    g++ -Wall -g3 -std=c++11 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
+    g++ -Wall -g3 -o bin/sleep sleep.c && bin/sleep
+    g++ -Wall -g3 -std=c++98 -o bin/sleep sleep.c && bin/sleep
+    g++ -Wall -g3 -std=c++03 -o bin/sleep sleep.c && bin/sleep
+    g++ -Wall -g3 -std=c++11 -o bin/sleep sleep.c && bin/sleep
 
 Note: `-g3` adds full debugging info! See the `-g` and `-glevel` options here: 
       https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
@@ -49,7 +49,8 @@ References:
 #include <unistd.h> // for usleep
 #endif
 
-void sleep_ms(int milliseconds) // cross-platform sleep function
+/// cross-platform sleep function
+void sleep_ms(int milliseconds)
 {
 #ifdef WIN32
     // printf("WIN32\n");
@@ -86,7 +87,7 @@ Sample Output:
 
 (with 50ms sleep between each line printed)
 
-    $ gcc -Wall -g3 -std=c11 -o hello_world_sleep hello_world_sleep.c && ./hello_world_sleep
+    $ gcc -Wall -g3 -std=c11 -o bin/sleep sleep.c && bin/sleep
 
     1: Hello sleep
     2: Hello sleep
