@@ -16,11 +16,11 @@ References:
 // Linux includes
 
 // C includes
-#include <errno.h>
-#include <stdint.h>
-#include <stdio.h>   // For `printf()`
-#include <string.h>  // `strerror(errno)`
-#include <time.h>
+#include <errno.h>  // `errno`
+#include <stdint.h> // `UINT64_MAX`
+#include <stdio.h>  // `printf()`
+#include <string.h> // `strerror(errno)`
+#include <time.h>   // `clock_gettime()` and `timespec_get()`
 
 /// Comment this define out to use the C `timespec_get()` instead of the better Linux and POSIX
 /// `clock_gettime()`.
@@ -65,7 +65,8 @@ uint64_t get_estimated_resolution()
     // Obtain a bunch of measurements as fast as possible, then let's see the gap between them.
 
     // Note: for a large linux computer, 10000 produces really consistent results. To be fast,
-    // however, even **10** produces fine results.
+    // however, even **10** produces fine results. So, use whatever number you want here between
+    // about 10 and 1 Million.
     #define NUM_MEASUREMENTS 1000
     // statically allocate this array to keep this memory off both the stack and the heap, so that
     // it can be HUGE if I want (ex: 100 Million elements--which takes about 2 seconds)! Otherwise,
