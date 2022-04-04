@@ -21,6 +21,7 @@ References:
 
 #pragma once
 
+#include <assert.h>
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 
 
@@ -29,19 +30,31 @@ References:
 ///   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80289#80289
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
+static_assert(sizeof(long) == sizeof(int64_t), "`L` should indicate `long` and "
+    "be equal to `int64_t` for your system. If not, update the `L`s below to `LL` or whatever "
+    "you need so that those constants are the same type and size as `int64_t`, as I want them "
+    "to be.");
+
+#define MS_PER_SEC (1000L)
+#define US_PER_SEC (1000000L)
+#define NS_PER_SEC (1000000000L)
+
+#define NS_PER_MS (1000000L)
+#define NS_PER_US (1000L)
+
 /// Convert seconds to milliseconds
-#define SEC_TO_MS(sec) ((sec)*1000)
+#define SEC_TO_MS(sec) ((sec)*MS_PER_SEC)
 /// Convert seconds to microseconds
-#define SEC_TO_US(sec) ((sec)*1000000)
+#define SEC_TO_US(sec) ((sec)*US_PER_SEC)
 /// Convert seconds to nanoseconds
-#define SEC_TO_NS(sec) ((sec)*1000000000)
+#define SEC_TO_NS(sec) ((sec)*NS_PER_SEC)
 
 /// Convert nanoseconds to seconds
-#define NS_TO_SEC(ns)   ((ns)/1000000000)
+#define NS_TO_SEC(ns)   ((ns)/NS_PER_SEC)
 /// Convert nanoseconds to milliseconds
-#define NS_TO_MS(ns)    ((ns)/1000000)
+#define NS_TO_MS(ns)    ((ns)/NS_PER_MS)
 /// Convert nanoseconds to microseconds
-#define NS_TO_US(ns)    ((ns)/1000)
+#define NS_TO_US(ns)    ((ns)/NS_PER_US)
 
 
 /// Get a time stamp in milliseconds.

@@ -47,8 +47,8 @@ int main()
     // Now print out the time deltas
     uint64_t t_old_ns = nanos_array[0];
     uint64_t sum_ns = 0;
-    uint64_t max_dt_ns = 0;
     uint64_t min_dt_ns = UINT64_MAX;
+    uint64_t max_dt_ns = 0;
     for (size_t i = 0; i < ARRAY_LEN(nanos_array); i++)
     {
         uint64_t t_new_ns = nanos_array[i];
@@ -59,7 +59,8 @@ int main()
         {
             max_dt_ns = dt_ns;
         }
-        else if (dt_ns > 0 && dt_ns < min_dt_ns)
+
+        if (dt_ns > 0 && dt_ns < min_dt_ns)
         {
             min_dt_ns = dt_ns;
         }

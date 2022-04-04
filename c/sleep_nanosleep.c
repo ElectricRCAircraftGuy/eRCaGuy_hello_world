@@ -1,7 +1,9 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-Try to sleep the SMALLEST time interval possible, and see how it does! How long does it actually sleep?
+Practice using `nanosleep()` and `clock_nanosleep()`--which is even better since it allows you to
+specify the clock to use, AND it allows you to sleep until **absolute** timestamps rather than
+only doing **relative** sleeps!
 
 Do a general `nanosleep()` and `clock_nanosleep()` demo on Linux!
 
@@ -17,6 +19,8 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 sleep_nanosleep.c -o bin/a && time bin/
 ```
 
 References:
+1. *****+https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+1. https://man7.org/linux/man-pages/man2/nanosleep.2.html
 1. *****[MY ANSWER] sleep in nanoseconds - https://stackoverflow.com/a/55860234/4561887
 1. [MY ANSWER] Get a timestamp in C in microseconds? - https://stackoverflow.com/a/67731965/4561887
 1. *****https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
