@@ -33,8 +33,11 @@ int main()
 {
     printf("Hello World.\n\n");
 
-    uint64_t resolution_ns = get_resolution();
-    printf("resolution_ns = %lu ns\n", resolution_ns);
+    uint64_t estimated_resolution_ns = get_estimated_resolution();
+    printf("estimated_resolution_ns = %lu ns\n", estimated_resolution_ns);
+
+    uint64_t specified_resolution_ns = get_specified_resolution();
+    printf("specified_resolution_ns = %lu ns\n", specified_resolution_ns);
 
     return 0;
 }
@@ -46,10 +49,11 @@ In both C and C++, typical resolutions for me are ~14~27 ns.
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 timinglib_get_resolution.c timinglib.c -o bin/a && time bin/a
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 timinglib_get_resolution.c timinglib.c -o bin/a && time bin/a
     Hello World.
 
-    resolution_ns = 24 ns
+    estimated_resolution_ns = 15 ns
+    specified_resolution_ns = 1 ns
 
     real    0m0.001s
     user    0m0.001s
@@ -62,7 +66,8 @@ OR, in C++:
     eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 timinglib_get_resolution.c timinglib.c -o bin/a && time bin/a
     Hello World.
 
-    resolution_ns = 15 ns
+    estimated_resolution_ns = 15 ns
+    specified_resolution_ns = 1 ns
 
     real    0m0.001s
     user    0m0.001s

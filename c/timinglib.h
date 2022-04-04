@@ -55,4 +55,9 @@ uint64_t nanos();
 
 /// Obtain an estimate, in nanoseconds, of the resolution of the underlying clock used to obtain all
 /// of the timestamps above. This estimate is determined empirically through testing.
-uint64_t get_resolution();
+uint64_t get_estimated_resolution();
+
+/// Obtain the specified resolution, as returned by `clock_getres()`. See:
+/// https://linux.die.net/man/3/clock_gettime. Works properly only if `USE_CLOCK_GETTIME` is
+/// defined in the .c file.
+uint64_t get_specified_resolution();
