@@ -115,7 +115,7 @@ void sleep_ns(uint64_t sleep_time_ns);
 //      //   `pthread` (POSIX threads).
 //      void * pthread_task(void * arguments)
 //      {
-//          const PERIOD_MS = 10; // 100 Hz
+//          const uint64_t PERIOD_MS = 10; // 100 Hz
 //          // Seed the last wake time with the current time.
 //          uint64_t last_wake_time_ms = millis();
 //
