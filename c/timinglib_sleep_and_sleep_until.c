@@ -151,7 +151,7 @@ SAMPLE OUTPUT:
 
 OR, in C++:
 
-
+(Same as in C)
 
 
 */

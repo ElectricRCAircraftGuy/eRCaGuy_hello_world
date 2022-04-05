@@ -251,8 +251,8 @@ void sleep_until_ns(uint64_t * previous_wake_time_ns, uint64_t period_ns)
     *previous_wake_time_ns = time_wakeup_ns; // update the user's input variable
     const struct timespec TS_WAKEUP =
     {
-        .tv_sec = time_wakeup_ns / NS_PER_SEC,
-        .tv_nsec = time_wakeup_ns % NS_PER_SEC,
+        .tv_sec = (__time_t)(time_wakeup_ns / NS_PER_SEC),
+        .tv_nsec = (__syscall_slong_t)(time_wakeup_ns % NS_PER_SEC),
     };
 
     // If the sleep is interrupted, it may take a couple attempts to sleep the full
