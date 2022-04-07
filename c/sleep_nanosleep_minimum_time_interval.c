@@ -41,40 +41,40 @@ To compile and run (assuming you've already `cd`ed into this dir). See:
 
 # With the **regular** `SCHED_OTHER`/`SCHED_NORMAL` "Default Linux time-sharing" scheduler:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
-gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time bin/a
 
 # GOOD VERSION TO USE:
 # With whatever scheduler is **manually set in the code below** in the function `set_scheduler()`!
 # (running the program with `sudo` is required to set the scheduler in the code)
-gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo bin/a
 
 # EASIEST VERSION TO USE:
 # With the **soft real-time** `SCHED_RR` "round-robin" scheduler at the **lowest** priority of 1:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 # Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
-gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 1 bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo chrt --rr 1 bin/a
 
 # With the **soft real-time** `SCHED_RR` "round-robin" scheduler at the **highest** priority of 99:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 # Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
-gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 99 bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo chrt --rr 99 bin/a
 
 # With the **soft real-time** `SCHED_FIFO` "first-in first-out" scheduler at the **lowest**
 # priority of 1:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 # Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
-gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --fifo 1 bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo chrt --fifo 1 bin/a
 
 # With the **soft real-time** `SCHED_FIFO` "first-in first-out" scheduler at the **highest**
 # priority of 99:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 # Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
-gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --fifo 99 bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo chrt --fifo 99 bin/a
 
 
 # 2. In C++
 # With the **regular** `SCHED_OTHER`/`SCHED_NORMAL` "Default Linux time-sharing" scheduler
-g++ -Wall -Wextra -Werror -O3 -std=c++17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a && time bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -pthread && time bin/a
 ```
 
 References:
@@ -107,6 +107,7 @@ References:
 #include "timinglib.h"
 
 // Linux includes
+#include <pthread.h>
 #include <sched.h>    // https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html
 #include <sys/mman.h> // `mlockall()` https://man7.org/linux/man-pages/man2/mlock.2.html
 
@@ -207,7 +208,7 @@ void set_scheduler()
 {
     int retcode; // return code to check for errors from function calls
 
-    // ---------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Demo 1: use `sched_setscheduler()` to change the current process's scheduler "policy"
     // **and** "priority".
     // See:
@@ -215,32 +216,40 @@ void set_scheduler()
     // 1. All `errno` errors: https://man7.org/linux/man-pages/man3/errno.3.html
     // 1. `mlockall()`: https://man7.org/linux/man-pages/man2/mlock.2.html
     // 1. *****https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
-    // ---------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     {
         const struct sched_param priority_param =
         {
-            // the priority must be from 1 (lowest priority) to 99 (highest priority) for the
-            // `SCHED_FIFO` AND `SCHED_RR` (round robin) scheduler policies; see:
+            // the priority must be from 1 (lowest priority) to 99
+            // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
+            // (round robin) scheduler policies; see:
             // https://man7.org/linux/man-pages/man7/sched.7.html
             .sched_priority = 1,
         };
 
-        // Note: use `0` as the `pid` (1st param) to indicate the PID of this running process
+        // Note: use `0` as the `pid` (1st param) to indicate the PID of this
+        // running process
         retcode = sched_setscheduler(0, SCHED_RR, &priority_param);
         if (retcode == -1)
         {
-            printf("ERROR: Failed to set scheduler. errno = %i: %s\n", errno, strerror(errno));
-            if (errno == EPERM)
+            printf("ERROR: in file %s: %i: Failed to set scheduler. "
+                   "errno = %i: %s.\n",
+                __FILE__, __LINE__, errno, strerror(errno));
+            if (errno == EPERM)  // Error: Permissions
             {
-                printf("  You must use `sudo` or run this program as root to have "
-                       " proper privileges!\n");
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
             }
-            return;
+        }
+        else
+        {
+            printf("`sched_setscheduler()` successful.\n");
         }
 
-        // Also lock the memory into RAM so that the kernel is NOT allowed to move it into the swap
-        // space, which would otherwise be a slow operation and break the "real-time"
-        // characteristics of this process.
+        // Memory lock: also lock the memory into RAM so that the kernel is NOT
+        // allowed to move it into the swap space, which would otherwise be a
+        // slow operation and break the "real-time" characteristics of this
+        // process.
         // See:
         // 1. https://man7.org/linux/man-pages/man2/mlock.2.html
         // 1. This tutorial/blog post:
@@ -248,51 +257,140 @@ void set_scheduler()
         retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
         if (retcode == -1)
         {
-            printf("ERROR: Failed to lock memory into RAM. errno = %i: %s\n",
-                errno, strerror(errno));
-            if (errno == EPERM)
+            printf("ERROR: in file %s: %i: Failed to lock memory into RAM. "
+                   "errno = %i: %s.\n",
+                __FILE__, __LINE__, errno, strerror(errno));
+            if (errno == EPERM)  // Error: Permissions
             {
-                printf("  You must use `sudo` or run this program as root to have "
-                       " proper privileges!\n");
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
             }
-            return;
+        }
+        else
+        {
+            printf("`mlockall()` successful.\n");
         }
     } // end of Demo 1
 
-    // ---------------------------------------------------------------------------------------------
-    // Demo 2: use `sched_setparam()` to change **only** the "priority" of the running process.
+    // -------------------------------------------------------------------------
+    // Demo 2: use `sched_setparam()` to change **only** the "priority" of the
+    // running process.
     // See:
     // 1. https://man7.org/linux/man-pages/man2/sched_setparam.2.html
     // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
-    //      1. "Listing 1" demo code: this code shows how to raise a child priority, lower a child
-    //         priority, and raise a priority in order to obtain a mutex lock which otherwise it
-    //         would never be able to obtain if a higher-priority process has it:
-    //         https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=2
-    // ---------------------------------------------------------------------------------------------
+    //      1. "Listing 1" demo code: this code shows how to raise a child
+    //      priority, lower a child priority, and raise a priority in order to
+    //      obtain a mutex lock which otherwise it would never be able to
+    //      obtain if a higher-priority process has it:
+    //      https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=2
+    // -------------------------------------------------------------------------
     {
-        const int new_priority = 50;
+        const int new_priority = 2;
         const struct sched_param priority_param =
         {
-            // the priority must be from 1 (lowest priority) to 99 (highest priority) for the
-            // `SCHED_FIFO` AND `SCHED_RR` (round robin) scheduler policies; see:
+            // the priority must be from 1 (lowest priority) to 99
+            // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
+            // (round robin) scheduler policies; see:
             // https://man7.org/linux/man-pages/man7/sched.7.html
             .sched_priority = new_priority,
         };
-        // Note: use `0` as the `pid` (1st param) to indicate the PID of this running process
+        // Note: use `0` as the `pid` (1st param) to indicate the PID of this
+        // running process
         retcode = sched_setparam(0, &priority_param);
         if (retcode == -1)
         {
-            printf("ERROR: Failed to set scheduler. errno = %i: %s\n", errno, strerror(errno));
-            if (errno == EPERM)
+            printf("ERROR: in file %s: %i: Failed to set priority. "
+                   "errno = %i: %s.\n",
+                __FILE__, __LINE__, errno, strerror(errno));
+            // NB: through testing, it seems that `errno` gets set to 22 (EINVAL), if `sudo` is not
+            // used to run this code. That seems like a compiler bug, because it should be `EPERM`,
+            // but let's just handle it as though it was `EPERM`.
+            if (errno == EPERM || errno == EINVAL)  // Error: Permissions
             {
-                printf("  You must use `sudo` or run this program as root to have "
-                       " proper privileges!\n");
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
             }
-            return;
+        }
+        else
+        {
+            printf("`sched_setparam()` successful.\n");
         }
     } // end of Demo 2
 
-    printf("Scheduler set successfully.\n");
+    // -------------------------------------------------------------------------
+    // Demo 3 (the pthread version of Demo 1): if using pthreads: use
+    // `pthread_setschedparam()` to change the current thread's
+    // scheduler "policy" and "priority".
+    // See:
+    // 1. https://man7.org/linux/man-pages/man3/pthread_setschedparam.3.html
+    // 1. https://man7.org/linux/man-pages/man3/pthread_self.3.html
+    // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+    // 1. https://askubuntu.com/a/1129915/327339
+    // -------------------------------------------------------------------------
+    {
+        pthread_t this_thread = pthread_self();
+        const struct sched_param priority_param =
+        {
+            // the priority must be from 1 (lowest priority) to 99
+            // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
+            // (round robin) scheduler policies; see:
+            // https://man7.org/linux/man-pages/man7/sched.7.html
+            .sched_priority = 1,
+        };
+        retcode = pthread_setschedparam(this_thread, SCHED_RR, &priority_param);
+        if (retcode != 0)
+        {
+            printf("ERROR: in file %s: %i: Failed to set pthread scheduler. "
+                   "retcode = %i: %s.\n",
+                    __FILE__, __LINE__, retcode, strerror(retcode));
+            if (retcode == EPERM)  // Error: Permissions
+            {
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
+            }
+        }
+        else
+        {
+            printf("`pthread_setschedparam()` successful.\n");
+        }
+
+        // Memory lock: also lock the memory into RAM to prevent slow operations
+        // where the kernel puts it into swap space. See notes above.
+        retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
+        if (retcode == -1)
+        {
+            printf("ERROR: in file %s: %i: Failed to lock memory into RAM. "
+                   "errno = %i: %s.\n",
+                __FILE__, __LINE__, errno, strerror(errno));
+            if (errno == EPERM)  // Error: Permissions
+            {
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
+            }
+        }
+        else
+        {
+            printf("`mlockall()` successful.\n");
+        }
+    } // end of Demo 3
+
+
+
+
+
+
+
+
+
+
+    // -------------------------------------------------------------------------
+    // Demo 2: use `sched_setparam()` to change **only** the "priority" of the running process.
+    // -------------------------------------------------------------------------
+    {
+
+    } // end of Demo 2
+
+    printf("End of `set_scheduler()`.\n\n");
 }
 
 // int main(int argc, char *argv[])  // alternative prototype
@@ -328,7 +426,7 @@ In C:
 
 Linux default scheduler:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time bin/a
     Attempt to sleep 1 ns per `clock_nanosleep()` call, 100000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 1
@@ -402,7 +500,7 @@ Linux default scheduler:
 
 Linux RR (Round robin) soft real-time scheduler, **lowest** priority  of 1:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 1 bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo chrt --rr 1 bin/a
     Attempt to sleep 1 ns per `clock_nanosleep()` call, 100000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 1
@@ -476,7 +574,7 @@ Linux RR (Round robin) soft real-time scheduler, **lowest** priority  of 1:
 
 Linux RR (Round robin) soft real-time scheduler, **highest** priority  of 99:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 99 bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm -pthread && time sudo chrt --rr 99 bin/a
     Attempt to sleep 1 ns per `clock_nanosleep()` call, 100000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 1
