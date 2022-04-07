@@ -28,6 +28,16 @@ test later on.
 
 STATUS: done!
 
+TODO:
+1. [x] Experiment by commenting out code to see what is making the new_thread
+run fast. Which code is making that happen? Demo 5 should be, but appears to
+not be working as expected.
+    1. Answer: the problem was I needed to call
+    `pthread_attr_setinheritsched(&pthread_attr, PTHREAD_EXPLICIT_SCHED);` to
+    tell `pthread_create()` to use the scheduler policy and priority set inside
+    of `pthread_attr` instead of inheriting those scheduling parameters from the
+    calling thread!
+
 To compile and run (assuming you've already `cd`ed into this dir). See:
 1. Linux scheduler descriptions: https://man7.org/linux/man-pages/man7/sched.7.html
 1. Command-line method for how to set which Linux **policy** (scheduler) and **priority** to use for
@@ -210,68 +220,11 @@ void * dummy_pthread_action(void * argument)
     printf("===== dummy_pthread_action(): pthread function started "
            "(name = \"%s\"). =====\n", thread_name);
 
-
-    // // -------------------------------------------------------------------------
-    // // [THIS IS MY PREFERRED TECHNIQUE FOR GENERAL USE]  <==================
-    // // Demo 3 (the pthread version of Demo 1): if using pthreads: use
-    // // `pthread_setschedparam()` to change the current thread's scheduler
-    // // "policy" and "priority".
-    // // See:
-    // // 1. https://man7.org/linux/man-pages/man3/pthread_setschedparam.3.html
-    // // 1. https://man7.org/linux/man-pages/man3/pthread_self.3.html
-    // // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
-    // // 1. https://askubuntu.com/a/1129915/327339
-    // // -------------------------------------------------------------------------
-    // {
-    //     pthread_t this_thread = pthread_self();
-    //     const struct sched_param priority_param =
-    //     {
-    //         // the priority must be from 1 (lowest priority) to 99
-    //         // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
-    //         // (round robin) scheduler policies; see:
-    //         // https://man7.org/linux/man-pages/man7/sched.7.html
-    //         .sched_priority = 1,
-    //     };
-    //     int retcode = pthread_setschedparam(this_thread, SCHED_RR, &priority_param);
-    //     if (retcode != 0)
-    //     {
-    //         printf("ERROR: in file %s: %i: Failed to set pthread scheduler. "
-    //                "retcode = %i: %s.\n",
-    //                 __FILE__, __LINE__, retcode, strerror(retcode));
-    //         if (retcode == EPERM)  // Error: Permissions
-    //         {
-    //             printf("  You must use `sudo` or run this program as root to "
-    //                    "have proper privileges!\n");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         printf("`pthread_setschedparam()` successful.\n");
-    //     }
-
-    //     // Memory lock: also lock the memory into RAM to prevent slow operations
-    //     // where the kernel puts it into swap space. See notes above.
-    //     retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
-    //     if (retcode == -1)
-    //     {
-    //         printf("ERROR: in file %s: %i: Failed to lock memory into RAM. "
-    //                "errno = %i: %s.\n",
-    //             __FILE__, __LINE__, errno, strerror(errno));
-    //         if (errno == EPERM)  // Error: Permissions
-    //         {
-    //             printf("  You must use `sudo` or run this program as root to "
-    //                    "have proper privileges!\n");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         printf("`mlockall()` successful.\n");
-    //     }
-    // } // end of Demo 3
-
-
     // Now do a nanosleep just to prove which scheduler is running in this
-    // thread.
+    // thread. A low average sleep time of ~4 us indicates the soft real-time
+    // SCHED_RR round robin scheduler, and a high average sleep time of ~55 us
+    // indicates SCHED_OTHER, which is the default **non-real-time**
+    // round-robin scheduler!
     run_sleep_tests(1, 10000);
 
     printf("===== dummy_pthread_action(): pthread function ended. =====\n");
@@ -500,16 +453,19 @@ void set_scheduler()
     // `pthread_attr_setschedpolicy()` and `pthread_attr_setschedparam()` to
     // set an initial scheduler **policy** and **priority** at the time of
     // thread creation via `pthread_create()`. Don't forget to use
-    // `pthread_attr_init()` and `pthread_attr_destroy()` as well to initialize
-    // and destroy the attributes object.
+    // `pthread_attr_setinheritsched()` to force `pthread_create()` to use our
+    // new settings instead of inheriting scheduler settings from the calling
+    // thread! You should use `pthread_attr_init()` and `pthread_attr_destroy()`
+    // as well to initialize and destroy the attributes object.
     // See:
     // 1. https://man7.org/linux/man-pages/man3/pthread_attr_init.3.html
     // 1. https://man7.org/linux/man-pages/man3/pthread_attr_setschedpolicy.3.html
     // 1. https://man7.org/linux/man-pages/man3/pthread_attr_setschedparam.3.html
+    // 1. https://man7.org/linux/man-pages/man3/pthread_attr_setinheritsched.3.html
     // 1. https://man7.org/linux/man-pages/man3/pthread_create.3.html
     // 1. https://man7.org/linux/man-pages/man3/pthread_join.3.html
     // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
-    //      1. "Listing 2" code which demonstrates some of this:
+    //      1. "Listing 2" code which demonstrates some of this code below:
     //         https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=3
     // -------------------------------------------------------------------------
     {
@@ -555,7 +511,23 @@ void set_scheduler()
                    retcode, strerror(retcode));
         }
 
-        // 4. Create any number of new pthread (POSIX thread) threads with this
+        // 4. Set the scheduler inheritance attribute so that `pthread_create()`
+        // will use the scheduler settings set above inside the `pthread_attr`
+        // object rather than inheriting scheduler attributes from the calling
+        // thread! If you don't call this function, the default behavior is for
+        // `pthread_create()` to IGNORE your scheduler policy and priority
+        // settings inside the `pthread_attr` object, and use the calling
+        // threads scheduler policy and priority instead!
+        retcode = pthread_attr_setinheritsched(&pthread_attr,
+            PTHREAD_EXPLICIT_SCHED);
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_attr_setinheritsched()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+
+        // 5. Create any number of new pthread (POSIX thread) threads with this
         // scheduler policy and priority set at thread creation time. Here is
         // a demo creating just one pthread.
 
@@ -567,9 +539,14 @@ void set_scheduler()
             printf("ERROR: `pthread_create()` failed. "
                    "retcode = %i: %s.\n",
                    retcode, strerror(retcode));
+            if (retcode == EPERM)  // Error: Permissions
+            {
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
+            }
         }
 
-        // 5. Destroy the thread attribute object. When done using the
+        // 6. Destroy the thread attribute object. When done using the
         // `pthread_attr_t` attribute object above to create any number of
         // pthreads you desire, destroy it, presumably to free up dynamic
         // memory and prevent memory leaks.
@@ -582,8 +559,8 @@ void set_scheduler()
                    retcode, strerror(retcode));
         }
 
-        // 6. thread cleanup: since I know `new_thread` is finished with its
-        // task, let's join it to clean it up.
+        // 7. thread cleanup: wait for the `new_thread` to finish with its
+        // task by joining with it to wait and then clean it up.
         // See: https://man7.org/linux/man-pages/man3/pthread_join.3.html
         const char* return_message;
         retcode = pthread_join(new_thread, (void**)&return_message);
