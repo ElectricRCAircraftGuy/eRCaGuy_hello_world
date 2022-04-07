@@ -9,10 +9,10 @@ STATUS: works!
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
 # 1. In C:
-gcc -Wall -Wextra -Werror -O3 -std=c17 timinglib_pthread_periodic_loop.c timinglib.c -o bin/a -pthread && time bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 timinglib_pthread_periodic_loop.c timinglib.c -o bin/a -pthread && time sudo bin/a
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=c++17 timinglib_pthread_periodic_loop.c timinglib.c -o bin/a -pthread && time bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 timinglib_pthread_periodic_loop.c timinglib.c -o bin/a -pthread && time sudo bin/a
 ```
 
 References:
@@ -34,7 +34,7 @@ References:
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
 
-#define NUM_ITERATIONS 100
+#define NUM_ITERATIONS 200
 
 // TODO: consider passing in the period to the `pthread_task()` function, and spawning multiple
 // threads at once.
@@ -47,7 +47,10 @@ void * pthread_task(void * argument)
     const char* thread_name = (const char*)argument;
     printf("thread_name = %s\n", thread_name);
 
-    const uint64_t PERIOD_MS = 10; // 10 ms --> 100 Hz; 1 ms --> 1000 Hz
+    // =============================================================================================
+    // SET LOOP PERIOD (FREQUENCY) HERE!
+    const uint64_t PERIOD_MS = 1; // 10 ms --> 100 Hz; 1 ms --> 1000 Hz
+    // =============================================================================================
     // Seed the last wake time with the current time.
     uint64_t last_wake_time_ms = millis();
 
@@ -105,6 +108,9 @@ void * pthread_task(void * argument)
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
+    printf("Activating realtime scheduler.\n");
+    use_realtime_scheduler();
+
     printf("Starting pthread at fixed interval using `sleep_until_ms()`.\n\n");
 
     pthread_t thread;
