@@ -43,11 +43,12 @@ To compile and run (assuming you've already `cd`ed into this dir). See:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time bin/a
 
+# GOOD VERSION TO USE:
 # With whatever scheduler is **manually set in the code below** in the function `set_scheduler()`!
 # (running the program with `sudo` is required to set the scheduler in the code)
 gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo bin/a
 
-# RECOMMENDED VERSION TO USE:
+# EASIEST VERSION TO USE:
 # With the **soft real-time** `SCHED_RR` "round-robin" scheduler at the **lowest** priority of 1:
 # (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 # Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
@@ -90,6 +91,7 @@ References:
     1. Command-line method for how to set which Linux **policy** (scheduler) and **priority** to use
     for a given command or process: https://askubuntu.com/a/51285/327339
     1. *****https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+    1. https://man7.org/linux/man-pages/man2/sched_setparam.2.html
 1. List of all possible `errno` errors, such as `EPERM`: "error, operation not permitted":
    https://man7.org/linux/man-pages/man3/errno.3.html
 
@@ -190,23 +192,24 @@ void run_sleep_tests(uint64_t sleep_time_ns, uint64_t num_measurements)
 
     double avg_dt_ns = (double)sum_ns/num_measurements;
     printf("failure_cnt                                              = %16lu\n", failure_cnt);
-    printf("average time required per `clock_nanosleep()` sleep call = %16.3f ns", avg_dt_ns);
-    printf(";   error = %9li **us**\n", NS_TO_US((int64_t)sleep_time_ns - (int64_t)avg_dt_ns));
+    printf("average time required per `clock_nanosleep()` sleep call = %16.0f ns", avg_dt_ns);
+    printf(";   error = %9.0f **us**\n", NS_TO_US((double)sleep_time_ns - (double)avg_dt_ns));
     printf("minimum time for a `clock_nanosleep()` sleep call        = %16lu ns", min_dt_ns);
-    printf(";   error = %9li **us**\n", NS_TO_US((int64_t)sleep_time_ns - (int64_t)min_dt_ns));
+    printf(";   error = %9.0f **us**\n", NS_TO_US((double)sleep_time_ns - (double)min_dt_ns));
     printf("maximum time for a `clock_nanosleep()` sleep call        = %16lu ns", max_dt_ns);
-    printf(";   error = %9li **us**\n", NS_TO_US((int64_t)sleep_time_ns - (int64_t)max_dt_ns));
+    printf(";   error = %9.0f **us**\n", NS_TO_US((double)sleep_time_ns - (double)max_dt_ns));
     printf("\n");
 }
 
 /// Set the real-time Linux scheduler _policy_ and _priority_ you'd like to use.
-// Comment out any options or code below you don't want to test or use.
+// Comment out any demos or code below you don't want to test or use.
 void set_scheduler()
 {
-    int retcode; // return code
+    int retcode; // return code to check for errors from function calls
 
     // ---------------------------------------------------------------------------------------------
-    // Option 1: use `sched_setscheduler()`
+    // Demo 1: use `sched_setscheduler()` to change the current process's scheduler "policy"
+    // **and** "priority".
     // See:
     // 1. https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html
     // 1. All `errno` errors: https://man7.org/linux/man-pages/man3/errno.3.html
@@ -214,19 +217,23 @@ void set_scheduler()
     // 1. *****https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
     // ---------------------------------------------------------------------------------------------
     {
-        const struct sched_param param =
+        const struct sched_param priority_param =
         {
+            // the priority must be from 1 (lowest priority) to 99 (highest priority) for the
+            // `SCHED_FIFO` AND `SCHED_RR` (round robin) scheduler policies; see:
+            // https://man7.org/linux/man-pages/man7/sched.7.html
             .sched_priority = 1,
         };
 
-        // Note: use `0` as the `pid` (1st param) to indicate "this running process"
-        retcode = sched_setscheduler(0, SCHED_RR, &param);
+        // Note: use `0` as the `pid` (1st param) to indicate the PID of this running process
+        retcode = sched_setscheduler(0, SCHED_RR, &priority_param);
         if (retcode == -1)
         {
             printf("ERROR: Failed to set scheduler. errno = %i: %s\n", errno, strerror(errno));
             if (errno == EPERM)
             {
-                printf("  You must use `sudo` to run this program with proper privileges!\n");
+                printf("  You must use `sudo` or run this program as root to have "
+                       " proper privileges!\n");
             }
             return;
         }
@@ -243,9 +250,47 @@ void set_scheduler()
         {
             printf("ERROR: Failed to lock memory into RAM. errno = %i: %s\n",
                 errno, strerror(errno));
+            if (errno == EPERM)
+            {
+                printf("  You must use `sudo` or run this program as root to have "
+                       " proper privileges!\n");
+            }
             return;
         }
-    } // end of Option 1
+    } // end of Demo 1
+
+    // ---------------------------------------------------------------------------------------------
+    // Demo 2: use `sched_setparam()` to change **only** the "priority" of the running process.
+    // See:
+    // 1. https://man7.org/linux/man-pages/man2/sched_setparam.2.html
+    // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+    //      1. "Listing 1" demo code: this code shows how to raise a child priority, lower a child
+    //         priority, and raise a priority in order to obtain a mutex lock which otherwise it
+    //         would never be able to obtain if a higher-priority process has it:
+    //         https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=2
+    // ---------------------------------------------------------------------------------------------
+    {
+        const int new_priority = 50;
+        const struct sched_param priority_param =
+        {
+            // the priority must be from 1 (lowest priority) to 99 (highest priority) for the
+            // `SCHED_FIFO` AND `SCHED_RR` (round robin) scheduler policies; see:
+            // https://man7.org/linux/man-pages/man7/sched.7.html
+            .sched_priority = new_priority,
+        };
+        // Note: use `0` as the `pid` (1st param) to indicate the PID of this running process
+        retcode = sched_setparam(0, &priority_param);
+        if (retcode == -1)
+        {
+            printf("ERROR: Failed to set scheduler. errno = %i: %s\n", errno, strerror(errno));
+            if (errno == EPERM)
+            {
+                printf("  You must use `sudo` or run this program as root to have "
+                       " proper privileges!\n");
+            }
+            return;
+        }
+    } // end of Demo 2
 
     printf("Scheduler set successfully.\n");
 }
