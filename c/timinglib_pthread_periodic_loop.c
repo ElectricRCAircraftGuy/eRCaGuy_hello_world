@@ -58,7 +58,8 @@ void * pthread_task(void * argument)
     uint64_t last_wake_time_us = micros();
 
     printf("thread_name = %s\n", thread_name);
-    printf("loop period = %lu us; freq = %.1f Hz\n", PERIOD_US, 1.0/US_TO_SEC((double)PERIOD_US));
+    printf("loop period = %lu ns (%lu us); freq = %.1f Hz\n",
+        US_TO_NS(PERIOD_US), PERIOD_US, 1.0/US_TO_SEC((double)PERIOD_US));
 
     // while (true)
     uint64_t t_start_ns = nanos();
