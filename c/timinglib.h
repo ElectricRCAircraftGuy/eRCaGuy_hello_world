@@ -61,6 +61,11 @@ static_assert(sizeof(long) == sizeof(int64_t), "`L` should indicate `long` and "
 /// Convert microseconds to nanoseconds
 #define US_TO_NS(us)    ((us)*NS_PER_US)
 
+/// Convert microseconds to seconds
+#define US_TO_SEC(us)   ((us)/US_PER_SEC)
+/// Convert milliseconds to seconds
+#define MS_TO_SEC(ms)   ((ms)/MS_PER_SEC)
+
 
 /// Get a monotonic time stamp in milliseconds.
 uint64_t millis();
