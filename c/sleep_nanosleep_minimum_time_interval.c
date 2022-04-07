@@ -212,7 +212,7 @@ void run_sleep_tests(uint64_t sleep_time_ns, uint64_t num_measurements)
     printf("\n");
 }
 
-/// A dummy function to have a new pthread call.
+/// A dummy function to be called and run by a new pthread.
 void * dummy_pthread_action(void * argument)
 {
     const char* thread_name = (const char*)argument;
@@ -469,6 +469,25 @@ void set_scheduler()
     //         https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=3
     // -------------------------------------------------------------------------
     {
+        // 0. Memory lock: also lock the memory into RAM to prevent slow operations
+        // where the kernel puts it into swap space. See notes above.
+        retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
+        if (retcode == -1)
+        {
+            printf("ERROR: in file %s: %i: Failed to lock memory into RAM. "
+                   "errno = %i: %s.\n",
+                __FILE__, __LINE__, errno, strerror(errno));
+            if (errno == EPERM)  // Error: Permissions
+            {
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
+            }
+        }
+        else
+        {
+            printf("`mlockall()` successful.\n");
+        }
+
         // 1. Create and initialize a pthread attribute object.
 
         pthread_attr_t pthread_attr;
@@ -585,7 +604,8 @@ int main()
 {
     uint64_t t_start_ns = nanos();
 
-    set_scheduler();
+    // set_scheduler(); // comment this in or out for testing
+    use_realtime_scheduler();
 
     // smallest sleep time possible!
     run_sleep_tests(1, 100000);    // 1 ns

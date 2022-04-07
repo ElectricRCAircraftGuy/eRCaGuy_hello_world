@@ -154,4 +154,19 @@ void sleep_until_ns(uint64_t * previous_wake_time_ns, uint64_t period_ns);
 
 
 // Real-time scheduler settings
-// TODO; see `set_scheduler()` in "sleep_nanosleep_minimum_time_interval.c"
+// See `set_scheduler()` in "sleep_nanosleep_minimum_time_interval.c"
+
+/// The lowest soft real-time scheduler priority which can be set.
+/// Note: for `SCHED_FIFO` and `SCHED_RR`. See:
+/// https://man7.org/linux/man-pages/man7/sched.7.html
+#define REALTIME_SCHEDULER_PRIORITY_LOWEST  1
+/// The highest soft real-time scheduler priority which can be set.
+#define REALTIME_SCHEDULER_PRIORITY_HIGHEST 99
+
+// Call this function to turn ON the Linux soft realtime scheduler for the
+// calling thread, in order to get minimum sleep intervals and resolution of
+// ~4 us with worst-case results being 100~400 us (0.1~0.4 ms), rather than the
+// default minimum sleep time of ~55 us with worst-case results being ~8000 us
+// (8 ms)! Calling this function allows for much better sleep resolutions and
+// timing accuracies than the default `SCHED_OTHER` scheduler can provide!
+void use_realtime_scheduler();

@@ -47,6 +47,8 @@ References:
 #include "timinglib.h"
 
 // Linux includes
+#include <pthread.h>
+#include <sys/mman.h> // `mlockall()` https://man7.org/linux/man-pages/man2/mlock.2.html
 
 // C includes
 #include <errno.h>  // `errno`
@@ -266,4 +268,57 @@ void sleep_until_ns(uint64_t * previous_wake_time_ns, uint64_t period_ns)
             print_nanosleep_failed(retcode);
         }
     }
+}
+
+// NB: for implementation details, see my examples inside the `set_scheduler()` func
+// in "sleep_nanosleep_minimum_time_interval.c"
+void use_realtime_scheduler()
+{
+    int retcode;
+
+    pthread_t this_thread = pthread_self();
+    const struct sched_param priority_param =
+    {
+        // the priority must be from 1 (lowest priority) to 99
+        // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
+        // (round robin) scheduler policies; see:
+        // https://man7.org/linux/man-pages/man7/sched.7.html
+        .sched_priority = REALTIME_SCHEDULER_PRIORITY_LOWEST,
+    };
+    retcode = pthread_setschedparam(this_thread, SCHED_RR, &priority_param);
+    if (retcode != 0)
+    {
+        printf("ERROR: in file %s: %i: Failed to set pthread scheduler. "
+               "retcode = %i: %s.\n",
+                __FILE__, __LINE__, retcode, strerror(retcode));
+        if (retcode == EPERM)  // Error: Permissions
+        {
+            printf("  You must use `sudo` or run this program as root to "
+                   "have proper privileges!\n");
+        }
+    }
+    else
+    {
+        // printf("`pthread_setschedparam()` successful.\n");
+    }
+
+    // Memory lock: also lock the memory into RAM to prevent slow operations
+    // where the kernel puts it into swap space. See notes above.
+    retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
+    if (retcode == -1)
+    {
+        printf("ERROR: in file %s: %i: Failed to lock memory into RAM. "
+               "errno = %i: %s.\n",
+            __FILE__, __LINE__, errno, strerror(errno));
+        if (errno == EPERM)  // Error: Permissions
+        {
+            printf("  You must use `sudo` or run this program as root to "
+                   "have proper privileges!\n");
+        }
+    }
+    else
+    {
+        // printf("`mlockall()` successful.\n");
+    }
+
 }
