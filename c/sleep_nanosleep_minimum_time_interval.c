@@ -28,12 +28,51 @@ test later on.
 
 STATUS: done!
 
-To compile and run (assuming you've already `cd`ed into this dir):
+To compile and run (assuming you've already `cd`ed into this dir). See:
+1. Linux scheduler descriptions: https://man7.org/linux/man-pages/man7/sched.7.html
+1. Command-line method for how to set which Linux **policy** (scheduler) and **priority** to use for
+   a given command or process: https://askubuntu.com/a/51285/327339
+
 ```bash
 # 1. In C:
+
+# ALTERNATIVELY, you may change the scheduler which runs this Linux code in the source code below,
+# rather than using the `chrt` "change real-time" command at call-time at the command-line.
+
+# With the **regular** `SCHED_OTHER`/`SCHED_NORMAL` "Default Linux time-sharing" scheduler:
+# (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
 gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time bin/a
 
+# With whatever scheduler is **manually set in the code below** in the function `set_scheduler()`!
+# (running the program with `sudo` is required to set the scheduler in the code)
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo bin/a
+
+# RECOMMENDED VERSION TO USE:
+# With the **soft real-time** `SCHED_RR` "round-robin" scheduler at the **lowest** priority of 1:
+# (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
+# Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 1 bin/a
+
+# With the **soft real-time** `SCHED_RR` "round-robin" scheduler at the **highest** priority of 99:
+# (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
+# Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 99 bin/a
+
+# With the **soft real-time** `SCHED_FIFO` "first-in first-out" scheduler at the **lowest**
+# priority of 1:
+# (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
+# Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --fifo 1 bin/a
+
+# With the **soft real-time** `SCHED_FIFO` "first-in first-out" scheduler at the **highest**
+# priority of 99:
+# (see: https://man7.org/linux/man-pages/man7/sched.7.html and https://askubuntu.com/a/51285/327339)
+# Note: see `chrt` priority ranges for each scheduler with `chrt --max`.
+gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --fifo 99 bin/a
+
+
 # 2. In C++
+# With the **regular** `SCHED_OTHER`/`SCHED_NORMAL` "Default Linux time-sharing" scheduler
 g++ -Wall -Wextra -Werror -O3 -std=c++17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a && time bin/a
 ```
 
@@ -46,6 +85,13 @@ References:
     1. timinglib.h
     1. timinglib.c
 1. https://en.cppreference.com/w/c/program/exit
+1. Linux real-time scheduler options:
+    1. Linux scheduler descriptions: https://man7.org/linux/man-pages/man7/sched.7.html
+    1. Command-line method for how to set which Linux **policy** (scheduler) and **priority** to use
+    for a given command or process: https://askubuntu.com/a/51285/327339
+    1. *****https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+1. List of all possible `errno` errors, such as `EPERM`: "error, operation not permitted":
+   https://man7.org/linux/man-pages/man3/errno.3.html
 
 */
 
@@ -59,6 +105,8 @@ References:
 #include "timinglib.h"
 
 // Linux includes
+#include <sched.h>    // https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html
+#include <sys/mman.h> // `mlockall()` https://man7.org/linux/man-pages/man2/mlock.2.html
 
 // C includes
 #include <errno.h>   // `errno`
@@ -151,16 +199,69 @@ void run_sleep_tests(uint64_t sleep_time_ns, uint64_t num_measurements)
     printf("\n");
 }
 
+/// Set the real-time Linux scheduler _policy_ and _priority_ you'd like to use.
+// Comment out any options or code below you don't want to test or use.
+void set_scheduler()
+{
+    int retcode; // return code
+
+    // ---------------------------------------------------------------------------------------------
+    // Option 1: use `sched_setscheduler()`
+    // See:
+    // 1. https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html
+    // 1. All `errno` errors: https://man7.org/linux/man-pages/man3/errno.3.html
+    // 1. `mlockall()`: https://man7.org/linux/man-pages/man2/mlock.2.html
+    // 1. *****https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+    // ---------------------------------------------------------------------------------------------
+    {
+        const struct sched_param param =
+        {
+            .sched_priority = 1,
+        };
+
+        // Note: use `0` as the `pid` (1st param) to indicate "this running process"
+        retcode = sched_setscheduler(0, SCHED_RR, &param);
+        if (retcode == -1)
+        {
+            printf("ERROR: Failed to set scheduler. errno = %i: %s\n", errno, strerror(errno));
+            if (errno == EPERM)
+            {
+                printf("  You must use `sudo` to run this program with proper privileges!\n");
+            }
+            return;
+        }
+
+        // Also lock the memory into RAM so that the kernel is NOT allowed to move it into the swap
+        // space, which would otherwise be a slow operation and break the "real-time"
+        // characteristics of this process.
+        // See:
+        // 1. https://man7.org/linux/man-pages/man2/mlock.2.html
+        // 1. This tutorial/blog post:
+        //    https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+        retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
+        if (retcode == -1)
+        {
+            printf("ERROR: Failed to lock memory into RAM. errno = %i: %s\n",
+                errno, strerror(errno));
+            return;
+        }
+    } // end of Option 1
+
+    printf("Scheduler set successfully.\n");
+}
+
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
     uint64_t t_start_ns = nanos();
 
-    // smallest sleep time possible!
-    run_sleep_tests(1, 1000);       // 1 ns
+    set_scheduler();
 
-    run_sleep_tests(100, 1000);     //       100 ns =    0.100 us
-    run_sleep_tests(1000, 1000);    //     1,000 ns =    1     us
+    // smallest sleep time possible!
+    run_sleep_tests(1, 100000);    // 1 ns
+
+    run_sleep_tests(100, 100000);   //       100 ns =    0.100 us
+    run_sleep_tests(1000, 100000);  //     1,000 ns =    1     us
     run_sleep_tests(10000, 1000);   //    10,000 ns =   10     us
     run_sleep_tests(100000, 1000);  //   100,000 ns =  100     us = 0.1 ms
     run_sleep_tests(1000000, 1000); // 1,000,000 ns = 1000     us = 1 ms
@@ -180,76 +281,233 @@ SAMPLE OUTPUT:
 
 In C:
 
+Linux default scheduler:
+
     eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time bin/a
-    Attempt to sleep 1 ns per `clock_nanosleep()` call, 1000 times.
+    Attempt to sleep 1 ns per `clock_nanosleep()` call, 100000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 1
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =        53675.742 ns;   error =       -53 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =            12963 ns;   error =       -12 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =            93691 ns;   error =       -93 **us**
+    average time required per `clock_nanosleep()` sleep call =        54471.927 ns;   error =       -54 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             3671 ns;   error =        -3 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          6601283 ns;   error =     -6601 **us**
 
-    Attempt to sleep 100 ns per `clock_nanosleep()` call, 1000 times.
+    Attempt to sleep 100 ns per `clock_nanosleep()` call, 100000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 100
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =        57645.493 ns;   error =       -57 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =            28682 ns;   error =       -28 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =           157062 ns;   error =      -156 **us**
+    average time required per `clock_nanosleep()` sleep call =        56702.391 ns;   error =       -56 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             3901 ns;   error =        -3 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          6108997 ns;   error =     -6108 **us**
 
-    Attempt to sleep 1000 ns per `clock_nanosleep()` call, 1000 times.
+    Attempt to sleep 1000 ns per `clock_nanosleep()` call, 100000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 1000
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =        61224.712 ns;   error =       -60 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =            17492 ns;   error =       -16 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =           560359 ns;   error =      -559 **us**
+    average time required per `clock_nanosleep()` sleep call =        55908.875 ns;   error =       -54 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             4458 ns;   error =        -3 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          4740096 ns;   error =     -4739 **us**
 
     Attempt to sleep 10000 ns per `clock_nanosleep()` call, 1000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 10000
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =        72386.553 ns;   error =       -62 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =            22643 ns;   error =       -12 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =           988789 ns;   error =      -978 **us**
+    average time required per `clock_nanosleep()` sleep call =        68783.728 ns;   error =       -58 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =            17810 ns;   error =        -7 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          1891034 ns;   error =     -1881 **us**
 
     Attempt to sleep 100000 ns per `clock_nanosleep()` call, 1000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 100000
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =       163173.417 ns;   error =       -63 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =           130761 ns;   error =       -30 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =           296215 ns;   error =      -196 **us**
+    average time required per `clock_nanosleep()` sleep call =       156984.599 ns;   error =       -56 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =           110281 ns;   error =       -10 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          1072336 ns;   error =      -972 **us**
 
     Attempt to sleep 1000000 ns per `clock_nanosleep()` call, 1000 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 1000000
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =      1124105.694 ns;   error =      -124 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =          1037005 ns;   error =       -37 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =          1273952 ns;   error =      -273 **us**
+    average time required per `clock_nanosleep()` sleep call =      1069170.389 ns;   error =       -69 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =          1008534 ns;   error =        -8 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          4357027 ns;   error =     -3357 **us**
 
     Attempt to sleep 1000000003 ns per `clock_nanosleep()` call, 2 times.
     ts_requested.tv_sec  = 1
     ts_requested.tv_nsec = 3
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =   1000224763.500 ns;   error =      -224 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =       1000166579 ns;   error =      -166 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =       1000282948 ns;   error =      -282 **us**
+    average time required per `clock_nanosleep()` sleep call =   1000060659.000 ns;   error =       -60 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =       1000059084 ns;   error =       -59 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =       1000062234 ns;   error =       -62 **us**
 
     Attempt to sleep 100000000 ns per `clock_nanosleep()` call, 10 times.
     ts_requested.tv_sec  = 0
     ts_requested.tv_nsec = 100000000
     failure_cnt                                              =                0
-    average time required per `clock_nanosleep()` sleep call =    100182029.500 ns;   error =      -182 **us**
-    minimum time for a `clock_nanosleep()` sleep call        =        100082942 ns;   error =       -82 **us**
-    maximum time for a `clock_nanosleep()` sleep call        =        100375405 ns;   error =      -375 **us**
+    average time required per `clock_nanosleep()` sleep call =    100081604.600 ns;   error =       -81 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =        100058123 ns;   error =       -58 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =        100130465 ns;   error =      -130 **us**
 
-    Total program run time = 4.536036879 sec.
+    Total program run time = 21.016586607 sec.
 
-    real    0m4.537s
-    user    0m0.010s
-    sys 0m0.049s
+    real    0m21.018s
+    user    0m0.123s
+    sys 0m0.698s
+
+
+Linux RR (Round robin) soft real-time scheduler, **lowest** priority  of 1:
+
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 1 bin/a
+    Attempt to sleep 1 ns per `clock_nanosleep()` call, 100000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 1
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =         4498.843 ns;   error =        -4 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             2667 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            40192 ns;   error =       -40 **us**
+
+    Attempt to sleep 100 ns per `clock_nanosleep()` call, 100000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 100
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =         4156.853 ns;   error =        -4 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             2683 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            22753 ns;   error =       -22 **us**
+
+    Attempt to sleep 1000 ns per `clock_nanosleep()` call, 100000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 1000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =         3894.208 ns;   error =        -2 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             2665 ns;   error =        -1 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            35610 ns;   error =       -34 **us**
+
+    Attempt to sleep 10000 ns per `clock_nanosleep()` call, 1000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 10000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =        12694.886 ns;   error =        -2 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =            12266 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            16980 ns;   error =        -6 **us**
+
+    Attempt to sleep 100000 ns per `clock_nanosleep()` call, 1000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 100000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =       104684.978 ns;   error =        -4 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =           102364 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =           524199 ns;   error =      -424 **us**
+
+    Attempt to sleep 1000000 ns per `clock_nanosleep()` call, 1000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 1000000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =      1012720.866 ns;   error =       -12 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =          1002401 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          1102952 ns;   error =      -102 **us**
+
+    Attempt to sleep 1000000003 ns per `clock_nanosleep()` call, 2 times.
+    ts_requested.tv_sec  = 1
+    ts_requested.tv_nsec = 3
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =   1000045425.000 ns;   error =       -45 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =       1000044155 ns;   error =       -44 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =       1000046695 ns;   error =       -46 **us**
+
+    Attempt to sleep 100000000 ns per `clock_nanosleep()` call, 10 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 100000000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =    100035182.600 ns;   error =       -35 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =        100008511 ns;   error =        -8 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =        100104635 ns;   error =      -104 **us**
+
+    Total program run time = 5.399367936 sec.
+
+    real    0m5.421s
+    user    0m0.107s
+    sys 0m0.668s
+
+
+Linux RR (Round robin) soft real-time scheduler, **highest** priority  of 99:
+
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sleep_nanosleep_minimum_time_interval.c timinglib.c -o bin/a -lm && time sudo chrt --rr 99 bin/a
+    Attempt to sleep 1 ns per `clock_nanosleep()` call, 100000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 1
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =         4338.589 ns;   error =        -4 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             2713 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            76852 ns;   error =       -76 **us**
+
+    Attempt to sleep 100 ns per `clock_nanosleep()` call, 100000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 100
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =         4415.744 ns;   error =        -4 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             2686 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =           106524 ns;   error =      -106 **us**
+
+    Attempt to sleep 1000 ns per `clock_nanosleep()` call, 100000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 1000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =         4031.598 ns;   error =        -3 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =             2751 ns;   error =        -1 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            81947 ns;   error =       -80 **us**
+
+    Attempt to sleep 10000 ns per `clock_nanosleep()` call, 1000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 10000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =        12913.663 ns;   error =        -2 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =            12199 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =            71128 ns;   error =       -61 **us**
+
+    Attempt to sleep 100000 ns per `clock_nanosleep()` call, 1000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 100000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =       104626.499 ns;   error =        -4 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =           102294 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =           176547 ns;   error =       -76 **us**
+
+    Attempt to sleep 1000000 ns per `clock_nanosleep()` call, 1000 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 1000000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =      1011654.836 ns;   error =       -11 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =          1002607 ns;   error =        -2 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =          1099322 ns;   error =       -99 **us**
+
+    Attempt to sleep 1000000003 ns per `clock_nanosleep()` call, 2 times.
+    ts_requested.tv_sec  = 1
+    ts_requested.tv_nsec = 3
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =   1000007763.000 ns;   error =        -7 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =       1000007610 ns;   error =        -7 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =       1000007916 ns;   error =        -7 **us**
+
+    Attempt to sleep 100000000 ns per `clock_nanosleep()` call, 10 times.
+    ts_requested.tv_sec  = 0
+    ts_requested.tv_nsec = 100000000
+    failure_cnt                                              =                0
+    average time required per `clock_nanosleep()` sleep call =    100008057.300 ns;   error =        -8 **us**
+    minimum time for a `clock_nanosleep()` sleep call        =        100007330 ns;   error =        -7 **us**
+    maximum time for a `clock_nanosleep()` sleep call        =        100009823 ns;   error =        -9 **us**
+
+    Total program run time = 5.422470091 sec.
+
+    real    0m5.446s
+    user    0m0.122s
+    sys 0m0.673s
+
+
+Linux FIFO (first-in/first-out) soft real-time scheduler, **lowest** priority  of 1:
+    (same as the RR ones above)
+Linux FIFO (first-in/first-out) soft real-time scheduler, **highest** priority  of 99:
+    (same as the RR ones above)
+
 
 
 

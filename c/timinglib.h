@@ -151,3 +151,7 @@ void sleep_until_us(uint64_t * previous_wake_time_us, uint64_t period_us);
 /// - `previous_wake_time_ms` is an in/out parameter, and will be read and then modified by the
 ///   function.
 void sleep_until_ns(uint64_t * previous_wake_time_ns, uint64_t period_ns);
+
+
+// Real-time scheduler settings
+// TODO; see `set_scheduler()` in "sleep_nanosleep_minimum_time_interval.c"
