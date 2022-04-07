@@ -116,7 +116,7 @@ References:
 #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
-#include <stdlib.h>  // `exit()`
+#include <stdlib.h>  // `exit()`, `malloc()`
 #include <string.h>  // `strerror(errno)`
 #include <time.h>    // `nanosleep()`, `clock_nanosleep()`, etc.
 
@@ -202,6 +202,88 @@ void run_sleep_tests(uint64_t sleep_time_ns, uint64_t num_measurements)
     printf("\n");
 }
 
+/// A dummy function to have a new pthread call.
+void * dummy_pthread_action(void * argument)
+{
+    const char* thread_name = (const char*)argument;
+
+    printf("===== dummy_pthread_action(): pthread function started "
+           "(name = \"%s\"). =====\n", thread_name);
+
+
+    // // -------------------------------------------------------------------------
+    // // [THIS IS MY PREFERRED TECHNIQUE FOR GENERAL USE]  <==================
+    // // Demo 3 (the pthread version of Demo 1): if using pthreads: use
+    // // `pthread_setschedparam()` to change the current thread's scheduler
+    // // "policy" and "priority".
+    // // See:
+    // // 1. https://man7.org/linux/man-pages/man3/pthread_setschedparam.3.html
+    // // 1. https://man7.org/linux/man-pages/man3/pthread_self.3.html
+    // // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+    // // 1. https://askubuntu.com/a/1129915/327339
+    // // -------------------------------------------------------------------------
+    // {
+    //     pthread_t this_thread = pthread_self();
+    //     const struct sched_param priority_param =
+    //     {
+    //         // the priority must be from 1 (lowest priority) to 99
+    //         // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
+    //         // (round robin) scheduler policies; see:
+    //         // https://man7.org/linux/man-pages/man7/sched.7.html
+    //         .sched_priority = 1,
+    //     };
+    //     int retcode = pthread_setschedparam(this_thread, SCHED_RR, &priority_param);
+    //     if (retcode != 0)
+    //     {
+    //         printf("ERROR: in file %s: %i: Failed to set pthread scheduler. "
+    //                "retcode = %i: %s.\n",
+    //                 __FILE__, __LINE__, retcode, strerror(retcode));
+    //         if (retcode == EPERM)  // Error: Permissions
+    //         {
+    //             printf("  You must use `sudo` or run this program as root to "
+    //                    "have proper privileges!\n");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         printf("`pthread_setschedparam()` successful.\n");
+    //     }
+
+    //     // Memory lock: also lock the memory into RAM to prevent slow operations
+    //     // where the kernel puts it into swap space. See notes above.
+    //     retcode = mlockall(MCL_CURRENT | MCL_FUTURE | MCL_ONFAULT);
+    //     if (retcode == -1)
+    //     {
+    //         printf("ERROR: in file %s: %i: Failed to lock memory into RAM. "
+    //                "errno = %i: %s.\n",
+    //             __FILE__, __LINE__, errno, strerror(errno));
+    //         if (errno == EPERM)  // Error: Permissions
+    //         {
+    //             printf("  You must use `sudo` or run this program as root to "
+    //                    "have proper privileges!\n");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         printf("`mlockall()` successful.\n");
+    //     }
+    // } // end of Demo 3
+
+
+    // Now do a nanosleep just to prove which scheduler is running in this
+    // thread.
+    run_sleep_tests(1, 10000);
+
+    printf("===== dummy_pthread_action(): pthread function ended. =====\n");
+
+    // Generate a message to return, just for fun.
+    const size_t MAX_STR_SIZE = 1024;
+    char* return_message = (char*)malloc(MAX_STR_SIZE);
+    snprintf(return_message, MAX_STR_SIZE,
+        "Thread named \"%s\" completed successfully!", thread_name);
+    return (void*)return_message;
+}
+
 /// Set the real-time Linux scheduler _policy_ and _priority_ you'd like to use.
 // Comment out any demos or code below you don't want to test or use.
 void set_scheduler()
@@ -209,8 +291,8 @@ void set_scheduler()
     int retcode; // return code to check for errors from function calls
 
     // -------------------------------------------------------------------------
-    // Demo 1: use `sched_setscheduler()` to change the current process's scheduler "policy"
-    // **and** "priority".
+    // Demo 1: use `sched_setscheduler()` to change the current process's
+    // scheduler "policy" **and** "priority".
     // See:
     // 1. https://man7.org/linux/man-pages/man2/sched_setscheduler.2.html
     // 1. All `errno` errors: https://man7.org/linux/man-pages/man3/errno.3.html
@@ -302,9 +384,10 @@ void set_scheduler()
             printf("ERROR: in file %s: %i: Failed to set priority. "
                    "errno = %i: %s.\n",
                 __FILE__, __LINE__, errno, strerror(errno));
-            // NB: through testing, it seems that `errno` gets set to 22 (EINVAL), if `sudo` is not
-            // used to run this code. That seems like a compiler bug, because it should be `EPERM`,
-            // but let's just handle it as though it was `EPERM`.
+            // NB: through testing, it seems that `errno` gets set to 22
+            // (EINVAL), if `sudo` is not used to run this code. That seems
+            // like a compiler bug, because it should be `EPERM`, but let's
+            // just handle it as though it was `EPERM`.
             if (errno == EPERM || errno == EINVAL)  // Error: Permissions
             {
                 printf("  You must use `sudo` or run this program as root to "
@@ -318,9 +401,10 @@ void set_scheduler()
     } // end of Demo 2
 
     // -------------------------------------------------------------------------
+    // [THIS IS MY PREFERRED TECHNIQUE FOR GENERAL USE]  <==================
     // Demo 3 (the pthread version of Demo 1): if using pthreads: use
-    // `pthread_setschedparam()` to change the current thread's
-    // scheduler "policy" and "priority".
+    // `pthread_setschedparam()` to change the current thread's scheduler
+    // "policy" and "priority".
     // See:
     // 1. https://man7.org/linux/man-pages/man3/pthread_setschedparam.3.html
     // 1. https://man7.org/linux/man-pages/man3/pthread_self.3.html
@@ -374,21 +458,147 @@ void set_scheduler()
         }
     } // end of Demo 3
 
-
-
-
-
-
-
-
-
-
     // -------------------------------------------------------------------------
-    // Demo 2: use `sched_setparam()` to change **only** the "priority" of the running process.
+    // Demo 4 (the pthread version of Demo 2): if using pthreads: use
+    // `pthread_setschedprio()` to change only the current thread's "priority".
+    // See:
+    // 1. https://man7.org/linux/man-pages/man3/pthread_setschedprio.3.html
     // -------------------------------------------------------------------------
     {
+        pthread_t this_thread = pthread_self();
 
-    } // end of Demo 2
+        // the priority must be from 1 (lowest priority) to 99
+        // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`(round robin)
+        // scheduler policies; see:
+        // https://man7.org/linux/man-pages/man7/sched.7.html
+        const int priority = 3;
+        retcode = pthread_setschedprio(this_thread, priority);
+        if (retcode != 0)
+        {
+            printf("ERROR: in file %s: %i: Failed to set pthread priority. "
+                   "retcode = %i: %s.\n",
+                    __FILE__, __LINE__, retcode, strerror(retcode));
+            // NB: through testing, it seems that `pthread_setschedprio
+            // ()` returns 22(EINVAL), if `sudo` is not used to run this code.
+            // That seems like a compiler bug, because it should be `EPERM`,
+            // but let's just handle it as though it was `EPERM`.
+            if (retcode == EPERM || retcode == EINVAL)  // Error: Permissions
+            {
+                printf("  You must use `sudo` or run this program as root to "
+                       "have proper privileges!\n");
+            }
+        }
+        else
+        {
+            printf("`pthread_setschedprio()` successful.\n");
+        }
+    } // end of Demo 4
+
+    // -------------------------------------------------------------------------
+    // Demo 5 (create a pthread with the desired scheduler **policy**
+    // and **priority** at creation time): if using pthreads: use
+    // `pthread_attr_setschedpolicy()` and `pthread_attr_setschedparam()` to
+    // set an initial scheduler **policy** and **priority** at the time of
+    // thread creation via `pthread_create()`. Don't forget to use
+    // `pthread_attr_init()` and `pthread_attr_destroy()` as well to initialize
+    // and destroy the attributes object.
+    // See:
+    // 1. https://man7.org/linux/man-pages/man3/pthread_attr_init.3.html
+    // 1. https://man7.org/linux/man-pages/man3/pthread_attr_setschedpolicy.3.html
+    // 1. https://man7.org/linux/man-pages/man3/pthread_attr_setschedparam.3.html
+    // 1. https://man7.org/linux/man-pages/man3/pthread_create.3.html
+    // 1. https://man7.org/linux/man-pages/man3/pthread_join.3.html
+    // 1. https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=1
+    //      1. "Listing 2" code which demonstrates some of this:
+    //         https://www.drdobbs.com/soft-real-time-programming-with-linux/184402031?pgno=3
+    // -------------------------------------------------------------------------
+    {
+        // 1. Create and initialize a pthread attribute object.
+
+        pthread_attr_t pthread_attr;
+        retcode = pthread_attr_init(&pthread_attr);
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_attr_init()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+
+        // 2. Set the scheduler **policy** (scheduler type) for the next thread
+        // to be created.
+
+        // Set to RR (round robin) soft real-time scheduler.
+        int scheduler_policy = SCHED_RR;
+        retcode = pthread_attr_setschedpolicy(&pthread_attr, scheduler_policy);
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_attr_setschedpolicy()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+
+        // 3. Set the scheduler **priority** for the next thread to be created.
+
+        const struct sched_param priority_param =
+        {
+            // the priority must be from 1 (lowest priority) to 99
+            // (highest priority) for the `SCHED_FIFO` AND `SCHED_RR`
+            // (round robin) scheduler policies; see:
+            // https://man7.org/linux/man-pages/man7/sched.7.html
+            .sched_priority = 1,
+        };
+        retcode = pthread_attr_setschedparam(&pthread_attr, &priority_param);
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_attr_setschedparam()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+
+        // 4. Create any number of new pthread (POSIX thread) threads with this
+        // scheduler policy and priority set at thread creation time. Here is
+        // a demo creating just one pthread.
+
+        pthread_t new_thread;
+        retcode = pthread_create(&new_thread, &pthread_attr,
+            dummy_pthread_action, "new_thread");
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_create()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+
+        // 5. Destroy the thread attribute object. When done using the
+        // `pthread_attr_t` attribute object above to create any number of
+        // pthreads you desire, destroy it, presumably to free up dynamic
+        // memory and prevent memory leaks.
+
+        retcode = pthread_attr_destroy(&pthread_attr);
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_attr_destroy()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+
+        // 6. thread cleanup: since I know `new_thread` is finished with its
+        // task, let's join it to clean it up.
+        // See: https://man7.org/linux/man-pages/man3/pthread_join.3.html
+        const char* return_message;
+        retcode = pthread_join(new_thread, (void**)&return_message);
+        if (retcode != 0)
+        {
+            printf("ERROR: `pthread_join()` failed. "
+                   "retcode = %i: %s.\n",
+                   retcode, strerror(retcode));
+        }
+        else
+        {
+            printf("`pthread_join()` successful: return_message = \"%s\"\n",
+                return_message);
+        }
+    } // end of Demo 5
 
     printf("End of `set_scheduler()`.\n\n");
 }
