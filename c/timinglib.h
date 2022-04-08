@@ -16,6 +16,18 @@ To compile and run:
 References:
 1. *****+[MY ANSWER] Get a timestamp in C in microseconds? - https://stackoverflow.com/a/67731965/4561887
 1. Example "delay until" timing code to look at: https://www.freertos.org/vtaskdelayuntil.html
+1. See also my answers here regarding Linux nanosleep functions and soft
+real-time schedulers, such as the `SCHED_RR` soft real-time round-robin
+scheduler:
+    1. [my ans] How to run a high-resolution, high-precision periodic loop in
+    Linux easily, at any frequency (ex: 10 KHz) using a soft real-time
+    scheduler and nanosecond delays:
+    https://stackoverflow.com/a/71790209/4561887
+    1. [my ans] pthread_create not working properly with
+    pthread_attr_setschedparam: https://stackoverflow.com/a/71789490/4561887
+    1. [my ans] How to configure the Linux SCHED_RR soft real-time round-robin
+    scheduler so that clock_nanosleep() can have improved resolution of ~4 us
+    down from ~ 55 us: https://stackoverflow.com/a/71757858/4561887
 
 */
 
