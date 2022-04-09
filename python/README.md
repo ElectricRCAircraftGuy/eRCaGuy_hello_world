@@ -73,3 +73,29 @@ Source: Tutorial: https://pylint.pycqa.org/en/latest/tutorial.html.
 ## Disable `pylint` errors
 
 See here: https://pylint.pycqa.org/en/latest/user_guide/message-control.html
+
+### Examples:
+
+1. Disable a violation _on the given line_ using `# pylint: disable=whatever` at the _end of_ the offending line:
+    From `hello_world.py`:
+    ```python
+    """
+    SAMPLE OUTPUT:
+
+        eRCaGuy_hello_world/python$ ./hello_world.py
+        Hello world!
+
+    """ # pylint: disable=pointless-string-statement
+    ```
+1. [MY PREFERENCE] Disable a violation _on the next line_ using `# pylint: disable-next=whatever` just _before_ the offending line:
+    From `hello_world.py`:
+    ```python
+    # pylint: disable-next=pointless-string-statement
+    """
+    SAMPLE OUTPUT:
+
+        eRCaGuy_hello_world/python$ ./hello_world.py
+        Hello world!
+
+    """
+    ```

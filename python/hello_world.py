@@ -43,10 +43,11 @@ if __name__ == '__main__':
 
 
 
+# pylint: disable-next=pointless-string-statement
 """
 SAMPLE OUTPUT:
 
     eRCaGuy_hello_world/python$ ./hello_world.py
     Hello world!
 
-""" # pylint: disable=pointless-string-statement
+"""
