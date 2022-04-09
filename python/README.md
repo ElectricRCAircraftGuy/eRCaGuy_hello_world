@@ -72,4 +72,4 @@ Source: Tutorial: https://pylint.pycqa.org/en/latest/tutorial.html.
 
 ## Disable `pylint` errors
 
-See here: https://pylint.pycqa.org/en/latest/user_guide/message-control.htm
+See here: https://pylint.pycqa.org/en/latest/user_guide/message-control.html

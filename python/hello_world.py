@@ -11,6 +11,8 @@ keywords: (keywords)
 
 Check this script with `pylint` v2.0.0 or later. See "eRCaGuy_hello_world/python/README.md" for
 installation instructions to install the latest version from GitHub.
+For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
+https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
 pylint hello_world.py
 ```
