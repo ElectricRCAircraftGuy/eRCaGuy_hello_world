@@ -38,10 +38,14 @@ References:
 
 1. https://www.binarytides.com/programming-udp-sockets-c-linux/
 
+1. https://man7.org/linux/man-pages/man7/ip.7.html
+1. *****https://man7.org/linux/man-pages/man3/recvfrom.3p.html [POSIX Programmer's Manual]
+    > DESCRIPTION: The recvfrom() function shall receive a message from a connection-mode [TCP] or
+      connectionless-mode [UDP] socket. It is normally used with connectionless-mode [UDP] sockets
+      **because it permits the application to retrieve the source address of received data.**
 1. https://linux.die.net/man/7/socket
 1. https://linux.die.net/man/2/socket
 1. https://linux.die.net/man/2/recvfrom
-1. https://man7.org/linux/man-pages/man7/ip.7.html
 1. https://linux.die.net/man/7/ip
 1.
 
@@ -85,15 +89,22 @@ Ans: https://linux.die.net/man/7/ip
 // AF_INET = IPv4 internet protocols
 // AF_INET6 = IPv6 internet protocols; see: https://linux.die.net/man/2/socket
 // DGRAM = "Datagram" (UDP)
-#define SOCKET_TYPE_TCP              AF_INET, SOCK_STREAM, 0
-#define SOCKET_TYPE_UDP              AF_INET, SOCK_DGRAM, 0
-#define SOCKET_TYPE_RAW(protocol)    AF_INET, SOCK_RAW, (protocol)
+//
+// IPv4
+#define SOCKET_TYPE_TCP_IPV4              AF_INET, SOCK_STREAM, 0
+#define SOCKET_TYPE_UDP_IPV4              AF_INET, SOCK_DGRAM, 0
+#define SOCKET_TYPE_RAW_IPV4(protocol)    AF_INET, SOCK_RAW, (protocol)
+// IPv6
+#define SOCKET_TYPE_TCP_IPV6              AF_INET6, SOCK_STREAM, 0
+#define SOCKET_TYPE_UDP_IPV6              AF_INET6, SOCK_DGRAM, 0
+#define SOCKET_TYPE_RAW_IPV6(protocol)    AF_INET6, SOCK_RAW, (protocol)
+//
 // Usage examples:
 // ```c
-// int socket_tcp = socket(SOCKET_TYPE_TCP);
-// int socket_udp = socket(SOCKET_TYPE_UDP);
+// int socket_tcp = socket(SOCKET_TYPE_TCP_IPV4);
+// int socket_udp = socket(SOCKET_TYPE_UDP_IPV4);
 // // See also: https://www.binarytides.com/raw-sockets-c-code-linux/
-// int socket_raw = socket(SOCKET_TYPE_RAW(IPPROTO_RAW));
+// int socket_raw = socket(SOCKET_TYPE_RAW_IPV4(IPPROTO_RAW));
 // ```c
 
 #define MAX_RECEIVE_BUFFER_SIZE 4096  // in bytes
@@ -108,6 +119,7 @@ _Static_assert(sizeof(uint16_t) == sizeof(unsigned short),
 int main()
 {
     int flags;
+    int retcode;
 
     printf("STARTING UDP SERVER:\n");
 
@@ -117,7 +129,7 @@ int main()
     // See:
     // 1. https://linux.die.net/man/2/socket
     // 1. https://man7.org/linux/man-pages/man2/socket.2.html
-    int socket_fd = socket(SOCKET_TYPE_UDP);
+    int socket_fd = socket(SOCKET_TYPE_UDP_IPV4);
     if (socket_fd == -1)
     {
         printf("Failed to create socket. errno = %i: %s\n", errno, strerror(errno));
@@ -147,9 +159,19 @@ int main()
     addr_server.sin_port = htons(PORT);
     // `INADDR_ANY` means "accept any incoming address". See:
     // https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-INADDR_005fANY
-    // To make your own address from an IPv4 string such as "127.0.0.1", use the "internet ascii to
-    // network" function, `inet_aton()`, here: https://linux.die.net/man/3/inet_aton
     addr_server.sin_addr.s_addr = INADDR_ANY;
+    // To make your own address from an IPv4 string such as localhost "127.0.0.1" instead, use
+    // the "internet ascii to network" function, `inet_aton()`. See here:
+    // 1. https://linux.die.net/man/3/inet_aton
+    // 1. https://man7.org/linux/man-pages/man3/inet.3.html
+    // Example (this :
+    retcode = inet_aton("127.0.0.1", &addr_server.sin_addr);
+    if (retcode == 0)
+    {
+        printf("Failed to generate a network address from an ASCII string address. Input address "
+               "ASCII string is invalid.\n");
+        goto cleanup;
+    }
 
     // =============================================================================================
     printf("2. Bind the socket object with the server address specified above so that it "
@@ -159,7 +181,7 @@ int main()
     // 1. https://linux.die.net/man/7/ip - this link also explains what happens when you try to use
     //    "unbound" sockets!
     // 1. https://linux.die.net/man/2/bind
-    int retcode = bind(socket_fd, (const struct sockaddr *)&addr_server, sizeof(addr_server));
+    retcode = bind(socket_fd, (const struct sockaddr *)&addr_server, sizeof(addr_server));
     if (retcode == -1)
     {
         printf("Failed to bind socket. errno = %i: %s\n", errno, strerror(errno));
@@ -174,14 +196,23 @@ int main()
     //    but can be made **nonblocking** by passing flag `MSG_DONTWAIT` to the calls!:
     //    "If no messages are available at the socket, the receive calls wait for a message to
     //    arrive".
+    // 1. *****https://man7.org/linux/man-pages/man3/recvfrom.3p.html [POSIX Programmer's Manual]
+    //      > DESCRIPTION: The recvfrom() function shall receive a message from a connection-mode
+    //        [TCP] or connectionless-mode [UDP] socket. It is normally used with
+    //        connectionless-mode [UDP] sockets **because it permits the application to retrieve
+    //        the source address of received data.**
     // 1. https://man7.org/linux/man-pages/man2/recv.2.html
     // 1. https://www.cs.cmu.edu/~srini/15-441/F01.full/www/assignments/P2/htmlsim_split/node12.html
     char receive_buf[MAX_RECEIVE_BUFFER_SIZE];
-    // This is an input/output ("value-result") argument to the `recvfrom()` call below. See the
-    // documentation links above. That means we must first set it to the length of the address,
+    // `addr_len` is an input/output ("value-result") argument to the `recvfrom()` call below. See
+    // the documentation links above. That means we must first set it to the length of the address,
     // but then we must read it after the call to check for address length errors as well, because
     // the function will write to it!
     socklen_t addr_len = sizeof(addr_client);
+    // Receive **from** **any address**, storing the address of the sender into `addr_client` once
+    // you receive a message **from ANYONE!** This "received from" address is then used as the
+    // "destination address" in `sendto()` below, which we use to **send back to**, or **reply to**,
+    // the sender!
     ssize_t num_bytes_received = recvfrom(socket_fd, receive_buf, sizeof(receive_buf), MSG_WAITALL,
         (struct sockaddr *)&addr_client, &addr_len);
     if (num_bytes_received == -1)
@@ -248,6 +279,8 @@ int main()
     // =============================================================================================
     printf("5. Send a response back to the sender of the message we just received.\n");
     // =============================================================================================
+    // See:
+    // 1. https://man7.org/linux/man-pages/man3/sendto.3p.html [POSIX Programmer's Manual]
 
     const char msg_to_send[] = "Hello from server.";
     // See: https://linux.die.net/man/2/sendto
@@ -265,6 +298,10 @@ int main()
 
     // flags = MSG_CONFIRM;
     flags = 0;
+    // Send **to** the address of `addr_client`, which is the **destination address**. See the
+    // POSIX Programmer's manual: https://man7.org/linux/man-pages/man3/sendto.3p.html
+    // Use `send()` to send to connection-mode (TCP) connected sockets, and use `sendto()` to send
+    // to connection-less (UDP) addresses!
     ssize_t num_bytes_sent = sendto(socket_fd, msg_to_send, sizeof(msg_to_send), flags,
         (const struct sockaddr *)&addr_client, sizeof(addr_client));
     if (num_bytes_sent == -1)
