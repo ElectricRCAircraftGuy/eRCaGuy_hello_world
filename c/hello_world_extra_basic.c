@@ -6,6 +6,9 @@ STATUS: (status)
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
+# Why `-std=gnu17` vs `-std=c17`, and `-std=gnu++17` vs `-std=c++17`?
+# See: [my answer]: https://stackoverflow.com/a/71801111/4561887
+
 # 1. In C:
 gcc -Wall -Wextra -Werror -O3 -std=gnu17 hello_world_extra_basic.c -o bin/a -lm && bin/a
 
@@ -14,7 +17,6 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 hello_world_extra_basic.c -o bin/a &&
 ```
 
 References:
-1. [my answer] `-std=c17` vs `-std=gnu17`: https://stackoverflow.com/a/71801111/4561887
 1.
 
 */
