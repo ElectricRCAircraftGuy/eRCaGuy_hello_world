@@ -7,13 +7,14 @@ STATUS: (status)
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
 # 1. In C:
-gcc -Wall -Wextra -Werror -O3 -std=c17 hello_world_extra_basic.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 hello_world_extra_basic.c -o bin/a -lm && bin/a
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 hello_world_extra_basic.c -o bin/a && bin/a
 ```
 
 References:
+1. [my answer] `-std=c17` vs `-std=gnu17`: https://stackoverflow.com/a/71801111/4561887
 1.
 
 */

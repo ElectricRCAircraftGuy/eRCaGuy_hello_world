@@ -21,17 +21,22 @@ Examples of how to compile & run:
     gcc -Wall -Werror -g3 -std=c90 -o hello_world hello_world.c -lm && ./hello_world
     gcc -Wall -Werror -g3 -std=c99 -o hello_world hello_world.c -lm && ./hello_world
     gcc -Wall -Werror -g3 -std=c11 -o hello_world hello_world.c -lm && ./hello_world
+    gcc -Wall -Werror -g3 -std=c17 -o hello_world hello_world.c -lm && ./hello_world
+    gcc -Wall -Werror -g3 -std=gnu17 -o hello_world hello_world.c -lm && ./hello_world
   C++:
     g++ -Wall -Werror -g3 -o hello_world hello_world.c && ./hello_world
     g++ -Wall -Werror -g3 -std=c++98 -o hello_world hello_world.c && ./hello_world
     g++ -Wall -Werror -g3 -std=c++03 -o hello_world hello_world.c && ./hello_world
     g++ -Wall -Werror -g3 -std=c++11 -o hello_world hello_world.c && ./hello_world
+    g++ -Wall -Werror -g3 -std=c++17 -o hello_world hello_world.c && ./hello_world
+    g++ -Wall -Werror -g3 -std=gnu++17 -o hello_world hello_world.c && ./hello_world
 
 Note: `-g3` adds full debugging info! See the `-g` and `-glevel` options here: 
       https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
 
 References:
-- this code posted as my answer here! https://stackoverflow.com/a/55384270/4561887 
+1. this code posted as my answer here! https://stackoverflow.com/a/55384270/4561887
+1. [my answer] `-std=c17` vs `-std=gnu17`: https://stackoverflow.com/a/71801111/4561887
 
 
 */

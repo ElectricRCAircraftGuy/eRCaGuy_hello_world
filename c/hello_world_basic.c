@@ -8,14 +8,14 @@ Make a basic demo I can easily copy-paste whenever I need a simple program.
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
-    mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=c11 -save-temps=obj hello_world_basic.c \
+    mkdir -p bin && gcc -Wall -Wextra -Werror -O3 -std=gnu17 -save-temps=obj hello_world_basic.c \
     -o bin/hello_world_basic -lm && bin/hello_world_basic
 2. In C++
-    mkdir -p bin && g++ -Wall -Wextra -Werror -O3 -std=c++17 -save-temps=obj hello_world_basic.c \
+    mkdir -p bin && g++ -Wall -Wextra -Werror -O3 -std=gnu++17 -save-temps=obj hello_world_basic.c \
     -o bin/hello_world_basic && bin/hello_world_basic
 
 References:
-1. None.
+1. [my answer] `-std=c17` vs `-std=gnu17`: https://stackoverflow.com/a/71801111/4561887
 
 */
 
