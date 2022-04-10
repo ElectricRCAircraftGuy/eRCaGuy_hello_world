@@ -14,11 +14,14 @@ and short these 5 steps are if you don't do any error checking!
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=c17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server -lm && bin/server
+# NB: Use `-std=gnu17`, NOT `-std=c17`, per my answer here:
+# https://stackoverflow.com/a/71801111/4561887. This allows me to use `inet_aton()`, for instance,
+# much more easily!
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server -lm && bin/server
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server && bin/server
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 socket__geeksforgeeks_udp_server_GS_edit_GREAT.c -o bin/server && bin/server
 ```
 
 ------------------------------
