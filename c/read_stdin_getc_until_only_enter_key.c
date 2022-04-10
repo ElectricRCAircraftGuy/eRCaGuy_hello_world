@@ -30,6 +30,7 @@ References:
 /// to and including the Enter key's newline ('\n') char. Once we hit the
 /// newline char, stop calling `getc()`, as calls to `getc()` beyond that will
 /// block again, waiting for more user input.
+/// - See my answer with this here: https://stackoverflow.com/a/71813113/4561887
 void clearStdin()
 {
     // keep reading 1 more char as long as the end of the stream, indicated by
