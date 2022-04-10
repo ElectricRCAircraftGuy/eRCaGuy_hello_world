@@ -19,6 +19,9 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 array_2d_fill_from_user_input_scanf_a
 References:
 1. From this question: storing the user input to 2D array:
    https://stackoverflow.com/q/71809255/4561887
+    1. *****+[my answer with this code!] How to populate a 2D array with user
+       input from scanf() (with full error handling):
+       https://stackoverflow.com/a/71813639/4561887
 1. *****https://www.cplusplus.com/reference/cstdio/scanf/ - soooo much easier to understand than the
    reference below!
 1. ****https://en.cppreference.com/w/c/io/fscanf - is more-complete than the reference above!
