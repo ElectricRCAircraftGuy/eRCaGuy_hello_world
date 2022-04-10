@@ -127,7 +127,8 @@ int main()
     printf("STARTING UDP SERVER:\n");
 
     // =============================================================================================
-    printf("1. Create a socket object and obtain a file descriptor to it.\n");
+    printf("1. Create a socket object, obtain a file descriptor to it, and prepare server and "
+           "client `struct sockaddr_in` internet namespace (\"in\") socket addresses.\n");
     // =============================================================================================
     // See:
     // 1. https://linux.die.net/man/2/socket
@@ -136,7 +137,8 @@ int main()
     if (socket_fd == -1)
     {
         printf("Failed to create socket. errno = %i: %s\n", errno, strerror(errno));
-        goto cleanup;
+        goto cleanup; // consider replacing this with `exit(EXIT_FAILURE);` instead, in order to
+                      // try to quickly get this code compiling in C++/gnu++
     }
 
     // Internet namespace socket addresses
@@ -153,6 +155,7 @@ int main()
     memset(&addr_client, 0, sizeof(addr_client));
 
     // Fill in the server address information.
+
     // sin = "socket internet namespace"
     addr_server.sin_family = AF_INET;  // IPv4
     // NB: `htons()` converts "host to network" byte order for unsigned 's'hort types
@@ -160,20 +163,60 @@ int main()
     // always a 2-byte uint16_t number, use `htons()` to convert it.
     // See: https://linux.die.net/man/3/htons
     addr_server.sin_port = htons(PORT);
+
+    // Use 1 of the 3 options below to set the IP address of the server.
+    // - (I am leaving all 3 options uncommented for the purposes of this demo, since that's okay,
+    //   but only the last one is therefore the one which will "stick", as the IP addresses set by
+    //   the options prior to that one get overwritten by the last one).
+
+    // Option 1/3: use a macro constant to set the IP address.
     // `INADDR_ANY` means "accept any incoming address". See:
     // https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-INADDR_005fANY
-    addr_server.sin_addr.s_addr = INADDR_ANY;
-    // To make your own address from an IPv4 string such as localhost "127.0.0.1" instead, use
-    // the "internet ascii to network" function, `inet_aton()`. See here:
+    // ie it means "any address for binding"; see: https://man7.org/linux/man-pages/man7/ip.7.html.
+    // I **think** that means it will bind to **any** available IP address when you call `bind()`
+    // below! If you need it to have some particular address, use one of the options just below
+    // instead!
+    addr_server.sin_addr.s_addr = INADDR_ANY; // <--- Option 1/3 to set the IP address
+    //
+    // Option 2/3: to make your own address from an IPv4 string such as localhost "127.0.0.1"
+    // instead, use the NON-POSIX "internet ascii to network" function, `inet_aton()`. See here:
     // 1. https://linux.die.net/man/3/inet_aton
     // 1. https://man7.org/linux/man-pages/man3/inet.3.html
-    // Example (this :
-    retcode = inet_aton("127.0.0.1", &addr_server.sin_addr);
+    // Example: this uses the localhost IPv4 address string "127.0.0.1".
+    //
+    retcode = inet_aton("127.0.0.1", &addr_server.sin_addr); // <--- Option 2/3 to set the IP address
     if (retcode == 0)
     {
         printf("Failed to generate a network address from an ASCII string address. Input address "
                "ASCII string is invalid.\n");
         goto cleanup;
+    }
+    //
+    // Option 3/3 [RECOMMENDED OVER `inet_aton()` above!]: even better than using the
+    // non-POSIX "ascii string to network" address `inet_aton()` function is using the
+    // POSIX "presentation string to network" `inet_pton()` function! See:
+    // 1. [my answer] https://stackoverflow.com/a/71801111/4561887 - Just use the POSIX-compliant
+    //    inet_pton() instead of the non-POSIX inet_aton()
+    // 1. https://man7.org/linux/man-pages/man3/inet_pton.3.html - Linux Programmer's Manual
+    // 1. https://www.gnu.org/software/libc/manual/html_mono/libc.html#index-inet_005fpton
+    //      - `inet_pton()` "function converts an Internet address (either IPv4 or IPv6) from
+    //        presentation (textual) to network (binary) format"
+    // 1. https://man7.org/linux/man-pages/man3/inet_pton.3p.html - POSIX Programmer's Manual
+    //
+    retcode = inet_pton(AF_INET, "127.0.0.1", &addr_server.sin_addr); // <--- Option 3/3 to set the IP address
+    if (retcode != 1)
+    {
+        printf("`inet_pton()` failed! ");
+        if (retcode == 0)
+        {
+            printf("The source IP address string does not contain a character string representing "
+                   "a valid network address in the specified address family.\n");
+        }
+        else if (retcode == -1)
+        {
+            printf("Invalid address family (AF) parameter was passed-in as the 1st argument. "
+                   "errno = %i: %s\n", errno, strerror(errno));
+        }
     }
 
     // =============================================================================================
@@ -350,7 +393,7 @@ In C:
 
 OR, in C++:
 
-
+[doesn't work yet--I need to address a bunch of compile-time errors!]
 
 
 */
