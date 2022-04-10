@@ -26,13 +26,16 @@ References:
 // #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
 
-// Clear the stdin input stream by reading and discarding all incoming chars up to and including
-// the Enter key's newline ('\n') char. Once we hit the newline char, stop calling `getc()`, as
-// calls to `getc()` beyond that will block again, waiting for more user input.
+/// Clear the stdin input stream by reading and discarding all incoming chars up
+/// to and including the Enter key's newline ('\n') char. Once we hit the
+/// newline char, stop calling `getc()`, as calls to `getc()` beyond that will
+/// block again, waiting for more user input.
 void clearStdin()
 {
-    // keep reading 1 more char as long as the end of the stream, indicated by the newline char,
-    // has NOT been reached
+    // keep reading 1 more char as long as the end of the stream, indicated by
+    // `EOF` (end of file), and the end of the line, indicated by the newline
+    // char inserted into the stream when you pressed Enter, have NOT been
+    // reached
     while (true)
     {
         int c = getc(stdin);

@@ -41,6 +41,13 @@ See also:
 ///   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80289#80289
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
+// Definitions: `rows` = "rows"; `cols` = "columns"
+// See usage of the next two macros in "array_2d_practice.c".
+/// Get number of rows in a 2D array
+#define NUM_ROWS(array_2d) ARRAY_LEN(array_2d)
+/// Get number of columns in a 2D array
+#define NUM_COLS(array_2d) ARRAY_LEN(array_2d[0])
+
 // For floating-point comparisons:
 // - Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160
 // - See also the function forms of this in my answer here:
