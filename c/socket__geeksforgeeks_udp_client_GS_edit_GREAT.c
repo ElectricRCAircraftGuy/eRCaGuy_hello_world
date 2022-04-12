@@ -8,6 +8,11 @@ This is the UDP **client** code.
 
 STATUS: DONE AND WORKS! THIS IS A GREAT DEMO!
 
+Instructions:
+1. Run the **server** code first in one terminal. It will wait for the client to send it a message.
+2. Run the **client** code second in a second terminal. It will send the server a message then wait
+   for a response, which the server sends immediately.
+
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash

@@ -11,6 +11,11 @@ STATUS: DONE AND WORKS! THIS IS A GREAT DEMO!
 TODO: make a super simple version of this that ignores ALL error checking, just to show how simple
 and short these 5 steps are if you don't do any error checking!
 
+Instructions:
+1. Run the **server** code first in one terminal. It will wait for the client to send it a message.
+2. Run the **client** code second in a second terminal. It will send the server a message then wait
+   for a response, which the server sends immediately.
+
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
@@ -85,6 +90,10 @@ Ans: https://linux.die.net/man/7/ip
 #include <stdlib.h>
 #include <string.h>  // `strerror()`
 
+
+// See my answer here: https://stackoverflow.com/a/58532788/4561887
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 
 // See: https://linux.die.net/man/7/ip
 // AF = "Address Family"
@@ -305,17 +314,54 @@ int main()
     // Use `ntohs()` ("network to host for short type") to convert the port number from network
     // (Big-endian) to host (Little-endian) byte order.
     uint16_t sender_port = ntohs(addr_client.sin_port);
+
+    // Convert the received network (binary) address to a textual address string now! 2 Options:
+
+    // Variables used for **both** options below.
+    char sender_ip_addr_str[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
+    const char* sender_ip_addr;
+
+    // Option 1/2: NON-POSIX `inet_ntoa()`
+    // - has NO error checking capabilities
+    // - can handle ONLY IPv4 IP addresss
+    // Use the NON-POSIX function, `inet_ntoa()`--"internet network to ascii", which is the opposite
+    // of the `inet_aton()`--"internet ascii to network" function!
     // See:
     // 1. https://linux.die.net/man/3/inet_aton
     // 1. https://linux.die.net/man/7/ip - for the `struct sockaddr_in` and `struct in_addr` struct
     //    definitions.
-    const char* sender_ip_addr = inet_ntoa(addr_client.sin_addr);
+    //
+    sender_ip_addr = inet_ntoa(addr_client.sin_addr);
+    strncpy(sender_ip_addr_str, sender_ip_addr, sizeof(sender_ip_addr_str));
+
+    // Option 2/2 [RECOMMENDED]: POSIX `inet_ntop()`
+    // - DOES have error handling capabilities
+    // - can handle IPv4 AND IPv6 IP addresses!
+    // Use the POSIX function, `inet_ntop()`--"internet network (binary) to presentation (textual)"
+    // format, which is the opposite of `inet_pton()`--"internet presentation (textual) to network
+    // (binary)" format!
+    // See:
+    // 1. https://man7.org/linux/man-pages/man3/inet_ntop.3.html
+    //
+    sender_ip_addr = inet_ntop(addr_client.sin_family, &addr_client.sin_addr,
+        sender_ip_addr_str, sizeof(sender_ip_addr_str));
+    if (sender_ip_addr == NULL)
+    {
+        printf("Failed to convert internet IP address from \"network\" format (binary, "
+               "Big-Endian byte order) to \"presentation\" (textual) format. "
+               "errno = %i: %s\n", errno, strerror(errno));
+        goto cleanup;
+    }
+
+    // Print the sender address information (Address Family, Port, and IP address)
 
     printf("Sender (client) address information:\n"
-           "  socket internet namespace (sin) family name = %s\n"
-           "  port                                        = %u\n"
-           "  IP address                                  = %s\n",
-           sender_sin_family_name, sender_port, sender_ip_addr);
+           "  socket internet namespace (sin) address family name = %s\n"
+           "  port                                                = %u\n"
+           "  IP address                                          = %s\n",
+           sender_sin_family_name,
+           sender_port,
+           sender_ip_addr_str);
 
     // B. print the message received from the sender
 
