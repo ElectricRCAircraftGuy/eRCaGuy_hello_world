@@ -33,6 +33,7 @@ References:
 #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
+#include <string.h>  // `strerror()`
 
 #define NUM_ITERATIONS 200
 
@@ -134,14 +135,15 @@ int main()
     int retcode = pthread_create(&thread, NULL, pthread_task, (void*)thread_name);
     if (retcode != 0)
     {
-        printf("Failed to create pthread. retcode = %i\n", retcode);
+        printf("Failed to create pthread. retcode = %i: %s\n", retcode, strerror(retcode));
     }
 
     const char * return_message;
     retcode = pthread_join(thread, (void**)&return_message);
     if (retcode != 0)
     {
-        printf("Failed to join (terminate) pthread. retcode = %i\n", retcode);
+        printf("Failed to join (terminate) pthread. retcode = %i: %s\n",
+            retcode, strerror(retcode));
     }
 
     printf("\nFinal message from thread = %s\n", return_message);
