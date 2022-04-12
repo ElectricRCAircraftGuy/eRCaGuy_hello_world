@@ -162,25 +162,31 @@ void sleep_us(uint64_t sleep_time_us)
 
 static void print_nanosleep_failed(int return_code)
 {
-    printf("`clock_nanosleep()` failed! return_code = %i: ", return_code);
-    // See all error codes here:
-    // https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+    // 1. See all error codes for `clock_nanosleep()` here:
+    //    https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html
+    // 1. See a list of ALL `errno` error codes here:
+    //    https://man7.org/linux/man-pages/man3/errno.3.html
+    const char* error_msg = "TBD";
+
     switch (return_code)
     {
     case EFAULT:
-        printf("EFAULT: `request` or `remain` specified an invalid address.\n");
+        error_msg = "EFAULT: `request` or `remain` specified an invalid address.";
         break;
     case EINTR:
-        printf("EINTR: The sleep was interrupted by a signal handler.\n");
+        error_msg = "EINTR: The sleep was interrupted by a signal handler.";
         break;
     case EINVAL:
-        printf("EINVAL: The value in the `tv_nsec` field was not in the range 0 to "
-               "999999999 or `tv_sec` was negative.\n");
+        error_msg = "EINVAL: The value in the `tv_nsec` field was not in the range 0 to "
+                    "999999999 or `tv_sec` was negative.";
         break;
     case ENOTSUP:
-        printf("ENOTSUP: The kernel does not support sleeping against this `clockid`.\n");
+        error_msg = "ENOTSUP: The kernel does not support sleeping against this `clockid`.";
         break;
     }
+
+    printf("`clock_nanosleep()` failed! return_code = %i: %s (%s)\n",
+        return_code, strerror(return_code), error_msg);
 }
 
 void sleep_ns(uint64_t sleep_time_ns)

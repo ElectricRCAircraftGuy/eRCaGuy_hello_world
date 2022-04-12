@@ -43,6 +43,9 @@ References:
 // Perform an action at the period specified below.
 // - Start `pthread_task` as its own thread, using a library such as
 //   `pthread` (POSIX threads).
+// - See my answer on how to do periodic actions here!: How to run a high-resolution, high-precision
+//   periodic loop in Linux easily, at any frequency (ex: 10 KHz) using a soft real-time scheduler
+//   and nanosecond delays: https://stackoverflow.com/a/71790209/4561887
 void * pthread_task(void * argument)
 {
     const char* thread_name = (const char*)argument;
