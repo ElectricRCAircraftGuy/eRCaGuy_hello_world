@@ -31,7 +31,8 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 class_using_declaration_basic__expose_s
 
 References:
 1. https://en.cppreference.com/w/cpp/language/using_declaration
-1.
+1. This code example is adapted from Kilian Leport's example code, here:
+   http://coliru.stacked-crooked.com/a/60d65a3be033acc3
 
 */
 
