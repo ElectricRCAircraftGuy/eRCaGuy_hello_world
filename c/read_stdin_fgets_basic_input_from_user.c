@@ -46,23 +46,27 @@ int main()
 
     // NEVER USE `gets()`! USE `fgets()` BELOW INSTEAD!
 
-    // USE THIS!: `fgets()`: "file get string", which reads until either EOF is reached, OR a
-    // newline (`\n`) is found, keeping the newline char in `buf`.
+    // USE THIS!: `fgets()`: "file get string", which reads until either EOF is
+    // reached, OR a newline (`\n`) is found, keeping the newline char in
+    // `buf`.
     // For `feof()` and `ferror()`, see:
     // 1. https://en.cppreference.com/w/c/io/feof
     // 1. https://en.cppreference.com/w/c/io/ferror
-    printf("Enter up to %zu chars: ", sizeof(buf) - 1); // - 1 to save room for null terminator
+    printf("Enter up to %zu chars: ", sizeof(buf) - 1); // - 1 to save room
+                                                        // for null terminator
     char* retval = fgets(buf, sizeof(buf), stdin);
     if (feof(stdin))
     {
         // Check for `EOF`, which means "End of File was reached".
-        // - This doesn't really make sense on `stdin` I think, but it is a good check to have when
-        //   reading from a regular file with `fgets()`. Keep it here regardless, just in case.
+        // - This doesn't really make sense on `stdin` I think, but it is a good
+        //   check to have when reading from a regular file with `fgets
+        //   ()`. Keep it here regardless, just in case.
         printf("EOF (End of File) reached.\n");
     }
     if (ferror(stdin))
     {
-        printf("Error indicator set. IO error when reading from file `stdin`.\n");
+        printf("Error indicator set. IO error when reading from file "
+               "`stdin`.\n");
     }
     if (retval == NULL)
     {
@@ -75,8 +79,8 @@ int main()
     size_t num_chars_written = strlen(buf) + 1; // + 1 for null terminator
     if (num_chars_written >= sizeof(buf))
     {
-        printf("Warning: user input may have been truncated! All %zu chars were written into "
-               "buffer.\n", num_chars_written);
+        printf("Warning: user input may have been truncated! All %zu chars "
+               "were written into buffer.\n", num_chars_written);
     }
     printf("You entered \"%s\".\n", buf);
 
