@@ -20,7 +20,8 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 read_stdin_fgets_basic_input_from_user.
 
 References:
 1. Why is the gets function so dangerous that it should not be used?:
-    1. [my answer] https://stackoverflow.com/a/71366629/4561887
+    1. [my answer with this code below!]
+       https://stackoverflow.com/a/71366629/4561887
     1. [Jonathan Leffler's answer] https://stackoverflow.com/a/4309845/4561887
 1. https://en.cppreference.com/w/c/io
 1. *****https://en.cppreference.com/w/c/io/fgets
