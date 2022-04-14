@@ -11,7 +11,11 @@ this in my **question** here: https://stackoverflow.com/q/71866535/4561887.
 The only guarantees for atomicity by the language standards are to use `_Atomic` types in C11 or
 later or `std::atomic<>` types in C++11 or later.
 
-STATUS: (status)
+STATUS & RESULTS: Done! Works great! Comment out `#define USE_ATOMIC_TYPES` below, and run it. Then
+uncomment it and run it again, to compare results! You'll see that when using atomic variables, you
+get the expected `10000000` (10 million) value for each counter, but when NOT using atomic
+variables, you'll only get each counter up to about half that, or `4274108` (4.3 million), for
+instance!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -66,26 +70,34 @@ they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535
 // Notes:
 // 1. For standard multi-threading, the `volatile` keyword is NOT required! See:
 // https://stackoverflow.com/q/4557979/4561887
+//      - However, I use it below anyway in order to match the NOT atomic declarations further below
+//        where `volatile` **is** required to prevent the increment operators from being optimized
+//        out!
 // 1. `volatile` **is**, however, required if sharing global variables between interrupt contexts
 // and the main context, OR to map addresses to hardware registers or memory directly. See:
 // https://electronics.stackexchange.com/a/409570/26234
 
-#define USE_ATOMIC_TYPES // comment this out to use regular types!
+#define USE_ATOMIC_TYPES // comment this out to use regular types!  <=========
 
 #ifdef USE_ATOMIC_TYPES
-_Atomic uint32_t counter1;
+// `volatile` NOT required here, but I use it to match the non-atomic declarations below; see my
+// note above as well.
+
+volatile _Atomic uint32_t counter1;
 // alternative way to do the above!--with the **smallest** type that is 32-bits or larger.
-atomic_uint_least32_t counter2;
+volatile atomic_uint_least32_t counter2;
 // alternative way to do the above!--with the **fastest** type that is 32-bits or larger (this type
 // could be larger than the "least"-sized type, but is guaranteed to be the fastest type with at
 // least 32 bits).
-atomic_uint_fast32_t counter3;
+volatile atomic_uint_fast32_t counter3;
 // atomic_uint32_t counter4; // INVALID!
 
-#else
-uint32_t counter1;
-uint32_t counter2;
-uint32_t counter3;
+#else // NOT using atomic types!
+// Make volatile or else these variables get optimized out and the code takes 0.001 sec to run
+// instead of much longer than that!
+volatile uint32_t counter1;
+volatile uint32_t counter2;
+volatile uint32_t counter3;
 #endif
 
 // Increment all of the atomic variables withOUT using mutexes, to prove that no race conditions are
@@ -168,8 +180,80 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 atomic_types.c -o bin/a -lm && bin/a
-    Hello World.
+ WITH `#define USE_ATOMIC_TYPES`
+
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 atomic_types_pthread_race_condition_test.c -o bin/a -lm -pthread && time bin/a
+    `_Atomic` types test in C.
+
+    Using atomic types.
+    Creating thread 0.
+    Creating thread 1.
+    Creating thread 2.
+    Creating thread 3.
+    Creating thread 4.
+    Creating thread 5.
+    Creating thread 6.
+    Creating thread 7.
+    Creating thread 8.
+    Creating thread 9.
+    Joining (waiting for it to complete) thread 0.
+    Joining (waiting for it to complete) thread 1.
+    Joining (waiting for it to complete) thread 2.
+    Joining (waiting for it to complete) thread 3.
+    Joining (waiting for it to complete) thread 4.
+    Joining (waiting for it to complete) thread 5.
+    Joining (waiting for it to complete) thread 6.
+    Joining (waiting for it to complete) thread 7.
+    Joining (waiting for it to complete) thread 8.
+    Joining (waiting for it to complete) thread 9.
+    counter1 = 10000000
+    counter2 = 10000000
+    counter3 = 10000000
+
+    PASSED!
+
+    real    0m0.557s
+    user    0m3.601s
+    sys 0m0.000s
+
+
+ With `#define USE_ATOMIC_TYPES` **commented out**:
+
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 atomic_types_pthread_race_condition_test.c -o bin/a -lm -pthread && time bin/a
+    `_Atomic` types test in C.
+
+    NOT using atomic types.
+    Creating thread 0.
+    Creating thread 1.
+    Creating thread 2.
+    Creating thread 3.
+    Creating thread 4.
+    Creating thread 5.
+    Creating thread 6.
+    Creating thread 7.
+    Creating thread 8.
+    Creating thread 9.
+    Joining (waiting for it to complete) thread 0.
+    Joining (waiting for it to complete) thread 1.
+    Joining (waiting for it to complete) thread 2.
+    Joining (waiting for it to complete) thread 3.
+    Joining (waiting for it to complete) thread 4.
+    Joining (waiting for it to complete) thread 5.
+    Joining (waiting for it to complete) thread 6.
+    Joining (waiting for it to complete) thread 7.
+    Joining (waiting for it to complete) thread 8.
+    Joining (waiting for it to complete) thread 9.
+    counter1 = 4197514
+    counter2 = 5243898
+    counter3 = 4612180
+    a: atomic_types_pthread_race_condition_test.c:169: main: Assertion `counter1 == NUM_INCREMENTS_PER_THREAD*NUM_THREADS' failed.
+    Aborted (core dumped)
+
+    real    0m0.192s
+    user    0m0.091s
+    sys 0m0.009s
+
+
 
 
 OR, in C++:
