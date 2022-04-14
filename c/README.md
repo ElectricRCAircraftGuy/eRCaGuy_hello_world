@@ -12,6 +12,13 @@ _To see all `*.md` files herein, run: `ls -1 | grep -i '\.md'`._
 1. [pthreads_README.md](pthreads_README.md) - has links to files which show how to use the POSIX threads `pthreads` library available on Linux.
 
 
+# Folder description
+
+1. `abandoned` = files I do _not_ plan to finish, but which I want to keep because I may reference them or their ideas again later. This includes failed ideas which I thought might work but did not, and they don't make good demos as-is. Again, I do _not_ plan to finish these.
+1. `TODO` = files already in-work, but not yet functional, or ideas which I'd like to begin and work on. I plan to finish these.
+
+
 # TODO
 
 Do my ideas and things in the files in the `todo` directory.
+
