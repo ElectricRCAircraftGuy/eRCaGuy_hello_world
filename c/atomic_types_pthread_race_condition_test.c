@@ -31,7 +31,16 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 atomic_types_pthread_race_condition_t
 
 References:
 1. [my Q] *****Which types on a 64-bit computer are naturally atomic in gnu C and gnu C++?--meaning
-they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535/4561887
+   they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535/4561887
+    1. [NEED TO STUDY AND READ] Answer to my Q, by @Nate.Eldredge:
+       https://stackoverflow.com/a/71867102/4561887
+        1. Resources from Nate (to help me learn assembly):
+           https://stackoverflow.com/questions/71866535/which-types-on-a-64-bit-computer-are-naturally-atomic-in-gnu-c-and-gnu-c-mea#comment127007726_71867102
+            1. [NEED TO STUDY & READ] x86 resources here: https://stackoverflow.com/tags/x86/info
+            1. [NEED TO STUDY & READ] ARM64: Architecture Reference Manual:
+               https://developer.arm.com/documentation/ddi0487/latest
+            1. *****[NEED TO STUDY & READ] Cortex-A Programmer's Guide ("friendly as a learning
+               text"): https://developer.arm.com/documentation/den0024/a
 1. *****`_Atomic` types in C11:
     1. *****https://en.cppreference.com/w/c/thread
     1. *****https://en.cppreference.com/w/c/language/atomic
@@ -46,7 +55,7 @@ they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535
    https://stackoverflow.com/a/51770507/4561887
 
 1. GCC & linux atomic stuff
-
+    1. *****+https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
     1. *****gcc documentation on forced atomic memory access intrinsics - from @Raymond.Chen
     (https://stackoverflow.com/questions/71866535/which-types-on-a-64-bit-computer-are-naturally-atomic-in-gnu-c-and-gnu-c-mea#comment127012929_71866535):
     "6.55 Built-in Functions for Memory Model Aware Atomic Operations":
@@ -55,6 +64,10 @@ they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535
     1. "/usr/include/x86_64-linux-gnu/c++/8/bits/atomic_word.h"
     1. https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_concurrency.html
     1. https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a00760_source.html - atomicity.h
+
+1. x86 links (from @Nate.Eldredge above)
+    1. [could be useful to find links and resources for studying x86 assembly code and all]
+       https://stackoverflow.com/tags/x86/info
 
 
 */
