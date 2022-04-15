@@ -42,16 +42,39 @@ they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535
 1. "pthreads_wikipedia_demo2.c"
 1. https://man7.org/linux/man-pages/man3/pthread_create.3.html
 1. https://man7.org/linux/man-pages/man3/pthread_join.3.html
+1. How can I print value of std::atomic<unsigned int>? - Ans: use the `load()` method!:
+   https://stackoverflow.com/a/51770507/4561887
+
+1. GCC & linux atomic stuff
+
+    1. *****gcc documentation on forced atomic memory access intrinsics - from @Raymond.Chen
+    (https://stackoverflow.com/questions/71866535/which-types-on-a-64-bit-computer-are-naturally-atomic-in-gnu-c-and-gnu-c-mea#comment127012929_71866535):
+    "6.55 Built-in Functions for Memory Model Aware Atomic Operations":
+    https://gcc.gnu.org/onlinedocs/gcc-11.2.0/gcc/_005f_005fatomic-Builtins.html#g_t_005f_005fatomic-Builtins
+
+    1. "/usr/include/x86_64-linux-gnu/c++/8/bits/atomic_word.h"
+    1. https://gcc.gnu.org/onlinedocs/libstdc++/manual/ext_concurrency.html
+    1. https://gcc.gnu.org/onlinedocs/gcc-4.6.2/libstdc++/api/a00760_source.html - atomicity.h
+
 
 */
 
 // Linux includes
 #include <pthread.h>
 
+// C++ includes
+#ifdef __cplusplus
+  // `std::atomic<>` types for C++!
+  #include <atomic> // See: https://en.cppreference.com/w/cpp/atomic/atomic
+#endif
+
 // C includes
 #include <assert.h>
 #include <inttypes.h>  // `PRIu32`, `PRIuLEAST32`, etc.
-#include <stdatomic.h> // For `atomic_uint_least32_t`: https://en.cppreference.com/w/c/thread#Atomic_operations
+#ifndef __cplusplus
+  // `atomic_uint_least32_t`-type types for C
+  #include <stdatomic.h> // For `atomic_uint_least32_t`: https://en.cppreference.com/w/c/thread#Atomic_operations
+#endif
 #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
@@ -80,24 +103,38 @@ they have atomic reads, and atomic writes - https://stackoverflow.com/q/71866535
 #define USE_ATOMIC_TYPES // comment this out to use regular types!  <=========
 
 #ifdef USE_ATOMIC_TYPES
-// `volatile` NOT required here, but I use it to match the non-atomic declarations below; see my
-// note above as well.
+  // `volatile` NOT required here, but I use it to match the non-atomic declarations below; see my
+  // note above as well.
 
-volatile _Atomic uint32_t counter1;
-// alternative way to do the above!--with the **smallest** type that is 32-bits or larger.
-volatile atomic_uint_least32_t counter2;
-// alternative way to do the above!--with the **fastest** type that is 32-bits or larger (this type
-// could be larger than the "least"-sized type, but is guaranteed to be the fastest type with at
-// least 32 bits).
-volatile atomic_uint_fast32_t counter3;
-// atomic_uint32_t counter4; // INVALID!
+  #ifndef __cplusplus // For C
+    volatile _Atomic uint32_t counter1; // in C
+    // alternative way to do the above!--with the **smallest** type that is 32-bits or larger.
+    volatile atomic_uint_least32_t counter2;
+    // alternative way to do the above!--with the **fastest** type that is 32-bits or larger
+    // (this type could be larger than the "least"-sized type, but is guaranteed to be the fastest
+    // type with at least 32 bits).
+    volatile atomic_uint_fast32_t counter3;
+    // atomic_uint32_t counter4; // INVALID IN C!
+
+  #else  // For C++
+    // volatile _Atomic uint32_t counter1; // in C
+    volatile std::atomic<uint32_t> counter1; // in C++
+    // alternative way to do the above!--with the **smallest** type that is 32-bits or larger.
+    volatile std::atomic_uint_least32_t counter2; // also in C++
+    // alternative way to do the above!--with the **fastest** type that is 32-bits or larger
+    // (this type could be larger than the "least"-sized type, but is guaranteed to be the fastest
+    // type with at least 32 bits).
+    volatile std::atomic_uint_fast32_t counter3; // also in C++
+    std::atomic_uint32_t counter4; // OK in C++!
+
+  #endif
 
 #else // NOT using atomic types!
-// Make volatile or else these variables get optimized out and the code takes 0.001 sec to run
-// instead of much longer than that!
-volatile uint32_t counter1;
-volatile uint32_t counter2;
-volatile uint32_t counter3;
+  // Make volatile or else these variables get optimized out and the code takes 0.001 sec to run
+  // instead of much longer than that!
+  volatile uint32_t counter1;
+  volatile uint32_t counter2;
+  volatile uint32_t counter3;
 #endif
 
 // Increment all of the atomic variables withOUT using mutexes, to prove that no race conditions are
@@ -157,14 +194,22 @@ int main()
     // check the atomic variables to ensure they are all the expected value now
 
 #ifdef USE_ATOMIC_TYPES
-    printf("counter1 = %" PRIu32 "\n", counter1);
+  #ifndef __cplusplus // For C
+    printf("counter1 = %" PRIu32 "\n",      counter1);
     printf("counter2 = %" PRIuLEAST32 "\n", counter2);
-    printf("counter3 = %" PRIuFAST32 "\n", counter3);
-#else
+    printf("counter3 = %" PRIuFAST32 "\n",  counter3);
+  #else // For C++
+    // Use the `loac()` method to atomically read the underlying type; see:
+    printf("counter1 = %" PRIu32 "\n",      counter1.load());
+    printf("counter2 = %" PRIuLEAST32 "\n", counter2.load());
+    printf("counter3 = %" PRIuFAST32 "\n",  counter3.load());
+  #endif
+#else // non-atomic types
     printf("counter1 = %" PRIu32 "\n", counter1);
     printf("counter2 = %" PRIu32 "\n", counter2);
     printf("counter3 = %" PRIu32 "\n", counter3);
 #endif
+
 
     assert(counter1 == NUM_INCREMENTS_PER_THREAD*NUM_THREADS);
     assert(counter2 == NUM_INCREMENTS_PER_THREAD*NUM_THREADS);
@@ -258,7 +303,14 @@ In C:
 
 OR, in C++:
 
-(doesn't work in C++--would need to resolve errors)
+Same output as in C!--except for when the `#define USE_ATOMIC_TYPES` part is **commented out**, the
+failed run-time assertion error is every-so-slightly different in C++ than in C:
+
+    counter1 = 4437387
+    counter2 = 4431987
+    counter3 = 4424032
+    a: atomic_types_pthread_race_condition_test.c:214: int main(): Assertion `counter1 == NUM_INCREMENTS_PER_THREAD*NUM_THREADS' failed.
+    Aborted (core dumped)
 
 
 */
