@@ -26,6 +26,9 @@ References:
     1. *****+ [MY ANSWER with this code!] How to read an NTP-adjusted RTC
     (Real-time clock) timestamp on Linux:
     https://stackoverflow.com/a/71889029/4561887
+1. [my answer--another one with this code]
+   Retrieve Linux Time using struct timespec:
+   https://stackoverflow.com/a/71889097/4561887
 1. *****https://man7.org/linux/man-pages/man3/clock_gettime.3.html
 1. RTC: https://en.wikipedia.org/wiki/Real-time_clock
 1. NTP: https://en.wikipedia.org/wiki/Network_Time_Protocol
