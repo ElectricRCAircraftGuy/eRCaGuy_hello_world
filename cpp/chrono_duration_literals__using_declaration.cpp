@@ -53,6 +53,9 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 chrono_duration_literals__using_declara
 References:
 1. [Question I'm going to answer with this code] Using operator ""s for std::chrono with gcc:
    https://stackoverflow.com/q/50503445/4561887
+    1. *****+ [MY ANSWER] Don't forget a using namespace declaration to get
+       access to std::chrono::duration<> literals:
+       https://stackoverflow.com/a/71880699/4561887
 1. https://en.cppreference.com/w/cpp/header/chrono
 1. *****https://en.cppreference.com/w/cpp/chrono/duration
 1. *****+https://en.cppreference.com/w/cpp/chrono/operator%22%22s
