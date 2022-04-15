@@ -30,7 +30,8 @@ References:
 1. https://linux.die.net/man/3/popen
 1. https://linux.die.net/man/3/pclose
 1. *****+ https://stackoverflow.com/a/28971647/4561887 - popen example!
-1. [MY ANSWER WITH THIS]
+1. [MY ANSWER WITH THIS]: Read Key presses in C; ex.: Arrow keys, Enter key:
+   https://stackoverflow.com/a/70980046/4561887
 
 */
 

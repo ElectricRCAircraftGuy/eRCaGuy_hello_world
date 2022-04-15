@@ -8,6 +8,12 @@ Use a bash system call to read in keypresses live withOUT forcing the user to pr
 end, unlike `getc()`, which won't return until you press Enter. See "read_in_any_key.c" for a
 `getc()` example instead, if pressing Enter at the end is ok.
 
+**How to read from a pipe** to read output from a system call in C:
+1. Run a cmd and open a pipe with `popen()`.
+2. Read the command response from the pipe with `fgets()`, using the file ptr to
+the pipe obtained from `popen()`.
+3. Close the pipe file with `pclose()`.
+
 STATUS: works! Done!
 
 To compile and run (assuming you've already `cd`ed into this dir):
@@ -33,7 +39,8 @@ References:
 1. *****More on pipes to pipes in C: see my comment here and the gist link in my comment:
    https://stackoverflow.com/questions/12032323/piping-the-output-of-one-command-as-input-to-another-command#comment126352138_12032323
     1. https://gist.github.com/mplewis/5279108
-1. [MY ANSWER WITH THIS]
+1. [MY ANSWER WITH THIS] Capture characters from standard input without waiting
+   for enter to be pressed: https://stackoverflow.com/a/70979820/4561887
 
 */
 
