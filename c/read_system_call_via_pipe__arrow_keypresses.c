@@ -13,11 +13,11 @@ STATUS: done; works!
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 read_arrow_keypresses_system_call.c -o bin/a && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 read_system_call_via_pipe__arrow_keypresses.c -o bin/a && bin/a
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 read_arrow_keypresses_system_call.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 read_system_call_via_pipe__arrow_keypresses.c -o bin/a && bin/a
 ```
 
 References:
@@ -168,7 +168,7 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 read_arrow_keypresses_system_call.c -o bin/a && bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 read_system_call_via_pipe__arrow_keypresses.c -o bin/a && bin/a
     Press any arrow key. Press Ctrl + C to quit.
     Key pressed = ARROWKEY_DOWN
     Key pressed = ARROWKEY_UP
