@@ -159,7 +159,7 @@ void example3()
 
 
     // std::chrono::seconds halfmin = (std::chrono::seconds)30; // WORKS!
-    // std::chrono::seconds halfmin = std::chrono::seconds(30); // WORKS! [my preference, if I'm going to cast!]
+    // std::chrono::seconds halfmin = std::chrono::seconds(30); // WORKS! [my preference, if I'm going to cast!] <=========
     // std::chrono::seconds halfmin = std::chrono::seconds{30}; // WORKS!
     // ---
     // std::chrono::seconds halfmin = std::chrono::duration<int64_t, std::ratio<1>>(30); // WORKS!
