@@ -1,0 +1,1 @@
+../c/static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c
