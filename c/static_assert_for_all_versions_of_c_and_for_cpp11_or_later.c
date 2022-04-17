@@ -60,6 +60,7 @@ References:
 
 
 #include <stdbool.h>
+#include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>
 
 
@@ -98,10 +99,15 @@ later**: */
             In C++, you'll get this error:
                 error: types may not be defined in ‘sizeof’ expressions
             */
+            /*
             #define _Static_assert(expr, msg) \
                 extern int (*__Static_assert_function (void)) \
                 [!!sizeof (struct { int __error_if_negative: (expr) ? 2 : -1; })]
+            */
+            #define _Static_assert(expr, msg) typedef char static_assertion_failed[(expr)?1:-1]
+                // (void)static_assertion_failed
         #endif
+
     #else
         /* for C++11 or later */
         #ifndef _Static_assert
@@ -113,14 +119,35 @@ later**: */
     _Static_assert((test_for_true), "(" #test_for_true ") failed")
 
 
+// #if sizeof(int) == 4
+    // #warning "Hey"
+// #endif
+
+#define STATIC_ASSERT2(COND) typedef char static_assertion_failed[(COND)?1:-1]
+
+STATIC_ASSERT2(2 > 1);
+
 typedef struct data_s
 {
     int i1;
     int i2;
 
-    STATIC_ASSERT(2 > 1);
+    STATIC_ASSERT(2 > 2);
+    // ((1 ? int i3 : int i4);
+    // using i = (1 ? int : long int);
+
+    // STATIC_ASSERT2(2 > 1);
 } data_t;
-STATIC_ASSERT(sizeof(data_t) > 4);
+STATIC_ASSERT(sizeof(data_t) >= 4);
+
+typedef union data_u
+{
+    data_t data;
+    uint8_t bytes[sizeof(data_t)];
+
+    STATIC_ASSERT(2 > 1);
+} data_union_t;
+STATIC_ASSERT(sizeof(data_union_t) >= 4);
 
 /* int main(int argc, char *argv[])  // alternative prototype */
 int main(void)
