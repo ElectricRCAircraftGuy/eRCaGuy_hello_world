@@ -118,13 +118,6 @@ later**: */
                 [!!sizeof (struct { int __error_if_negative: (expr) ? 2 : -1; })]
             */
             #define _Static_assert(expr, msg) \
-                /* See: https://stackoverflow.com/a/47518775/4561887 */ \
-                #pragma GCC diagnostic push \
-                #pragma GCC diagnostic ignored "-Wunused-local-typedefs" \
-                struct UNIQUE_NAME { typedef char static_assertion_failed[(expr)?1:-1]; }; \
-                #pragma GCC diagnostic pop
-
-            #define _Static_assert(expr, msg) \
                 struct UNIQUE_NAME { typedef char static_assertion_failed[(expr)?1:-1]; }
 
                 // (void)static_assertion_failed
