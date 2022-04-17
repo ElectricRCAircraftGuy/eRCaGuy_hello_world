@@ -87,6 +87,19 @@ later**: */
 
 
 /* OR [BEST], for **any version of C OR C++**: */
+
+
+// https://stackoverflow.com/a/1597129/4561887
+// *****https://stackoverflow.com/a/35922379/4561887
+#define TOKENPASTE(x, y) x ## y
+#define TOKENPASTE2(x, y) TOKENPASTE(x, y)
+#define UNIQUE_NAME TOKENPASTE2(Unique_, __LINE__)
+
+// UNIQUE_NAME
+// UNIQUE_NAME
+
+
+
 #ifdef __cplusplus
     #if __cplusplus < 201103L
         /* for pre-C++11 */
@@ -104,7 +117,16 @@ later**: */
                 extern int (*__Static_assert_function (void)) \
                 [!!sizeof (struct { int __error_if_negative: (expr) ? 2 : -1; })]
             */
-            #define _Static_assert(expr, msg) typedef char static_assertion_failed[(expr)?1:-1]
+            #define _Static_assert(expr, msg) \
+                /* See: https://stackoverflow.com/a/47518775/4561887 */ \
+                #pragma GCC diagnostic push \
+                #pragma GCC diagnostic ignored "-Wunused-local-typedefs" \
+                struct UNIQUE_NAME { typedef char static_assertion_failed[(expr)?1:-1]; }; \
+                #pragma GCC diagnostic pop
+
+            #define _Static_assert(expr, msg) \
+                struct UNIQUE_NAME { typedef char static_assertion_failed[(expr)?1:-1]; }
+
                 // (void)static_assertion_failed
         #endif
 
@@ -119,24 +141,29 @@ later**: */
     _Static_assert((test_for_true), "(" #test_for_true ") failed")
 
 
+// #define _Static_assert(expr, msg) typedef char static_assertion_failed[(expr)?1:-1]
+
+
 // #if sizeof(int) == 4
     // #warning "Hey"
 // #endif
 
-#define STATIC_ASSERT2(COND) typedef char static_assertion_failed[(COND)?1:-1]
+// #define STATIC_ASSERT2(COND) typedef char static_assertion_failed[(COND)?1:-1]
 
-STATIC_ASSERT2(2 > 1);
+STATIC_ASSERT(2 > 1);
+STATIC_ASSERT(3 > 1);
 
 typedef struct data_s
 {
     int i1;
     int i2;
 
-    STATIC_ASSERT(2 > 2);
+    STATIC_ASSERT(2 > 1);
+    STATIC_ASSERT(3 > 1);
     // ((1 ? int i3 : int i4);
     // using i = (1 ? int : long int);
 
-    // STATIC_ASSERT2(2 > 1);
+    // STATIC_ASSERT(2 > 1);
 } data_t;
 STATIC_ASSERT(sizeof(data_t) >= 4);
 
@@ -146,6 +173,7 @@ typedef union data_u
     uint8_t bytes[sizeof(data_t)];
 
     STATIC_ASSERT(2 > 1);
+    STATIC_ASSERT(5 > 4);
 } data_union_t;
 STATIC_ASSERT(sizeof(data_union_t) >= 4);
 
@@ -166,12 +194,16 @@ int main(void)
 
     /* this should pass */
     STATIC_ASSERT(2 > 1);
+    STATIC_ASSERT(4 > 1);
     /*
     */
     /* this should fail */
     /*
     STATIC_ASSERT(1 > 2);
     */
+
+    // uint8_t UNIQUE_NAME; //////////// see the output of what UNIQUE_NAME is!
+    // uint8_t UNIQUE_NAME;
 
 
     return 0;
