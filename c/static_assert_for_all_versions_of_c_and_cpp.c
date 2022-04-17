@@ -9,6 +9,8 @@ Demonstrate a universal static assert macro which works and can be used
 in **all** versions of C and C++ (at least: so long as the gcc or clang
 compilers are used), if possible.
 
+See my answer with this code here: https://stackoverflow.com/a/54993033/4561887.
+
 Note: we must use C-style comments instead of C++ //-style comments, in order to
 compile this code in ISO C90. Otherwise , you'll see:
 > error: C++ style comments are not allowed in ISO C90
@@ -25,27 +27,27 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C:
-gcc -Wall -Wextra -Werror -O3 -std=c90 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
-gcc -Wall -Wextra -Werror -O3 -std=c99 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
-gcc -Wall -Wextra -Werror -O3 -std=c11 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
-gcc -Wall -Wextra -Werror -O3 -std=c17 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c90 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c99 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c11 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
 # gnu C
-gcc -Wall -Wextra -Werror -O3 -std=gnu90 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
-gcc -Wall -Wextra -Werror -O3 -std=gnu99 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
-gcc -Wall -Wextra -Werror -O3 -std=gnu11 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a  # my default C build cmd
+gcc -Wall -Wextra -Werror -O3 -std=gnu90 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu99 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu11 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a  # my default C build cmd
 
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=c++98 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
-g++ -Wall -Wextra -Werror -O3 -std=c++03 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
-g++ -Wall -Wextra -Werror -O3 -std=c++11 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
-g++ -Wall -Wextra -Werror -O3 -std=c++17 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++98 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++03 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++11 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
 # gnu++
-g++ -Wall -Wextra -Werror -O3 -std=gnu++98 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
-g++ -Wall -Wextra -Werror -O3 -std=gnu++03 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
-g++ -Wall -Wextra -Werror -O3 -std=gnu++11 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
-g++ -Wall -Wextra -Werror -O3 -std=gnu++17 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a  # my default C++ build cmd
+g++ -Wall -Wextra -Werror -O3 -std=gnu++98 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++03 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++11 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a  # my default C++ build cmd
 
 ```
 
@@ -248,7 +250,7 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c90 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a -lm && bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c90 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a -lm && bin/a
     Static assert tests in C and C++.
     __STDC__ = 1
     __STRICT_ANSI__ = 1
@@ -257,7 +259,7 @@ In C:
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++98 static_assert_for_all_versions_of_c_and_for_cpp11_or_later.c -o bin/a && bin/a
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++98 static_assert_for_all_versions_of_c_and_cpp.c -o bin/a && bin/a
     Static assert tests in C and C++.
     __cplusplus = 199711
     __STDC__ = 1
