@@ -184,10 +184,16 @@ typedef union data_u
     data_t data;
     uint8_t bytes[sizeof(data_t)];
 
+
 /* See notes above. */
 /*
+    STATIC_ASSERT(2 > 2);
+    STATIC_ASSERT(5 > 5);
     STATIC_ASSERT(2 > 1);
     STATIC_ASSERT(5 > 4);
+
+    _Static_assert(2 > 1, "this should pass");
+    _Static_assert(5 > 4, "this should pass");
 */
 } data_union_t;
 STATIC_ASSERT(sizeof(data_union_t) >= 4);
