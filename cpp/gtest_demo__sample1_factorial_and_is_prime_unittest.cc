@@ -2,7 +2,8 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 Add googletest sample1 from Google.
-See references below for where these files come from.
+- See references below for where these files come from.
+- This "*_unittest.cc" file is the main file to run and test this code.
 
 STATUS: wip
 
@@ -13,7 +14,9 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"googletest/googletest/include" \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    googletest/googletest/src/gtest_main.cc -o bin/a && bin/a
 ```
 
 References:
@@ -66,11 +69,16 @@ References:
 //
 // Don't forget gtest.h, which declares the testing framework.
 
-#include "sample1.h"
+// Local headers
+#include "gtest_demo__sample1_factorial_and_is_prime.h"
 
+// 3rd-party libraries
+#include "gtest/gtest.h"
+
+// C and C++ includes
 #include <limits.h>
 
-#include "gtest/gtest.h"
+
 namespace {
 
 // Step 2. Use the TEST macro to define your tests.

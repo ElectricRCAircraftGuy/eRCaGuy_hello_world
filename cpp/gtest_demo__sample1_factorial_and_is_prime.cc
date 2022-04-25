@@ -1,7 +1,7 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-See the "*_unittest.cc" file for this code.
+See the "*_unittest.cc" file to run and test this code.
 */
 
 // Copyright 2005, Google Inc.
@@ -35,7 +35,8 @@ See the "*_unittest.cc" file for this code.
 
 // A sample program demonstrating using Google C++ testing framework.
 
-#include "sample1.h"
+#include "gtest_demo__sample1_factorial_and_is_prime.h"
+
 
 // Returns n! (the factorial of n).  For negative n, n! is defined to be 1.
 int Factorial(int n) {
