@@ -1,3 +1,9 @@
+/*
+This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
+See the "*_unittest.cc" file for this code.
+*/
+
 // Copyright 2005, Google Inc.
 // All rights reserved.
 //

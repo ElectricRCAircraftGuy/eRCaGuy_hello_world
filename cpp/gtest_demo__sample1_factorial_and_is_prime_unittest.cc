@@ -1,3 +1,30 @@
+/*
+This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
+Add googletest sample1 from Google.
+See references below for where these files come from.
+
+STATUS: wip
+
+To compile and run (assuming you've already `cd`ed into this dir):
+```bash
+# NB: you may need to use `-std=gnu++17` instead of `-std=c++17` in order to obtain extra GNU
+# gcc features, including gcc extensions, POSIX cmds, and Linux sytem cmds.
+# See: [my answer]: https://stackoverflow.com/a/71801111/4561887
+
+# 1. In C++
+g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+```
+
+References:
+1. googletest sample1 sources:
+  1. Locally-stored: "eRCaGuy_hello_world/cpp/googletest/googletest/samples/sample1*"
+    1. See "eRCaGuy_hello_world/cpp/README.md" for googletest setup info.
+  1. Online: "samples" folder: https://github.com/google/googletest/tree/main/googletest/samples
+
+*/
+
+
 // Copyright 2005, Google Inc.
 // All rights reserved.
 //
