@@ -14,9 +14,75 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
+##### doesn't work yet! Try specifying ALL the source files to build that cmake did with `time make`
 g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"googletest/googletest/include" \
     gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
     googletest/googletest/src/gtest_main.cc -o bin/a && bin/a
+
+
+######## nope!
+g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"googletest/googletest/include" \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    -l"$(pwd)/googletest/build/lib/libgtest_main.a" -o bin/a && bin/a
+
+g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -L"googletest/build/lib" \
+    -lgtest_main.a \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    -o bin/a && bin/a
+
+g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -L"googletest/build/lib" \
+    -lgmock -lgtest -lgtest_main -pthread \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    gtest_demo__sample1_factorial_and_is_prime.cc \
+    -o bin/a && bin/a
+
+
+
+# WORKS!
+# See: https://ethz-adrl.github.io/ct/ct_core/doc/html/md__home_adrl_code_src_control-toolbox_ct_core_build_test_googletest-src_googletest_README.html
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -I"googletest/googletest" -L"googletest/build/lib" -pthread \
+    googletest/googletest/src/gtest-all.cc googletest/googletest/src/gtest_main.cc \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    gtest_demo__sample1_factorial_and_is_prime.cc \
+    -o bin/a \
+    && time bin/a
+
+# WORKS!
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -I"googletest/googletest" -pthread \
+    googletest/googletest/src/gtest-all.cc googletest/googletest/src/gtest_main.cc \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    gtest_demo__sample1_factorial_and_is_prime.cc \
+    -o bin/a \
+    && time bin/a
+
+# works; creates .o object files
+# See: https://ethz-adrl.github.io/ct/ct_core/doc/html/md__home_adrl_code_src_control-toolbox_ct_core_build_test_googletest-src_googletest_README.html
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -I"googletest/googletest" -pthread \
+    googletest/googletest/src/gtest-all.cc googletest/googletest/src/gtest_main.cc \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    gtest_demo__sample1_factorial_and_is_prime.cc \
+    -c
+time ar -rv bin/1/libgtest.a gtest-all.o
+time ar -rv bin/1/libgtest_main.a gtest_main.o
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -pthread \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    gtest_demo__sample1_factorial_and_is_prime.cc \
+    bin/1/libgtest.a bin/1/libgtest_main.a \
+    -o bin/a
+
+# Works!
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
+    -I"googletest/googletest/include" -pthread \
+    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    gtest_demo__sample1_factorial_and_is_prime.cc \
+    googletest/build/lib/libgtest.a googletest/build/lib/libgtest_main.a \
+    -o bin/a
 ```
 
 References:
