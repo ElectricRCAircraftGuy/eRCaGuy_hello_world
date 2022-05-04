@@ -1,88 +1,31 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+GS
+Apr. to May 2022
+
 Add googletest sample1 from Google.
 - See references below for where these files come from.
 - This "*_unittest.cc" file is the main file to run and test this code.
 
-STATUS: wip
+STATUS: done; and works perfectly!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
-# NB: you may need to use `-std=gnu++17` instead of `-std=c++17` in order to obtain extra GNU
-# gcc features, including gcc extensions, POSIX cmds, and Linux sytem cmds.
-# See: [my answer]: https://stackoverflow.com/a/71801111/4561887
-
-# 1. In C++
-##### doesn't work yet! Try specifying ALL the source files to build that cmake did with `time make`
-g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"googletest/googletest/include" \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    googletest/googletest/src/gtest_main.cc -o bin/a && bin/a
-
-
-######## nope!
-g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"googletest/googletest/include" \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    -l"$(pwd)/googletest/build/lib/libgtest_main.a" -o bin/a && bin/a
-
-g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -L"googletest/build/lib" \
-    -lgtest_main.a \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    -o bin/a && bin/a
-
-g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -L"googletest/build/lib" \
-    -lgmock -lgtest -lgtest_main -pthread \
+# FIRST, follow the detailed clone and build steps here to clone the googletest repo and manually
+# build the necessary *.a static library files for gtest and gmock:
+# "eRCaGuy_hello_world/cpp/README.md"
+#
+# THEN, build and run this unit test with this command!:
+time ( \
+    time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
+    -I"googletest/googletest/include" -I"googletest/googlemock/include" \
     gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
     gtest_demo__sample1_factorial_and_is_prime.cc \
-    -o bin/a && bin/a
-
-
-
-# WORKS!
-# See: https://ethz-adrl.github.io/ct/ct_core/doc/html/md__home_adrl_code_src_control-toolbox_ct_core_build_test_googletest-src_googletest_README.html
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -I"googletest/googletest" -L"googletest/build/lib" -pthread \
-    googletest/googletest/src/gtest-all.cc googletest/googletest/src/gtest_main.cc \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    gtest_demo__sample1_factorial_and_is_prime.cc \
+    bin/libgtest.a bin/libgtest_main.a \
     -o bin/a \
-    && time bin/a
-
-# WORKS!
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -I"googletest/googletest" -pthread \
-    googletest/googletest/src/gtest-all.cc googletest/googletest/src/gtest_main.cc \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    gtest_demo__sample1_factorial_and_is_prime.cc \
-    -o bin/a \
-    && time bin/a
-
-# works; creates .o object files
-# See: https://ethz-adrl.github.io/ct/ct_core/doc/html/md__home_adrl_code_src_control-toolbox_ct_core_build_test_googletest-src_googletest_README.html
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -I"googletest/googletest" -pthread \
-    googletest/googletest/src/gtest-all.cc googletest/googletest/src/gtest_main.cc \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    gtest_demo__sample1_factorial_and_is_prime.cc \
-    -c
-time ar -rv bin/1/libgtest.a gtest-all.o
-time ar -rv bin/1/libgtest_main.a gtest_main.o
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -pthread \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    gtest_demo__sample1_factorial_and_is_prime.cc \
-    bin/1/libgtest.a bin/1/libgtest_main.a \
-    -o bin/a
-
-# Works!
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 \
-    -I"googletest/googletest/include" -pthread \
-    gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
-    gtest_demo__sample1_factorial_and_is_prime.cc \
-    googletest/build/lib/libgtest.a googletest/build/lib/libgtest_main.a \
-    -o bin/a
+    && time bin/a \
+)
 ```
 
 References:
@@ -247,3 +190,58 @@ TEST(IsPrimeTest, Positive) {
 // Did you notice that we didn't register the tests?  The
 // RUN_ALL_TESTS() macro magically knows about all the tests we
 // defined.  Isn't this convenient?
+
+
+
+
+/*
+Sample output:
+
+    eRCaGuy_hello_world/cpp$ time ( \
+    >     time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
+    >     -I"googletest/googletest/include" -I"googletest/googlemock/include" \
+    >     gtest_demo__sample1_factorial_and_is_prime_unittest.cc \
+    >     gtest_demo__sample1_factorial_and_is_prime.cc \
+    >     bin/libgtest.a bin/libgtest_main.a \
+    >     -o bin/a \
+    >     && time bin/a \
+    > )
+
+    real    0m1.621s
+    user    0m1.259s
+    sys 0m0.147s
+    Running main() from googletest/googletest/src/gtest_main.cc
+    [==========] Running 6 tests from 2 test suites.
+    [----------] Global test environment set-up.
+    [----------] 3 tests from FactorialTest
+    [ RUN      ] FactorialTest.Negative
+    [       OK ] FactorialTest.Negative (0 ms)
+    [ RUN      ] FactorialTest.Zero
+    [       OK ] FactorialTest.Zero (0 ms)
+    [ RUN      ] FactorialTest.Positive
+    [       OK ] FactorialTest.Positive (0 ms)
+    [----------] 3 tests from FactorialTest (0 ms total)
+
+    [----------] 3 tests from IsPrimeTest
+    [ RUN      ] IsPrimeTest.Negative
+    [       OK ] IsPrimeTest.Negative (0 ms)
+    [ RUN      ] IsPrimeTest.Trivial
+    [       OK ] IsPrimeTest.Trivial (0 ms)
+    [ RUN      ] IsPrimeTest.Positive
+    [       OK ] IsPrimeTest.Positive (0 ms)
+    [----------] 3 tests from IsPrimeTest (0 ms total)
+
+    [----------] Global test environment tear-down
+    [==========] 6 tests from 2 test suites ran. (0 ms total)
+    [  PASSED  ] 6 tests.
+
+    real    0m0.002s
+    user    0m0.000s
+    sys 0m0.002s
+
+    real    0m1.623s
+    user    0m1.259s
+    sys 0m0.149s
+
+
+*/

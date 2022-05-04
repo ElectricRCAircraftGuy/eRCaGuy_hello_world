@@ -200,7 +200,7 @@ time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
     -o bin/a && time bin/a
 ```
 
-I like to wrap it up in an outer `time` call too, however, to time the duration of the entire thing. See my answer here: 
+I like to wrap it up in an outer `time` call too, however, to time the duration of the entire thing. See my answer here for details on the `time` cmd: https://unix.stackexchange.com/a/699728/114401:
 
 ```bash
 # MY FAVORITE COMMAND/TECHNIQUE <===========
