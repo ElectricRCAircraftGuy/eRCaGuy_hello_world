@@ -8,6 +8,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. https://github.com/google/googletest
     1. https://github.com/google/googletest/tree/main/googletest
 1. \*\*\*\*\*+ https://ethz-adrl.github.io/ct/ct_core/doc/html/md__home_adrl_code_src_control-toolbox_ct_core_build_test_googletest-src_googletest_README.html - this is the main source for all of the examples below because it is the _only_ source I could find which showed me how to use g++ to build googletest from scratch. It is where I learned how to build `gtest` and the associated static library files (including the `libgtest.a` and `libgtest_main.a` static library .a archive files, for instance) with g++. 
+1. I have now posted some of these instructions below here on Stack Overflow as well: [How do I build and use googletest (gtest) and googlemock (gmock) with gcc/g++ or clang?](https://stackoverflow.com/a/72108315/4561887)
 
 
 ## First, clone the googletest source code and symlink it into your repo
