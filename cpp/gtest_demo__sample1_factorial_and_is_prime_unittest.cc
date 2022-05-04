@@ -12,11 +12,11 @@ STATUS: done; and works perfectly!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
-# FIRST, follow the detailed clone and build steps here to clone the googletest repo and manually
+# 1. FIRST, follow the detailed clone and build steps here to clone the googletest repo and manually
 # build the necessary *.a static library files for gtest and gmock:
 # "eRCaGuy_hello_world/cpp/README.md"
-#
-# THEN, build and run this unit test with this command!:
+
+# 2. THEN, build and run this unit test with this command!:
 time ( \
     time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
     -I"googletest/googletest/include" -I"googletest/googlemock/include" \
