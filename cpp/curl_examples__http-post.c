@@ -5,8 +5,13 @@ GS
 May 2022
 
 Test the libcurl example "http-post.c". See references below for links to it.
+This C code is essentially the equivalent of this command-line curl command!:
 
-STATUS: (status)
+    curl -d "name=daniel&project=curl" -X POST "http://postit.example.com/moo.cgi"
+
+See: https://www.educative.io/edpresso/how-to-perform-a-post-request-using-curl
+
+STATUS: done & works!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -30,7 +35,8 @@ References:
 1. libcurl example "http-post.c":
     1. Local: "eRCaGuy_hello_world/cpp/curl/docs/examples/http-post.c"
     1. Online: https://curl.se/libcurl/c/http-post.html
-1.
+1. How to perform a POST request using Curl:
+   https://www.educative.io/edpresso/how-to-perform-a-post-request-using-curl
 
 */
 
@@ -123,5 +129,10 @@ Not a valid post URL, so this error is expected.
     user    0m0.044s
     sys 0m0.037s
 
+
+Command-line equivalent command and output:
+
+    eRCaGuy_hello_world/c$ curl -d "name=daniel&project=curl" -X POST "http://postit.example.com/moo.cgi"
+    curl: (6) Could not resolve host: postit.example.com
 
 */
