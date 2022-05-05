@@ -578,6 +578,9 @@ cd ../..  # go back up to the same level as where the `curl` dir is
 # 1. https://stackoverflow.com/a/37558191/4561887
 # 1. [my answer] https://unix.stackexchange.com/a/701472/114401
 # <==== DO THIS! ====
+# (recommended, since the `libcurl.so` file has been installed by `sudo make install` here now too):
+echo "export LD_LIBRARY_PATH=\"/usr/local/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc
+# OR (also ok, since this is where the library got built):
 echo "export LD_LIBRARY_PATH=\"$(pwd)/curl/build/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc
 . ~/.bashrc  # re-source it
 ```
@@ -656,7 +659,10 @@ time ( \
 # OR (best): add this new library path permanently: <===== BEST ======
 # Run this _once_ to add it to your ~/.bashrc file. 
 # See: https://stackoverflow.com/a/37558191/4561887.
-echo "export LD_LIBRARY_PATH=\"$(pwd)/curl/build/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc   # <========
+# (recommended, since the `libcurl.so` file has been installed by `sudo make install` here now too):
+echo "export LD_LIBRARY_PATH=\"/usr/local/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc  # <========
+# OR (also ok, since this is where the library got built):
+echo "export LD_LIBRARY_PATH=\"$(pwd)/curl/build/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc
 . ~/.bashrc  # re-source it
 # Then run:
 time ( \
