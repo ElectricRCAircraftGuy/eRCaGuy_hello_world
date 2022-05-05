@@ -269,3 +269,189 @@ Using Option 1 from above (pre-building the `*.a` static library files for gtest
     ```
 
 etc. 
+
+
+# `fmt` library installation & setup
+
+Source code: https://github.com/fmtlib/fmt
+
+
+## 1. Build & install the `fmt` library
+
+Get the source code and place it at the same level as the main `eRCaGuy_hello_world` folder, then symlink the fmt lib into the `eRCaGuy_hello_world/cpp` folder.
+
+```bash
+# cd into your repo of interest (for me: `eRCaGuy_hello_world`)
+cd path/to/eRCaGuy_hello_world
+# go up one level to be at the same level as `eRCaGuy_hello_world`
+cd ..
+
+# clone the repo
+git clone https://github.com/fmtlib/fmt.git
+# you now have the folder "fmt" at the same level as "eRCaGuy_hello_world"; ex:
+#   some/dir/eRCaGuy_hello_world
+#   some/dir/fmt
+
+# cd into the folder where you want the symlink to googletest be located
+cd eRCaGuy_hello_world/cpp
+# create a relative symlink to the other repo here
+ln -si ../../fmt .
+```
+
+Now build & install the library! See: https://fmt.dev/latest/usage.html#building-the-library
+
+```bash
+cd eRCaGuy_hello_world/cpp
+
+cd fmt
+mkdir -p build 
+cd build
+time cmake ..  # takes ~2 sec
+time make      # takes ~3~5 minutes
+time sudo make install  # takes ~7 sec
+```
+
+Done!
+
+Here is the output of `time sudo make install`, so you can see what it's really doing:
+
+```bash
+eRCaGuy_hello_world/cpp/fmt/build$ time sudo make install
+[sudo] password for gabriel: 
+[  4%] Built target fmt
+[  7%] Built target gtest
+[ 16%] Built target posix-mock-test
+[ 23%] Built target test-main
+[ 26%] Built target xchar-test
+[ 29%] Built target color-test
+[ 32%] Built target chrono-test
+[ 35%] Built target os-test
+[ 38%] Built target args-test
+[ 41%] Built target enforce-checks-test
+[ 44%] Built target gtest-extra-test
+[ 47%] Built target printf-test
+[ 50%] Built target scan-test
+[ 53%] Built target format-test
+[ 64%] Built target format-impl-test
+[ 67%] Built target ostream-test
+[ 72%] Built target ranges-test
+[ 81%] Built target compile-fp-test
+[ 84%] Built target assert-test
+[ 87%] Built target core-test
+[ 90%] Built target compile-test
+[100%] Built target unicode-test
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /usr/local/lib/libfmt.a
+-- Installing: /usr/local/include/fmt/args.h
+-- Installing: /usr/local/include/fmt/chrono.h
+-- Installing: /usr/local/include/fmt/color.h
+-- Installing: /usr/local/include/fmt/compile.h
+-- Installing: /usr/local/include/fmt/core.h
+-- Installing: /usr/local/include/fmt/format.h
+-- Installing: /usr/local/include/fmt/format-inl.h
+-- Installing: /usr/local/include/fmt/locale.h
+-- Installing: /usr/local/include/fmt/os.h
+-- Installing: /usr/local/include/fmt/ostream.h
+-- Installing: /usr/local/include/fmt/printf.h
+-- Installing: /usr/local/include/fmt/ranges.h
+-- Installing: /usr/local/include/fmt/xchar.h
+-- Installing: /usr/local/lib/cmake/fmt/fmt-config.cmake
+-- Installing: /usr/local/lib/cmake/fmt/fmt-config-version.cmake
+-- Installing: /usr/local/lib/cmake/fmt/fmt-targets.cmake
+-- Installing: /usr/local/lib/cmake/fmt/fmt-targets-release.cmake
+-- Installing: /usr/local/lib/pkgconfig/fmt.pc
+
+real    0m7.034s
+user    0m0.413s
+sys 0m0.217s
+```
+
+
+## 2. How to use and link against the `fmt` library in your own code
+
+As you can see from the `time sudo make install` output above, `time sudo make install` installs both the _library_ into `/usr/local/lib/libfmt.a` **and** all of the header files to include into `/usr/local/include/fmt`! Having the header files there now means that I can just include the `fmt` library files like this in my projects now!:
+
+```cpp
+// You can do this now that the `fmt` library is installed!
+#include <fmt/format.h>
+```
+
+...instead of having to do relative includes like this:
+
+```cpp
+#include "fmt/include/fmt/format.h"
+```
+
+OR having to add the `-I` flag to g++ like this: `-I"fmt/include"` and then including like this:
+
+```cpp
+#include "fmt/format.h"
+```
+
+Two options:
+
+See my instructions here: https://github.com/fmtlib/fmt/issues/2157#issuecomment-1117930229
+
+1. Option 1: add `#define FMT_HEADER_ONLY` to your build options or above your `#include <fmt/format.h>` line:
+    Ex:
+    ```bash
+    time g++ -Wall -Wextra -Werror -O3 -std=c++17 -DFMT_HEADER_ONLY fmt_lib_demo.cpp \
+        -o bin/a -lfmt && bin/a
+    ```
+    Then in my source code:
+    ```cpp
+    #include <fmt/format.h>
+    ```
+    OR, just in my source code:
+    ```cpp
+    #define FMT_HEADER_ONLY
+    #include <fmt/format.h>
+    ```
+1. Option 2 [my preference]: add `-lfmt` OR `"/usr/local/lib/libfmt.a"` to your build command to link against the make-installed static .a library at that location. 
+    See my notes: https://github.com/fmtlib/fmt/issues/2157#issuecomment-1117930229:
+    ```bash
+    # Option 1 [my preference]: add `-lfmt`
+    time g++ -Wall -Wextra -Werror -O3 -std=c++17 fmt_lib_demo.cpp -o bin/a -lfmt && bin/a
+
+    # OR: Option 2: add `"/usr/local/lib/libfmt.a"`
+    time g++ -Wall -Wextra -Werror -O3 -std=c++17 fmt_lib_demo.cpp "/usr/local/lib/libfmt.a" \
+        -o bin/a && bin/a
+    ```
+
+**My final build command:**
+
+I like to build with _static, compile-time format string checks ON_ by defining the `FMT_ENFORCE_COMPILE_STRING` macro and using the `FMT_STRING()` macro around all format strings so that I don't get unexpected run-time errors which throw exceptions and crash my code! See: 
+1. https://fmt.dev/latest/api.html#compile-time-format-string-checks
+1. https://github.com/fmtlib/fmt/issues/2157#issuecomment-1117930229
+
+So, here is my final build command:
+```bash
+# my final `fmt` library build command style:
+
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 -DFMT_ENFORCE_COMPILE_STRING fmt_lib_demo.cpp \
+    -o bin/a -lfmt && bin/a
+```
+
+Then, in your code, you must use `FMT_STRING()` around all format strings, like this, for example:
+
+```cpp
+#include <fmt/format.h>
+
+
+std::string timestamps_str = fmt::format(FMT_STRING(
+        "Timestamps:\n"
+        "  time_ns_1 = {:20.9f}\n"
+        "  time_ns_2 = {:20.9f}\n"
+        "  time_ns_3 = {:20.9f}\n"),
+        NS_TO_SEC((double)time_ns_1),
+        NS_TO_SEC((double)time_ns_2),
+        NS_TO_SEC((double)time_ns_3));
+std::cout << timestamps_str;
+
+fmt::print(FMT_STRING("\n"
+        "  time_ns_1 = {:20.9f}\n"),
+        NS_TO_SEC((double)time_ns_1));
+```
+
+**See [eRCaGuy_hello_world/cpp/fmt_lib_demo.cpp](fmt_lib_demo.cpp) for a full demo!**
