@@ -8,7 +8,15 @@ Started: 12 Feb. 2022
 [Place newest on TOP]
 
 
-## 20220212
+## 20220428:
+1. [ ] As both C and C++ code: test packing and alignment of `__attribute__((__packed__))` vs `#pragma packed(1)`. I'm pretty sure the former sets only packing to 1 but leaves the struct alignment as a whole to be naturally-aligned, which is good. The latter sets packing to 1 but _also_ sets the whole struct alignment to 1, which is _bad_. See: 
+    1. [Microsoft DevBlogs: Anybody who writes #pragma pack(1) may as well just wear a sign on their forehead that says “I hate RISC”, by Raymond C](https://devblogs.microsoft.com/oldnewthing/20200103-00/?p=103290)
+1. [x] finish adding gtest & gmock build instructions & initial examples to cpp dir.
+1. [x] finish adding cpp/swap_bytes_lib.h/.cpp library and unit tests.
+1. [x] finish adding fmt library and cpp/fmt_lib_demo.cpp with `{:20.9f}` type float formatting examples.
+
+
+## 20220212:
 
 Write C/C++ macros to:
 1. count number of arguments:
