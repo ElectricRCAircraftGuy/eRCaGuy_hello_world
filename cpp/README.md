@@ -516,7 +516,7 @@ fmt::print(FMT_STRING("\n"
 1. Installation instructions: https://curl.se/docs/install.html
 1. \*\*\*\*\*+ [my answer] [How to build curl from scratch using cmake, including building libcurl, and then how to use it to build and run the C examples](https://unix.stackexchange.com/a/701472/114401) 
 1. \*\*\*\*\*+ libcurl usage & help:
-    1. The libcurl API: https://curl.se/libcurl/c/
+    1. \*\*\*\*\* The libcurl API: https://curl.se/libcurl/c/
     1. libcurl - small example snippets: https://curl.se/libcurl/c/example.html
     1. libcurl programming tutorial: https://curl.se/libcurl/c/libcurl-tutorial.html; here are some of the _key sections_ I care about in this tutorial: 
         1. "Compiling the Program"
@@ -535,6 +535,7 @@ fmt::print(FMT_STRING("\n"
         > The multi interface, on the other hand, allows your program to transfer multiple files in both directions at the same time, without forcing you to use multiple threads. The name might make it seem that the multi interface is for multi-threaded programs, but the truth is almost the reverse. The multi interface allows a single-threaded application to perform the same kinds of multiple, simultaneous transfers that multi-threaded programs can perform. It allows many of the benefits of multi-threaded transfers without the complexity of managing and synchronizing many threads.
     1. Easy interface overview: https://curl.se/libcurl/c/libcurl-easy.html
     1. multi interface overview: https://curl.se/libcurl/c/libcurl-multi.html
+        1. curl_easy_setopt - set options for a curl easy handle [ex: `CURLOPT_URL`--the only option you really _must_ set]: https://curl.se/libcurl/c/curl_easy_setopt.html
 
 
 <a id="1-build--install-the-curl-library"></a>
