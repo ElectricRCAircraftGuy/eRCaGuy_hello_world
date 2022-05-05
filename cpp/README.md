@@ -536,6 +536,7 @@ fmt::print(FMT_STRING("\n"
     1. Easy interface overview: https://curl.se/libcurl/c/libcurl-easy.html
     1. multi interface overview: https://curl.se/libcurl/c/libcurl-multi.html
         1. curl_easy_setopt - set options for a curl easy handle [ex: `CURLOPT_URL`--the only option you really _must_ set]: https://curl.se/libcurl/c/curl_easy_setopt.html
+    1. libcurl error codes [ex: `CURLE_OK` = "Curl Error Ok" = no error]: https://curl.se/libcurl/c/libcurl-errors.html
 
 
 <a id="1-build--install-the-curl-library"></a>
@@ -576,7 +577,8 @@ cd ../..  # go back up to the same level as where the `curl` dir is
 # See:
 # 1. https://stackoverflow.com/a/37558191/4561887
 # 1. [my answer] https://unix.stackexchange.com/a/701472/114401
-echo "export LD_LIBRARY_PATH=\"$(pwd)/curl/build/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc   # <========
+# <==== DO THIS! ====
+echo "export LD_LIBRARY_PATH=\"$(pwd)/curl/build/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc
 . ~/.bashrc  # re-source it
 ```
 
@@ -665,7 +667,7 @@ time ( \
     && time bin/a \
 )
 
-# <============
+# <============ FINAL ANSWER ===========
 # Correction though: we should build the examples as C with `gcc`, rather than as C++ with `g++`
 # (even though the first one at least does build and run as C++ too). 
 # **Final answer:**
