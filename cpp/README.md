@@ -6,7 +6,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 <summary><b>(click to expand)</b></summary>
 <!-- MarkdownTOC -->
 
-1. [Googletest setup: how to build googletest \(gtest and gmock\) with the gcc/g++ compiler](#googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler)
+1. [C++ Googletest setup: how to build googletest \(gtest and gmock\) with the gcc/g++ compiler](#c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler)
     1. [References:](#references)
     1. [First, clone the googletest source code and symlink it into your repo](#first-clone-the-googletest-source-code-and-symlink-it-into-your-repo)
     1. [Build all of gtest and gmock as static library archive `*.a` files](#build-all-of-gtest-and-gmock-as-static-library-archive-a-files)
@@ -16,11 +16,11 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
         1. [Option 1 \[my preference/recommended!\] build your unit test using the pre-built `*.a` static library files from above:](#option-1-my-preferencerecommended-build-your-unit-test-using-the-pre-built-a-static-library-files-from-above)
         1. [Option 2: rebuild your unit test _and_ the entire gtest/gmock library all at once](#option-2-rebuild-your-unit-test-and-the-entire-gtestgmock-library-all-at-once)
         1. [More examples just to show building and running the samples which come with googletest](#more-examples-just-to-show-building-and-running-the-samples-which-come-with-googletest)
-1. [`fmt` library installation & setup](#fmt-library-installation--setup)
+1. [C++ `fmt` library installation & setup](#c-fmt-library-installation--setup)
     1. [References:](#references-1)
     1. [1. Build & install the `fmt` library](#1-build--install-the-fmt-library)
     1. [2. How to use and link against the `fmt` library in your own code](#2-how-to-use-and-link-against-the-fmt-library-in-your-own-code)
-1. [`curl` library installation & setup](#curl-library-installation--setup)
+1. [C `curl` library installation & setup](#c-curl-library-installation--setup)
     1. [References:](#references-2)
     1. [1. Build & install the `curl` library](#1-build--install-the-curl-library)
     1. [2. How to use and link against the `curl` library in your own code](#2-how-to-use-and-link-against-the-curl-library-in-your-own-code)
@@ -29,8 +29,8 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 </details>
 
 
-<a id="googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler"></a>
-# Googletest setup: how to build googletest (gtest and gmock) with the gcc/g++ compiler
+<a id="c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler"></a>
+# C++ Googletest setup: how to build googletest (gtest and gmock) with the gcc/g++ compiler
 
 
 <a id="references"></a>
@@ -309,8 +309,8 @@ Using Option 1 from above (pre-building the `*.a` static library files for gtest
 etc. 
 
 
-<a id="fmt-library-installation--setup"></a>
-# `fmt` library installation & setup
+<a id="c-fmt-library-installation--setup"></a>
+# C++ `fmt` library installation & setup
 
 
 <a id="references-1"></a>
@@ -506,8 +506,8 @@ fmt::print(FMT_STRING("\n"
 **See [eRCaGuy_hello_world/cpp/fmt_lib_demo.cpp](fmt_lib_demo.cpp) for a full demo!**
 
 
-<a id="curl-library-installation--setup"></a>
-# `curl` library installation & setup
+<a id="c-curl-library-installation--setup"></a>
+# C `curl` library installation & setup
 
 
 <a id="references-2"></a>
@@ -515,6 +515,26 @@ fmt::print(FMT_STRING("\n"
 1. Source code: https://github.com/curl/curl
 1. Installation instructions: https://curl.se/docs/install.html
 1. \*\*\*\*\*+ [my answer] [How to build curl from scratch using cmake, including building libcurl, and then how to use it to build and run the C examples](https://unix.stackexchange.com/a/701472/114401) 
+1. \*\*\*\*\*+ libcurl usage & help:
+    1. The libcurl API: https://curl.se/libcurl/c/
+    1. libcurl - small example snippets: https://curl.se/libcurl/c/example.html
+    1. libcurl programming tutorial: https://curl.se/libcurl/c/libcurl-tutorial.html; here are some of the _key sections_ I care about in this tutorial: 
+        1. "Compiling the Program"
+            Get the linking options for gcc:
+            ```bash
+            $ curl-config --libs
+            -L/usr/local/lib -lcurl
+            ```
+        1. "Two interfaces"
+        1. "Handle the easy libcurl"
+        1. "Http posting" - for REST API `curl -X POST http://192.168.0.1/my_api/my_command` type POST commands!
+        1. "Showing progress"
+        1. "Libcurl with c++"
+        1. "Persistence is the way to happiness"
+        1. "The multi interface": 
+        > The multi interface, on the other hand, allows your program to transfer multiple files in both directions at the same time, without forcing you to use multiple threads. The name might make it seem that the multi interface is for multi-threaded programs, but the truth is almost the reverse. The multi interface allows a single-threaded application to perform the same kinds of multiple, simultaneous transfers that multi-threaded programs can perform. It allows many of the benefits of multi-threaded transfers without the complexity of managing and synchronizing many threads.
+    1. Easy interface overview: https://curl.se/libcurl/c/libcurl-easy.html
+    1. multi interface overview: https://curl.se/libcurl/c/libcurl-multi.html
 
 
 <a id="1-build--install-the-curl-library"></a>
@@ -549,6 +569,14 @@ time cmake ..  # takes ~20 sec
 time make      # takes ~11 sec
 
 time sudo make install  # takes < 1 sec
+
+cd ../..  # go back up to the same level as where the `curl` dir is
+
+# See:
+# 1. https://stackoverflow.com/a/37558191/4561887
+# 1. [my answer] https://unix.stackexchange.com/a/701472/114401
+echo "export LD_LIBRARY_PATH=\"$(pwd)/curl/build/lib:\$LD_LIBRARY_PATH\"" >> ~/.bashrc   # <========
+. ~/.bashrc  # re-source it
 ```
 
 Note that `make` above produces the dynamic, shared-object .so library file at `curl/build/lib/libcurl.so`. You need to link to this library at compile time, and load it directly at run-time. See: https://www.cprogramming.com/tutorial/shared-libraries-linux-gcc.html.
