@@ -273,7 +273,14 @@ etc.
 
 # `fmt` library installation & setup
 
-Source code: https://github.com/fmtlib/fmt
+
+## References:
+1. Source code: https://github.com/fmtlib/fmt
+1. https://fmt.dev/latest/syntax.html
+1. https://fmt.dev/latest/usage.html#building-the-library
+1. https://fmt.dev/latest/api.html
+    1. https://fmt.dev/latest/api.html#compile-time-format-string-checks
+1. My own notes & instructions: https://github.com/fmtlib/fmt/issues/2157#issuecomment-1117930229
 
 
 ## 1. Build & install the `fmt` library
