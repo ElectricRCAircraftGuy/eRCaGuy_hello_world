@@ -23,7 +23,7 @@ Example command-line alternatives to this C program:
 
     # POST
 
-    curl --data "moo mooo moo moo" -X POST "https://example.com"
+    curl --data "name=gabriel&project=curl" -X POST "https://example.com"
 
 From `man curl`:
 
@@ -36,7 +36,12 @@ From `man curl`:
 See also: https://www.educative.io/edpresso/how-to-perform-a-post-request-using-curl
 
 
-STATUS: wip
+STATUS: done & works! This is a very thorough code example with extensive curl library error
+checking. The only error checking I'm really missing still is checking for NULL ptr parameters
+passed in to my functions.
+
+The main functions herein are `http_get()` and `http_post()`.
+
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -247,48 +252,37 @@ size_t write_callback(const char *received_data, size_t size, size_t count, void
 /// \details        This is roughly the equivalent of: `curl -X GET "https://example.com"`,
 ///                 where `url` is "https://example.com".
 /// \param[in]      url             The URL to communicate with.
-/// \param[out]     response_buf    (Optional) the buffer to write the response string into. Pass
+/// \param[out]     response_str    (Optional) the buffer to write the response string into. Pass
 ///                     in NULL to not use this parameter, in which case the output will be
-///                     written to `stdout` instead of into the `response_buf`.
-/// \param[in]      response_len    The length of the response buffer. It is recommended to use
+///                     written to `stdout` instead of into the `response_str`.
+/// \param[in]      response_str_len    The length of the response buffer. It is recommended to use
 ///                     a response buffer of size `CURL_MAX_WRITE_SIZE`, since that is the maximum
 ///                     size `curl` will try to write into the buffer. That curl macro is usually
 ///                     ~16 KiB.
 /// \return         A curl error code:
-CURLcode http_get(const char* url, char* response_buf, size_t response_len)
+CURLcode http_get(const char* url, char* response_str, size_t response_str_len)
 {
     CURLcode curl_code;
     buffer_t response_buffer; // buffer in which the response will be stored
-
-    // Reset all previously-set options for this handle so that subsequent calls to this function
-    // will start fresh. Otherwise, if you pass in `response_buf` once, then options
-    // `CURLOPT_WRITEFUNCTION` and `CURLOPT_WRITEDATA` will get set below, and will remain set
-    // even during subsequent calls when you pass in `NULL` for `response_buf`! That is NOT the
-    // desired behavior, so we must reset the options and start fresh on this handle each time
-    // we begin this function.
-    // See info. about `curl_easy_reset()` here:
-    // 1. https://curl.se/libcurl/c/libcurl-easy.html
-    // 1. https://curl.se/libcurl/c/curl_easy_reset.html
-    curl_easy_reset(g_curl_data.curl_easy); // Note: no return code to check
 
     curl_code = curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_URL, url);
     if (curl_code != CURLE_OK)
     {
         printf("ERROR: curl_easy_setopt() failed on `CURLOPT_URL`. curl_code = %i: %s\n",
                 curl_code, curl_easy_strerror(curl_code));
-        return curl_code;
+        goto cleanup;
     }
 
     // Only write the data into the response buffer if the user desires it and has passed in a
     // buffer. Otherwise, let curl write to `stdout`, which is the default.
-    if (response_buf != NULL && response_len > 0)
+    if (response_str != NULL && response_str_len > 0)
     {
         // This call always succeeds and returns `CURLE_OK`.
         // See: https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
         curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_WRITEFUNCTION, write_callback);
 
-        response_buffer.buf = response_buf;
-        response_buffer.len_total = response_len;
+        response_buffer.buf = response_str;
+        response_buffer.len_total = response_str_len;
         response_buffer.i_write = 0; // reset
         // This call always succeeds and returns `CURLE_OK`.
         // See: https://curl.se/libcurl/c/CURLOPT_WRITEDATA.html
@@ -305,11 +299,11 @@ CURLcode http_get(const char* url, char* response_buf, size_t response_len)
     {
         printf("ERROR: curl_easy_perform() failed. curl_code = %i: %s\n",
                 curl_code, curl_easy_strerror(curl_code));
-        return curl_code;
+        goto cleanup;
     }
 
     // ensure null termination of the entire string
-    if (response_buf != NULL && response_len > 0)
+    if (response_str != NULL && response_str_len > 0)
     {
         response_buffer.buf[response_buffer.i_write] = '\0';
     }
@@ -324,6 +318,68 @@ CURLcode http_get(const char* url, char* response_buf, size_t response_len)
     // printf("==== LAST several chars: `%s` ====\n",
     //     &response_buffer.buf[response_buffer.i_write - 5]);
 
+cleanup:
+
+    // Reset all previously-set options for this handle so that subsequent calls to this function
+    // will start fresh. Otherwise, if you pass in `response_str` once, then options
+    // `CURLOPT_WRITEFUNCTION` and `CURLOPT_WRITEDATA` will get set below, and will remain set
+    // even during subsequent calls when you pass in `NULL` for `response_str`! That is NOT the
+    // desired behavior, so we must reset the options and start fresh on this handle each time
+    // we begin this function.
+    // See info. about `curl_easy_reset()` here:
+    // 1. https://curl.se/libcurl/c/libcurl-easy.html
+    // 1. https://curl.se/libcurl/c/curl_easy_reset.html
+    curl_easy_reset(g_curl_data.curl_easy); // Note: no return code to check
+
+    return curl_code;
+}
+
+/// \brief          Call an HTTP POST REST API command.
+/// \details        This is roughly the equivalent of:
+///     `curl --data "name=gabriel&project=curl" -X POST "https://example.com"`, where `url`
+///     is "https://example.com", and the `post_str` is "name=gabriel&project=curl".
+///     For a basic libcurl example, see: https://curl.se/libcurl/c/simplepost.html
+/// \param[in]      url             The URL to communicate with.
+/// \param[in]      post_str        The string to POST, or send **to** the URL.
+/// \param[in]      post_str_len    (Optional) The length of the `post_str`, in chars or bytes.
+///                     If `post_str` is a null-terminated string, then you can pass in
+///                     `strlen(post_str)` OR `0` for this to simply have this function call
+///                     `strlen(post_str)` itself.
+/// \param[out]     response_str    (Optional) the buffer to write the response string into. Pass
+///                     in NULL to not use this parameter, in which case the output will be
+///                     written to `stdout` instead of into the `response_str`.
+/// \param[in]      response_str_len    The length of the response buffer. It is recommended to use
+///                     a response buffer of size `CURL_MAX_WRITE_SIZE`, since that is the maximum
+///                     size `curl` will try to write into the buffer. That curl macro is usually
+///                     ~16 KiB.
+/// \return         A curl error code:
+CURLcode http_post(const char* url, const char* post_str, size_t post_str_len,
+    char* response_str, size_t response_str_len)
+{
+    CURLcode curl_code;
+
+    // todo: add checks for NULL on all ptr parameters
+
+    if (post_str_len == 0)
+    {
+        post_str_len = strlen(post_str);
+    }
+
+    // This call always succeeds and returns `CURLE_OK`.
+    // See: https://curl.se/libcurl/c/CURLOPT_POSTFIELDS.html
+    curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_POSTFIELDS, post_str);
+
+    curl_code = curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_POSTFIELDSIZE, (long)post_str_len);
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: curl_easy_setopt() failed on `CURLOPT_POSTFIELDSIZE`. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+        goto cleanup;
+    }
+
+    curl_code = http_get(url, response_str, response_str_len);
+
+cleanup:
     return curl_code;
 }
 
@@ -344,7 +400,7 @@ int main(void)
     static_assert(sizeof(response_buffer) == CURL_MAX_WRITE_SIZE, "just for a sanity check");
 
     // 2. http_get(), collecting the response
-    printf("==== 1. ==== Calling http_get() WITH a response buffer to manually "
+    printf("==== 2. ==== Calling http_get() WITH a response buffer to manually "
            "collect the response.\n");
     curl_code = http_get("www.example.com", response_buffer, sizeof(response_buffer));
     if (curl_code != CURLE_OK)
@@ -362,7 +418,7 @@ int main(void)
     }
 
     // 3. http_get(), NOT collecting the response
-    printf("==== 2. ==== Calling http_get() withOUT a response buffer to manually "
+    printf("==== 3. ==== Calling http_get() withOUT a response buffer to manually "
            "collect the response. Therefore, the output will be **automatically written** "
            "to `stdout`!\n");
     curl_code = http_get("www.example.com", NULL, 0);
@@ -377,9 +433,43 @@ int main(void)
         printf("--- SUCESS! ---\n");
     }
 
-    // 4. http_post()
+    // 4. http_post(), collecting the response
+    printf("==== 4. ==== Calling http_post() WITH a response buffer to manually "
+           "collect the response.\n");
 
-    // 5. tear_down()
+    curl_code = http_post("www.example.com", "name=gabriel&project=curl", 0,
+        response_buffer, sizeof(response_buffer));
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: http_post() failed. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+    }
+    else
+    {
+        printf("--- SUCESS! ---\n");
+        printf("=== response_buffer START ===\n"
+               "%s\n"
+               "=== response_buffer END ===\n\n",
+               response_buffer);
+    }
+
+    // 5. http_post(), NOT collecting the response
+    printf("==== 5. ==== Calling http_post() withOUT a response buffer to manually "
+           "collect the response. Therefore, the output will be **automatically written** "
+           "to `stdout`!\n");
+    curl_code = http_post("www.example.com", "name=gabriel&project=curl", 0, NULL, 0);
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: http_post() failed. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+        return curl_code;
+    }
+    else
+    {
+        printf("--- SUCESS! ---\n");
+    }
+
+    // 6. tear_down()
     tear_down();
 
     return 0;
@@ -392,12 +482,215 @@ int main(void)
 SAMPLE OUTPUT:
 
 
+    eRCaGuy_hello_world/c$ time (     time gcc -Wall -Wextra -Werror -O3 -std=c17     curl_rest_api_http_post_and_get.c     -lcurl     -o bin/a ) && time bin/a
 
+    real    0m0.123s
+    user    0m0.109s
+    sys 0m0.015s
+    ==== 2. ==== Calling http_get() WITH a response buffer to manually collect the response.
+    --- SUCESS! ---
+    === response_buffer START ===
+    <!doctype html>
+    <html>
+    <head>
+        <title>Example Domain</title>
 
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style type="text/css">
+        body {
+            background-color: #f0f0f2;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-Command-line equivalent command and output:
+        }
+        div {
+            width: 600px;
+            margin: 5em auto;
+            padding: 2em;
+            background-color: #fdfdff;
+            border-radius: 0.5em;
+            box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+        }
+        a:link, a:visited {
+            color: #38488f;
+            text-decoration: none;
+        }
+        @media (max-width: 700px) {
+            div {
+                margin: 0 auto;
+                width: auto;
+            }
+        }
+        </style>
+    </head>
 
+    <body>
+    <div>
+        <h1>Example Domain</h1>
+        <p>This domain is for use in illustrative examples in documents. You may use this
+        domain in literature without prior coordination or asking for permission.</p>
+        <p><a href="https://www.iana.org/domains/example">More information...</a></p>
+    </div>
+    </body>
+    </html>
 
+    === response_buffer END ===
+
+    ==== 3. ==== Calling http_get() withOUT a response buffer to manually collect the response. Therefore, the output will be **automatically written** to `stdout`!
+    <!doctype html>
+    <html>
+    <head>
+        <title>Example Domain</title>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style type="text/css">
+        body {
+            background-color: #f0f0f2;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+        }
+        div {
+            width: 600px;
+            margin: 5em auto;
+            padding: 2em;
+            background-color: #fdfdff;
+            border-radius: 0.5em;
+            box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+        }
+        a:link, a:visited {
+            color: #38488f;
+            text-decoration: none;
+        }
+        @media (max-width: 700px) {
+            div {
+                margin: 0 auto;
+                width: auto;
+            }
+        }
+        </style>
+    </head>
+
+    <body>
+    <div>
+        <h1>Example Domain</h1>
+        <p>This domain is for use in illustrative examples in documents. You may use this
+        domain in literature without prior coordination or asking for permission.</p>
+        <p><a href="https://www.iana.org/domains/example">More information...</a></p>
+    </div>
+    </body>
+    </html>
+    --- SUCESS! ---
+    ==== 4. ==== Calling http_post() WITH a response buffer to manually collect the response.
+    --- SUCESS! ---
+    === response_buffer START ===
+    <!doctype html>
+    <html>
+    <head>
+        <title>Example Domain</title>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style type="text/css">
+        body {
+            background-color: #f0f0f2;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+        }
+        div {
+            width: 600px;
+            margin: 5em auto;
+            padding: 2em;
+            background-color: #fdfdff;
+            border-radius: 0.5em;
+            box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+        }
+        a:link, a:visited {
+            color: #38488f;
+            text-decoration: none;
+        }
+        @media (max-width: 700px) {
+            div {
+                margin: 0 auto;
+                width: auto;
+            }
+        }
+        </style>
+    </head>
+
+    <body>
+    <div>
+        <h1>Example Domain</h1>
+        <p>This domain is for use in illustrative examples in documents. You may use this
+        domain in literature without prior coordination or asking for permission.</p>
+        <p><a href="https://www.iana.org/domains/example">More information...</a></p>
+    </div>
+    </body>
+    </html>
+
+    === response_buffer END ===
+
+    ==== 5. ==== Calling http_post() withOUT a response buffer to manually collect the response. Therefore, the output will be **automatically written** to `stdout`!
+    <!doctype html>
+    <html>
+    <head>
+        <title>Example Domain</title>
+
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style type="text/css">
+        body {
+            background-color: #f0f0f2;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+        }
+        div {
+            width: 600px;
+            margin: 5em auto;
+            padding: 2em;
+            background-color: #fdfdff;
+            border-radius: 0.5em;
+            box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+        }
+        a:link, a:visited {
+            color: #38488f;
+            text-decoration: none;
+        }
+        @media (max-width: 700px) {
+            div {
+                margin: 0 auto;
+                width: auto;
+            }
+        }
+        </style>
+    </head>
+
+    <body>
+    <div>
+        <h1>Example Domain</h1>
+        <p>This domain is for use in illustrative examples in documents. You may use this
+        domain in literature without prior coordination or asking for permission.</p>
+        <p><a href="https://www.iana.org/domains/example">More information...</a></p>
+    </div>
+    </body>
+    </html>
+    --- SUCESS! ---
+
+    real    0m0.244s
+    user    0m0.004s
+    sys 0m0.004s
 
 
 */

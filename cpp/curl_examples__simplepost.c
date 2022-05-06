@@ -27,8 +27,7 @@ time ( \
     curl_examples__simplepost.c \
     -lcurl \
     -o bin/a \
-    && time bin/a \
-)
+) && time bin/a
 ```
 
 References:
