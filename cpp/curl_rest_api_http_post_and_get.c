@@ -208,7 +208,7 @@ void tear_down()
     curl_global_cleanup();
 }
 
-/// \brief          The callback function which writes data received from curl.
+/// \brief          The callback function which writes data received from the curl operation.
 /// \details        This is the `curl_easy_setopt()` `CURLOPT_WRITEFUNCTION` function callback which
 ///     gets calls to write data received from the curl operation during `curl_easy_perform()`.
 ///     See: https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
@@ -259,6 +259,17 @@ CURLcode http_get(const char* url, char* response_buf, size_t response_len)
 {
     CURLcode curl_code;
     buffer_t response_buffer; // buffer in which the response will be stored
+
+    // Reset all previously-set options for this handle so that subsequent calls to this function
+    // will start fresh. Otherwise, if you pass in `response_buf` once, then options
+    // `CURLOPT_WRITEFUNCTION` and `CURLOPT_WRITEDATA` will get set below, and will remain set
+    // even during subsequent calls when you pass in `NULL` for `response_buf`! That is NOT the
+    // desired behavior, so we must reset the options and start fresh on this handle each time
+    // we begin this function.
+    // See info. about `curl_easy_reset()` here:
+    // 1. https://curl.se/libcurl/c/libcurl-easy.html
+    // 1. https://curl.se/libcurl/c/curl_easy_reset.html
+    curl_easy_reset(g_curl_data.curl_easy); // Note: no return code to check
 
     curl_code = curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_URL, url);
     if (curl_code != CURLE_OK)
@@ -320,6 +331,7 @@ int main(void)
 {
     CURLcode curl_code;
 
+    // 1. set_up()
     curl_code = set_up();
     if (curl_code != CURLE_OK)
     {
@@ -331,8 +343,10 @@ int main(void)
     static char response_buffer[CURL_MAX_WRITE_SIZE];
     static_assert(sizeof(response_buffer) == CURL_MAX_WRITE_SIZE, "just for a sanity check");
 
-    printf("==== 1. ==== Calling http_get() WITH a response buffer to collect the response.\n");
-    curl_code = http_get("www.example.com", NULL, 0);//response_buffer, sizeof(response_buffer));
+    // 2. http_get(), collecting the response
+    printf("==== 1. ==== Calling http_get() WITH a response buffer to manually "
+           "collect the response.\n");
+    curl_code = http_get("www.example.com", response_buffer, sizeof(response_buffer));
     if (curl_code != CURLE_OK)
     {
         printf("ERROR: http_get() failed. curl_code = %i: %s\n",
@@ -340,16 +354,17 @@ int main(void)
     }
     else
     {
-        printf("SUCESS!\n");
+        printf("--- SUCESS! ---\n");
+        printf("=== response_buffer START ===\n"
+               "%s\n"
+               "=== response_buffer END ===\n\n",
+               response_buffer);
     }
 
-    // printf("=== response_buffer START ===\n"
-    //        "%s\n"
-    //        "=== response_buffer END ===\n\n",
-    //        response_buffer);
-
-    printf("==== 2. ==== Calling http_get() withOUT a response buffer to collect the response. "
-           "Therefore, the output will be automatically written to stdout.\n");
+    // 3. http_get(), NOT collecting the response
+    printf("==== 2. ==== Calling http_get() withOUT a response buffer to manually "
+           "collect the response. Therefore, the output will be **automatically written** "
+           "to `stdout`!\n");
     curl_code = http_get("www.example.com", NULL, 0);
     if (curl_code != CURLE_OK)
     {
@@ -359,9 +374,12 @@ int main(void)
     }
     else
     {
-        printf("SUCESS!\n");
+        printf("--- SUCESS! ---\n");
     }
 
+    // 4. http_post()
+
+    // 5. tear_down()
     tear_down();
 
     return 0;
