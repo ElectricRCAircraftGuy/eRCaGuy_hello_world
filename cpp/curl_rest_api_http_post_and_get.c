@@ -6,6 +6,13 @@ May 2022
 
 Write some basic functions to do REST API POST and GET calls using libcurl in C.
 
+Note: using a manual, static response buffer in C (see `buffer_t` below) was a pain in the butt!
+BUT, it _is_ real-time and safe for safety-critical systems! If using C++ in the future, on NON
+real-time and NON safety-critical systems in the future, use a `std::string` (or `std::vector` if
+using `uint8_t` types) as that would allow automatic dynamic memory allocation and growth
+under-the-hood and be **much** easier to implement! Anyway though, what I have done here is correct
+and works well, albeit it took a little extra effort.
+
 Example command-line alternatives to this C program:
 
     # GET
@@ -38,15 +45,23 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # FIRST, follow the curl installation & setup instructions here: "eRCaGuy_hello_world/cpp/README.md"
-# THEN, build & run it like this:
+# THEN, build & run it like this: <=========
 # In C:
 time ( \
     time gcc -Wall -Wextra -Werror -O3 -std=c17 \
     curl_rest_api_http_post_and_get.c \
     -lcurl \
     -o bin/a \
-    && time bin/a \
-)
+) && time bin/a
+
+# Note, to run the "simple GET" example (instead of this code), do the following.
+# Here is that example: https://curl.se/libcurl/c/simple.html
+time ( \
+    time gcc -Wall -Wextra -Werror -O3 -std=c17 \
+    curl/docs/examples/simple.c \
+    -lcurl \
+    -o bin/a \
+) && time bin/a
 ```
 
 References:
@@ -75,6 +90,7 @@ References:
 
 // C and C++ includes
 #include <assert.h>
+#include <stdint.h>  // `uint8_t`, etc.
 #include <stdio.h>
 #include <string.h>
 
@@ -83,20 +99,66 @@ References:
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
+// --------------- buffer struct and functions start ---------------
+
 typedef struct buffer_s
 {
-    // fixed values
-    char * buf;  /// ptr to a buffer
-    size_t len_total;  /// total number of bytes in the buffer
-
-    // values which change as the buffer is written to
-    // size_t len_remaining; /// number of unused bytes in the buffer ////////
-    size_t i_write; /// the next write location in the buffer
+    /// ptr to a buffer
+    char * buf;
+    /// total number of bytes in the buffer
+    size_t len_total;
+    /// the next write location (index) to write to in the buffer; set to zero to "reset" or clear"
+    /// the buffer of all data
+    size_t i_write;
 } buffer_t;
+
+/// Reset/clear the buffer in preparation for another operation on it. Any data already in the
+/// buffer will now be lost.
+void buffer_reset(buffer_t* buffer)
+{
+    buffer->i_write = 0;
+}
+
+/// Get the number of remaining (unused) bytes in the buffer.
+size_t buffer_get_num_bytes_remaining(const buffer_t* buffer)
+{
+    size_t num_bytes_remaining = buffer->len_total - buffer->i_write;
+    return num_bytes_remaining;
+}
+
+/// Write `num_bytes` bytes from `from_buffer` into `to_buffer`, returning the number of bytes
+/// actually written, since it could be less than `num_bytes` if the `to_buffer` is too small.
+size_t buffer_write_bytes(buffer_t* to_buffer, const char* from_buffer, size_t num_bytes)
+{
+    size_t num_bytes_remaining = buffer_get_num_bytes_remaining(to_buffer);
+    // do `- 1` to save room for a null terminator at the very end of the string
+    size_t num_bytes_to_write = MIN(num_bytes_remaining - 1, num_bytes);
+    if (num_bytes_to_write < num_bytes)
+    {
+        printf("WARNING: destination buffer is too small to hold all of the data. "
+               "num_bytes_remaining = %zu; to_buffer->len_total = %zu; "
+               "num_bytes_to_write = %zu; num_bytes desired to be written = %zu.\n",
+               num_bytes_remaining, to_buffer->len_total, num_bytes_to_write, num_bytes);
+    }
+
+    memcpy(&to_buffer->buf[to_buffer->i_write], from_buffer, num_bytes_to_write);
+    to_buffer->i_write += num_bytes_to_write;
+    size_t num_bytes_written = num_bytes_to_write;
+
+    return num_bytes_written;
+}
+
+// --------------- buffer struct and functions end -----------------
 
 typedef struct curl_data_s
 {
-    CURL* curl_easy; // curl_easy handle
+    /// curl_easy handle; NB: this handle can only be used by **one thread at a time!** That means
+    /// that if you want to have a multi-threaded program with multiple `curl_easy_perform()`
+    /// operations going on at the same time, you need to re-architect this code to have
+    /// **one curl easy handle** per thread!
+    /// See: https://curl.se/libcurl/c/curl_easy_perform.html
+    /// > If you want parallel transfers, you must use several curl easy_handles.
+    CURL* curl_easy;
 } curl_data_t;
 
 // global variables
@@ -105,18 +167,13 @@ curl_data_t g_curl_data =
     .curl_easy = NULL,
 };
 
-/// Reset/clear the buffer in preparation for another operation on it. Any data already in the
-/// buffer will now be lost.
-void reset_buffer(buffer_t* buffer)
-{
-    // buffer->len_remaining = buffer->len_total;////////
-    buffer->i_write = 0;
-}
-
 /// A set-up function to be run once by the main thread at the start of `main()` BEFORE any other
 /// threads have been started! This function is NOT thread-safe because it calls
 /// `curl_global_init()`, which is NOT thread-safe! See:
 /// https://curl.se/libcurl/c/curl_global_init.html
+/// - Also, you must have **one curl easy handle** per parallel call to `curl_easy_perform()`.
+///   Since I only have one curl easy handle, I can only have one thread using it at a time.
+///   See: https://curl.se/libcurl/c/curl_easy_perform.html
 CURLcode set_up()
 {
     CURLcode curl_code = CURLE_OK;
@@ -154,17 +211,17 @@ void tear_down()
 /// \brief          The callback function which writes data received from curl.
 /// \details        This is the `curl_easy_setopt()` `CURLOPT_WRITEFUNCTION` function callback which
 ///     gets calls to write data received from the curl operation during `curl_easy_perform()`.
-///                 See: https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
-///                 This callback signature is essentially created by curl to be modeled after the
-///                 `fwrite()` function. See:
-///                 1. https://www.cplusplus.com/reference/cstdio/fwrite/
-///                 1. https://en.cppreference.com/w/c/io/fwrite
+///     See: https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
+///     This callback signature is essentially created by curl to be modeled after the
+///     `fwrite()` function. See:
+///     1. https://www.cplusplus.com/reference/cstdio/fwrite/
+///     1. https://en.cppreference.com/w/c/io/fwrite
 /// \param[in]      received_data        The buffer of data arriving from the curl operation, which
 ///                     this function must handle.
 /// \param[in]      size                 The size of a byte--will always be 1. This oddity of
-///                     having this even be an input parameter at all seems to be that this
-///                     function is modeled after the `fwrite()` function in C which writes to
-///                     a file: https://en.cppreference.com/w/c/io/fwrite.
+///                     having this even be an input parameter at all seems to be that this callback
+///                     function prototype is modeled after the `fwrite()` function in C which
+///                     writes to a file: https://en.cppreference.com/w/c/io/fwrite.
 ///                     The 4 parameters to this write callback function could be made to
 ///                     **exactly mimic** the 4 parameters to `fwrite()` if desired.
 /// \param[in]      count                The number of bytes in the `received_data` buffer which
@@ -181,19 +238,9 @@ size_t write_callback(const char *received_data, size_t size, size_t count, void
     assert(size == 1); // the curl documentation states that `size` is always 1, so let's prove it
 
     buffer_t* write_buffer = (buffer_t*)user_data;
-    size_t num_bytes_to_write = MIN(write_buffer->len, count);
-    if (num_bytes_to_write < count)
-    {
-        printf("WARNING: output buffer is too small to hold all of the data. "
-               "write_buffer->len = %zu; num_bytes_to_write = %zu; count of bytes desired "
-               "to be written = %zu.\n",
-               write_buffer->len, num_bytes_to_write, count);
-        // do not return; we will write as many bytes as we can anyway
-    }
+    size_t num_bytes_written = buffer_write_bytes(write_buffer, received_data, count);
 
-    memcpy(write_buffer->buf, received_data, num_bytes_to_write); /////////// add bytes_used and i_write to the struct!
-
-    return num_bytes_to_write;
+    return num_bytes_written;
 }
 
 /// \brief          Call an HTTP GET REST API command.
@@ -208,12 +255,10 @@ size_t write_callback(const char *received_data, size_t size, size_t count, void
 ///                     size `curl` will try to write into the buffer. That curl macro is usually
 ///                     ~16 KiB.
 /// \return         A curl error code:
-///                 - #ENUM_VALUE_1////////
-///                 - #ENUM_VALUE_2
-///                 - #ENUM_VALUE_3
 CURLcode http_get(const char* url, char* response_buf, size_t response_len)
 {
     CURLcode curl_code;
+    buffer_t response_buffer; // buffer in which the response will be stored
 
     curl_code = curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_URL, url);
     if (curl_code != CURLE_OK)
@@ -227,17 +272,16 @@ CURLcode http_get(const char* url, char* response_buf, size_t response_len)
     // buffer. Otherwise, let curl write to `stdout`, which is the default.
     if (response_buf != NULL && response_len > 0)
     {
-        curl_code = curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_WRITEFUNCTION, write_callback);
-        /////// error handling
+        // This call always succeeds and returns `CURLE_OK`.
+        // See: https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
+        curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_WRITEFUNCTION, write_callback);
 
-
-        buffer_t write_buffer =
-        {
-            .buf = response_buf,
-            .len = response_len
-        };
-        curl_code = curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_WRITEDATA, &write_buffer);
-        //// error handling
+        response_buffer.buf = response_buf;
+        response_buffer.len_total = response_len;
+        response_buffer.i_write = 0; // reset
+        // This call always succeeds and returns `CURLE_OK`.
+        // See: https://curl.se/libcurl/c/CURLOPT_WRITEDATA.html
+        curl_easy_setopt(g_curl_data.curl_easy, CURLOPT_WRITEDATA, &response_buffer);
     }
 
     // Perform the curl request/operation. NB: this call is NOT thread-safe if using one
@@ -252,6 +296,22 @@ CURLcode http_get(const char* url, char* response_buf, size_t response_len)
                 curl_code, curl_easy_strerror(curl_code));
         return curl_code;
     }
+
+    // ensure null termination of the entire string
+    if (response_buf != NULL && response_len > 0)
+    {
+        response_buffer.buf[response_buffer.i_write] = '\0';
+    }
+
+    // // debug prints
+    // printf("==== LAST 3 BYTES: %u %u %u %u %u ====\n",
+    //     (uint8_t)response_buffer.buf[response_buffer.i_write - 2],
+    //     (uint8_t)response_buffer.buf[response_buffer.i_write - 1],
+    //     (uint8_t)response_buffer.buf[response_buffer.i_write - 0],
+    //     (uint8_t)response_buffer.buf[response_buffer.i_write + 1],
+    //     (uint8_t)response_buffer.buf[response_buffer.i_write + 2]);
+    // printf("==== LAST several chars: `%s` ====\n",
+    //     &response_buffer.buf[response_buffer.i_write - 5]);
 
     return curl_code;
 }
@@ -269,17 +329,38 @@ int main(void)
     }
 
     static char response_buffer[CURL_MAX_WRITE_SIZE];
-    // buffer_t response_buffer =
-    // {
-    //     .buf = buffer,
-    //     .len = sizeof(buffer),
-    // };
-    static_assert(sizeof(response_buffer) == CURL_MAX_WRITE_SIZE, "sanity check");
+    static_assert(sizeof(response_buffer) == CURL_MAX_WRITE_SIZE, "just for a sanity check");
 
-    printf("Calling http_get() WITH a response buffer.\n");
-    curl_code = http_get("www.example.com", response_buffer, sizeof(response_buffer));
+    printf("==== 1. ==== Calling http_get() WITH a response buffer to collect the response.\n");
+    curl_code = http_get("www.example.com", NULL, 0);//response_buffer, sizeof(response_buffer));
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: http_get() failed. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+    }
+    else
+    {
+        printf("SUCESS!\n");
+    }
 
+    // printf("=== response_buffer START ===\n"
+    //        "%s\n"
+    //        "=== response_buffer END ===\n\n",
+    //        response_buffer);
 
+    printf("==== 2. ==== Calling http_get() withOUT a response buffer to collect the response. "
+           "Therefore, the output will be automatically written to stdout.\n");
+    curl_code = http_get("www.example.com", NULL, 0);
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: http_get() failed. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+        return curl_code;
+    }
+    else
+    {
+        printf("SUCESS!\n");
+    }
 
     tear_down();
 
