@@ -23,6 +23,7 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 struct_basic_demo_withOUT_nested_stru
 
 References:
 1. The question: https://stackoverflow.com/q/72330971/4561887
+    1. [my answer with this code] https://stackoverflow.com/a/72331865/4561887
 
 */
 
