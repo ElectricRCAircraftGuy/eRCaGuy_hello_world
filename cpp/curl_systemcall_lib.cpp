@@ -23,7 +23,7 @@ References:
 
 
 // Local includes
-#include "curl_syscall_lib.h"
+#include "curl_systemcall_lib.h"
 
 // 3rd-party library includes
 #include <fmt/format.h>
@@ -36,7 +36,7 @@ References:
 #include <cstdio> // `popen()`
 
 
-namespace curl_syscall
+namespace curl_systemcall
 {
 
 std::string http_post(const char* url, const char* post_str, std::string* response_str = nullptr)
@@ -107,4 +107,4 @@ done:
     return error;
 }
 
-} // namespace curl_syscall
+} // namespace curl_systemcall

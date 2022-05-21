@@ -43,7 +43,7 @@ References:
 #include <string>
 
 
-namespace curl_syscall
+namespace curl_systemcall
 {
 
 /// error code indicating no error
@@ -64,5 +64,5 @@ std::string http_post(const char* url, const char* post_str, std::string* respon
 /// Same as above, but withOUT using `goto` in the implementation.
 std::string http_post2(const char* url, const char* post_str, std::string* response_str = nullptr);
 
-} // namespace curl_syscall
+} // namespace curl_systemcall
 
