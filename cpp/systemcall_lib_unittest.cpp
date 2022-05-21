@@ -58,12 +58,14 @@ References:
 namespace
 {
 
-/// Test a simple `ls` call
+/// Test a simple `ls` system call
 TEST(SystemCallTest, ListFile)
 {
     std::string response_str;
     int cmd_return_code;
-    std::string error = systemcall::system_call("ls hello_world.cpp", &response_str, &cmd_return_code);
+    std::string error = systemcall::system_call("ls hello_world.cpp", &response_str,
+        &cmd_return_code);
+
     EXPECT_EQ(error, systemcall::ERROR_OK);
     EXPECT_EQ(response_str, std::string("hello_world"));
     EXPECT_EQ(cmd_return_code, 0);

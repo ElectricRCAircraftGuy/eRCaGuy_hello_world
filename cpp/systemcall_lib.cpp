@@ -39,6 +39,34 @@ References:
 namespace systemcall
 {
 
+static std::string system_call_close_pipe(FILE *pipe, int* cmd_retcode)
+{
+    std::string error = ERROR_OK;
+
+    int retval = pclose(pipe);
+    // Check if `pclose()` itself failed
+    if (retval == -1)
+    {
+        error = fmt::format(FMT_STRING("Failed to close pipe. Therefore: could not obtain the "
+            "system call's exit status code. errno = {}: {}"), errno, strerror(errno));
+        return error;
+    }
+    // Check if the system call cmd called by `popen()` failed.
+    else if (retval != 0)
+    {
+        error = fmt::format(FMT_STRING("Command exited with error status exit code {}."), retval);
+        // no need to return now; the pipe functioned correctly; the cmd failed, is all; keep going
+    }
+
+    if (cmd_retcode != nullptr)
+    {
+        // pass back the cmd's return code to the user
+        *cmd_retcode = retval;
+    }
+
+    return error;
+}
+
 std::string system_call(const char* cmd, std::string* response_str, int* cmd_retcode)
 {
     std::string error = ERROR_OK;
@@ -46,7 +74,7 @@ std::string system_call(const char* cmd, std::string* response_str, int* cmd_ret
     if (cmd == nullptr)
     {
         error = "INVALID ARGUMENT: nullptr";
-        goto done;
+        return error;
     }
 
     FILE *pipe = popen(cmd, "r");
@@ -54,13 +82,13 @@ std::string system_call(const char* cmd, std::string* response_str, int* cmd_ret
     {
         error = fmt::format(FMT_STRING("Failed to open pipe. errno = {}: {}"),
             errno, strerror(errno));
-        goto done;
+        return error;
     }
 
     if (response_str == nullptr)
     {
         // skip reading the response back from the system call
-        goto close;
+        return system_call_close_pipe(pipe, cmd_retcode);
     }
 
     constexpr size_t BUFSIZE = 4096;
@@ -86,7 +114,7 @@ std::string system_call(const char* cmd, std::string* response_str, int* cmd_ret
     if (ferror(pipe))
     {
         error = "Error indicator set. IO error occurred when reading from pipe.";
-        goto close;
+
     }
     if (feof(pipe))
     {
@@ -94,24 +122,7 @@ std::string system_call(const char* cmd, std::string* response_str, int* cmd_ret
     }
 
 close:
-    int retval = pclose(pipe);
-    if (retval == -1)
-    {
-        error = fmt::format(FMT_STRING("Failed to close pipe. Therefore: could not obtain the "
-            "system call's exit status code. errno = {}: {}"), errno, strerror(errno));
-        goto done;
-    }
-    else if (retval != 0)
-    {
-        error = fmt::format(FMT_STRING("Command exited with error status exit code {}."), retval);
-        // no need to `goto done`; the pipe functioned correctly; the cmd failed, is all
-    }
-
-    if (cmd_retcode != nullptr)
-    {
-        // pass back the cmd's return code to the user
-        *cmd_retcode = retval;
-    }
+    error = system_call_close_pipe(pipe, cmd_retcode);
 
 done:
     return error;

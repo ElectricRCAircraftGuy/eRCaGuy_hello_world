@@ -51,18 +51,13 @@ constexpr char ERROR_OK[] = "OK";
 /// \param[in]      cmd             A null-terminated command string to call as though at the
 ///                     command-line.
 /// \param[out]     response_str    (Optional) A pointer to a `std::string` to receive the
-///                     command's `stdout` response in, if desired.
+///                     command's `stdout` response back, if desired.
 /// \param[out]     cmd_retcode     (Optional) A pointer to receive the command's return error code
-///                     in, if desired.
+///                     back, if desired.
 /// \return         An error string to describe the error if there is an error, or
 ///                 `ERROR_OK` otherwise.
 std::string system_call(const char* cmd, std::string* response_str = nullptr,
    int* cmd_retcode = nullptr);
-
-/// Same as above, but withOUT using `goto` in the implementation, to appease those you may work
-/// with who don't understand the virtues and benefits of a well-used `goto`.
-// std::string system_call2(const char* cmd, std::string* response_str = nullptr,
-   // int* cmd_retcode = nullptr);
 
 } // namespace systemcall
 
