@@ -69,6 +69,7 @@ std::string system_call(const char* cmd, std::string* response_str, int* cmd_ret
         goto close;
     }
 
+    response_str->clear();
     // pre-reserve some space to avoid having the string dynamically allocate memory
     // under-the-hood for response strings <= BUFSIZE in length; this improves speed; see:
     // https://github.com/facontidavide/CPP_Optimizations_Diary/blob/master/docs/reserve.md
@@ -77,7 +78,7 @@ std::string system_call(const char* cmd, std::string* response_str, int* cmd_ret
     num_bytes_read = sizeof(buf); // initialize as necessary to enter the while loop
     while (num_bytes_read == sizeof(buf))
     {
-        size_t num_bytes_read = fread(buf, 1, sizeof(buf), pipe);
+        num_bytes_read = fread(buf, 1, sizeof(buf), pipe);
         response_str->append((const char*)buf, num_bytes_read);
     }
     // check for errors
@@ -173,6 +174,7 @@ std::string system_call2(const char* cmd, std::string* response_str, int* cmd_re
     constexpr size_t BUFSIZE = 4096;
     uint8_t buf[BUFSIZE];
 
+    response_str->clear();
     // pre-reserve some space to avoid having the string dynamically allocate memory
     // under-the-hood for response strings <= BUFSIZE in length; this improves speed; see:
     // https://github.com/facontidavide/CPP_Optimizations_Diary/blob/master/docs/reserve.md
@@ -181,7 +183,7 @@ std::string system_call2(const char* cmd, std::string* response_str, int* cmd_re
     size_t num_bytes_read = sizeof(buf); // initialize as necessary to enter the while loop
     while (num_bytes_read == sizeof(buf))
     {
-        size_t num_bytes_read = fread(buf, 1, sizeof(buf), pipe);
+        num_bytes_read = fread(buf, 1, sizeof(buf), pipe);
         response_str->append((const char*)buf, num_bytes_read);
     }
     // check for errors
