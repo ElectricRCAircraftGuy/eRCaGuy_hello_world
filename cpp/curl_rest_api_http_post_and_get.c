@@ -469,6 +469,50 @@ int main(void)
         printf("--- SUCESS! ---\n");
     }
 
+    // 5.5 A few more tests.
+    // Set this up here: https://beeceptor.com/
+    // MANUALLY create a "test1234" URL there, with an API at `/get/hello` which returns:
+    //      ```
+    //      {
+    //        "response": "world"
+    //      }
+    //      ```
+    printf("==== 5.5 ====\n");
+    curl_code = http_get("https://test1234.free.beeceptor.com/get/hello",
+        response_buffer, sizeof(response_buffer));
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: http_get() failed. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+    }
+    else
+    {
+        printf("--- SUCESS! ---\n");
+        printf("=== response_buffer START ===\n"
+               "%s\n"
+               "=== response_buffer END ===\n\n",
+               response_buffer);
+    }
+
+    // 5.6. http_post(), collecting the response
+    printf("==== 5.6 ====\n");
+
+    curl_code = http_post("https://test1234.free.beeceptor.com/", "name=gabriel&project=curl", 0,
+        response_buffer, sizeof(response_buffer));
+    if (curl_code != CURLE_OK)
+    {
+        printf("ERROR: http_post() failed. curl_code = %i: %s\n",
+                curl_code, curl_easy_strerror(curl_code));
+    }
+    else
+    {
+        printf("--- SUCESS! ---\n");
+        printf("=== response_buffer START ===\n"
+               "%s\n"
+               "=== response_buffer END ===\n\n",
+               response_buffer);
+    }
+
     // 6. tear_down()
     tear_down();
 
@@ -687,10 +731,29 @@ SAMPLE OUTPUT:
     </body>
     </html>
     --- SUCESS! ---
+    === response_buffer START ===
+    {
+      "response": "world"
+    }
+    === response_buffer END ===
 
-    real    0m0.244s
-    user    0m0.004s
-    sys 0m0.004s
+    ==== 5.6 ====
+    --- SUCESS! ---
+    === response_buffer START ===
+    {
+        "id": 1,
+        "app_id": 1,
+        "carousell_listing_id": "8503",
+        "status": "L",
+        "created_at": "2018-05-03T08:55:04.719Z",
+        "updated_at": "2018-05-03T08:55:04.719Z"
+    }
+    === response_buffer END ===
+
+
+    real    0m0.497s
+    user    0m0.028s
+    sys 0m0.007s
 
 
 */
