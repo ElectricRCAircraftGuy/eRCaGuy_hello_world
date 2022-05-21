@@ -23,7 +23,7 @@ References:
 
 
 // Local includes
-#include "curl_syscall_lib.h"
+#include "systemcall_lib.h"
 
 // 3rd-party library includes
 #include <fmt/format.h>
@@ -36,16 +36,20 @@ References:
 #include <cstdio> // `popen()`
 
 
-namespace curl_syscall
+namespace systemcall
 {
 
-std::string http_post(const char* url, const char* post_str, std::string* response_str = nullptr)
+std::string system_call(const char* cmd, std::string* response_str, int* cmd_retcode)
 {
     std::string error = ERROR_OK;
 
-    std::string cmd = fmt::format(FMT_STRING("curl --data \"{}\" -X POST \"{}\""), post_str, url);
+    if (cmd == nullptr)
+    {
+        error = "INVALID ARGUMENT: nullptr";
+        goto done;
+    }
 
-    FILE *pipe = popen(cmd.c_str(), "r");
+    FILE *pipe = popen(cmd, "r");
     if (pipe == nullptr)
     {
         error = fmt::format(FMT_STRING("Failed to open pipe. errno = {}: {}"),
@@ -71,7 +75,7 @@ std::string http_post(const char* url, const char* post_str, std::string* respon
     while (num_bytes_read == sizeof(buf))
     {
         size_t num_bytes_read = fread(buf, 1, sizeof(buf), pipe);
-        response_str->append(buf, num_bytes_read);
+        response_str->append((const char*)buf, num_bytes_read);
     }
     // check for errors
     // NB: `fread()` and `ferror()` do NOT set `errno`! You don't get that level of granularity.
@@ -103,8 +107,14 @@ close:
         // no need to `goto done`; the pipe functioned correctly; the cmd failed, is all
     }
 
+    if (cmd_retcode != nullptr)
+    {
+        // pass back the cmd's return code to the user
+        *cmd_retcode = retval;
+    }
+
 done:
     return error;
 }
 
-} // namespace curl_syscall
+} // namespace systemcall

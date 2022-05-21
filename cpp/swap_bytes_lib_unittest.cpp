@@ -27,6 +27,7 @@ References:
 1. https://github.com/google/googletest
     1. https://github.com/google/googletest/blob/main/docs/reference/assertions.md - for
        `EXPECT_EQ()`, `EXPECT_STREQ()`--for C-strings only, etc.!
+1. [my answer on how to build gtest with gcc] https://stackoverflow.com/a/72108315/4561887
 
 */
 
