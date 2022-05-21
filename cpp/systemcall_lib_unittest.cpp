@@ -6,7 +6,7 @@ May 2022
 
 Googletest (gtest) unit tests for systemcall_lib.h/.cpp.
 
-STATUS: wip
+STATUS: done and works!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -64,23 +64,24 @@ TEST(SystemCallTest, ListFile)
 {
     std::string response_str;
     int cmd_return_code;
+    constexpr char CMD[] = "ls hello_world.cpp";
     const std::string EXPECTED_RESPONSE_STR = "hello_world.cpp\n";
     std::string error;
 
     // Test `system_call()`
-    error = systemcall::system_call("ls hello_world.cpp", &response_str, &cmd_return_code);
+    error = systemcall::system_call(CMD, &response_str, &cmd_return_code);
     EXPECT_EQ(error, systemcall::ERROR_OK);
     EXPECT_EQ(response_str, EXPECTED_RESPONSE_STR);
     EXPECT_EQ(cmd_return_code, 0);
 
     // Test `system_call2()`
-    error = systemcall::system_call2("ls hello_world.cpp", &response_str, &cmd_return_code);
+    error = systemcall::system_call2(CMD, &response_str, &cmd_return_code);
     EXPECT_EQ(error, systemcall::ERROR_OK);
     EXPECT_EQ(response_str, EXPECTED_RESPONSE_STR);
     EXPECT_EQ(cmd_return_code, 0);
 
     // Test `system_call()` again, to ensure the `response_str` is cleared and not just appended
-    error = systemcall::system_call("ls hello_world.cpp", &response_str, &cmd_return_code);
+    error = systemcall::system_call(CMD, &response_str, &cmd_return_code);
     EXPECT_EQ(error, systemcall::ERROR_OK);
     EXPECT_EQ(response_str, EXPECTED_RESPONSE_STR);
     EXPECT_EQ(cmd_return_code, 0);

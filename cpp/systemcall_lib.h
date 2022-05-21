@@ -10,7 +10,7 @@ response through a pipe.
 TODO:
 1.
 
-STATUS: wip
+STATUS: done and works!
 
 To compile and run:
 - See a file which includes this header file, as an example.
