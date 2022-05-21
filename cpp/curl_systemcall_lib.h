@@ -13,7 +13,7 @@ in another file and example instead, so I can compare the two options, including
 TODO:
 1.
 
-STATUS: wip
+STATUS: done and works!
 
 To compile and run:
 - See a file which includes this header file, as an example.
@@ -21,9 +21,7 @@ To compile and run:
 References:
 1. "eRCaGuy_hello_world/cpp/curl_rest_api_http_post_and_get.c" - great example of the
    libcurl C library
-1. "eRCaGuy_hello_world/c/read_system_call_via_pipe__arrow_keypresses.c" - example of using a pipe
-   with `popen()` to read back the response from a system call in C or C++
-1. *****+ "eRCaGuy_hello_world/c/read_system_call_via_pipe__keypress.c"
+1. "systemcall_lib.h/.cpp"
 
 */
 
@@ -47,7 +45,10 @@ namespace curl_systemcall
 {
 
 /// error code indicating no error
-constexpr char ERROR_OK[] = "ok";
+constexpr char ERROR_OK[] = "OK";
+
+/// TODO: add this
+// std::string http_get(const char* url, std::string* response_str = nullptr);
 
 /// \brief          Send an HTTP REST API POST command.
 /// \details        This is essentially equivalent to the following command-line command:
@@ -56,13 +57,10 @@ constexpr char ERROR_OK[] = "ok";
 /// \param[in]      url             A null-terminated URL to send the POST command to.
 /// \param[in]      post_str        A null-terminated string containing the data to post, or send
 ///     to the URL.
-/// \param[out]     response_str    (Optional) A string to receive the response in, if desired.
+/// \param[out]     response_str    (Optional) A string to receive the response back, if desired.
 /// \return         An error string to describe the error if there is an error, or
 ///                 `ERROR_OK` otherwise.
 std::string http_post(const char* url, const char* post_str, std::string* response_str = nullptr);
-
-/// Same as above, but withOUT using `goto` in the implementation.
-std::string http_post2(const char* url, const char* post_str, std::string* response_str = nullptr);
 
 } // namespace curl_systemcall
 
