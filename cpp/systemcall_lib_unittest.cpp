@@ -19,10 +19,10 @@ To compile and run (assuming you've already `cd`ed into this dir):
 time ( \
     time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
     -I"googletest/googletest/include" -I"googletest/googlemock/include" \
-    bin/libgtest.a bin/libgtest_main.a \
     -DFMT_ENFORCE_COMPILE_STRING \
     systemcall_lib_unittest.cpp \
     systemcall_lib.cpp \
+    bin/libgtest.a bin/libgtest_main.a \
     -o bin/a \
     -lfmt \
     && time bin/a \

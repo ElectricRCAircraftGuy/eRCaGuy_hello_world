@@ -59,5 +59,13 @@ constexpr char ERROR_OK[] = "OK";
 std::string system_call(const char* cmd, std::string* response_str = nullptr,
    int* cmd_retcode = nullptr);
 
+/// Same as above, but withOUT using `goto` in the implementation, to appease those you may work
+/// with who don't understand the virtues and benefits of a properly-used `goto` error-handling
+/// pattern. See my arguments and demo here--especially the links at the end of my answer!:
+/// https://stackoverflow.com/a/54488289/4561887; and:
+/// https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/Research_General/goto_for_error_handling_in_C/readme.md
+std::string system_call2(const char* cmd, std::string* response_str = nullptr,
+   int* cmd_retcode = nullptr);
+
 } // namespace systemcall
 
