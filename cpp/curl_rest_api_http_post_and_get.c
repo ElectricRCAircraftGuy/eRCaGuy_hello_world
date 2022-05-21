@@ -83,6 +83,13 @@ References:
   `curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, my_fwrite);`:
   https://curl.se/libcurl/c/ftpget.html
 
+Places to create and/or test REST API commands:
+1. Google search for "online rest api server":
+   https://www.google.com/search?q=online+rest+api+server&oq=online+rest+api+server&aqs=chrome..69i57.10074j0j7&sourceid=chrome&ie=UTF-8
+    1. **** [requires setup, but gives great versatility] https://beeceptor.com/
+    1. ***** [no setup required!; it just works!] https://gorest.co.in/
+
+
 */
 
 
@@ -470,6 +477,8 @@ int main(void)
     }
 
     // 5.5 A few more tests.
+    //
+    // Option A:
     // Set this up here: https://beeceptor.com/
     // MANUALLY create a "test1234" URL there, with an API at `/get/hello` which returns:
     //      ```
@@ -477,8 +486,12 @@ int main(void)
     //        "response": "world"
     //      }
     //      ```
+    // OR, Option B:
+    // Just use the URLs here, with NO setup required!:
+    // https://gorest.co.in/
     printf("==== 5.5 ====\n");
-    curl_code = http_get("https://test1234.free.beeceptor.com/get/hello",
+    // curl_code = http_get("https://test1234.free.beeceptor.com/get/hello",
+    curl_code = http_get("https://gorest.co.in/public/v2/users",
         response_buffer, sizeof(response_buffer));
     if (curl_code != CURLE_OK)
     {
@@ -496,9 +509,9 @@ int main(void)
 
     // 5.6. http_post(), collecting the response
     printf("==== 5.6 ====\n");
-
-    curl_code = http_post("https://test1234.free.beeceptor.com/", "name=gabriel&project=curl", 0,
-        response_buffer, sizeof(response_buffer));
+    // curl_code = http_post("https://test1234.free.beeceptor.com/",
+    curl_code = http_post("https://gorest.co.in/public/v2/users",
+        "name=gabriel&project=curl", 0, response_buffer, sizeof(response_buffer));
     if (curl_code != CURLE_OK)
     {
         printf("ERROR: http_post() failed. curl_code = %i: %s\n",
@@ -526,11 +539,16 @@ int main(void)
 SAMPLE OUTPUT:
 
 
-    eRCaGuy_hello_world/c$ time (     time gcc -Wall -Wextra -Werror -O3 -std=c17     curl_rest_api_http_post_and_get.c     -lcurl     -o bin/a ) && time bin/a
+    eRCaGuy_hello_world/cpp$ time ( \
+    >     time gcc -Wall -Wextra -Werror -O3 -std=c17 \
+    >     curl_rest_api_http_post_and_get.c \
+    >     -lcurl \
+    >     -o bin/a \
+    > ) && time bin/a
 
-    real    0m0.123s
-    user    0m0.109s
-    sys 0m0.015s
+    real    0m0.116s
+    user    0m0.102s
+    sys 0m0.013s
     ==== 2. ==== Calling http_get() WITH a response buffer to manually collect the response.
     --- SUCESS! ---
     === response_buffer START ===
@@ -731,29 +749,22 @@ SAMPLE OUTPUT:
     </body>
     </html>
     --- SUCESS! ---
+    ==== 5.5 ====
+    --- SUCESS! ---
     === response_buffer START ===
-    {
-      "response": "world"
-    }
+    [{"id":2494,"name":"Shivakari Kaur","email":"kaur_shivakari@dooley.biz","gender":"male","status":"inactive"},{"id":2493,"name":"Ankal Malik","email":"malik_ankal@braun.net","gender":"male","status":"inactive"},{"id":2491,"name":"Anjali Pillai","email":"pillai_anjali@maggio.com","gender":"female","status":"active"},{"id":2490,"name":"Chetanaanand Rana I","email":"i_rana_chetanaanand@windler.org","gender":"female","status":"active"},{"id":2489,"name":"Priya Shukla","email":"priya_shukla@koepp-ruecker.io","gender":"male","status":"active"},{"id":2488,"name":"Fr. Aruna Sharma","email":"fr_sharma_aruna@halvorson.io","gender":"male","status":"inactive"},{"id":2487,"name":"Devi Patil","email":"devi_patil@wunsch.info","gender":"female","status":"active"},{"id":2486,"name":"Deveshwar Gupta DDS","email":"deveshwar_dds_gupta@mcdermott-oreilly.biz","gender":"male","status":"active"},{"id":2485,"name":"Ajeet Dwivedi","email":"ajeet_dwivedi@murphy.info","gender":"female","status":"active"},{"id":2484,"name":"Kashyap Ahluwalia","email":"kashyap_ahluwalia@kuvalis.net","gender":"female","status":"active"},{"id":2483,"name":"Baalagopaal Naik","email":"naik_baalagopaal@berge-halvorson.co","gender":"female","status":"inactive"},{"id":2482,"name":"Mohan Mahajan DC","email":"mohan_mahajan_dc@kohler.org","gender":"female","status":"active"},{"id":2481,"name":"Krishnadasa Patel Esq.","email":"krishnadasa_patel_esq@osinski-bergstrom.name","gender":"male","status":"inactive"},{"id":2480,"name":"Yogesh Pillai LLD","email":"yogesh_lld_pillai@bosco.io","gender":"female","status":"inactive"},{"id":2478,"name":"Chanda Menon","email":"menon_chanda@moen-schumm.info","gender":"female","status":"active"},{"id":2477,"name":"Karunanidhi Butt Jr.","email":"butt_jr_karunanidhi@ferry-vandervort.biz","gender":"male","status":"active"},{"id":2475,"name":"Mr. Aaratrika Butt","email":"mr_butt_aaratrika@gislason.name","gender":"female","status":"active"},{"id":2474,"name":"Dr. Deepesh Gandhi","email":"deepesh_gandhi_dr@hyatt-ruecker.co","gender":"male","status":"active"},{"id":2470,"name":"Pran Deshpande","email":"pran_deshpande@hagenes.com","gender":"male","status":"inactive"},{"id":2469,"name":"Dipali Abbott","email":"dipali_abbott@bauch-boyle.co","gender":"male","status":"active"}]
     === response_buffer END ===
 
     ==== 5.6 ====
     --- SUCESS! ---
     === response_buffer START ===
-    {
-        "id": 1,
-        "app_id": 1,
-        "carousell_listing_id": "8503",
-        "status": "L",
-        "created_at": "2018-05-03T08:55:04.719Z",
-        "updated_at": "2018-05-03T08:55:04.719Z"
-    }
+    {"message":"Authentication failed"}
     === response_buffer END ===
 
 
-    real    0m0.497s
-    user    0m0.028s
-    sys 0m0.007s
+    real    0m1.357s
+    user    0m0.029s
+    sys 0m0.008s
 
 
 */
