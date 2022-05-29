@@ -17,7 +17,7 @@ RESULTS:
 1. To use a C++ `std::string` as a C-style _writable_`char*` buffer, you MUST first pre-allocate the
 string's internal buffer to change its `.size()` by using `.resize()` (using `.reserve()` to
 increase only the `.capacity()` is NOT sufficient!). Then, you can access the underlying buffer as
-a `char*` in 3 ways:
+a `char*` in at least 3 ways:
     1. Technique 1: array indexing using `operator[]`. Ex: `&str[0]`, `&str[5]`, etc.
     1. Technique 2: use the `.data()` method to obtain a `char*`; Ex: `str.data()`,
     `str.data() + 5`, etc.
