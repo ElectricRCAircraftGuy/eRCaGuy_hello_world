@@ -99,17 +99,17 @@ This:
 ```html
 **Align left:**
 <p align="left" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 **Align center:**
 <p align="center" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 **Align right:**
 <p align="right" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 ```
 
@@ -117,17 +117,17 @@ Produces this:
 
 **Align left:**
 <p align="left" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 **Align center:**
 <p align="center" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 **Align right:**
 <p align="right" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 If you'd like to set the text itself to left, center, or right, you can include the text inside the `<p>` element as well, as regular HTML, like this:
@@ -135,7 +135,7 @@ If you'd like to set the text itself to left, center, or right, you can include 
 ```html
 <p align="right" width="100%">
     This text is also aligned to the right.<br>
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 ```
 
@@ -143,7 +143,7 @@ To produce this:
 
 <p align="right" width="100%">
     This text is also aligned to the right.<br>
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 
@@ -155,21 +155,21 @@ This:
 ```html
 **Align left (works fine):**
 
-<img align="left" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+<img align="left" width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 
 
 **Align center (doesn't really work):**
 
-<img align="center" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+<img align="center" width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 
 
 **Align right (works fine):**
 
-<img align="right" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+<img align="right" width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 ```
@@ -178,21 +178,21 @@ Produces this:
 
 **Align left (works fine):**
 
-<img align="left" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+<img align="left" width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 
 
 **Align center (doesn't really work):**
 
-<img align="center" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+<img align="center" width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 
 
 **Align right (works fine):**
 
-<img align="right" width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+<img align="right" width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 [Arduino](https://en.wikipedia.org/wiki/Arduino) (/ɑːrˈdwiːnoʊ/) is an open-source hardware and software company, project and user community that designs and manufactures single-board microcontrollers and microcontroller kits for building digital devices. Its hardware products are licensed under a CC-BY-SA license, while software is licensed under the GNU Lesser General Public License (LGPL) or the GNU General Public License (GPL),[1] permitting the manufacture of Arduino boards and software distribution by anyone. Arduino boards are available commercially from the official website or through authorized distributors. Arduino board designs use a variety of microprocessors and controllers. The boards are equipped with sets of digital and analog input/output (I/O) pins that may be interfaced to various expansion boards ('shields') or breadboards (for prototyping) and other circuits.
 
@@ -208,30 +208,30 @@ This:
 ```html
 33% width each (_possibly_ a little too wide to fit all 3 images side-by-side, depending on your markdown viewer):
 <p align="center" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 32% width each (perfect size to just barely fit all 3 images side-by-side):
 <p align="center" width="100%">
-    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="32%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="32%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="32%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 31% width each:
 <p align="center" width="100%">
-    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="31%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="31%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="31%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 30% width each:
 <p align="center" width="100%">
-    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="30%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="30%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="30%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 ```
 
@@ -239,30 +239,30 @@ Produces this:
 
 33% width each (_possibly_ a little too wide to fit all 3 images side-by-side, depending on your markdown viewer):
 <p align="center" width="100%">
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="33%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="33%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 32% width each (perfect size to just barely fit all 3 images side-by-side):
 <p align="center" width="100%">
-    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="32%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="32%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="32%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="32%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 31% width each:
 <p align="center" width="100%">
-    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="31%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="31%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="31%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="31%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 30% width each:
 <p align="center" width="100%">
-    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="30%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="30%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="30%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="30%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 I am aligning all paragraph `<p>` elements above to the `center`, but you can also align `left` or `right`, as shown in previous examples, to force the row of images to get aligned that way too. Example:
@@ -272,9 +272,9 @@ This:
 ```html
 Align the whole row of images to the right this time:
 <p align="right" width="100%">
-    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="25%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="25%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="25%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 ```
 
@@ -282,9 +282,9 @@ Produces this (aligning the whole row of images according to the `align` attribu
 
 Align the whole row of images to the right this time:
 <p align="right" width="100%">
-    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
-    <img width="25%" src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img width="25%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="25%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
+    <img width="25%" src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 </p>
 
 
@@ -297,28 +297,28 @@ This code produces two rows of images which have good horizontal spacing, but ba
 
 ```html
 <p align="center" width="100%">
-    <img width="32%" src="photos/pranksta1.jpg"> 
-    <img width="32%" src="photos/pranksta2.jpg"> 
-    <img width="32%" src="photos/pranksta3.jpg"> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
 </p>
 <p align="center" width="100%">
-    <img width="32%" src="photos/pranksta4.jpg"> 
-    <img width="32%" src="photos/pranksta5.jpg"> 
-    <img width="32%" src="photos/pranksta6.jpg"> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
 </p>
 ```
 
 Produces this, since the last image in row 1 ("pranksta3.jpg") is a very tall image with 2x the height as the other images:
 
 <p align="center" width="100%">
-    <img width="32%" src="photos/pranksta1.jpg"> 
-    <img width="32%" src="photos/pranksta2.jpg"> 
-    <img width="32%" src="photos/pranksta3.jpg"> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
 </p>
 <p align="center" width="100%">
-    <img width="32%" src="photos/pranksta4.jpg"> 
-    <img width="32%" src="photos/pranksta5.jpg"> 
-    <img width="32%" src="photos/pranksta6.jpg"> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
+    <img width="32%" src=photos/Fire_Drone_High_Quality_300x173.gif> 
 </p>
 
 So, placing those two rows of images inside a markdown table forces nice-looking vertical spacing. Notice in the markdown table below that each image is set to have an HTML `width` attribute set to 100%. This is because it is _relative to the table cell the image sits in_, NOT relative to the page column width anymore. Since we want each image to fill the entire width of each cell, we set their widths all to `width="100%"`. 
@@ -326,18 +326,18 @@ So, placing those two rows of images inside a markdown table forces nice-looking
 This markdown table with images in it:
 
 ```html
-|                                               |                                               |                                               |
-|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|
-| <img width="100%" src="photos/pranksta1.jpg"> | <img width="100%" src="photos/pranksta2.jpg"> | <img width="100%" src="photos/pranksta3.jpg"> |
-| <img width="100%" src="photos/pranksta4.jpg"> | <img width="100%" src="photos/pranksta5.jpg"> | <img width="100%" src="photos/pranksta6.jpg"> |
+|                                                                   |                                                                   |                                                                   |
+|-------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------------------------------------------|
+| <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> |
+| <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> |
 ```
 
 Produces this, which looks much nicer and more well-spaced in my opinion, since vertical spacing is also centered for each row of images:
 
-|                                               |                                               |                                               |
-|-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|
-| <img width="100%" src="photos/pranksta1.jpg"> | <img width="100%" src="photos/pranksta2.jpg"> | <img width="100%" src="photos/pranksta3.jpg"> |
-| <img width="100%" src="photos/pranksta4.jpg"> | <img width="100%" src="photos/pranksta5.jpg"> | <img width="100%" src="photos/pranksta6.jpg"> |
+|                                                                   |                                                                   |                                                                   |
+|-------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------------------------------------------|
+| <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> |
+| <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> | <img width="100%" src=photos/Fire_Drone_High_Quality_300x173.gif> |
 
 
 ----
@@ -352,7 +352,7 @@ This works in any markdown file, such as a [GitHub Pages](https://pages.github.c
 
 Use this HTML/CSS to add and center an image and set its size to 60% of the screen space width inside your markdown file, which is usually a good starting value:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" 
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" 
          style="display:block;float:none;margin-left:auto;margin-right:auto;width:60%"> 
 
 Change the `width` CSS value to whatever percent you want, or remove it altogether to use the markdown default size, which I think is 100% of the screen width if the image is larger than the screen, or it is the actual image width otherwise.
@@ -415,11 +415,11 @@ Or, here is the same code as above but with detailed HTML and CSS comments to ex
 
 Now, whether you insert an image using markdown:
 
-    ![](https://i.stack.imgur.com/RJj4x.png)
+    ![](photos/Fire_Drone_High_Quality_300x173.gif)
 
 Or HTML in your markdown file:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 ...it will be automatically centered and sized to 60% of the screenview width, as described in the comments within the HTML and CSS above. _(Of course the 60% size is really easily changeable too, and I present simple ways below to do it on an image-by-image basis as well)._ 
 
@@ -428,11 +428,11 @@ Or HTML in your markdown file:
 
 Whether or not you have copied and pasted the above `<style>` block into the top of your markdown file, this will also work, as it overrides and takes precedence over any file-scope style settings you may have set above:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" style="display:block;float:none;margin-left:auto;margin-right:auto;width:60%"> 
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" style="display:block;float:none;margin-left:auto;margin-right:auto;width:60%"> 
 
 You can also format it on multiple lines, like this, and it will still work:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" 
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" 
          alt="this is an optional description of the image to help the blind and show up in case the 
               image won't load" 
          style="display:block; /* override the default display setting of `inline-block` */ 
@@ -485,11 +485,11 @@ Now, your `img` CSS block has set the default setting for images to be centered 
 
 For example, this image will be **center-aligned and 60% in size** (the default I set above):
 
-    <img src="https://i.stack.imgur.com/RJj4x.png"> 
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif"> 
 
 This image will be **left-aligned**, however, with text wrapping to its right, using the `leftAlign` CSS class we just created above!
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" class="leftAlign">
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" class="leftAlign">
 
 It might look like this:
 
@@ -497,7 +497,7 @@ It might look like this:
 
 You can still **override any of its CSS properties via the `style` attribute**, however, such as width, like this:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" class="leftAlign" style="width:20%">
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" class="leftAlign" style="width:20%">
 
 And now you'll get this:
 
@@ -545,7 +545,7 @@ Another option to what we just showed above, where we modified the default `img`
 
 Use them, of course, like this:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" class="centerAlign" style="width:20%">
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" class="centerAlign" style="width:20%">
 
 Notice how I manually set the `width` property using the CSS `style` attribute above, but if I had something more complicated I wanted to do, I could also create some additional classes like this, adding them inside the `<style>...</style>` block above:
 
@@ -558,7 +558,7 @@ Notice how I manually set the `width` property using the CSS `style` attribute a
 
 Now you can assign multiple classes to the same object, like this. Simply [separate class names by a space, NOT a comma][3]. In the event of conflicting settings, I believe whichever setting comes *last* will be the one that takes effect, overriding any previously-set settings. This should also be the case in the event you set the same CSS properties multiple times in the same CSS class or inside the same HTML `style` attribute. 
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" class="centerAlign small">
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" class="centerAlign small">
 
 <a id="5-consolidate-common-settings-in-css-classes"></a>
 ## 5. Consolidate Common Settings in CSS Classes:
@@ -634,21 +634,21 @@ How to add a basic image in markdown with default "behind-the-scenes" HTML and C
 
 This markdown:
 
-    ![](https://i.stack.imgur.com/RJj4x.png)
+    ![](photos/Fire_Drone_High_Quality_300x173.gif)
 
 Will produce this output:
 
-![](https://i.stack.imgur.com/RJj4x.png)
+![](photos/Fire_Drone_High_Quality_300x173.gif)
 
 This is [my fire-shooting hexacopter I made](https://www.electricrcaircraftguy.com/2016/05/battlebots-season-2-buzz-fire-drone.html). 
 
 You can also optionally add a description in the opening square brackets. Honestly I'm not even sure what that does, but perhaps it gets converted into an [HTML `<img>` element `alt` attribute][4], which gets displayed in case the image can't load, and may be read by screen readers for the blind. So, this markdown:
 
-    ![this is my hexacopter I built](https://i.stack.imgur.com/RJj4x.png)
+    ![this is my hexacopter I built](photos/Fire_Drone_High_Quality_300x173.gif)
 
 will also produce this output:
 
-![this is my hexacopter I built](https://i.stack.imgur.com/RJj4x.png)
+![this is my hexacopter I built](photos/Fire_Drone_High_Quality_300x173.gif)
 
 
 <a id="3-more-details-on-whats-happening-in-the-htmlcss-when-centering-and-resizing-an-image-in-markdown"></a>
@@ -656,7 +656,7 @@ will also produce this output:
 
 Centering the image in markdown requires that we use the extra control that HTML and CSS can give us directly. You can insert and center an individual image like this:
 
-    <img src="https://i.stack.imgur.com/RJj4x.png" 
+    <img src="photos/Fire_Drone_High_Quality_300x173.gif" 
          alt="this is my hexacopter I built" 
          style="display:block; 
                 float:none; 
