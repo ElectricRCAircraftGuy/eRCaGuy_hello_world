@@ -14,7 +14,7 @@ https://en.cppreference.com/w/Talk:cpp/string/basic_string/operator_at
 
 RESULTS:
 
-1. To use a C++ `std::string` as a C-style _writable_`char*` buffer, you MUST first pre-allocate the
+1. To use a C++ `std::string` as a C-style _writable_ `char*` buffer, you MUST first pre-allocate the
 string's internal buffer to change its `.size()` by using `.resize()` (using `.reserve()` to
 increase only the `.capacity()` is NOT sufficient!). Then, you can access the underlying buffer as
 a `char*` in at least 3 ways:
@@ -28,6 +28,9 @@ a `char*` in at least 3 ways:
 2. To obtain a _readable_ null-terminated `const char*` from a `std::string`, use the
 `.c_str()` method. It returns a C-style string that is _guaranteed to be null-terminated_.
 Note that the `.data()` method is NOT the same thing, as it is NOT guaranteed to be null-terminated!
+
+See the code snippets below also in my new, detailed answer here:
+https://stackoverflow.com/a/72485404/4561887
 
 
 STATUS: done and works!
@@ -43,14 +46,17 @@ time g++ -Wall -Wextra -Werror -O3 -std=c++17 string__use_std_string_as_a_c_str_
 ```
 
 References:
-1. How to convert a std::string to const char* or char*:
+1. How to convert a `std::string` to `const char*` or `char*`:
    https://stackoverflow.com/q/347949/4561887
+    1. *****++ [my detailed answer here]
+       https://stackoverflow.com/a/72485404/4561887
 1. Directly write into char* buffer of std::string:
    https://stackoverflow.com/q/39200665/4561887
 1. Is there a way to get std:string's buffer:
    https://stackoverflow.com/q/7836863/4561887
 
 (my content)
+1. *****++ [my detailed answer here] https://stackoverflow.com/a/72485404/4561887
 1. [my Q] See the "Adjacently related" section at the bottom of my question here:
    https://stackoverflow.com/q/72367123/4561887
 1. *****+ [my comments about pre-allocating a buffer in the std::string]:
