@@ -43,7 +43,7 @@ int main()
 {
     std::string s("hey");
 
-    // I expect this to be "True", and it does!
+    // I expect this to print "True", and it does!
     if (s == "hey")
     {
         printf("True\n");
