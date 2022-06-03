@@ -6,6 +6,8 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 <summary><b>(click to expand)</b></summary>
 <!-- MarkdownTOC -->
 
+1. [`ccache` - "a fast C/C++ compiler cache"](#ccache---a-fast-cc-compiler-cache)
+1. [Library setup & installation](#library-setup--installation)
 1. [C++ Googletest setup: how to build googletest \(gtest and gmock\) with the gcc/g++ compiler](#c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler)
     1. [References:](#references)
     1. [First, clone the googletest source code and symlink it into your repo](#first-clone-the-googletest-source-code-and-symlink-it-into-your-repo)
@@ -24,9 +26,60 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     1. [References:](#references-2)
     1. [1. Build & install the `curl` library](#1-build--install-the-curl-library)
     1. [2. How to use and link against the `curl` library in your own code](#2-how-to-use-and-link-against-the-curl-library-in-your-own-code)
+1. [C++ `nlohmann/json` "JSON for Modern C++" library installation & setup](#c-nlohmannjson-json-for-modern-c-library-installation--setup)
+    1. [Option 1: to download just that one single < 1 MB header file into your project, do this:](#option-1-to-download-just-that-one-single--1-mb-header-file-into-your-project-do-this)
+    1. [Option 2 \[my preference\]: clone the _entire_ nlohmann json library](#option-2-my-preference-clone-the-entire-nlohmann-json-library)
+    1. [Include the header in your builds](#include-the-header-in-your-builds)
 
 <!-- /MarkdownTOC -->
 </details>
+
+
+<a id="ccache---a-fast-cc-compiler-cache"></a>
+# `ccache` - ["a fast C/C++ compiler cache"](https://ccache.dev/manual/4.6.1.html)
+
+You may optionally speed up your builds by using the `ccache` compiler cacher. 
+
+References:
+1. \*\*\*\*\*+ Quick instructions: https://ccache.dev/manual/4.6.1.html#_run_modes
+1. https://github.com/ccache/ccache/blob/master/doc/INSTALL.md
+1. https://ccache.dev/documentation.html
+1. Main website: https://ccache.dev/
+
+For Linux:
+```bash
+# Install it
+sudo apt update 
+sudo apt install ccache
+
+ccache -h         # help menu
+ccache --version  # print version info
+
+# show stats
+ccache -s
+# OR (same thing)
+ccache --show-stats
+
+# (OPTIONAL) Create local symlinks to override your compiler and call ccache instead, whenever
+# you try to call your compiler directly.
+# See: https://ccache.dev/manual/4.6.1.html#_run_modes
+cp ccache /usr/local/bin/
+ln -s ccache /usr/local/bin/gcc
+ln -s ccache /usr/local/bin/g++
+ln -s ccache /usr/local/bin/cc
+ln -s ccache /usr/local/bin/c++
+
+# Basic, direct usage (without symlinks to replace your compiler)
+ccache compiler compiler_options
+# ex: 
+time ccache g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"json/single_include" json_nlohmann_demo.cpp -o bin/a && bin/a
+```
+
+
+<a id="library-setup--installation"></a>
+# Library setup & installation
+
+See the major headings below for instructions to install and set up various libraries.
 
 
 <a id="c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler"></a>
@@ -340,7 +393,7 @@ time git clone https://github.com/fmtlib/fmt.git
 #   some/dir/eRCaGuy_hello_world
 #   some/dir/fmt
 
-# cd into the folder where you want the symlink to googletest be located
+# cd into the folder where you want a symlink to this repo to be located
 cd eRCaGuy_hello_world/cpp
 # create a relative symlink to the other repo here
 ln -si ../../fmt .
@@ -762,3 +815,68 @@ user    0m1.018s
 sys 0m0.188s
 ```
 
+
+<a id="c-nlohmannjson-json-for-modern-c-library-installation--setup"></a>
+# C++ `nlohmann/json` "JSON for Modern C++" library installation & setup
+
+References: 
+1. main source code: https://github.com/nlohmann/json
+    1. Basic usage for serialization/deserialization and dumping the output for humans to read: https://github.com/nlohmann/json#serialization--deserialization
+1. main webpage: https://json.nlohmann.me/
+
+This library can be used and installed as a "singled header file". The file stored at `single_include/nlohmann/json.hpp` is the one single header file to rule them all! Just copy it to your project, include it, and you're done! It just works.
+
+
+<a id="option-1-to-download-just-that-one-single--1-mb-header-file-into-your-project-do-this"></a>
+## Option 1: to download just that one single < 1 MB header file into your project, do this:
+
+```bash
+cd path/to/your_project
+mkdir -p json/single_include/nlohmann
+cd json/single_include/nlohmann
+
+# download the one single < 1 MB header file
+time wget https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+
+# cd back up to your project
+```
+
+
+<a id="option-2-my-preference-clone-the-entire-nlohmann-json-library"></a>
+## Option 2 [my preference]: clone the _entire_ nlohmann json library
+
+Here is the general "installation" process I like to use for this json library repo. Note, however, that cloning the repo may take 10\~15 minutes or so, downloading \~300 MiB of data, so if you have a slow internet connection or limited data just do the option above instead.
+
+```bash
+# cd into your repo of interest (for me: `eRCaGuy_hello_world`)
+cd path/to/eRCaGuy_hello_world
+# go up one level to be at the same level as `eRCaGuy_hello_world`
+cd ..
+
+# clone the repo; this downloads ~300 MiB of data and takes 10~15 minutes
+time git clone https://github.com/nlohmann/json.git
+# you now have the folder "json" at the same level as "eRCaGuy_hello_world"; ex:
+#   some/dir/eRCaGuy_hello_world
+#   some/dir/json
+
+# cd into the folder where you want a symlink to this repo to be located
+cd eRCaGuy_hello_world/cpp
+# create a relative symlink to the other repo here
+ln -si ../../json .
+```
+
+
+<a id="include-the-header-in-your-builds"></a>
+## Include the header in your builds
+
+Now, to build and use that header file in your projects, add this include option to your gcc build options:
+```bash
+-I"path/to/json/single_include"
+```
+
+Then, you can include that file in a source file with:
+```cpp
+#include <nlohmann/json.hpp>
+```
+
+See [json_nlohmann_demo.cpp](json_nlohmann_demo.cpp) as an example I wrote.
