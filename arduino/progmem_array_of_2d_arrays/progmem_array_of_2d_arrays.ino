@@ -50,8 +50,13 @@ the **address** at that indexed location via `&` in order to obtain a RAM
 address. We then pass that RAM address to `pgm_read_byte()` to do the mapping
 from the RAM address to a Flash memory address, and it then reads the contents
 at that mapped Flash address. We never find out what that mapped Flash address
-is, but that's ok. So long as we keep the RAM address we always have a way to
-read the Flash value again via those `pgm_read_*()` functions.
+is, but that's ok. So long as we can obtain the RAM address we always have a
+way to read the Flash value again via those `pgm_read_*()` functions.
+
+See my answer with this code and explanation here!:
+https://stackoverflow.com/a/72624681/4561887
+The explanation above, and more, is in the section titled "Notes About How
+the PROGMEM `pgm_read_*()` functions work and what they are doing".
 
 
 References:
