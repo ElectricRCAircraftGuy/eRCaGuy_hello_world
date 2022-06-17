@@ -15,10 +15,10 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C:
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_array_dynamic_array_of_int.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_array_dynamic_array_of_int_with_factory_create_func.c -o bin/a -lm && bin/a
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_array_dynamic_array_of_int.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_array_dynamic_array_of_int_with_factory_create_func.c -o bin/a && bin/a
 ```
 
 References:
@@ -226,7 +226,7 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_array_dynamic_array_of_int.c -o bin/a -lm && bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_array_dynamic_array_of_int_with_factory_create_func.c -o bin/a -lm && bin/a
     p can hold 10 integers
     p[0] = 0
     p[1] = 1
