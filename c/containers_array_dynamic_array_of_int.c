@@ -40,6 +40,7 @@ References:
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h> // `memset()`
 
 
 /// A container representing a dynamically-allocated array of integers
@@ -53,8 +54,8 @@ typedef struct array_of_int_s
     size_t size;
 } array_of_int_t;
 
-/// "Zero", or "clear", an array by setting all of its elements to zeor!
-void array_of_int_zero(const array_of_int_t* array_of_int)
+/// "Zero", or "clear", an array by setting all of its elements to zero!
+void array_of_int_zero(array_of_int_t* array_of_int)
 {
     if (array_of_int == NULL)
     {
@@ -62,28 +63,26 @@ void array_of_int_zero(const array_of_int_t* array_of_int)
         return;
     }
 
-    printf("{");
-    for (size_t i = 0; i < array_of_int->size; i++)
-    {
-        printf("%i");
-        if (i < array_of_int->size - 1)
-        {
-            printf(", ");
-        }
-    }
-    printf("}\n");
+    // memset(&array_of_int->data[0], 0, array_of_int->size*sizeof(array_of_int->data[0]));
 }
 
 /// A "factory" function to dynamically create and return a ptr to a dynamically-allocated object
 /// containing an array of `num_elements` of type `int`.
+///
+/// The data in the array is zeroed by this function.
+///
 /// See also this answer which helped me: https://stackoverflow.com/a/65270682/4561887
 /// and my answer where I shared this: https://stackoverflow.com/a/72653068/4561887
+///
+/// Returns NULL if malloc() fails due to "out of memory".
 array_of_int_t* array_of_int_create(size_t num_elements)
 {
-    // Note: `sizeof(*(array_of_int->data))` is the equivalent to `sizeof(int)` in this case, except
-    // that it's more robust because if you chance the `data` type in the `array_of_int_t` struct,
-    // you do NOT also have to change this `malloc()` call here!. It could also be written like
-    // this: `sizeof(array_of_int->data[0])`.
+    // Allocate memory for the entire struct, as well as the actual array space that the `.data`
+    // member will point to!
+    // - Note: `sizeof(*(array_of_int->data))` is the equivalent to `sizeof(int)` in this case,
+    // except that it's more robust because if you change the `data` type in the `array_of_int_t`
+    // struct from `int*` to something else, you do NOT also have to change this `malloc()` call
+    // here!. It could also be written like this: `sizeof(array_of_int->data[0])`.
     array_of_int_t *array_of_int = malloc(sizeof(*array_of_int)
         + num_elements*sizeof(*(array_of_int->data)));
 
@@ -108,10 +107,10 @@ void array_of_int_print(const array_of_int_t* array_of_int)
         return;
     }
 
-    printf("{");
+    printf("array data: {");
     for (size_t i = 0; i < array_of_int->size; i++)
     {
-        printf("%i");
+        printf("%i", array_of_int->data[i]);
         if (i < array_of_int->size - 1)
         {
             printf(", ");
@@ -130,22 +129,56 @@ int main()
     int *p = (int*)malloc(sizeof(int)*NUM_INTS);
     printf("p can hold %zu integers\n", NUM_INTS);
 
-    p[0] = 123;
-    p[NUM_INTS - 1] = 456;
+    // write some data to this array
+    for (size_t i = 0; i < NUM_INTS; i++)
+    {
+        p[i] = i;
+    }
+
+    // print the data out now
+    for (size_t i = 0; i < NUM_INTS; i++)
+    {
+        printf("p[%zu] = %i\n", i, p[i]);
+    }
+    printf("\n");
 
 
     // 2. Containerized demo
 
-    array_of_int_t array_int;
-    array_int.data = (int*)malloc(sizeof(int)*NUM_INTS);
-    array_int.size = NUM_INTS;
-    printf("array_int can hold %zu integers\n", array_int.size);
+    array_of_int_t array_of_int;
+    // Note: `sizeof(array_of_int->data[0])` is the same as `sizeof(int)` in this case, except it is
+    // more-robust since it doesn't require changing anything here if you ever change the type of
+    // `.data` from `int*` to something else.
+    array_of_int.data = (int*)malloc(sizeof(array_of_int.data[0])*NUM_INTS);
+    array_of_int.size = NUM_INTS;
+    printf("array_of_int_t can hold %zu integers\n", array_of_int.size);
+
+    // write all zeros to this array, then write a few values, then print the whole array
+    array_of_int_zero(&array_of_int);
+    array_of_int.data[2] = 123;
+    array_of_int.data[7] = 456789;
+    array_of_int_print(&array_of_int);
+    printf("\n");
 
 
-    // 3. Containerized demo with initializer function
+    // 3. [BEST!] Fully containerized demo, with a factory "create" function to dynamically make
+    // an array object! And, with full error checking to ensure `malloc()` actually worked!
 
-    array_of_int_t array_int2 = array_of_int_create(NUM_INTS);
-    printf("array_int2 can hold %zu integers\n", array_int2.size);
+    array_of_int_t * array_of_int2 = array_of_int_create(NUM_INTS);
+    if (array_of_int2 == NULL)
+    {
+        printf("ERROR: array_of_int_create() failed!\n");
+        return 1;
+    }
+
+    printf("array_of_int2 can hold %zu integers\n", array_of_int2->size);
+    // the `array_of_int_create()` function already zeroed all the data, so let's just write in
+    // some values then print out the whole array!
+    // array_of_int2->data[1] = 1;
+    // array_of_int2->data[5] = 5;
+    // array_of_int2->data[9] = 9;
+    array_of_int_print(array_of_int2);
+    printf("\n");
 
 
     return 0;
