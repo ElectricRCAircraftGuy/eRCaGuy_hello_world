@@ -128,6 +128,22 @@ array_of_int_t* array_of_int_create(size_t num_elements)
     return array_of_int;
 }
 
+/// "Destroy" the array object by `free`ing its dynamically-allocated memory.
+/// This function should be called when done using the object, to prevent
+/// memory leaks.
+///
+/// Same as with calling `free()`, calling this function multiple times on the
+/// same object is **undefined behavior**, so don't do that!
+/// See: https://en.cppreference.com/w/c/memory/free
+void array_of_int_destroy(array_of_int_t *array_of_int)
+{
+    // Only free it if it's a valid pointer.
+    if (array_of_int)
+    {
+        free(array_of_int);
+    }
+}
+
 /// Print all elements in an array
 void array_of_int_print(const array_of_int_t* array_of_int)
 {
@@ -157,6 +173,11 @@ int main()
     // 1. Basic demo
 
     int *p = (int*)malloc(sizeof(int)*NUM_INTS);
+    if (p == NULL)
+    {
+        printf("ERROR: malloc() failed (out of memory)!\n");
+        exit(EXIT_FAILURE);
+    }
     printf("p can hold %zu integers\n", NUM_INTS);
 
     // write some data to this array
@@ -172,6 +193,12 @@ int main()
     }
     printf("\n");
 
+    // Free the dynamically-allocated memory when done, to prevent memory leaks
+    if (p)
+    {
+        free(p);
+    }
+
 
     // 2. Containerized demo
 
@@ -185,6 +212,11 @@ int main()
     // size_t num_bytes = sizeof(array_of_int.data[0])*NUM_INTS;
     // printf("num_bytes = %zu\n", num_bytes);
     array_of_int.data = (int*)malloc(sizeof(array_of_int.data[0])*NUM_INTS);
+    if (array_of_int.data == NULL)
+    {
+        printf("ERROR: malloc() failed (out of memory)!\n");
+        exit(EXIT_FAILURE);
+    }
     array_of_int.size = NUM_INTS;
     printf("array_of_int_t can hold %zu integers\n", array_of_int.size);
 
@@ -195,6 +227,12 @@ int main()
     array_of_int.data[7] = 456789;
     array_of_int_print(&array_of_int);
     printf("\n");
+
+    // Free the dynamically-allocated memory when done, to prevent memory leaks
+    if (array_of_int.data)
+    {
+        free(array_of_int.data);
+    }
 
 
     // 3. [BEST!] A fully containerized demo, with a factory "create" function
@@ -216,6 +254,8 @@ int main()
     array_of_int2->data[9] = 9;
     array_of_int_print(array_of_int2);
     printf("\n");
+    // Free the dynamically-allocated memory when done, to prevent memory leaks
+    array_of_int_destroy(array_of_int2);
 
 
     return 0;
