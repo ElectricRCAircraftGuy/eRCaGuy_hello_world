@@ -13,7 +13,7 @@ GS
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C: BUILD A DYNAMIC (SHARED OBJECT `lib*.so`) library file and use it in another program to
    dynamically inject my function calls below **before AND after** their `main()` function!:
-        ./dynamic_func_call_before_and_after_main_build_and_run.sh
+        ./dynamic_func_call_before_and_after_main__build_and_run.sh
 
 References:
 1. [my Q, and the ans. here] https://stackoverflow.com/questions/68171246/in-gcc-is-there-any-way-to-dynamically-add-a-function-call-to-the-start-of-main
@@ -68,7 +68,7 @@ void called_after_main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/c$ ./dynamic_func_call_before_and_after_main_build_and_run.sh
+    eRCaGuy_hello_world/c$ ./dynamic_func_call_before_and_after_main__build_and_run.sh
     gcc constructors are called BEFORE `main()`.
     This is the start of `main()`.
       Hello world.
