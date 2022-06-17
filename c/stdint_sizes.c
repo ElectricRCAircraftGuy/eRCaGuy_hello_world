@@ -24,6 +24,8 @@ References:
 1. ***** https://en.cppreference.com/w/c/types/integer - fixed-width integer types
 1. https://www.cs.yale.edu/homes/aspnes/pinewiki/C(2f)IntegerTypes.html
 1. ***** https://www.ibm.com/docs/en/ibm-mq/7.5?topic=platforms-standard-data-types
+1. [my answer] Integer and floating point rank and promotion rules in C and C++:
+   https://stackoverflow.com/a/72654668/4561887
 
 */
 

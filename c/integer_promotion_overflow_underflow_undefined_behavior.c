@@ -34,7 +34,11 @@ is NOT undefined behavior? Maybe it is only undefined behavior if it happens dur
 not sure, but yes, I think this could be the case.
 
 
-STATUS: wip
+STATUS: done and works!
+
+See my answer related to this: Integer and floating point rank and promotion rules in C and C++:
+https://stackoverflow.com/a/72654668/4561887
+
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -50,6 +54,8 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 integer_promotion_overflow_underflow_
 
 References:
 1. Implicit type promotion rules: https://stackoverflow.com/q/46073295/4561887
+    1. [my answer] Integer and floating point rank and promotion rules in C and C++:
+       https://stackoverflow.com/a/72654668/4561887
 
 
 ------------------------
