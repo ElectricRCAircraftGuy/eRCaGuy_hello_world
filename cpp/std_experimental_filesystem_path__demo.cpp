@@ -46,28 +46,34 @@ int main()
     printf("Hello ");
     std::cout << "world!\n\n";
 
-    // Error:
-    //      /tmp/ccfHRXrJ.o: In function `main':
-    //      std_experimental_filesystem_path__demo.cpp:(.text.startup+0x9c): undefined reference to `std::experimental::filesystem::v1::__cxx11::path::_M_split_cmpts()'
-    //      collect2: error: ld returned 1 exit status
-    // std::experimental::filesystem::path path1 = "json/single_include";
+    std::experimental::filesystem::path path1 = "json/single_include";
+    std::experimental::filesystem::path path2 = std::string("json/single_include");
+    std::experimental::filesystem::path path3("json/single_include");
+    std::experimental::filesystem::path path4{"json/single_include"};
 
-    // Error: same as above
-    // std::experimental::filesystem::path path1 = std::string("json/single_include");
+    std::string path_prefix1 = "json/single_include";
+    std::experimental::filesystem::path path5 = path_prefix1;
 
-    // Error: same as above
-    // std::experimental::filesystem::path path1("json/single_include");
+    std::string path_prefix2{"json/single_include"};
+    std::experimental::filesystem::path path6 = path_prefix2;
 
-    // Error: same as above
-    // std::experimental::filesystem::path path1{"json/single_include"};
 
-    // Error: same as above
-    // std::string path_prefix = "json/single_include";
-    // std::experimental::filesystem::path path1 = path_prefix;
+    std::cout << "path1 = " << path1 << "\n";
+    std::cout << "path2 = " << path2 << "\n";
+    std::cout << "path3 = " << path3 << "\n";
+    std::cout << "path4 = " << path4 << "\n";
+    std::cout << "path5 = " << path5 << "\n";
+    std::cout << "path6 = " << path6 << "\n";
 
-    std::string path_prefix{"json/single_include"};
-    std::experimental::filesystem::path path1 = path_prefix;
 
+    // Now append a string to a path using the path class member `operator/=()`. See:
+    // https://en.cppreference.com/w/cpp/experimental/fs/path/append
+    path1 /= "nlohmann";
+    std::cout << "path1 = " << path1 << "\n";
+
+    // Now append a string to a path using the non-member function `operator/()`. See:
+    // https://en.cppreference.com/w/cpp/experimental/fs/path/operator_slash
+    path1 = path1 / "test";
     std::cout << "path1 = " << path1 << "\n";
 
 
@@ -79,7 +85,21 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/cpp$ g++ -Wall -Wextra -Werror -O3 -std=c++17 std_experimental_filesystem_path__demo.cpp -o bin/a && bin/a
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 std_experimental_filesystem_path__demo.cpp -o bin/a -lstdc++fs && bin/a
+
+    real    0m0.672s
+    user    0m0.619s
+    sys 0m0.053s
     Hello world!
+
+    path1 = "json/single_include"
+    path2 = "json/single_include"
+    path3 = "json/single_include"
+    path4 = "json/single_include"
+    path5 = "json/single_include"
+    path6 = "json/single_include"
+    path1 = "json/single_include/nlohmann"
+    path1 = "json/single_include/nlohmann/test"
+
 
 */
