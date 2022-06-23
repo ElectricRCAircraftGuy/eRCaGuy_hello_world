@@ -4,9 +4,9 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 June 2022
 
-Learn how to construct `std::experimental::filesystem::path::path`s.
+Learn how to construct and concatenate `std::experimental::filesystem::path::path`s.
 
-STATUS: (status)
+STATUS: done and works!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -15,13 +15,13 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 std_experimental_filesystem_path__demo.cpp -o bin/a -lstdc++fs && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 std_experimental_filesystem_path.cpp -o bin/a -lstdc++fs && bin/a
 ```
 
 IMPORTANT: if you see this linker error:
     ```
     /tmp/ccfHRXrJ.o: In function `main':
-    std_experimental_filesystem_path__demo.cpp:(.text.startup+0x9c): undefined reference to `std::experimental::filesystem::v1::__cxx11::path::_M_split_cmpts()'
+    std_experimental_filesystem_path.cpp:(.text.startup+0x9c): undefined reference to `std::experimental::filesystem::v1::__cxx11::path::_M_split_cmpts()'
     collect2: error: ld returned 1 exit status
     ```
 ...it's because you forgot to link to the library with `-lstdc++fs` above! Add that to your build
@@ -85,7 +85,7 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 std_experimental_filesystem_path__demo.cpp -o bin/a -lstdc++fs && bin/a
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 std_experimental_filesystem_path.cpp -o bin/a -lstdc++fs && bin/a
 
     real    0m0.672s
     user    0m0.619s
