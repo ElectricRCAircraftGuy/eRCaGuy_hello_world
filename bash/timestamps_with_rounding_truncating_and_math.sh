@@ -14,10 +14,10 @@
 # keywords: timestamps, high-resolution timestamps, truncating, rounding,
 # floating point math, integer math
 
-# Check this script with: `shellcheck timestamps.sh`
+# Check this script with: `shellcheck timestamps_with_rounding_truncating_and_math.sh`
 
 # Run command:
-#       ./timestamps.sh
+#       ./timestamps_with_rounding_truncating_and_math.sh
 
 # References:
 # 1. How to do floating point calculations in bash
@@ -52,7 +52,7 @@ echo ""
 
 # pretty-print them, aligning the decimals and rounding to the appropriate
 # number of decimal places
-echo "== Pretty-printed with aligned decimals and appropriate number of "\
+echo "== Pretty-printed with aligned decimals and appropriate number of"\
      "decimals =="
 printf "time_sec = %30.9f\n" "$time_sec"
 printf "time_ms  = %27.6f\n" "$time_ms"
@@ -132,14 +132,14 @@ echo ""
 
 # SAMPLE OUTPUT:
 #
-#       eRCaGuy_hello_world/bash$ ./timestamps.sh
+#       eRCaGuy_hello_world/bash$ ./timestamps_with_rounding_truncating_and_math.sh
 #       == Printed as-is ==
 #       time_sec = 1657683163.093838727
 #       time_ms  = 1657683163093.838727000
 #       time_us  = 1657683163093838.727000000
 #       time_ns  = 1657683163093838727.000000000
 #
-#       == Pretty-printed with aligned decimals and appropriate number of  decimals ==
+#       == Pretty-printed with aligned decimals and appropriate number of decimals ==
 #       time_sec =           1657683163.093838727
 #       time_ms  =        1657683163093.838727
 #       time_us  =     1657683163093838.727
