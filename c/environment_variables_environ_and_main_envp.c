@@ -44,6 +44,7 @@ References:
 1. [my answer] "source (.) vs export (and also some file lock [flock] stuff at the end)":
    https://stackoverflow.com/a/62626515/4561887
 1. ***** meaning of argv, argc, and envp in `main()`: https://stackoverflow.com/a/54723654/4561887
+1. Print the environment variables using `environ`: https://stackoverflow.com/q/4291080/4561887
 
 */
 
