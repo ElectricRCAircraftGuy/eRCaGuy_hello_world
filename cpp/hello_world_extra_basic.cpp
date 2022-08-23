@@ -11,7 +11,7 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
 ```
 
 References:
@@ -40,7 +40,11 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/cpp$ g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+
+    real    0m2.079s
+    user    0m0.775s
+    sys 0m0.087s
     Hello world!
 
 */
