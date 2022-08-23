@@ -2,13 +2,16 @@
 
 [>> Sponsor Me on GitHub <<](https://github.com/sponsors/ElectricRCAircraftGuy)
 
+
 # eRCaGuy_hello_world
 "hello world" demos &amp; templates for various languages, incl. `gcc` build commands for C &amp; C++ 
 
 See also my [eRCaGuy_hello_world_data](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world_data) project. 
 
 By Gabriel Staples  
-www.ElectricRCAircraftGuy.com
+www.ElectricRCAircraftGuy.com  
+
+- Disclaimer: any content herein is my own or otherwise has proper notice of licensing and attribution. This repo contains my own beliefs, opinions, words and works. They are _not_ endorsed by any of my past nor present employers.
 
 
 ## Other, very-useful repos:
