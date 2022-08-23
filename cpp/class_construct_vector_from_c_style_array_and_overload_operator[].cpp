@@ -14,7 +14,7 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-g++ -Wall -Wextra -Werror -O3 -std=c++17 class_construct_vector_from_c_style_array.cpp -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 class_construct_vector_from_c_style_array_and_overload_operator[].cpp -o bin/a && bin/a
 ```
 
 References:
@@ -128,11 +128,15 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 class_construct_vector_from_c_style_array.cpp -o bin/a && bin/a
+    eRCaGuy_hello_world/cpp$ g++ -Wall -Wextra -Werror -O3 -std=c++17 class_construct_vector_from_c_style_array_and_overload_operator[].cpp -o bin/a && bin/a
     1  2  3
-    Growing the vector from 3 to 4 elements.
+    setData(): Growing the vector from 3 to 4 elements.
     10  11  12  13
-    Growing the vector from 4 to 11 elements.
+    setData(): Growing the vector from 4 to 11 elements.
     10  11  12  13  0  0  0  0  0  0  99
+    test[1] = 23
+    22  23  24  13  0  0  0  0  0  0  99
+    operator[](): Growing the vector from 11 to 13 elements.
+    22  23  24  13  0  0  0  0  0  0  99  0  33
 
 */
