@@ -1,0 +1,70 @@
+# This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
+name: yaml-cpp_demo.yaml
+description: This is a demo yaml file that can be imported, for example, by the yaml-cpp library.
+author: Gabriel Staples
+date: Aug. 2022
+
+# list of dictionaries (maps)
+# - Note: practice using a couple YAML anchors and aliases too.
+#   See: https://support.atlassian.com/bitbucket-cloud/docs/yaml-anchors/
+data:
+
+  # Positions
+  - name: x
+    description: x position
+    units: mm
+    type: int64_t
+    value: 100
+  - name: y
+    description: y position
+    units: mm
+    type: int64_t
+    value: 200
+  - name: z
+    description: z position
+    units: mm
+    type: int64_t
+    value: 300
+
+  # Velocities
+  - name: u
+    description: velocity in the x direction
+    units: mm/s
+    type: int64_t
+    value: 10
+  - name: v
+    description: velocity in the y direction
+    units: mm/s
+    type: int64_t
+    value: 11
+  - name: w
+    description: velocity in the z direction
+    units: mm/s
+    type: int64_t
+    value: 12
+
+  # Euler Angles
+  - &phi_anchor
+    name: phi
+    description: roll angle
+    units: deg
+    type: double
+    value: 0.10
+  - name: theta
+    description: pitch angle
+    units: deg
+    type: double
+    value: -0.20
+  - name: psi
+    description: yaw angle (heading)
+    units: deg
+    type: double
+    value: 45.1234
+
+  # Practice referencing an anchor via an alias
+  - *phi_anchor
+  # Same as above, but override `description` and `value`
+  - <<: *phi_anchor
+    description: roll angle yeah!
+    value: 0.1020304

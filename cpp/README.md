@@ -30,6 +30,9 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     1. [Option 1: to download just that one single < 1 MB header file into your project, do this:](#option-1-to-download-just-that-one-single--1-mb-header-file-into-your-project-do-this)
     1. [Option 2 \[my preference\]: clone the _entire_ nlohmann json library](#option-2-my-preference-clone-the-entire-nlohmann-json-library)
     1. [Include the header in your builds](#include-the-header-in-your-builds)
+1. [C++ `yaml-cpp` library installation & setup](#c-yaml-cpp-library-installation--setup)
+    1. [1. Build & install the `yaml-cpp` library](#1-build--install-the-yaml-cpp-library)
+    1. [2. How to use and link against the `yaml-cpp` library in your own code](#2-how-to-use-and-link-against-the-yaml-cpp-library-in-your-own-code)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -880,3 +883,139 @@ Then, you can include that file in a source file with:
 ```
 
 See [json_nlohmann_demo.cpp](json_nlohmann_demo.cpp) as an example I wrote.
+
+
+<a id="c-yaml-cpp-library-installation--setup"></a>
+# C++ `yaml-cpp` library installation & setup
+
+**References:**
+1. https://github.com/jbeder/yaml-cpp
+1. Tutorials:
+    1. https://github.com/jbeder/yaml-cpp/wiki/Tutorial
+    1. https://github.com/jbeder/yaml-cpp/wiki/How-To-Emit-YAML
+
+
+<a id="1-build--install-the-yaml-cpp-library"></a>
+## 1. Build & install the `yaml-cpp` library
+
+```bash
+# cd into your repo of interest (for me: `eRCaGuy_hello_world`)
+cd path/to/eRCaGuy_hello_world
+# go up one level to be at the same level as `eRCaGuy_hello_world`
+cd ..
+
+# clone the repo
+time git clone https://github.com/jbeder/yaml-cpp.git
+# you now have the folder "yaml-cpp" at the same level as "eRCaGuy_hello_world"; ex:
+#   some/dir/eRCaGuy_hello_world
+#   some/dir/yaml-cpp
+
+# cd into the folder where you want a symlink to this repo to be located
+cd eRCaGuy_hello_world/cpp
+# create a relative symlink to the other repo here
+ln -si ../../yaml-cpp .
+```
+
+Now build the library! See: https://github.com/jbeder/yaml-cpp#how-to-build
+
+```bash
+cd eRCaGuy_hello_world/cpp
+
+cd yaml-cpp
+mkdir -p build 
+cd build
+time cmake ..  # takes ~1 sec
+time make      # takes ~15 sec
+time sudo make install  # takes ~7 sec
+```
+
+Done!
+
+Here is the output of `time sudo make install`, so you can see what it's really doing. As you can see, it installed the static library .a file into `/usr/local/lib/libyaml-cpp.a`, and it installed all of the relevant header files you can include into the `/usr/local/include/yaml-cpp` dir, such as the main header, which is `/usr/local/include/yaml-cpp/yaml.h`.
+
+```
+eRCaGuy_hello_world/cpp/yaml-cpp/build$ time sudo make install  # takes ~7 sec
+[sudo] password for gabriel: 
+[ 84%] Built target yaml-cpp
+[ 89%] Built target yaml-cpp-parse
+[ 94%] Built target yaml-cpp-read
+[100%] Built target yaml-cpp-sandbox
+Install the project...
+-- Install configuration: ""
+-- Installing: /usr/local/lib/libyaml-cpp.a
+-- Up-to-date: /usr/local/include
+-- Installing: /usr/local/include/yaml-cpp
+-- Installing: /usr/local/include/yaml-cpp/mark.h
+-- Installing: /usr/local/include/yaml-cpp/noexcept.h
+-- Installing: /usr/local/include/yaml-cpp/emitterdef.h
+-- Installing: /usr/local/include/yaml-cpp/binary.h
+-- Installing: /usr/local/include/yaml-cpp/emitterstyle.h
+-- Installing: /usr/local/include/yaml-cpp/emittermanip.h
+-- Installing: /usr/local/include/yaml-cpp/emitfromevents.h
+-- Installing: /usr/local/include/yaml-cpp/null.h
+-- Installing: /usr/local/include/yaml-cpp/eventhandler.h
+-- Installing: /usr/local/include/yaml-cpp/ostream_wrapper.h
+-- Installing: /usr/local/include/yaml-cpp/yaml.h
+-- Installing: /usr/local/include/yaml-cpp/anchor.h
+-- Installing: /usr/local/include/yaml-cpp/node
+-- Installing: /usr/local/include/yaml-cpp/node/type.h
+-- Installing: /usr/local/include/yaml-cpp/node/iterator.h
+-- Installing: /usr/local/include/yaml-cpp/node/parse.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail
+-- Installing: /usr/local/include/yaml-cpp/node/detail/iterator_fwd.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/iterator.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/node_iterator.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/impl.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/node_ref.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/node.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/memory.h
+-- Installing: /usr/local/include/yaml-cpp/node/detail/node_data.h
+-- Installing: /usr/local/include/yaml-cpp/node/ptr.h
+-- Installing: /usr/local/include/yaml-cpp/node/impl.h
+-- Installing: /usr/local/include/yaml-cpp/node/emit.h
+-- Installing: /usr/local/include/yaml-cpp/node/node.h
+-- Installing: /usr/local/include/yaml-cpp/node/convert.h
+-- Installing: /usr/local/include/yaml-cpp/depthguard.h
+-- Installing: /usr/local/include/yaml-cpp/dll.h
+-- Installing: /usr/local/include/yaml-cpp/stlemitter.h
+-- Installing: /usr/local/include/yaml-cpp/parser.h
+-- Installing: /usr/local/include/yaml-cpp/traits.h
+-- Installing: /usr/local/include/yaml-cpp/emitter.h
+-- Installing: /usr/local/include/yaml-cpp/contrib
+-- Installing: /usr/local/include/yaml-cpp/contrib/anchordict.h
+-- Installing: /usr/local/include/yaml-cpp/contrib/graphbuilder.h
+-- Installing: /usr/local/include/yaml-cpp/exceptions.h
+-- Installing: /usr/local/share/cmake/yaml-cpp/yaml-cpp-targets.cmake
+-- Installing: /usr/local/share/cmake/yaml-cpp/yaml-cpp-targets-noconfig.cmake
+-- Installing: /usr/local/share/cmake/yaml-cpp/yaml-cpp-config.cmake
+-- Installing: /usr/local/share/cmake/yaml-cpp/yaml-cpp-config-version.cmake
+-- Installing: /usr/local/share/pkgconfig/yaml-cpp.pc
+
+real    0m6.552s
+user    0m0.138s
+sys 0m0.051s
+```
+
+
+<a id="2-how-to-use-and-link-against-the-yaml-cpp-library-in-your-own-code"></a>
+## 2. How to use and link against the `yaml-cpp` library in your own code
+
+See the section in this readme titled _"2. How to use and link against the fmt library in your own code"_ for more details and info. and alternative options.
+
+**Option 1: link in the _installed_ static .a file library**
+
+In your header or source file:
+
+```cpp
+#include <yaml-cpp/yaml.h>
+```
+
+In your build command, add `-lyaml-cpp` to link in the library. Ex:
+
+```bash
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 yaml-cpp_lib_demo.cpp -o bin/a -lyaml-cpp && bin/a
+```
+
+**Option 2: _manually_ link in the .a file**
+
+TODO
