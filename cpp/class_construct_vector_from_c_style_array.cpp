@@ -33,6 +33,7 @@ References:
 
 // C and C++ includes
 #include <cstdio>
+#include <iostream>
 #include <vector>
 
 // See: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/c/utilities.h
@@ -62,16 +63,36 @@ public:
     }
 
     /// Write `value` to the element at index `i`
+    /// - Note: cause the vector to automatically grow if the index would otherwise be
+    ///   out of bounds.
     void setData(size_t i, int value)
     {
         if (i >= _data.size())
         {
-            printf("Growing the vector from %zu to %zu elements.\n",
+            printf("setData(): Growing the vector from %zu to %zu elements.\n",
                 _data.size(), i + 1);
             _data.resize(i + 1);
         }
 
         _data[i] = value;
+    }
+
+    /// Overload the `[]` operator to allow reading or writing directly from or to the
+    /// private array in this class.
+    /// See: https://en.cppreference.com/w/cpp/language/operators and search the page for
+    /// "operator[]" and the "Array subscript operator" section.
+    /// - Note: cause the vector to automatically grow if the index would otherwise be
+    ///   out of bounds.
+    int& operator[](std::size_t i)
+    {
+        if (i >= _data.size())
+        {
+            printf("operator[](): Growing the vector from %zu to %zu elements.\n",
+                _data.size(), i + 1);
+            _data.resize(i + 1);
+        }
+
+        return _data[i];
     }
 };
 
@@ -89,6 +110,15 @@ int main()
     test.printData();
     test.setData(10, 99); // causes the vector to automatically grow
     test.printData();
+
+    test[0] = 22;
+    test[1] = 23;
+    test[2] = 24;
+    std::cout << "test[1] = " << test[1] << "\n";
+    test.printData();
+    test[12] = 33; // causes the vector to automatically grow
+    test.printData();
+
 
     return 0;
 }
