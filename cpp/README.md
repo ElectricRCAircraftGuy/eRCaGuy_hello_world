@@ -1018,4 +1018,10 @@ time g++ -Wall -Wextra -Werror -O3 -std=c++17 yaml-cpp_lib_demo.cpp -o bin/a -ly
 
 **Option 2: _manually_ link in the .a file**
 
-TODO
+Include the header the same as above in your source code.
+
+In your build command, add in the include dir with `-I`, and specify the .a static library file **last** in your list of source files to build! Ex:
+
+```bash
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"yaml-cpp/include" yaml-cpp_lib_demo.cpp yaml-cpp/build/libyaml-cpp.a -o bin/a && bin/a
+```
