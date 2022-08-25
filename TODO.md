@@ -8,6 +8,15 @@ Started: 12 Feb. 2022
 [Place newest on TOP]
 
 
+## 20220817:
+1. [ ] Write a cooperative multi-tasking library usable in Linux or Arduino. Base it on the `CREATE_TASK_TIMER()` macro in "eRCaGuy_hello_world/arduino/coulomb_counter_with_cooperative_multitasking_macro/coulomb_counter_with_cooperative_multitasking_macro.ino". See also:
+    1. My Arduino answer: https://arduino.stackexchange.com/a/75937/7727
+    1. My answer: How to auto-generate unique variable names with the line number in them by using macros: https://stackoverflow.com/a/71899854/4561887
+        1. "eRCaGuy_hello_world/c/macro_make_unique_variable_name_with_line_number.c"
+        1. This trick could be useful potentially to auto-generate certain variable names I need, as necessary, such as the time start variable, maybe? Not sure. Will need to think it through.
+    1. Be sure to test it on both Linux and Arduino, proving it works! Consider making it a standalone repo (added to this hello world repo as a subrepo) for better visibility.
+
+
 ## 20220428:
 1. [ ] As both C and C++ code: test packing and alignment of `__attribute__((__packed__))` vs `#pragma packed(1)`. I'm pretty sure the former sets only packing to 1 but leaves the struct alignment as a whole to be naturally-aligned, which is good. The latter sets packing to 1 but _also_ sets the whole struct alignment to 1, which is _bad_. See: 
     1. [Microsoft DevBlogs: Anybody who writes #pragma pack(1) may as well just wear a sign on their forehead that says “I hate RISC”, by Raymond C](https://devblogs.microsoft.com/oldnewthing/20200103-00/?p=103290)
