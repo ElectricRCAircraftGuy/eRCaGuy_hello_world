@@ -64,7 +64,14 @@ data:
 
   # Practice referencing an anchor via an alias
   - *phi_anchor
+
   # Same as above, but override `description` and `value`
-  - <<: *phi_anchor
-    description: roll angle yeah!
-    value: 0.1020304
+  # See: https://yaml.org/type/merge.html
+  # Doesn't seem to work as expected, so comment it out! I'm not sure if it's my syntax that's a
+  # problem, or a bug in the yaml-cpp library, but I think it's a bug in the library. Note: the
+  # parser does read this in without throwing an error. It just doesn't represent or print this last
+  # node in the sequence (list) correctly is all.
+  # - # Override
+  #   <<: *phi_anchor
+  #   description: roll angle yeah!
+  #   value: 0.1020304
