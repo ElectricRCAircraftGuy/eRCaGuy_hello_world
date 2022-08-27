@@ -47,7 +47,7 @@ int main()
     // (**since C++17**). See:
     // 1. https://en.cppreference.com/w/cpp/container/unordered_map
     // 2. https://en.cppreference.com/w/cpp/language/structured_binding
-    for (auto const& [key, value] : map)
+    for (const auto& [key, value] : map)
     {
         std::cout << key << ": " << value << "\n";
     }
