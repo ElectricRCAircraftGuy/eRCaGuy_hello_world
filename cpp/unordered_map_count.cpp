@@ -44,7 +44,9 @@ int main()
     map["pears"] = 44;
 
     // Print key:value pairs using automatic "structured binding" to `key`, `value` variables
-    // (**since C++17**)
+    // (**since C++17**). See:
+    // 1. https://en.cppreference.com/w/cpp/container/unordered_map
+    // 2. https://en.cppreference.com/w/cpp/language/structured_binding
     for (auto const& [key, value] : map)
     {
         std::cout << key << ": " << value << "\n";
@@ -52,15 +54,21 @@ int main()
     std::cout << "\n";
 
     // Print counts
-    // explicitly do this one outside the for loop below since it's not in the map!
+
+    // Explicitly do this one outside the for loop below since it's not in the map!
     std::cout << "count(kiwis) = " << map.count("kiwis") << "\n";
+
+    // Iterate over the map using an explicit `std::pair<>` iterator type range-based for loop,
+    // which I prefer instead of the "structured binding" range-based for loop approach above.
     for (const std::pair<const std::string, int> element : map)
     {
         size_t count = map.count(element.first);
         std::cout << "count(" << element.first << ") = " << count << "\n";
     }
-    // explicitly do this one outside the for loop above since it's not in the map!
+
+    // Explicitly do this one outside the for loop above since it's not in the map!
     std::cout << "count(strawberries) = " << map.count("strawberries") << "\n";
+
 
     return 0;
 }
