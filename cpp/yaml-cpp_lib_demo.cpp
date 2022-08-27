@@ -104,6 +104,7 @@ int main()
     }
 
     // Finally, load a good and valid file!
+    // NB: ALSO USE THE try/catch MECHANISM ABOVE IF YOU ARE WRITING THIS FOR PRODUCTION CODE!
     filename = YAML_FILE_PATH;
     root_node = YAML::LoadFile(filename);
     if (root_node.IsNull())
@@ -125,36 +126,59 @@ int main()
     assert(root_node.IsMap());
     assert(root_node["data"].IsSequence());
 
+    // ---------------------------------------------------------------------------------------------
     // Iterate over the "data" sequence (list) in this yaml file, printing select data
+    // ---------------------------------------------------------------------------------------------
+    std::cout << "=== Iterate over sequences (lists). ===\n\n";
+
     YAML::Node data_node = root_node["data"];
     assert(data_node.IsSequence());
+
+    std::cout << "1. Using an index:\n";
     for (size_t i = 0; i < data_node.size(); i++)
     {
         std::cout << data_node[i]["name"] << ", " << data_node[i]["value"] << "\n";
     }
+    std::cout << "\n";
+
+    std::cout << "2. Using a range-based for loop "
+                 "(https://en.cppreference.com/w/cpp/language/range-for):\n";
+    for (YAML::Node node : data_node)
+    {
+        std::cout << node["name"] << ", " << node["value"] << "\n";
+    }
+    std::cout << "\n\n";
 
     // Iterate over the "data" sequence (list) in this yaml file, printing each map in the list
-    std::cout << "\n";
     for (size_t i = 0; i < data_node.size(); i++)
     {
         std::cout << "data_node[" << i << "] = \n" << data_node[i] << "\n\n";
     }
 
+    // ---------------------------------------------------------------------------------------------
     // Iterate over a map in the data
+    // ---------------------------------------------------------------------------------------------
+    std::cout << "=== Iterate over maps (\"dictionaries\", or hash tables). ===\n\n";
+
     YAML::Node data_phi = root_node["data"][6];
     assert(data_phi.IsMap());
     std::cout << "data_phi = \n" << data_phi << "\n\n";
     std::cout << "data_phi.size() = " << data_phi.size() << "\n";
+
     // NB: this does NOT work! See the output. This is how you iterate over a sequence, NOT a map!
+    std::cout << "0. Iterating over a map as though it was a sequence does NOT work!\n";
     for (size_t i = 0; i < data_phi.size(); i++)
     {
         // Does not work right. That's the point: to show you what NOT to do. :)
         std::cout << "data_phi[" << i << "] = " << data_phi[i] << "\n";
     }
     std::cout << "\n";
-    // This is correct to iterate over a map!
+
+    // The following ways are correct to iterate over a map!:
+
     // See the `YAML::Node lineup` example here:
     // https://github.com/jbeder/yaml-cpp/wiki/Tutorial#basic-parsing-and-node-editing
+    std::cout << "1. Using traditional iterators:\n";
     for (YAML::const_iterator it = data_phi.begin(); it != data_phi.end(); it++)
     {
         std::string key = it->first.as<std::string>();
@@ -162,6 +186,52 @@ int main()
         printf("key = %-15s value = %-15s\n", key.c_str(), value.c_str());
     }
     std::cout << "\n";
+
+    std::cout << "2. Using a range-based for loop "
+                 "(https://en.cppreference.com/w/cpp/language/range-for) with `auto`.\n"
+                 "Note: using `auto` is NOT recommended! `auto` makes it confusing what the\n"
+                 "underlying type is and can do. It obfuscates the code:\n";
+    for (const auto& keyValue : data_phi)
+    {
+        std::string key = keyValue.first.as<std::string>();
+        std::string value = keyValue.second.as<std::string>();
+        printf("key = %-15s value = %-15s\n", key.c_str(), value.c_str());
+    }
+    std::cout << "\n";
+
+    std::cout << "3. Using a range-based for loop withOUT `auto` (this IS recommended!)\n"
+                 "(https://en.cppreference.com/w/cpp/language/range-for):\n";
+    for (const std::pair<YAML::Node, YAML::Node>& keyValue : data_phi)
+    {
+        std::string key = keyValue.first.as<std::string>();
+        std::string value = keyValue.second.as<std::string>();
+        printf("key = %-15s value = %-15s\n", key.c_str(), value.c_str());
+    }
+    std::cout << "\n\n";
+
+    // Iterating using "structured binding" does NOT work actually! Error:
+    //      yaml-cpp_lib_demo.cpp: In function ‘int main()’:
+    //      yaml-cpp_lib_demo.cpp:215:22: error: cannot decompose inaccessible member ‘YAML::Node::m_isValid’ of ‘YAML::Node’
+    //           for (const auto& [keyNode, valueNode] : data_phi)
+    //                            ^~~~~~~~~~~~~~~~~~~~
+    //      In file included from /usr/local/include/yaml-cpp/yaml.h:16,
+    //                       from yaml-cpp_lib_demo.cpp:47:
+    //      /usr/local/include/yaml-cpp/node/node.h:133:8: note: declared private here
+    //         bool m_isValid;
+    //              ^~~~~~~~~
+    //
+    // std::cout << "4. Using automatic \"structured binding\" to `key`, `value` variables "
+    //              "(**since C++17**)\n. "
+    //              "See https://en.cppreference.com/w/cpp/container/unordered_map and \n"
+    //              "https://en.cppreference.com/w/cpp/language/structured_binding.\n";
+    // for (const auto& [keyNode, valueNode] : data_phi)
+    // {
+    //     std::string key = keyNode.as<std::string>();
+    //     std::string value = valueNode.as<std::string>();
+    //     printf("key = %-15s value = %-15s\n", key.c_str(), value.c_str());
+    // }
+    // std::cout << "\n\n";
+
 
     // Do some math on a value from a map node
     double value = data_phi["value"].as<double>();
@@ -178,9 +248,9 @@ SAMPLE OUTPUT:
 
     eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 yaml-cpp_lib_demo.cpp -o bin/a -lyaml-cpp && bin/a
 
-    real    0m2.449s
-    user    0m2.240s
-    sys 0m0.130s
+    real    0m1.918s
+    user    0m1.816s
+    sys 0m0.097s
     Practice reading from a YAML file!
 
     Unable to load file "yaml-cpp_lib_demooo.yaml".
@@ -244,6 +314,9 @@ SAMPLE OUTPUT:
         value: 45.1234
       - *1
 
+    === Iterate over sequences (lists). ===
+
+    1. Using an index:
     x, 100
     y, 200
     z, 300
@@ -254,6 +327,19 @@ SAMPLE OUTPUT:
     theta, -0.20
     psi, 45.1234
     phi, 0.10
+
+    2. Using a range-based for loop (https://en.cppreference.com/w/cpp/language/range-for):
+    x, 100
+    y, 200
+    z, 300
+    u, 10
+    v, 11
+    w, 12
+    phi, 0.10
+    theta, -0.20
+    psi, 45.1234
+    phi, 0.10
+
 
     data_node[0] =
     name: x
@@ -325,6 +411,8 @@ SAMPLE OUTPUT:
     type: double
     value: 0.10
 
+    === Iterate over maps ("dictionaries", or hash tables). ===
+
     data_phi =
     name: phi
     description: roll angle
@@ -333,19 +421,40 @@ SAMPLE OUTPUT:
     value: 0.10
 
     data_phi.size() = 5
+    0. Iterating over a map as though it was a sequence does NOT work!
     data_phi[0] =
     data_phi[1] =
     data_phi[2] =
     data_phi[3] =
     data_phi[4] =
 
+    1. Using traditional iterators:
     key = name            value = phi
     key = description     value = roll angle
     key = units           value = deg
     key = type            value = double
     key = value           value = 0.10
 
+    2. Using a range-based for loop (https://en.cppreference.com/w/cpp/language/range-for) with `auto`.
+    Note: using `auto` is NOT recommended! `auto` makes it confusing what the
+    underlying type is and can do. It obfuscates the code:
+    key = name            value = phi
+    key = description     value = roll angle
+    key = units           value = deg
+    key = type            value = double
+    key = value           value = 0.10
+
+    3. Using a range-based for loop withOUT `auto` (this IS recommended!)
+    (https://en.cppreference.com/w/cpp/language/range-for):
+    key = name            value = phi
+    key = description     value = roll angle
+    key = units           value = deg
+    key = type            value = double
+    key = value           value = 0.10
+
+
     phi value = 0.100000; phi value*2.1 = 0.210000
+
 
 
 */
