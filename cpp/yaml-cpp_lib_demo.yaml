@@ -16,6 +16,22 @@ data:
     units: mm
     type: int64_t
     value: 100
+    # What happens if we have the same key twice? Does yaml-cpp throw an error? Does it retain
+    # only the first one? Only the last one?
+    # - Answer, through observation: it stores both, so if you print the whole node here you'll get
+    #   both. BUT, if you ask for the "value" of this Map node you'll get only the FIRST one, which
+    #   reads 100 (as specified just above)!
+    # - I think more-correct behavior, however, would be for yaml-cpp to throw an error while
+    #   loading the file, as I think having duplicate keys like this is NOT a valid YAML file. But,
+    #   I suppose that depends on what you really want? Yeah, throwing an error is probably better,
+    #   so that no-one using the library thinks that the **last** value is retained and overriding
+    #   the first, when in fact the first overrides the last in the current implementation of
+    #   yaml-cpp.
+    # - This behavior might not be consistent. I've only tested this one case, and the keys in the
+    #   map may not actually be ordered. So, your results may vary, perhaps. I'd call this
+    #   "undefined behavior", as far as YAML file definitions go, and as far as the user "contract"
+    #   goes when using yaml-cpp.
+    value: 999
   - name: y
     description: y position
     units: mm

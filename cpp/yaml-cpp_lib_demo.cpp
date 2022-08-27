@@ -237,7 +237,32 @@ int main()
     double value = data_phi["value"].as<double>();
     printf("phi value = %f; phi value*2.1 = %f\n", value, value*2.1);
 
+    // Try to cast a string as a double. Does an exception get thrown?
 
+    // Ans: YES! An exception
+    // gets thrown! So, if you want to be "safe" here and explicitly handle the error, you need
+    // to use a try/catch block. Here is the result of the following line:
+    //
+    //      terminate called after throwing an instance of 'YAML::TypedBadConversion<double>'
+    //        what():  yaml-cpp: error at line 65, column 11: bad conversion
+    //      Aborted (core dumped)
+    //
+    // value = data_phi["name"].as<double>(); // uncomment this to watch it crash the program here,
+                                              // and core dump
+
+    // Use a try/catch block instead to catch the thrown exception!
+    try
+    {
+        value = data_phi["name"].as<double>();
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "Unable to cast yaml string to double.\n"
+                  << "  Exception caught: e.what() = " << e.what() << "\n";
+    }
+
+
+    std::cout << "\nEnd! Program **successfully** terminated.\n";
     return 0;
 }
 
