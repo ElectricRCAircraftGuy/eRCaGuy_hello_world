@@ -47,7 +47,13 @@ import socket
 
 
 # Note: `socket.SOCK_STREAM` is usually used with TCP and `socket.SOCK_DGRAM` is usually used with
-# UDP. See: https://stackoverflow.com/a/10810040/4561887
+# UDP. See:
+# 1. Stack Overflow: What is SOCK_DGRAM and SOCK_STREAM?:
+#    https://stackoverflow.com/q/5815675/4561887
+#   1. Answer by @Michael J: https://stackoverflow.com/a/10810040/4561887
+#   1. *****+ [my answer] https://stackoverflow.com/a/71417876/4561887
+# 1. *****+ [my demo code in C]
+#    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/c/socket__geeksforgeeks_udp_server_GS_edit_GREAT.c
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 HOST = '192.168.0.1'
