@@ -83,8 +83,8 @@ def main():
 
     print("Unpacking the last struct.")
     (byte_1, uint32_1, uint32_2, uint32_3) = struct.unpack(format_string, data_c)
-    print(f"(byte_1, uint32_1, uint32_2, uint32_3) = " +
-          f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n")
+    print("(byte_1, uint32_1, uint32_2, uint32_3) = " +
+         f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n")
 
     # ----------------------------------------------------------------------------------------------
     print("== Option 2. pack a struct using a `struct.Struct` class. ==\n" +
@@ -111,12 +111,12 @@ def main():
           "using the struct_class_object.")
     # data_c
     (byte_1, uint32_1, uint32_2, uint32_3) = struct_class_object.unpack(data_c)
-    print(f"(byte_1, uint32_1, uint32_2, uint32_3) = " +
-          f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})")
+    print("(byte_1, uint32_1, uint32_2, uint32_3) = " +
+         f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})")
     # data_2c
     (byte_1, uint32_1, uint32_2, uint32_3) = struct_class_object.unpack(data_2c)
-    print(f"(byte_1, uint32_1, uint32_2, uint32_3) = " +
-          f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n")
+    print("(byte_1, uint32_1, uint32_2, uint32_3) = " +
+         f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n")
 
     # prove that the data object packed by the global functions is the same as the one packed by the
     # class
