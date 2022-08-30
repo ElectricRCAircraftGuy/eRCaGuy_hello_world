@@ -12,10 +12,10 @@
 
 # keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
 
-# Check this script with: `shellcheck aplay_alsa_play_high_tone.sh`
+# Check this script with: `shellcheck alsa_aplay_high_tone.sh`
 
 # Run command:
-#       ./aplay_alsa_play_high_tone.sh
+#       ./alsa_aplay_high_tone.sh
 
 # References:
 # 1. How to play sound in C from scratch (Linux): https://stackoverflow.com/q/71445060/4561887 -

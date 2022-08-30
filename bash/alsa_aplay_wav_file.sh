@@ -8,7 +8,7 @@
 # Learn to play one or more .wav files with the ALSA (Advanced Linux Sound Architecture) `aplay`
 # Linux audio utility.
 
-# Status:  wip
+# Status:  wip; runs and plays but maybe needs some work and cleanup
 
 # keywords:
 
