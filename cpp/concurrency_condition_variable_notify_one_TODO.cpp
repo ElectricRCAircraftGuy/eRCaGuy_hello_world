@@ -21,6 +21,9 @@ used.
   socket read buffer via a call to `setsockopt()`
   (https://man7.org/linux/man-pages/man2/setsockopt.2.html), I think, with the `SO_RCVBUF` option,
   I think. Look more into this!
+- See also `cat /proc/sys/net/core/rmem_max`. Search this page for "rmem_max", which is the max read
+  buffer memory allowed to be "set by using the SO_RCVBUF socket option", apparently:
+  https://man7.org/linux/man-pages/man7/socket.7.html
 
 
 STATUS: todo
