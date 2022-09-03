@@ -38,6 +38,7 @@ g++ -Wall -Wextra -Werror -O3 -std=c++17 stringstream_initialize_from_std_string
 ```
 
 References:
+1. *****+ [my answer with this code] https://stackoverflow.com/a/73590126/4561887
 1. *****+ https://en.cppreference.com/w/cpp/io/basic_stringstream
     1. https://en.cppreference.com/w/cpp/io/basic_stringstream/str `.str()` func
 1. https://stackoverflow.com/q/73589589/4561887 - Why doesn't `std::stringstream` work with
