@@ -18,6 +18,12 @@ and cannot be modified. See:
     > in general: `std::string_view` is the replacement for `std::string` when you don't own the
       string.
 
+Also demonstrate `std::move()` semantics to improve efficiency. Search this pg for "move":
+https://en.cppreference.com/w/cpp/io/basic_stringstream/basic_stringstream
+and see:
+Why doesn't std::stringstream work with std::string_view?:
+https://stackoverflow.com/q/73589589/4561887
+
 
 STATUS: done and works!
 
@@ -65,7 +71,7 @@ int main()
     std::stringstream ss1(str, std::ios_base::in | std::ios_base::out | std::ios_base::app);
     ss1 << "world.\n";  // since `std::ios_base::app` was used above, this **appends** rather than
                         // **overwrites** the data in the stringstream.
-    std::cout << ss1.str();
+    std::cout << ss1.str() << "\n";
 
     // 2. Construct a `std::stringstream` from a `std::string_view`. This is also constructor #3
     // from the link above (passing in a `std::string), but we must first construct a `std::string`
@@ -77,6 +83,12 @@ int main()
         std::ios_base::in | std::ios_base::out | std::ios_base::app);
     ss2 << "today?\n";
     std::cout << ss2.str();
+    // 2b Even better and more-efficient: move the string during construction since it won't be
+    // used anywhere else and is constructed as an R-value in the call anyway:
+    std::stringstream ss2b(std::move(std::string(sv)),
+        std::ios_base::in | std::ios_base::out | std::ios_base::app);
+    ss2b << "today?\n";
+    std::cout << ss2b.str() << "\n";
 
     // 3. Construct a `std::stringstream` from a C-string. This is also constructor #3
     // from the link above (passing in a `std::string), but we must first construct a `std::string`
@@ -89,11 +101,22 @@ int main()
         std::ios_base::in | std::ios_base::out | std::ios_base::app);
     ss3 << "doing?\n";
     std::cout << ss3.str();
-    // 4. ALTERNATIVE: be explicit in constructing the `std::string` from the C-string
-    std::stringstream ss4(std::string(c_str),
+    // 3b. ALTERNATIVE: be explicit in constructing the `std::string` from the C-string
+    std::stringstream ss3b(std::string(c_str),
         std::ios_base::in | std::ios_base::out | std::ios_base::app);
-    ss4 << "feeling?\n";
-    std::cout << ss4.str();
+    ss3b << "doing?\n";
+    std::cout << ss3b.str();
+    // 3c. OR, again, even better and more efficient: use `std::move()` on these in-place-constructed
+    // `std::string`s too!:
+    std::stringstream ss3c(std::move(c_str),
+        std::ios_base::in | std::ios_base::out | std::ios_base::app);
+    ss3c << "doing?\n";
+    std::cout << ss3c.str();
+    // 3d. again, with `std::move()`:
+    std::stringstream ss3d(std::move(std::string(c_str)),
+        std::ios_base::in | std::ios_base::out | std::ios_base::app);
+    ss3d << "doing?\n";
+    std::cout << ss3d.str();
 
 
     return 0;
@@ -106,8 +129,14 @@ SAMPLE OUTPUT:
 
     eRCaGuy_hello_world/cpp$ g++ -Wall -Wextra -Werror -O3 -std=c++17 stringstream_initialize_from_std_string__string_view__and_c_string.cpp -o bin/a && bin/a
     Hello world.
+
     Hey and how are you today?
+    Hey and how are you today?
+
     Hey and how are you doing?
-    Hey and how are you feeling?
+    Hey and how are you doing?
+    Hey and how are you doing?
+    Hey and how are you doing?
+
 
 */
