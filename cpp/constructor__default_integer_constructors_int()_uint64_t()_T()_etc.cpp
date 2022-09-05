@@ -93,58 +93,87 @@ C++?""
 #include <cstdio>   // For `printf()`
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 
+
+// Generic template programming which uses some of the syntax below
+template <typename T>
+void reinitializeVariable(T* variable_or_object, T inital_value = T{})
+{
+    *variable_or_object = inital_value;
+}
+
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
     printf("Default ");
-    std::cout << "constructors:\n\n";
+    std::cout << "constructors [correction: **value initialization** of "
+                 "integer and floating point types!]:\n\n";
 
     // These are all the same thing: initializing an int to 0
+    int i0 = 0;     // 0
     int i1 = int(); // 0
-    int i5 = int{}; ////////////////
-    int i2{};       // 0
-    int i3();       // incorrect integer initialization: this is actually a
-                    // function declaration of function `i2()` which accepts
+    int i2 = int{}; // 0
+    int i3{};       // 0
+    int i4();       // incorrect integer initialization: this is actually a
+                    // function declaration of function `i4()` which accepts
                     // `void` and returns `int`.
 
+    std::cout << "i0 = " << i0 << "\n";
     std::cout << "i1 = " << i1 << "\n";
-    std::cout << "i5 = " << i5 << "\n"; ///////////////
-    std::cout << "i2 = " << i2 << "\n\n";
-    // Can't print `i3` like this, since it's a function address, not an `int`.
-    //     error: the address of ‘int i3()’ will never be NULL [-Werror=address]
-    // std::cout << i3 << "\n";
+    std::cout << "i2 = " << i2 << "\n";
+    std::cout << "i3 = " << i3 << "\n\n";
+    // Can't print `i4` like this, since it's a function address, not an `int`.
+    //     error: the address of ‘int i4()’ will never be NULL [-Werror=address]
+    // std::cout << i4 << "\n";
 
     // These are all the same thing: initializing an int to 0
     int i10 = 0;        // 0
     int i11 = int();    // 0
     int i12 = int(0);   // 0
-    int i13{};          // 0
-    int i14{0};         // 0
+    int i13 = int{};    // 0
+    int i14 = int{0};   // 0
+    int i15{};          // 0
+    int i16{0};         // 0
     std::cout << "i10 = " << i10 << "\n";
     std::cout << "i11 = " << i11 << "\n";
     std::cout << "i12 = " << i12 << "\n";
     std::cout << "i13 = " << i13 << "\n";
-    std::cout << "i14 = " << i14 << "\n\n";
+    std::cout << "i14 = " << i14 << "\n";
+    std::cout << "i15 = " << i15 << "\n";
+    std::cout << "i16 = " << i16 << "\n\n";
 
     // These are all the same thing: initializing an int to 99
     int i20 = 99;        // 99
     int i21 = int(99);   // 99
-    int i22{99};         // 99
+    int i22 = int{99};   // 99
+    int i23{99};         // 99
     std::cout << "i20 = " << i20 << "\n";
     std::cout << "i21 = " << i21 << "\n";
-    std::cout << "i22 = " << i22 << "\n\n";
+    std::cout << "i22 = " << i22 << "\n";
+    std::cout << "i23 = " << i23 << "\n\n";
 
     // A few more random examples, to show it works with other types too
 
     // Set all uint64_t types to 77
-    uint64_t u1 = 77;
-    uint64_t u2 = uint64_t(77);
-    uint64_t u3{77};
-    std::cout << "u1 = " << u1 << "\n";
-    std::cout << "u2 = " << u2 << "\n";
-    std::cout << "u3 = " << u3 << "\n\n";
+    uint64_t u64_20 = 77;           // 77
+    uint64_t u64_21 = uint64_t(77); // 77
+    uint64_t u64_22 = uint64_t{77}; // 77
+    uint64_t u64_23{77};            // 77
+    std::cout << "u64_20 = " << u64_20 << "\n";
+    std::cout << "u64_21 = " << u64_21 << "\n";
+    std::cout << "u64_22 = " << u64_22 << "\n";
+    std::cout << "u64_23 = " << u64_23 << "\n\n";
 
-    // double d1{0.1234}; ////////////
+    // Set all double types to 77.1234
+    double d20 = 77.1234;           // 77.1234
+    double d21 = double(77.1234);   // 77.1234
+    double d22 = double{77.1234};   // 77.1234
+    double d23{77.1234};            // 77.1234
+    std::cout << "d20 = " << d20 << "\n";
+    std::cout << "d21 = " << d21 << "\n";
+    std::cout << "d22 = " << d22 << "\n";
+    std::cout << "d23 = " << d23 << "\n\n";
+
+    // Try it with types whose typename is multiple words. Ex: `unsigned int`
 
 
 
