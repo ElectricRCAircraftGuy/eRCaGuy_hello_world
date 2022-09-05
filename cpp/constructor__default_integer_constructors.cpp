@@ -1,6 +1,9 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+GS
+Sept. 2022
+
 Demonstrate the weird `T()` "default constructors" on various types in C++,
 including even basic types like integers! You'll see this super weird
 default-constructor syntax on cppreference.com all over the place, such as
@@ -23,6 +26,14 @@ int i2 = int{77};
 int i2 = int(77);
 ```
 
+See also: https://en.cppreference.com/w/cpp/language/zero_initialization. "Zero
+initialization" is not really a concept in C++, but it has a reference page
+because some other types of initialization, such as "value initialization", may
+initialize values to zero.  Here is a quote from the link above: _"Note that
+this is not the syntax for zero-initialization, which does not have a dedicated
+syntax in the language. These are examples of other types of initializations,
+which might perform zero-initialization."_
+
 
 STATUS: wip
 
@@ -33,7 +44,7 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 default_constructors__integers.cpp -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 constructor__default_integer_constructors.cpp -o bin/a && bin/a
 ```
 
 References:
@@ -112,7 +123,7 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 default_constructors__integers.cpp -o bin/a && bin/a
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 constructor__default_integer_constructors.cpp -o bin/a && bin/a
 
     real    0m2.079s
     user    0m0.775s
