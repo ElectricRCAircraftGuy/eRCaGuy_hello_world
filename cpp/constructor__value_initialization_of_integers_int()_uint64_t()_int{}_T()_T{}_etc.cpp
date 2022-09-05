@@ -4,6 +4,22 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 Sept. 2022
 
+Main references:
+1. What does int() do in C++? - https://stackoverflow.com/q/17131911/4561887
+1. What is a call to `char()`, `uint8_t()`, `int64_t()`, integer `T()`, etc, as a function in C++? -
+   https://stackoverflow.com/q/72367123/4561887
+---
+1. https://en.cppreference.com/w/cpp/language/value_initialization - using a
+   constructor (for classes) or constructor-like initialization (for integers or
+   floating point numbers) via `()` or `{}`.
+1. https://en.cppreference.com/w/cpp/language/zero_initialization - not a
+   dedicated type of initialization in C++; colloquially includes any other type
+   of initialization which initializes to zero, such as a value initialization
+   via `()` or `{}`, with no value specified.
+1. https://en.cppreference.com/w/cpp/language/default_constructor - any class
+   constructor which can be called with no arguments.
+1. https://en.cppreference.com/w/cpp/language/constructor - any class
+   constructor or member initialization list--using the colon operator, `:`.
 
 BACKGROUND NOTES:
 
@@ -71,7 +87,7 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 "constructor__default_integer_constructors_int()_uint64_t()_T()_etc.cpp" -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 "constructor__value_initialization_of_integers_int()_uint64_t()_int{}_T()_T{}_etc.cpp" -o bin/a && bin/a
 ```
 
 References:
