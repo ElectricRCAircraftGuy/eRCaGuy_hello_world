@@ -4,6 +4,31 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 Sept. 2022
 
+
+BACKGROUND NOTES:
+
+Note that integers and floating point types do not actually have "constructors"
+in C++. That is a misnomer. So, me naming this file with the
+phrase "integer_constructors", and me saying "default constructors" below is
+actually a **misnomer**. It is a misnomer which should resonate with you,
+however, because **that's what it looks like.**
+
+The true term is simply "value initialization." Keep this in mind.
+I **intentionally** use this misnomer to teach a principle, but I want you to
+understand that integers and floating point types in C++ **are not classes**
+and do NOT have true "constructors" like classes do. Rather, they allow this
+weird "value initialization" syntax to simply allow **generic, template-based
+programming** where these types of syntaxes are used for generic programming.
+Ex: from here (https://stackoverflow.com/a/17131915/4561887):
+
+    template <typename T>
+    void reset(T& in)
+    {
+        in = T();
+    }
+
+DESCRIPTION:
+
 Demonstrate the weird `T()` "default constructors" on various types in C++,
 including even basic types like integers! You'll see this super weird
 default-constructor syntax on cppreference.com all over the place, such as
@@ -15,7 +40,8 @@ explicit vector( size_type count,
                  const Allocator& alloc = Allocator());
 ```
 
-While I'm at it, show other initialization syntaxes too, such as brace initialization of integers and other types.
+While I'm at it, show other initialization syntaxes too, such as brace
+initialization of integers and other types.
 
 Examples:
 ```
@@ -29,10 +55,11 @@ int i2 = int(77);
 See also: https://en.cppreference.com/w/cpp/language/zero_initialization. "Zero
 initialization" is not really a concept in C++, but it has a reference page
 because some other types of initialization, such as "value initialization", may
-initialize values to zero.  Here is a quote from the link above: _"Note that
-this is not the syntax for zero-initialization, which does not have a dedicated
-syntax in the language. These are examples of other types of initializations,
-which might perform zero-initialization."_
+initialize values to zero. Here is a quote from the link above:
+
+    > Note that this is not the syntax for zero-initialization, which does not
+      have a dedicated syntax in the language. These are examples of other
+      types of initializations, which might perform zero-initialization.
 
 
 STATUS: wip
@@ -44,21 +71,27 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 constructor__default_integer_constructors.cpp -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 "constructor__default_integer_constructors_int()_uint64_t()_T()_etc.cpp" -o bin/a && bin/a
 ```
 
 References:
 1. https://en.cppreference.com/w/cpp/container/vector/vector
-1.
+1. https://stackoverflow.com/a/73564212/4561887 - my answer on "What is the
+colon syntax (:) in the class constructor and what does passing an integer to a
+std::vector<> constructor do?"
+1. ***** https://stackoverflow.com/q/72367123/4561887 - my Q on "What is a call
+to `char()`, `uint8_t()`, `int64_t()`, integer `T()`, etc, as a function in
+C++?""
+1. https://stackoverflow.com/q/17131911/4561887 - "What does int() do in C++?"
+
 
 */
 
-// C++ includes
-#include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 
-// C includes
+// C & C++ includes
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
 #include <cstdio>   // For `printf()`
+#include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
@@ -123,11 +156,6 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 constructor__default_integer_constructors.cpp -o bin/a && bin/a
 
-    real    0m2.079s
-    user    0m0.775s
-    sys 0m0.087s
-    Hello world!
 
 */
