@@ -8,7 +8,7 @@ Sept. 2022
 <!-- <summary><b>(click to expand)</b></summary> -->
 <!-- MarkdownTOC -->
 
-1. [C++ mutexes and locks: `std::mutex` vs `std::lock_guard` and `std::condition_variable` vs `std::unique_lock` vs `std::scoped_lock` and `std::lock()`](#c-mutexes-and-locks-stdmutex-vs-stdlock_guard-and-stdcondition_variable-vs-stdunique_lock-vs-stdscoped_lock-and-stdlock)
+1. [C++ mutexes and locks: `std::mutex` vs \(`std::lock_guard` and `std::condition_variable`\) vs `std::unique_lock` vs \(`std::scoped_lock` and `std::lock(\)`)](#c-mutexes-and-locks-stdmutex-vs-stdlock_guard-and-stdcondition_variable-vs-stdunique_lock-vs-stdscoped_lock-and-stdlock)
     1. [1. `std::mutex` \(C++11\)](#1-stdmutex-c11)
     1. [2. `std::lock_guard` \(C++11\)](#2-stdlock_guard-c11)
     1. [3. `std::unique_lock` \(C++11\)](#3-stdunique_lock-c11)
@@ -20,7 +20,7 @@ Sept. 2022
 
 
 <a id="c-mutexes-and-locks-stdmutex-vs-stdlock_guard-and-stdcondition_variable-vs-stdunique_lock-vs-stdscoped_lock-and-stdlock"></a>
-# C++ mutexes and locks: `std::mutex` vs `std::lock_guard` and `std::condition_variable` vs `std::unique_lock` vs `std::scoped_lock` and `std::lock()`
+# C++ mutexes and locks: `std::mutex` vs (`std::lock_guard` and `std::condition_variable`) vs `std::unique_lock` vs (`std::scoped_lock` and `std::lock()`)
 
 About references: _both_ cppreference.com and cplusplus.com are _community wikis._ **You** can edit them, just like Wikipedia! Cppreference.com is generally _more pedantic_ and up-to-date (has documentation through C++20, for instance) and difficult to understand, and cplusplus.com is generally **significantly** easier to understand, and more useful in that sense, but is missing most documentation after C++11.  
 
