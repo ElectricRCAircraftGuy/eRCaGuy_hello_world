@@ -281,9 +281,11 @@ while (true)
     // the predicate is false, then the `wait()` function assumes it was a 
     // [spurious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup) and 
     // automatically calls the underlying `lock.unlock()` and puts the thread
-    // back to sleep again. 
+    // back to sleep to wait again. This wait loop goes on indefinitely until 
+    // the predicate is true, at which point the `wait()` function will return. 
     // When `wait()` finally does return, the lock will have been already
-    // automatically taken via `lock.lock()`.  
+    // automatically taken via `lock.lock()`, which of course is just a wrapper
+    // around the underlying mutex, essentially calling `mutex.lock()`.  
     cv.wait(lock, []() { 
         return sharedData.isNewData; 
     });
