@@ -468,6 +468,12 @@ Features:
 1. Allows one thread waking up another thread or threads to notify it or them that it's time for it or them to run.
 1. The producer/notifying thread can lock the mutex like normal to write to or access the shared data.
 1. The consumer/`wait()`ing thread _must_ use a `std::unique_lock` when waiting to be notified and woken up.
+1. The [`std::condition_variable::wait()`](https://en.cppreference.com/w/cpp/thread/condition_variable/wait) function uses the `std::unique_lock` internally to _unlock_ the mutex whenever it puts the thread to sleep to wait, and to _lock_ the mutex whenever the thread gets woken up by a notification from the `std::condition_variable`. Here is the locking process:
+    1. The underlying mutex is already locked at the start of `std::condition_variable::wait()`. (Constructing the `std::unique_lock` automatically locked it at construction).
+    1. `std::condition_variable::wait()` _unlocks_ the mutex before sleeping to wait.
+    1. `std::condition_variable::wait()` _locks_ the mutex each time the thread is awakened.
+    1. If the wake up was spurious, and/or the predicate condition is _not_ met (indicating it should wait again), it _locks_ the mutex again before sleeping to wait again.
+    1. When the thread is awakened and the predicate condition is `true`, `std::condition_variable::wait()` finally returns, and the mutex is guaranteed to be _locked_ at the time `std::condition_variable::wait()` returns and is complete. 
 
 Sample code:  
 _See above in the [`std::unique_lock`](#condition_variable) section!_
