@@ -6,6 +6,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 <summary><b>(click to expand)</b></summary>
 <!-- MarkdownTOC -->
 
+1. [Other READMEs/documentation/articles](#other-readmesdocumentationarticles)
 1. [`ccache` - "a fast C/C++ compiler cache"](#ccache---a-fast-cc-compiler-cache)
 1. [Library setup & installation](#library-setup--installation)
 1. [C++ Googletest setup: how to build googletest \(gtest and gmock\) with the gcc/g++ compiler](#c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler)
@@ -36,6 +37,14 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 <!-- /MarkdownTOC -->
 </details>
+
+
+<a id="other-readmesdocumentationarticles"></a>
+# Other READMEs/documentation/articles
+...at this same directory level:
+
+1. [Iterators](iterators_README.md)
+1. [`std::mutex` vs `std::lock_guard` vs `std::unique_lock` vs `std::scoped_lock`](std_mutex_vs_std_lock_guard_vs_std_unique_lock_vs_std_scoped_lock_README.md)
 
 
 <a id="ccache---a-fast-cc-compiler-cache"></a>
