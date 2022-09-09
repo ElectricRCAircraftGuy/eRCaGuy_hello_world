@@ -8,23 +8,43 @@ Sept. 2022
 <!-- <summary><b>(click to expand)</b></summary> -->
 <!-- MarkdownTOC -->
 
-1. [C++ mutexes and locks: `std::mutex` vs \(`std::lock_guard` and `std::condition_variable`\) vs `std::unique_lock` vs \(`std::scoped_lock` and `std::lock(\)`)](#c-mutexes-and-locks-stdmutex-vs-stdlock_guard-and-stdcondition_variable-vs-stdunique_lock-vs-stdscoped_lock-and-stdlock)
+1. [C++ mutexes and locks: `std::mutex`, `std::lock_guard`, `std::unique_lock` and `std::condition_variable`,  and `std::scoped_lock` and `std::lock()`](#c-mutexes-and-locks-stdmutex-stdlock_guard-stdunique_lock-and-stdcondition_variable-and-stdscoped_lock-and-stdlock)
+    1. [General References:](#general-references)
     1. [1. `std::mutex` \(C++11\)](#1-stdmutex-c11)
+        1. [References:](#references)
+        1. [Features:](#features)
+        1. [Sample code:](#sample-code)
     1. [2. `std::lock_guard` \(C++11\)](#2-stdlock_guard-c11)
+        1. [References:](#references-1)
+        1. [Features:](#features-1)
+        1. [Sample code:](#sample-code-1)
     1. [3. `std::unique_lock` \(C++11\)](#3-stdunique_lock-c11)
+        1. [References:](#references-2)
+        1. [Features:](#features-2)
+        1. [Sample code:](#sample-code-2)
+            1. [`std::unique_lock`](#stdunique_lock)
+            1. [`std::condition_variable`](#stdcondition_variable)
     1. [4. `std::scoped_lock` \(C++17\) and `std::lock()` \(C++11\)](#4-stdscoped_lock-c17-and-stdlock-c11)
+        1. [References:](#references-3)
+        1. [Features:](#features-3)
+        1. [Sample code:](#sample-code-3)
     1. [5. `std::condition_variable` \(C++11\)](#5-stdcondition_variable-c11)
+        1. [References:](#references-4)
+        1. [Features:](#features-4)
+        1. [Sample code:](#sample-code-4)
 
 <!-- /MarkdownTOC -->
 <!-- </details> -->
 
 
-<a id="c-mutexes-and-locks-stdmutex-vs-stdlock_guard-and-stdcondition_variable-vs-stdunique_lock-vs-stdscoped_lock-and-stdlock"></a>
-# C++ mutexes and locks: `std::mutex` vs (`std::lock_guard` and `std::condition_variable`) vs `std::unique_lock` vs (`std::scoped_lock` and `std::lock()`)
+<a id="c-mutexes-and-locks-stdmutex-stdlock_guard-stdunique_lock-and-stdcondition_variable-and-stdscoped_lock-and-stdlock"></a>
+# C++ mutexes and locks: `std::mutex`, `std::lock_guard`, `std::unique_lock` and `std::condition_variable`,  and `std::scoped_lock` and `std::lock()`
 
 About references: _both_ cppreference.com and cplusplus.com are _community wikis._ **You** can edit them, just like Wikipedia! Cppreference.com is generally _more pedantic_ and up-to-date (has documentation through C++20, for instance) and difficult to understand, and cplusplus.com is generally **significantly** easier to understand, and more useful in that sense, but is missing most documentation after C++11.  
 
-General References:
+
+<a id="general-references"></a>
+## General References:
 1. Concurrency support library: https://en.cppreference.com/w/cpp/thread
 1. Spurious wakeup: https://en.wikipedia.org/wiki/Spurious_wakeup
 
@@ -32,15 +52,18 @@ General References:
 <a id="1-stdmutex-c11"></a>
 ## 1. `std::mutex` (C++11)
 
-References:
+<a id="references"></a>
+### References:
 1. https://en.cppreference.com/w/cpp/thread/mutex
 1. https://cplusplus.com/reference/mutex/mutex/
     > A mutex is a lockable object that is designed to signal when critical sections of code need exclusive access, preventing other threads with the same protection from executing concurrently and access the same memory locations.
 
-Features:
+<a id="features"></a>
+### Features:
 1. A `std::mutex` allows you to prevent race conditions between multiple threads by explicitly locking and unlocking access to a shared resource.
 
-Sample code:
+<a id="sample-code"></a>
+### Sample code:
 ```cpp
 #include <mutex>
 
@@ -55,21 +78,24 @@ mutex.unlock();
 <a id="2-stdlock_guard-c11"></a>
 ## 2. `std::lock_guard` (C++11)
 
-References:
+<a id="references-1"></a>
+### References:
 1. https://en.cppreference.com/w/cpp/thread/lock_guard
 1. https://cplusplus.com/reference/mutex/lock_guard/ 
     > A lock guard is an object that manages a mutex object by keeping it always locked.
     > 
     > On construction, the mutex object is locked by the calling thread, and on destruction, the mutex is unlocked. It is the simplest lock, and is specially useful as an object with automatic duration that lasts until the end of its context. In this way, it guarantees the mutex object is properly unlocked in case an exception is thrown.
 
-Features:
+<a id="features-1"></a>
+### Features:
 1. A `std::lock_guard` wraps a mutex. 
 1. At creation, it automatically locks the mutex. 
 1. Upon destruction as it exits scope, it automatically unlocks the mutex. 
 1. If using C++17 or later, it is recommended to use `std::scoped_lock` instead. 
 1. Even in C++11, you can use the more feature-rich `std::unique_lock` as well, to do the exact same thing if needed.
 
-Sample code:
+<a id="sample-code-1"></a>
+### Sample code:
 ```cpp
 #include <mutex>
 
@@ -91,7 +117,8 @@ std::mutex mutex;
 <a id="3-stdunique_lock-c11"></a>
 ## 3. `std::unique_lock` (C++11)
 
-References:
+<a id="references-2"></a>
+### References:
 1. https://en.cppreference.com/w/cpp/thread/unique_lock
 1. https://cplusplus.com/reference/mutex/unique_lock/
     > A unique lock is an object that manages a mutex object with unique ownership in both states: locked and unlocked.
@@ -100,7 +127,8 @@ References:
     > 
     > This class guarantees an unlocked status on destruction (even if not called explicitly). Therefore it is especially useful as an object with automatic duration, as it guarantees the mutex object is properly unlocked in case an exception is thrown.
 
-Features:
+<a id="features-2"></a>
+### Features:
 1. Wraps a mutex, but has more features than a `std::lock_guard`. 
     1. Unlike a `std::lock_guard`, a `std::unique_lock` can be explicitly locked and unlocked after creation.
 1. At creation, by default, it automatically locks the mutex (same as a `std::lock_guard`), but this behavior can be modified by passing special values to the constructor.
@@ -109,7 +137,12 @@ Features:
     1. The reason a `std::unique_lock` is required by a `std::condition_variable` is so that it can lock the underlying mutex each time the condition variable wakes up from a wait after a valid notification and runs a critical section of code, and unlock the underlying mutex each time A) the condition variable `wait()` call spuriously wakes up and it needs to wait again, and B) upon automatic destruction when the critical section runs and is over and the scope of the `std::unique_lock` is exited.
 1. You can **always** use a `std::unique_lock` in place of a `std::lock_guard`, but not the other way around. 
 
-Sample code:
+<a id="sample-code-2"></a>
+### Sample code:
+
+<a id="stdunique_lock"></a>
+#### `std::unique_lock`
+
 ```cpp
 #include <mutex>
 
@@ -171,8 +204,11 @@ std::mutex mutex;
     // `std::unique_lock`
 ```
 
+<a id="stdcondition_variable"></a>
+#### `std::condition_variable`
+
 <a id="condition_variable"></a>
-The `std::condition_variable` usage of the `std::unique_lock` is slightly more complex:
+The **`std::condition_variable`** usage of the `std::unique_lock` is slightly more complex:
 
 ```cpp
 #include <condition_variable>
@@ -356,11 +392,13 @@ while (true)
 <a id="4-stdscoped_lock-c17-and-stdlock-c11"></a>
 ## 4. `std::scoped_lock` (C++17) and `std::lock()` (C++11)
 
-References:
+<a id="references-3"></a>
+### References:
 1. `std::scoped_lock`: https://en.cppreference.com/w/cpp/thread/scoped_lock
 1. `std::lock`: https://en.cppreference.com/w/cpp/thread/lock
 
-Features:
+<a id="features-3"></a>
+### Features:
 1. `std::scoped_lock` is a very simple mechanism, like a C++11 `std::lock_guard`, except that the C++17 `std::scoped_lock` can be used on **multiple mutexes simultaneously!**
 1. If using C++17 or later, it is recommended to use `std::scoped_lock` instead of the `std::lock_guard`. 
 1. A `std::scoped_lock` wraps one or more mutexes, just like a `std::lock_guard`, except a `std::lock_guard` can only wrap ONE mutex at a time!
@@ -368,7 +406,8 @@ Features:
 1. Upon destruction as it exits scope, a `std::scoped_lock` automatically unlocks the mutex(es). 
 1. Even in C++11, you can use the more feature-rich `std::unique_lock` as well, to do the exact same thing as a `std::scoped_lock`, but on a _single mutex at a time_. To do the same thing in C++11 on _multiple mutexes at once_, you must use a call to the `std::lock(mutex1, mutex2, mutexN)` function instead, thereby explicitly locking all mutexes at once. See examples below.
 
-Sample code:
+<a id="sample-code-3"></a>
+### Sample code:
 ```cpp
 #include <mutex>
 
@@ -449,7 +488,8 @@ std::mutex mutex3;
 <a id="5-stdcondition_variable-c11"></a>
 ## 5. `std::condition_variable` (C++11)
 
-References:
+<a id="references-4"></a>
+### References:
 1. https://en.cppreference.com/w/cpp/thread/condition_variable
     1. https://en.cppreference.com/w/cpp/thread/condition_variable/wait
 1. https://cplusplus.com/reference/condition_variable/condition_variable/
@@ -464,7 +504,8 @@ References:
         >
         > Generally, the function is notified to wake up by a call in another thread either to member `notify_one` or to member `notify_all`. But certain implementations may produce spurious wake-up calls without any of these functions being called. Therefore, users of this function shall ensure their condition for resumption is met.
 
-Features:
+<a id="features-4"></a>
+### Features:
 1. Allows one thread waking up another thread or threads to notify it or them that it's time for it or them to run.
 1. The producer/notifying thread can lock the mutex like normal to write to or access the shared data.
 1. The consumer/`wait()`ing thread _must_ use a `std::unique_lock` when waiting to be notified and woken up.
@@ -475,5 +516,6 @@ Features:
     1. If the wake up was spurious, and/or the predicate condition is _not_ met (indicating it should wait again), it _locks_ the mutex again before sleeping to wait again.
     1. When the thread is awakened and the predicate condition is `true`, `std::condition_variable::wait()` finally returns, and the mutex is guaranteed to be _locked_ at the time `std::condition_variable::wait()` returns and is complete. 
 
-Sample code:  
+<a id="sample-code-4"></a>
+### Sample code:  
 _See above in the [`std::unique_lock`](#condition_variable) section!_
