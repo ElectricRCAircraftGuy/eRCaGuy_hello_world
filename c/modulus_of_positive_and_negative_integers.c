@@ -29,7 +29,8 @@ References:
    https://stackoverflow.com/q/4467539/4561887
 1. ***** How does java do modulus calculations with negative numbers?:
    [great answer!] https://stackoverflow.com/a/4403570/4561887
-1.
+    1. *****+ [MY OWN ANSWER WITH THIS CODE, FOR C AND C++]
+       https://stackoverflow.com/a/73782011/4561887
 
 */
 
