@@ -7,6 +7,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 <!-- MarkdownTOC -->
 
 1. [Other READMEs/documentation/articles](#other-readmesdocumentationarticles)
+1. [LeetCode answers herein](#leetcode-answers-herein)
 1. [`ccache` - "a fast C/C++ compiler cache"](#ccache---a-fast-cc-compiler-cache)
 1. [Library setup & installation](#library-setup--installation)
 1. [C++ Googletest setup: how to build googletest \(gtest and gmock\) with the gcc/g++ compiler](#c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler)
@@ -45,6 +46,27 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 1. [Iterators](iterators_README.md)
 1. [`std::mutex` vs `std::lock_guard` vs `std::unique_lock` vs `std::scoped_lock`](std_mutex_vs_std_lock_guard_vs_std_unique_lock_vs_std_scoped_lock_README.md)
+
+
+<a id="leetcode-answers-herein"></a>
+# LeetCode answers herein
+
+To find any LeetCode questions and/or answers I've got in this repo, the best way would be to grep for "leetcode.com". You can use regular GNU `grep`, _or_ (much better!) [ripgrep](https://github.com/BurntSushi/ripgrep#installation) (`rg`):
+
+```bash
+# Search the repo for "leetcode.com"
+
+cd path/to/eRCaGuy_hello_world
+
+# with grep
+time grep -rn 'leetcode\.com'
+
+# with ripgrep (`rg`) (searches much faster)
+time rg 'leetcode\.com'
+```
+
+Here is a manual list of files. If it's incomplete, sorry. Manually search using the commands above instead. 
+1. [puzzle__maze__smallest_sum_flowing_down_right.cpp](puzzle__maze__smallest_sum_flowing_down_right.cpp)
 
 
 <a id="ccache---a-fast-cc-compiler-cache"></a>
