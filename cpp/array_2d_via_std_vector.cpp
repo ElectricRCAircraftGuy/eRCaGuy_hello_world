@@ -149,6 +149,8 @@ int main()
     array2d_4[1][1] = 2;
     array2d_4[2][2] = 3;
     array2d_4[2][3] = 4;
+    // array2d_4[3][3] = 5; // UNDEFINED BEHAVIOR! OUT OF ROW BOUNDS! Results
+    //                      // in: `Segmentation fault (core dumped)`
     print_array2d_1(array2d_4);
     print_array2d_2(array2d_4);
     printf("-------------\n\n");
@@ -164,9 +166,48 @@ SAMPLE OUTPUT:
 
     eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 array_2d_via_std_vector.cpp -o bin/a && bin/a
 
-    real    0m2.079s
-    user    0m0.775s
-    sys 0m0.087s
-    Hello world!
+    real    0m0.389s
+    user    0m0.355s
+    sys 0m0.034s
+
+    Print 2D arrays (vector of vectors) in C++!
+
+    -------------
+
+    array2d[0][0]=11 array2d[0][1]=12 array2d[0][2]=13
+    array2d[1][0]=14 array2d[1][1]=15 array2d[1][2]=16
+
+    array2d[0][0]=11 array2d[0][1]=12 array2d[0][2]=13
+    array2d[1][0]=14 array2d[1][1]=15 array2d[1][2]=16
+
+    -------------
+
+    array2d[0][0]=1 array2d[0][1]=2 array2d[0][2]=3
+    array2d[1][0]=4 array2d[1][1]=5 array2d[1][2]=6 array2d[1][3]=7
+    array2d[2][0]=8 array2d[2][1]=9 array2d[2][2]=10
+
+    array2d[0][0]=1 array2d[0][1]=2 array2d[0][2]=3
+    array2d[1][0]=4 array2d[1][1]=5 array2d[1][2]=6 array2d[1][3]=7
+    array2d[2][0]=8 array2d[2][1]=9 array2d[2][2]=10
+
+    -------------
+
+    array2d[0][0]=-1 array2d[0][1]=-2 array2d[0][2]=-3
+    array2d[1][0]=-4 array2d[1][1]=-5
+
+    array2d[0][0]=-1 array2d[0][1]=-2 array2d[0][2]=-3
+    array2d[1][0]=-4 array2d[1][1]=-5
+
+    -------------
+
+    array2d[0][0]=1 array2d[0][1]=0 array2d[0][2]=0 array2d[0][3]=0
+    array2d[1][0]=0 array2d[1][1]=2 array2d[1][2]=0 array2d[1][3]=0
+    array2d[2][0]=0 array2d[2][1]=0 array2d[2][2]=3 array2d[2][3]=4
+
+    array2d[0][0]=1 array2d[0][1]=0 array2d[0][2]=0 array2d[0][3]=0
+    array2d[1][0]=0 array2d[1][1]=2 array2d[1][2]=0 array2d[1][3]=0
+    array2d[2][0]=0 array2d[2][1]=0 array2d[2][2]=3 array2d[2][3]=4
+
+    -------------
 
 */
