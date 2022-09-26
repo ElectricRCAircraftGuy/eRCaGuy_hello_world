@@ -66,7 +66,7 @@ time rg 'leetcode\.com'
 ```
 
 Here is a manual list of files. If it's incomplete, sorry. Manually search using the commands above instead. 
-1. [puzzle__maze__smallest_sum_flowing_down_right.cpp](puzzle__maze__smallest_sum_flowing_down_right.cpp)
+1. [puzzle__maze__smallest_sum_flowing_down_and_right.cpp](puzzle__maze__smallest_sum_flowing_down_and_right.cpp)
 
 
 <a id="ccache---a-fast-cc-compiler-cache"></a>
