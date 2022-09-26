@@ -29,8 +29,12 @@ time g++ -Wall -Wextra -Werror -O3 -std=c++17 array_2d_via_std_vector.cpp -o bin
 ```
 
 References:
-1. *****+ [my answer--with some of this code!]
+1. *****+ [my answer: C-style multi-dimensional arrays in C and C++]
    https://stackoverflow.com/a/67814330/4561887
+    1. *****++ [my answer with a LOT of this code!]
+       "How to pass a multidimensional array to a function in C++ only, via
+       `std::vector<std::vector<int>>&`":
+       https://stackoverflow.com/a/73850641/4561887
 1. puzzle__maze__smallest_sum_flowing_down_and_right.cpp
 1. https://en.cppreference.com/w/cpp/container/vector
     1. `std::vector<>` constructor documentation:
@@ -49,6 +53,10 @@ References:
 
 using array2d_t = std::vector<std::vector<int>>;
 using grid_t = array2d_t; // alternative alias for a 2D array
+// OR with typedef:
+// typedef std::vector<std::vector<int>> array2d_t;
+// typedef array2d_t grid_t; // alternative alias for a 2D array
+
 
 // Version 1: demonstrate passing using the `array2d_t` above, and iterating
 // using regular for loops.
