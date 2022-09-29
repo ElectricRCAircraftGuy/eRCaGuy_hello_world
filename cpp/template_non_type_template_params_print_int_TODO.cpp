@@ -57,9 +57,8 @@ https://www.google.com/search?q=c%2B%2B+template+specialization&oq=c%2B%2B+templ
     1. https://en.cppreference.com/w/cpp/language/template_specialization
 1. Google search for "non type template parameters" -
 https://www.google.com/search?q=non+type+template+parameters&oq=non+type+template+parameters&aqs=chrome..69i57.3319j0j7&sourceid=chrome&ie=UTF-8
-    1. https://stackoverflow.com/questions/5687540/non-type-template-parameters/5687553#5687553
     1. What does template <unsigned int N> mean? - https://stackoverflow.com/q/499106/4561887
-    1. ***** https://stackoverflow.com/questions/5687540/non-type-template-parameters/5687553#5687553
+    1. ***** [need to study and read more] https://stackoverflow.com/questions/5687540/non-type-template-parameters/5687553#5687553
 
 
 
