@@ -26,6 +26,7 @@ time g++ -Wall -Wextra -Werror -O3 -std=c++17 variadic_templates_parameter_packs
 ```
 
 References:
+1. [my own answer with this code] https://stackoverflow.com/a/73904874/4561887
 1. ***** Variadic templates and parameter packs:
     https://en.cppreference.com/w/cpp/language/parameter_pack:
     > A template with at least one parameter pack is called a _variadic template_.
