@@ -89,6 +89,10 @@ void OuterFunc(FuncType innerFunc, FuncArgs... args)
     printf("Calling inner function with all passed-in args.\n");
     // See the "Expansion loci" section of this documentation here:
     // https://en.cppreference.com/w/cpp/language/parameter_pack
+    // This is really cool, because calling the inner function like this is **just like the Python
+    // example here!**: https://stackoverflow.com/a/803632/4561887--except you pass the arguments
+    // to the inner function as `args...` in C++ here instead of as `*args` (the contents of the
+    // arguments list) in Python.
     innerFunc(args...);
 
     printf("OuterFunc end.\n\n");
