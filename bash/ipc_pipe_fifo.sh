@@ -31,8 +31,16 @@
 # NB: this pipe actually shows up as a **file** (technically a pseudo-file)
 # named "mypipe" and in the current directory you are in when you run this cmd!
 mkfifo mypipe
-# Start listening for incoming data over this pipe
+
+# Option 1: Start listening for incoming data over this pipe, and print it to
+# the screen when it comes in.
 cat < mypipe
+# OR: Option 2: start listening for incoming data over this pipe, and write it
+# to file "out.txt" when it comes in.
+cat < mypipe > out.txt
+# OR: Option 3: start listening for incoming data over this pipe, and write it
+# to file "out.txt" AND print it to the screen when it comes in.
+cat < mypipe | tee out.txt
 
 
 # ----------------
