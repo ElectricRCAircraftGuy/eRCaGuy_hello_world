@@ -12,6 +12,13 @@ Regarding the erroneous `git status 2&>1 > /dev/null`...
 
 Yes, I can. I'm also trying to understand a variety of behaviors and bits of bash syntax too, so let's go through the statement in question, and some examples in order to gain a better understanding.
 
+## Quick Summary
+
+1. If you just want to **understand the full meaning of the odd/erroneous syntax in question:** `git status 2&>1 > /dev/null`, jump straight to **section 1** below.
+1. If you're here just based on the **_title_ of the question itself**: "What does &> do in bash?", jump straight down to **section 2** below. 
+1. If you want to have a **quick-reference summary of proper redirection usage in bash**, such as redirecting stderr to stdout via `2>&1`, or redirecting stdout to a file via `>file` or `1>file`, or redirecting stderr to a file via `2>file`, or redirecting _both_ stdout _and_ stderr to a file via `&>file` or `>file 2>&1`, look just at **section 3** below: "3. Summary of proper redirection in bash".
+1. If you just want to test your bash knowledge on weird, redundant, overriding, or otherwise non-standard usages of redirection, look at **section 4** below.
+
 
 ## 1. Breakdown of the statement `git status 2&>1 > /dev/null`
 
