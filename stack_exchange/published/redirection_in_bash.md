@@ -10,7 +10,7 @@ Regarding the erroneous `git status 2&>1 > /dev/null`...
 
 > Can someone clarify the man page and explain exactly what is happening with this syntax?
 
-Yes, I can. I'm also trying to understand a variety of behaviors and bits of bash syntax too, so let's go through the statement in question, and some examples in order to gain a better understanding.
+Yes, I can. I'm also trying to understand a variety of behaviors and bits of bash syntax too, so let's go through the statement in question, and some examples in order to gain a better understanding together.
 
 ## Quick Summary
 
