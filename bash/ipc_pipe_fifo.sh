@@ -21,6 +21,9 @@
 
 # References:
 # 1. ***** [in the question itself!] https://unix.stackexchange.com/q/96718/114401
+#   1. *****+ [my own answer!] https://unix.stackexchange.com/a/720397/114401 -
+#      including "Key differences between sending over a serial port and sending
+#      over an inter-process-communication (IPC) pipe"
 
 
 # ----------------
