@@ -14,17 +14,17 @@ Sept. 2022
         1. [References:](#references)
         1. [Features:](#features)
         1. [Sample code:](#sample-code)
-    1. [2. `std::lock_guard` \(C++11\)](#2-stdlock_guard-c11)
+    1. [2. `std::lock_guard` \(C++11\) \(smart lock\)](#2-stdlock_guard-c11-smart-lock)
         1. [References:](#references-1)
         1. [Features:](#features-1)
         1. [Sample code:](#sample-code-1)
-    1. [3. `std::unique_lock` \(C++11\)](#3-stdunique_lock-c11)
+    1. [3. `std::unique_lock` \(C++11\) \(smart lock\)](#3-stdunique_lock-c11-smart-lock)
         1. [References:](#references-2)
         1. [Features:](#features-2)
         1. [Sample code:](#sample-code-2)
             1. [`std::unique_lock`](#stdunique_lock)
             1. [`std::condition_variable`](#stdcondition_variable)
-    1. [4. `std::scoped_lock` \(C++17\) and `std::lock()` \(C++11\)](#4-stdscoped_lock-c17-and-stdlock-c11)
+    1. [4. `std::scoped_lock` \(C++17\) \(smart lock\) and `std::lock()` \(C++11\)](#4-stdscoped_lock-c17-smart-lock-and-stdlock-c11)
         1. [References:](#references-3)
         1. [Features:](#features-3)
         1. [Sample code:](#sample-code-3)
@@ -32,6 +32,7 @@ Sept. 2022
         1. [References:](#references-4)
         1. [Features:](#features-4)
         1. [Sample code:](#sample-code-4)
+        1. [Additional notes:](#additional-notes)
 
 <!-- /MarkdownTOC -->
 <!-- </details> -->
@@ -41,6 +42,16 @@ Sept. 2022
 # C++ mutexes and locks: `std::mutex`, `std::lock_guard`, `std::unique_lock` and `std::condition_variable`,  and `std::scoped_lock` and `std::lock()`
 
 About references: _both_ cppreference.com and cplusplus.com are _community wikis._ **You** can edit them, just like Wikipedia! Cppreference.com is generally _more pedantic_ and up-to-date (has documentation through C++20, for instance) and difficult to understand, and cplusplus.com is generally **significantly** easier to understand, and more useful in that sense, but is missing most documentation after C++11.  
+
+**Smart locks:**  
+
+`std::lock_guard`, `std::unique_lock`, and `std::scoped_lock` are all "smart locks". Just like "smart pointers" automatically manage the underlying dynamically-allocated memory and _free it_ when the smart pointer goes out of scope and is destroyed (see [here](https://learn.microsoft.com/en-us/cpp/cpp/smart-pointers-modern-cpp?view=msvc-170) and [here](https://en.cppreference.com/w/cpp/memory/shared_ptr) and [here](https://www.geeksforgeeks.org/smart-pointers-cpp/)), "smart locks" automatically manage the underlying lock and _unlock it_ when the smart lock goes out of scope and is destroyed. 
+
+This way, if a C++ exception is thrown or an error happens and function returns early, the smart lock _automatically_ unlocks the underlying lock, thereby preventing an otherwise-preventable deadlock condition. This, I think, is their primary advantage. You should think about the "niceties" of smart locks similarly to how you might consider the "niceties" of smart pointers. Use them when it aids you and makes your life easier, and especially when a function might throw an exception or return early, and the lock should be unlocked before the function returns.
+
+Smart locks:
+1. By default, automatically _lock_ the underlying mutex at construction.
+1. Automatically _unlock_ the underlying mutex as they exit scope and are destroyed.
 
 
 <a id="general-references"></a>
@@ -75,8 +86,8 @@ mutex.unlock();
 ```
 
 
-<a id="2-stdlock_guard-c11"></a>
-## 2. `std::lock_guard` (C++11)
+<a id="2-stdlock_guard-c11-smart-lock"></a>
+## 2. `std::lock_guard` (C++11) (smart lock)
 
 <a id="references-1"></a>
 ### References:
@@ -88,9 +99,10 @@ mutex.unlock();
 
 <a id="features-1"></a>
 ### Features:
-1. A `std::lock_guard` wraps a mutex. 
-1. At creation, it automatically locks the mutex. 
-1. Upon destruction as it exits scope, it automatically unlocks the mutex. 
+1. Is a "smart lock". See what this means above. In short:
+    1. A `std::lock_guard` wraps a mutex. 
+    1. At creation, it automatically locks the mutex. 
+    1. Upon destruction as it exits scope, it automatically unlocks the mutex. 
 1. If using C++17 or later, it is recommended to use `std::scoped_lock` instead. 
 1. Even in C++11, you can use the more feature-rich `std::unique_lock` as well, to do the exact same thing if needed.
 
@@ -114,8 +126,8 @@ std::mutex mutex;
 
 
 <a id="unique_lock"></a>
-<a id="3-stdunique_lock-c11"></a>
-## 3. `std::unique_lock` (C++11)
+<a id="3-stdunique_lock-c11-smart-lock"></a>
+## 3. `std::unique_lock` (C++11) (smart lock)
 
 <a id="references-2"></a>
 ### References:
@@ -129,10 +141,11 @@ std::mutex mutex;
 
 <a id="features-2"></a>
 ### Features:
-1. Wraps a mutex, but has more features than a `std::lock_guard`. 
-    1. Unlike a `std::lock_guard`, a `std::unique_lock` can be explicitly locked and unlocked after creation.
-1. At creation, by default, it automatically locks the mutex (same as a `std::lock_guard`), but this behavior can be modified by passing special values to the constructor.
-1. Upon destruction as it exits scope, it automatically unlocks the mutex (same as a `std::lock_guard`).
+1. Is a "smart lock". See what this means above. In short:
+    1. Wraps a mutex, but has more features than a `std::lock_guard`. 
+        1. Unlike a `std::lock_guard`, a `std::unique_lock` can be explicitly locked and unlocked after creation.
+    1. At creation, by default, it automatically locks the mutex (same as a `std::lock_guard`), but this behavior can be modified by passing special values to the constructor.
+    1. Upon destruction as it exits scope, it automatically unlocks the mutex (same as a `std::lock_guard`).
 1. Is required by the receiving side (the side which is notified) for use by a `std::condition_variable` in order to receive the notification. 
     1. The reason a `std::unique_lock` is required by a `std::condition_variable` is so that it can lock the underlying mutex each time the condition variable wakes up from a wait after a valid notification and runs a critical section of code, and unlock the underlying mutex each time A) the condition variable `wait()` call spuriously wakes up and it needs to wait again, and B) upon automatic destruction when the critical section runs and is over and the scope of the `std::unique_lock` is exited.
 1. You can **always** use a `std::unique_lock` in place of a `std::lock_guard`, but not the other way around. 
@@ -310,15 +323,31 @@ while (true)
     std::unique_lock<std::mutex> lock(mutex); // `mutex.lock()` is automatically 
                                               // called here at construction 
     
-    // Wait, meaning sleep this thread, until it is notified by the condition
+    // Check the boolean predicate FIRST. The boolean predicate (2nd parameter,
+    // lambda function in this case) is checked both at the start of the 
+    // `wait()` function, *before* sleeping, *as well as* at the end of the
+    // `wait()` function, after sleeping and each time the thread wakes up. The
+    // `wait()` function **only** sleeps the thread if the predicate starts out
+    // `false`, and it only exits the `wait()` function by returning from it
+    // when the predicate is `true`. In other words, the below usage of 
+    // `wait()` is **exactly identical** to this `while` loop!:
+    //      
+    //      while (sharedData.isNewData == false) 
+    //      // OR: `while (!sharedData.isNewData)`
+    //      {
+    //          cv.wait(lock);
+    //      }
+    // 
+    // So, assuming the boolean predicate 2nd parameter, starts out false, then:
+    // wait, meaning sleep this thread, until it is notified by the condition
     // variable to wake up! The 2nd parameter passed to `wait()` is a callable
     // or lambda or boolean variable "predicate" which must be `true` in order
     // for this thread to stay awake and return from the `wait()` function. If
-    // the predicate is false, then the `wait()` function assumes it was a 
-    // [spurious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup) and 
+    // the predicate is false, then the `wait()` function assumes it was a
+    // [spurious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup) and
     // automatically calls the underlying `lock.unlock()` and puts the thread
-    // back to sleep to wait again. This wait loop goes on indefinitely until 
-    // the predicate is true, at which point the `wait()` function will return. 
+    // back to sleep to wait again. This wait loop goes on indefinitely until
+    // the predicate is true, at which point the `wait()` function will return.
     // When `wait()` finally does return, the lock will have been already
     // automatically taken via `lock.lock()`, which of course is just a wrapper
     // around the underlying mutex, essentially calling `mutex.lock()`.  
@@ -389,8 +418,8 @@ while (true)
 ```
 
 
-<a id="4-stdscoped_lock-c17-and-stdlock-c11"></a>
-## 4. `std::scoped_lock` (C++17) and `std::lock()` (C++11)
+<a id="4-stdscoped_lock-c17-smart-lock-and-stdlock-c11"></a>
+## 4. `std::scoped_lock` (C++17) (smart lock) and `std::lock()` (C++11)
 
 <a id="references-3"></a>
 ### References:
@@ -402,8 +431,10 @@ while (true)
 1. `std::scoped_lock` is a very simple mechanism, like a C++11 `std::lock_guard`, except that the C++17 `std::scoped_lock` can be used on **multiple mutexes simultaneously!**
 1. If using C++17 or later, it is recommended to use `std::scoped_lock` instead of the `std::lock_guard`. 
 1. A `std::scoped_lock` wraps one or more mutexes, just like a `std::lock_guard`, except a `std::lock_guard` can only wrap ONE mutex at a time!
-1. At creation, a `std::scoped_lock` automatically locks the mutex(es). 
-1. Upon destruction as it exits scope, a `std::scoped_lock` automatically unlocks the mutex(es). 
+1. Is a "smart lock". See what this means above. In short:
+    1. Wraps _one or more_ mutexes. 
+    1. At creation, a `std::scoped_lock` automatically locks the mutex(es). 
+    1. Upon destruction as it exits scope, a `std::scoped_lock` automatically unlocks the mutex(es). 
 1. Even in C++11, you can use the more feature-rich `std::unique_lock` as well, to do the exact same thing as a `std::scoped_lock`, but on a _single mutex at a time_. To do the same thing in C++11 on _multiple mutexes at once_, you must use a call to the `std::lock(mutex1, mutex2, mutexN)` function instead, thereby explicitly locking all mutexes at once. See examples below.
 
 <a id="sample-code-3"></a>
@@ -519,3 +550,42 @@ std::mutex mutex3;
 <a id="sample-code-4"></a>
 ### Sample code:  
 _See above in the [`std::unique_lock`](#condition_variable) section!_
+
+<a id="additional-notes"></a>
+### Additional notes:
+
+**No, `std::condition_variable`s do _not_ have an underlying notification queue**
+
+Reminder: this:
+```cpp
+cv.wait(lock, []() { 
+    return sharedData.isNewData; 
+});
+```
+...is **exactly identical** to this:
+```cpp
+while (sharedData.isNewData == false) // OR: `while (!sharedData.isNewData)`
+{
+    cv.wait(lock);
+}
+```
+
+There is NOT an underlying notification queue, nor counter, nor boolean flag. Rather, the **boolean predicate** we check *is* the flag! And, it is checked both at the start of the `wait()` function, *before* sleeping, *as well as* at the end of the `wait()` function, after sleeping and each time the thread wakes up. **The `wait()` function _only_ sleeps the thread if the predicate starts out `false`, and it only exits the `wait()` function by returning from it when the predicate is `true`.** Look at that `while` loop version just above and this will become perfectly clear.
+
+So, if the producer thread sets a shared predicate to `true`, and then sends a `my_condition_variable.notify_one()` call, if the consumer thread is not *already* waiting, it does *not* receive that notification. BUT, it doesn't really matter! So long as the consumer thread is either using the 2-parameter `wait()` call (with the 2nd parameter being a boolean predicate), OR using the `while` loop predicate-checking technique, then once the consumer thread hits the `wait()` call (or while loop), the predicate will be seen as being `true`, and the whole while block and waiting sleep will be skipped entirely, and the consumer will go ahead and run instantly *as though* it *had* received the `notify_one()` notification while waiting! When the predicate is used, the end result is the same *as though* the condition variable did have an underlying notification queue (or flag) of length one.
+
+See:
+1. https://en.cppreference.com/w/cpp/thread/condition_variable/wait - it states that this templated function:
+    > ```cpp
+    > template< class Predicate >
+    > void wait( std::unique_lock<std::mutex>& lock, Predicate stop_waiting );
+    > ```
+    is:
+    > Equivalent to
+    > ```cpp
+    > while (!stop_waiting()) {
+    >     wait(lock);
+    > }
+    > ```
+1. [Is there a notify_one ( ) queue?](https://stackoverflow.com/q/54513521/4561887) - Answer by [@super](https://stackoverflow.com/a/54513856/4561887), who set me on the right track to finally understand this myself
+    1. \*\*\*\*\* My answer with this content above: https://stackoverflow.com/a/74024531/4561887
