@@ -554,21 +554,26 @@ _See above in the [`std::unique_lock`](#condition_variable) section!_
 <a id="additional-notes"></a>
 ### Additional notes:
 
-**No, `std::condition_variable`s do _not_ have an underlying notification queue**
+**No, `std::condition_variable`s do _not_ have an underlying notification queue**...  
+...but that doesn't really matter at all! So long as you use a boolean predicate, an early notification (by a producer) which is sent _before_ the consumer hits the `wait()` function will _not_ be missed by the consumer! 
 
-Reminder: this:
+That is because this call with the lambda function boolean predicate as the 2nd parameter:
 ```cpp
 cv.wait(lock, []() { 
     return sharedData.isNewData; 
 });
 ```
-...is **exactly identical** to this:
+...is **exactly identical** to this `while` loop:
 ```cpp
 while (sharedData.isNewData == false) // OR: `while (!sharedData.isNewData)`
 {
     cv.wait(lock);
 }
 ```
+
+...and the while loop's `cv.wait(lock);` line is only called if the predicate is `false` in the first place!
+
+In detail:
 
 There is NOT an underlying notification queue, nor counter, nor boolean flag. Rather, the **boolean predicate** we check *is* the flag! And, it is checked both at the start of the `wait()` function, *before* sleeping, *as well as* at the end of the `wait()` function, after sleeping and each time the thread wakes up. **The `wait()` function _only_ sleeps the thread if the predicate starts out `false`, and it only exits the `wait()` function by returning from it when the predicate is `true`.** Look at that `while` loop version just above and this will become perfectly clear.
 
@@ -587,5 +592,5 @@ See:
     >     wait(lock);
     > }
     > ```
-1. [Is there a notify_one ( ) queue?](https://stackoverflow.com/q/54513521/4561887) - Answer by [@super](https://stackoverflow.com/a/54513856/4561887), who set me on the right track to finally understand this myself
-    1. \*\*\*\*\* My answer with this content above: https://stackoverflow.com/a/74024531/4561887
+1. [Is there a notify_one ( ) queue?](https://stackoverflow.com/q/54513521/4561887) - [Answer by @super](https://stackoverflow.com/a/54513856/4561887), who set me on the right track to finally understand this myself
+    1. \*\*\*\*\* [My answer with this content above](https://stackoverflow.com/a/74024531/4561887)
