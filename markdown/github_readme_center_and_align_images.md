@@ -556,7 +556,7 @@ Notice how I manually set the `width` property using the CSS `style` attribute a
         /* set any other properties, as desired, inside this class too */
     }
 
-Now you can assign multiple classes to the same object, like this. Simply [separate class names by a space, NOT a comma][3]. In the event of conflicting settings, I believe whichever setting comes *last* will be the one that takes effect, overriding any previously-set settings. This should also be the case in the event you set the same CSS properties multiple times in the same CSS class or inside the same HTML `style` attribute. 
+Now you can assign multiple classes to the same object, like this. Simply [separate class names by a space, NOT a comma][3]. In the event of conflicting settings, I believe whichever setting comes *last* will be the one that takes effect, overriding any previously-set settings. This should also be the case in the event you set the same [CSS](https://www.interviewbit.com/css-cheat-sheet/) properties multiple times in the same CSS class or inside the same HTML `style` attribute. 
 
     <img src="https://i.stack.imgur.com/RJj4x.png" class="centerAlign small">
 
