@@ -20,6 +20,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     1. See [this comment under my Stack Overflow answer](https://stackoverflow.com/questions/12090472/how-do-i-center-an-image-in-the-readme-md-file-on-github/62383408#comment127834553_62383408):
     > Aligning text with an image on it's right does not work for gifs. – [Omar Dulaimi](https://stackoverflow.com/users/7186666/omar-dulaimi) [May 24 at 10:23](https://stackoverflow.com/questions/12090472/how-do-i-center-an-image-in-the-readme-md-file-on-github/62383408#comment127834553_62383408)
     1. _Result of my testing above:_ GIFs work just fine! See below: [Regular images \(PNG, JPG, etc\) vs GIFs](#regular-images-png-jpg-etc-vs-gifs).
+1. **[underline.md](underline.md)** - demonstrate underlined text, as I explain how to do in my answer here: [Get underlined text with Markdown](https://stackoverflow.com/a/66595330/4561887)
 
 
 <a id="regular-images-png-jpg-etc-vs-gifs"></a>
