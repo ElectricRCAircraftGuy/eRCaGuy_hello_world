@@ -81,7 +81,7 @@ Result:
 
 ##<ins> Underlined heading</ins>
 
-## <ins>Underlined heading</ins>
+## <ins>Underlined heading [this actually works on GitHub too! Yaay!]</ins>
 
 <ins>
 ## Underlined heading
