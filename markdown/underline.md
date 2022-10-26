@@ -31,8 +31,24 @@ Markdown:
 Result - this works fine in a markdown viewer, but NOT on GitHub!:  
 ## <u>Underlined heading</u>
 
+---
 
 Let's try some other examples:
+
+Markdown:
+```html
+<u>## Underlined heading</u>
+
+##<u> Underlined heading</u>
+
+## <u>Underlined heading</u>
+
+<u>
+## Underlined heading
+</u>
+```
+
+Result:  
 
 <u>## Underlined heading</u>
 
@@ -44,6 +60,22 @@ Let's try some other examples:
 ## Underlined heading
 </u>
 
+---
+
+Markdown:
+```html
+<ins>## Underlined heading</ins>
+
+##<ins> Underlined heading</ins>
+
+## <ins>Underlined heading</ins>
+
+<ins>
+## Underlined heading
+</ins>
+```
+
+Result:
 
 <ins>## Underlined heading</ins>
 
@@ -54,3 +86,7 @@ Let's try some other examples:
 <ins>
 ## Underlined heading
 </ins>
+
+---
+
+
