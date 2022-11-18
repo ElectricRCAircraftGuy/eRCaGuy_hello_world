@@ -8,7 +8,11 @@
 # References:
 # 1. None; all in my head from prior learning.
 
-some_func() {
+print_double_quoted_multiline_examples() {
+    # ----------------------------
+    # 3 examples that DO work
+    # ----------------------------
+
     # DO IT LIKE THIS!   <======== GOOD =========
     # NB: each separate string argument to the `echo` command is parsed as a separate argument, and
     # `echo` automatically adds a space between each printed argument output, so that is why we do
@@ -31,8 +35,11 @@ that will print properly on one line in the output."
     printf "%s%s\n" "GOOD: This is a multi-line string in the code " \
         "that will print properly on one line in the output."
 
-    #---------------
     echo ""
+
+    # ----------------------------
+    # 2 examples that do NOT work
+    # ----------------------------
 
     # Not like this.
     echo "BAD: The spacing in this is wrong! It will print with a big \
@@ -45,8 +52,21 @@ that will print properly on one line in the output."
     echo ""
 }
 
-some_func
+print_single_quoted_multiline_examples() {
+    echo 'test \'
+}
 
+
+echo -e \
+    "--------------------------------------\n"\
+   "print_double_quoted_multiline_examples\n" \
+    "--------------------------------------"
+print_double_quoted_multiline_examples
+
+echo "--------------------------------------" \
+     "print_single_quoted_multiline_examples" \
+     "--------------------------------------"
+print_single_quoted_multiline_examples
 
 
 # Example output:
