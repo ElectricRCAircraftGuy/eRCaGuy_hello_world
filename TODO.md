@@ -8,6 +8,14 @@ Started: 12 Feb. 2022
 [Place newest on TOP]
 
 
+## 202210xx:
+1. [ ] Write a thread-safe FIFO queue library in both C and in C++. In both cases, allow it to handle **any** data type. In C++, use templates for this. See also, for background research:
+    1. FreeRTOS Queues (which are naturally thread-safe, and written in C): https://www.freertos.org/Embedded-RTOS-Queues.html
+        1. `xQueueCreate()`: https://www.freertos.org/a00116.html
+        1. FreeRTOS Binary Semaphores: https://www.freertos.org/Embedded-RTOS-Binary-Semaphores.html
+    1. My own writeup on smart locks, task notifications, and condition variables and things in C++: [cpp/std_mutex_vs_std_lock_guard_vs_std_unique_lock_vs_std_scoped_lock_README.md](cpp/std_mutex_vs_std_lock_guard_vs_std_unique_lock_vs_std_scoped_lock_README.md)
+
+
 ## 20220817:
 1. [ ] Write a cooperative multi-tasking library usable in Linux or Arduino. Base it on the `CREATE_TASK_TIMER()` macro in "eRCaGuy_hello_world/arduino/coulomb_counter_with_cooperative_multitasking_macro/coulomb_counter_with_cooperative_multitasking_macro.ino". See also:
     1. My Arduino answer: https://arduino.stackexchange.com/a/75937/7727
