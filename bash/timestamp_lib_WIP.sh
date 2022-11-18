@@ -126,6 +126,12 @@ nanos() {
     nanos_int
 }
 
+
+# special sleep functions for loop timing
+sleep_until() {
+    #########
+}
+
 # ------------------------------- Library END ----------------------------------
 
 RETURN_CODE_SUCCESS=0
