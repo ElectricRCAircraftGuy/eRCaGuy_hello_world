@@ -24,6 +24,10 @@
 #    https://stackoverflow.com/q/71568169/4561887
 # 1. [my answer] How to use all bash operators, and arithmetic expansion, in
 #    bash: https://stackoverflow.com/a/71567705/4561887
+# 1. *****+ MUCH BETTER WAY!: https://stackoverflow.com/a/71568608/4561887
+
+############# TODO: add this demo!:
+# https://stackoverflow.com/a/71568608/4561887
 
 
 # Convert a decimal number to a binary number with a minimum specified number of
