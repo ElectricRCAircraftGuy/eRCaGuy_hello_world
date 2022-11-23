@@ -5,7 +5,7 @@ gabrielstaples.com
 Sept-Oct. 2022
 
 TODO: teach and practice various ways to use and pass variadic functions and their parameters in C
-and C++.
+and C++. Borrow from some of my work here: https://stackoverflow.com/a/74542788/4561887
 
 The below is just some scratch work to conceptualize and prototype various ideas.
 See also my answer using variadic templates in C++ here:
@@ -48,6 +48,7 @@ Note: consider unions (or `std::variant<>` in C++) and `std::optional<>` potenti
 
 
 References:
+1. [my ans] https://stackoverflow.com/a/74542788/4561887
 1. [my ans] https://stackoverflow.com/a/73904874/4561887
 1. https://en.cppreference.com/w/c/variadic
 1. Multiple typename arguments in c++ template? - https://stackoverflow.com/a/19923558/4561887
