@@ -2,6 +2,25 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 Demonstrate underlined text, as I explain how to do in my answer here: [Get underlined text with Markdown](https://stackoverflow.com/a/66595330/4561887)
 
+This:
+```
+# <ins>Underlined Heading 1</ins>
+## <ins>Underlined Heading 2</ins>
+### <ins>Underlined Heading 3</ins>
+#### <ins>Underlined Heading 4</ins>
+<!-- etc. -->
+```
+
+...produces this:
+
+# <ins>Underlined Heading 1</ins>
+## <ins>Underlined Heading 2</ins>
+### <ins>Underlined Heading 3</ins>
+#### <ins>Underlined Heading 4</ins>
+<!-- etc. -->
+
+---
+---
 ---
 
 Markdown:
