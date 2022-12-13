@@ -55,8 +55,11 @@ _Your results may vary, of course, but favor a smaller JVM bazel heap (to use le
     # ADD this line to bottom (w/out the # comment symbol):
     # /swapfile none swap sw 0 0
     cat /proc/sys/vm/swappiness     # not required: verify your systems 
-                                    # "swappiness" value is 60 or so (range 
-                                    # is 0 to 100)
+        # "swappiness" value. Note: values now range 0 to 200 (they used to only
+        #  go up to 100), and have a default value of 60. I highly recommend
+        #  you follow my instructions here to set your swappiness to 0,
+        #  however, to improve your system's performance:
+        #  https://askubuntu.com/a/1445347/327339
     ```
 1. **To resize or delete your swapfile:** if you ever need to resize your swap file you just made above, you can delete it like this:
     ```bash
@@ -90,10 +93,9 @@ Done!
 1. \*\*\*\*\*[my own answer] [Ask Ubuntu: How do I increase the size of swapfile without removing it in the terminal?](https://askubuntu.com/a/1177620/327339)
 1. https://linuxize.com/post/how-to-add-swap-space-on-ubuntu-18-04/
 1. https://serverfault.com/questions/684771/best-way-to-disable-swap-in-linux/684792#684792
+1. My answer: [How do I configure swappiness?](https://askubuntu.com/a/1445347/327339)
 
 
 ## See also:
 1. https://github.com/bazelbuild/bazel/issues/1308
-
-
 
