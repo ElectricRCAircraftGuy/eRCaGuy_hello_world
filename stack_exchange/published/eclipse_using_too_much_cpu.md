@@ -1,7 +1,7 @@
 <!--
 GS
 Dec. 2022
-https://stackoverflow.com/a/74707607/4561887
+My answer: https://stackoverflow.com/a/74707607/4561887
 -->
 
 ## Problem: Eclipse and the Eclipse indexer take up all my resources / CPU%
@@ -27,6 +27,8 @@ _to:_
 Restart Eclipse. 
 
 Now, Eclipse can only take up to 4 of my 8 hyperthreads, and my system runs much better!
+
+If on Linux, you should also reduce your "swappiness" setting to improve system performance. See below.
 
 
 ## Details and additional improvements to make
@@ -165,6 +167,17 @@ java -X
 >     -Xmx<size>        set maximum Java heap size
 
 
+## (For Linux users) reduce your system's "swappiness"
+
+If on Linux, you should also reduce your "swappiness" setting from the default of 60 down to the range of 0 to 10 (I prefer 0) to increase your system's performance and reduce lagging and freezing when you get above about 75% RAM usage. 
+
+"Swappiness" describes how likely your system is to move the contents of RAM to your "swap space", or virtual memory, which is on your hard disk drive (HDD) or solid state drive (SSD). Swappiness setting values range from 0 to 200 (see [my answer quoting the Linux kernel source code here](https://askubuntu.com/a/1445347/327339)), where 0 means it will try not to use your swap space until it has to, and 200 means it will favor using your swap space earlier. 
+
+The benefit of virtual memory, or swap space, is that it can expand your computer's "RAM-like" memory for free practically, allowing you to run a program or do a heavy task like compiling a large application. Such a heavy process might want 64 GiB of RAM even if you only have 8 GiB of RAM. Normally, your computer would crash and couldn't do it, but with swap space it _can_, as it treats your swap file or partition like extra RAM. That's pretty amazing. The downside of swap memory, however, is that it's much slower than RAM, even when it is running on a high-speed m.2 SSD. 
+
+So, to limit swapping and improve performance, just reduce your swappiness to 0. Follow my instructions here: [How do I configure swappiness?](https://askubuntu.com/a/1445347/327339).
+
+
 ## References:
 
 1. My Google document: [Eclipse setup instructions on a new Linux (or other OS) computer](https://docs.google.com/document/d/1LbuxOsDHfpMksGdpX5X-7l7o_TIIVFPkH2eD23cXUmA/edit?usp=sharing)
@@ -175,8 +188,10 @@ java -X
 1. [How to view memory usage in eclipse (beginner)](https://stackoverflow.com/a/31255323/4561887)
     1. I also put this info. in my Google document linked-to above.
 1. https://wiki.eclipse.org/FAQ_How_do_I_increase_the_heap_size_available_to_Eclipse%3F
+1. My answer: [How do I configure swappiness?](https://askubuntu.com/a/1445347/327339)
 
 
   [1]: https://i.stack.imgur.com/dimKK.png
   [2]: https://i.stack.imgur.com/vl6pm.png
   [3]: https://i.stack.imgur.com/Zf4Bq.jpg
+
