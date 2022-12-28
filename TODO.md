@@ -8,6 +8,10 @@ Started: 12 Feb. 2022
 [Place newest on TOP]
 
 
+## 20221207:
+1. [ ]  Analyze [this sample data](https://github.com/Atores1/exampleData) and write an algorithm to do automatic peak detection on it! Add an answer to the question: [Finding realtime reliable and precise peak detection algorithm for noisy signals](https://stackoverflow.com/q/74679201/4561887). Ensure your code is capable of running on even the weakest of 8-bit AVR-based Arduinos. Have a signal generator/simulator send the Arduino this data over serial, live, from your computer, so your algorithm can do live peak detection on the Arduino.
+
+
 ## 202210xx:
 1. [ ] Write a thread-safe FIFO queue library in both C and in C++. In both cases, allow it to handle **any** data type. In C++, use templates for this. See also, for background research:
     1. FreeRTOS Queues (which are naturally thread-safe, and written in C): https://www.freertos.org/Embedded-RTOS-Queues.html
