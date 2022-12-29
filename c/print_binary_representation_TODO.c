@@ -1,7 +1,20 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+GS
+Fall 2022
+
 Print numbers in binary. Ex: uint8_t 129 would print as "10000001", etc.
+
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+UPDATE 29 DEC 2022:
+This (https://stackoverflow.com/a/3974138/4561887) is the best answer and is pretty much what I
+would have come up with myself. So, just tweak it to fix it up a bit and give it good variable
+names and refactor it a bit. Ex: `i` should be `i_byte` or `byte_index` and `j` should be `i_bit`
+or `bit_index`, and `b` should be `byte_array`, and get rid of the unnecessary `const`s, etc. Maybe
+also pretty-format it to print in groups of 8 bits, and add sample output and a link to onlinegdb
+to run it, to the answer.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Allow it to handle printing numbers of **any** type in binary! See references below to get started.
 ==> Note: just write your own function from scratch to do this! No sense in doing any
@@ -29,6 +42,7 @@ References:
 1. Google search for "print binary":
    https://www.google.com/search?q=print+binary&oq=print+binary&aqs=chrome..69i57j69i65l3.3118j0j7&sourceid=chrome&ie=UTF-8
 1. https://stackoverflow.com/questions/111928/is-there-a-printf-converter-to-print-in-binary-format
+    1. *****+ https://stackoverflow.com/a/3974138/4561887
 1. https://www.arduino.cc/reference/en/language/functions/communication/serial/print/
 1. Google search for "arduino print binary":
    https://www.google.com/search?q=arduino+print+binary&oq=arduino+print+binary&aqs=chrome.0.69i59j69i64l2.2293j0j7&sourceid=chrome&ie=UTF-8
