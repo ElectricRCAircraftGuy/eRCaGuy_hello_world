@@ -1,8 +1,10 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-(description)
-STATUS: (status)
+Write a basic calculator program (addition, subtraction, multiplication, division), that works over
+sdbus, as a demo and intro. to how sdbus works!
+
+STATUS: todo/wip
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
