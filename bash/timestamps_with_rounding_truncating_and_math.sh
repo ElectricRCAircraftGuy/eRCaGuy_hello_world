@@ -3,7 +3,7 @@
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 # GS
-# July 2022
+# 12 July 2022
 
 # Get high-resolution timestamps in bash, learn how to both **truncate**
 # and **round** to a whole number, and show how to do both **floating
@@ -20,6 +20,15 @@
 #       ./timestamps_with_rounding_truncating_and_math.sh
 
 # References:
+# 1. *****+ MY ANSWER WITH THIS CODE: **TODO**:
+#   1. TODO: add an answer somewhere with this code below and/or with my code
+#   from "bash/timestamp_lib_WIP.sh", which would be really useful for people I think!
+#   1. Potential places to post this as an answer:
+#       1. Google search for "bash high resolution timestamps"
+#          https://www.google.com/search?q=bash+high+resolution+timestamps&oq=bash+high+resolution+timestamps&aqs=chrome..69i57.4432j0j7&sourceid=chrome&ie=UTF-8
+#           1. https://unix.stackexchange.com/q/204796/114401
+#           1. https://serverfault.com/q/151109/357116
+#           1. https://stackoverflow.com/q/16548528/4561887
 # 1. How to do floating point calculations in bash
 #   1. main answer: https://stackoverflow.com/a/12723330/4561887
 #   1. [my answer]: https://stackoverflow.com/a/58479867/4561887
