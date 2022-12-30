@@ -9,19 +9,26 @@ My goal is to answer this question: How to play sound in C from scratch
 Arduino-like `tonAC()`-type function and passing the output to the `aplay` Linux system call.
 
 STATUS: wip
+Note 30 Dec. 2022: I made some misc. changes to this file but don't remember why. So, take a look
+at this file's history next time I look at it so I can see what changes I last made:
+```bash
+# See: https://stackoverflow.com/a/5493663/4561887
+git log --follow -p -- c/alsa_aplay__play_tone_sound_WIP.c
+```
 
 To compile and run (assuming you've already `cd`ed into this dir):
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=c17 alsa_aplay__play_tone_sound.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 alsa_aplay__play_tone_sound.c -o bin/a -lm && time bin/a
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 alsa_aplay__play_tone_sound.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 alsa_aplay__play_tone_sound.c -o bin/a && time bin/a
 ```
 
 References:
-1. How to play sound in C from scratch (Linux): https://stackoverflow.com/q/71445060/4561887
+1. [Q I'd like to answer] How to play sound in C from scratch (Linux):
+   https://stackoverflow.com/q/71445060/4561887
 1. ALSA (Advanced Linux Sound Architecture):
    https://en.wikipedia.org/wiki/Advanced_Linux_Sound_Architecture
 1. See `man aplay`
@@ -31,6 +38,9 @@ References:
     1. https://www.arduino.cc/reference/en/libraries/toneac/
     1. https://github.com/teckel12/arduino-toneac
 1. https://en.cppreference.com/w/c/string/byte/strncat
+1. *****More on pipes to pipes in C: see my comment here and the gist link in my comment:
+   https://stackoverflow.com/questions/12032323/piping-the-output-of-one-command-as-input-to-another-command#comment126352138_12032323
+    1. https://gist.github.com/mplewis/5279108
 
 MINIMUM AMOUNT OF RAW DATA THAT PLAYS!:
 ```bash
@@ -39,8 +49,17 @@ echo -n "0x00 0xff 0x00 0xff 0x00 0xff" | aplay
 # OR
 printf "%s" "0x00 0xff 0x00 0xff 0x00 0xff" | aplay
 
+printf "\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff\x00\xff" | aplay
+
 # Signed 16-bit Big-endian:
 echo -n "0x0000 0xffff 0x0000 0xffff 0x0000 0xffff" | aplay -f S16_BE
+
+TODO:
+1. [ ] Write the data to a file instead of just to RAM. Play it from a file OR from RAM, but if
+   from RAM, you'll have to use binary 1 in place of all binary 0s, because bash can't handle
+   binary zeros. Read up on pipes too. See the "more on pipes to pipes in C" reference above.
+1. [ ]
+
 ```
 
 */
@@ -87,9 +106,9 @@ typedef struct waveform_s
     uint8_t full_waveform[SAMPLES_PER_SEC*PLAY_LENGTH_SEC];
 
     /// Bash command string to play the `full_waveform` above.
-    /// 1 sample (1 byte) becomes a string like "0xab ", which is 5 chars. Add some extra chars as
+    /// 1 sample (1 byte) becomes a string like "\xab", which is 4 chars. Add some extra chars as
     /// well to allow for the rest of the command string.
-    char cmd[SAMPLES_PER_SEC*PLAY_LENGTH_SEC*5 + 50];
+    char cmd[SAMPLES_PER_SEC*PLAY_LENGTH_SEC*4 + 100];
 } waveform_t;
 
 /// \brief          Generate a single period of a sine wave at the desired frequency and store it
@@ -169,25 +188,25 @@ void make_cmd(waveform_t *waveform)
     const size_t I_CMD_MAX = ARRAY_LEN(waveform->cmd) - 1;
 
     // 1. write the cmd prefix
-    const char CMD_PREFIX[] = "printf \"%s\" \"";
+    const char CMD_PREFIX[] = "bash -c 'time aplay -f U8 -r 8000 <<< \"$(printf \"";
     snprintf(&(waveform->cmd[i_cmd]), I_CMD_MAX - i_cmd, "%s", CMD_PREFIX);
     i_cmd += sizeof(CMD_PREFIX) - 1; // -1 so we will overwrite the null terminator next time
 
     // 2. write the cmd body (all of the binary audio data)
     for (size_t i = 0; i < ARRAY_LEN(waveform->full_waveform); i++)
     {
-        const char FORMAT_STR[] = "0x%02X ";
+        const char FORMAT_STR[] = "\\x%02X";
         snprintf(&(waveform->cmd[i_cmd]), I_CMD_MAX - i_cmd,
-            FORMAT_STR, waveform->full_waveform[i]);
-        i_cmd += 5;
+            FORMAT_STR, waveform->full_waveform[i]); //////// write 1 instead of 0, since bash can't handle binary zeros!
+        i_cmd += 4;
     }
 
     // 3. write the cmd suffix
-    const char CMD_SUFFIX[] = "\" | aplay -f U8 -r 8000";
+    const char CMD_SUFFIX[] = "\")\"'";
     snprintf(&(waveform->cmd[i_cmd]), I_CMD_MAX - i_cmd, "%s", CMD_SUFFIX);
     i_cmd += sizeof(CMD_SUFFIX) - 1; // -1 so we will overwrite the null terminator next time
 
-    // printf("cmd = %s\n", waveform->cmd); // debugging
+    printf("cmd = %s\n", waveform->cmd); // debugging
 }
 
 void play_sound(const waveform_t *waveform)
@@ -204,9 +223,10 @@ void play_sound(const waveform_t *waveform)
 int main()
 {
     static waveform_t waveform;
-    make_period_sinewave(&waveform, 100);
+    make_period_sinewave(&waveform, 200);
     make_full_waveform(&waveform);
     make_cmd(&waveform);
+    // write_file(&waveform, "file.wav");
     play_sound(&waveform);
 
     // // for (size_t i = 0; i < ARRAY_LEN(audio_samples); i++)
