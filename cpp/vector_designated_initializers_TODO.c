@@ -8,9 +8,9 @@ need to study up on more in order to solidify in my mind.
 
 See:
 1. https://stackoverflow.com/questions/9849719/what-do-square-brackets-mean-in-array-initialization-in-c/9849782#9849782
-1. https://gcc.gnu.org/onlinedocs/gcc-4.0.4/gcc/Designated-Inits.html
+1. https://gcc.gnu.org/onlinedocs/gcc/Designated-Inits.html
 
-be sure to also do demo which shows whether uninitialized indices are initialized to zero.
+be sure to also do a demo which shows whether uninitialized indices are initialized to zero.
 See: https://stackoverflow.com/questions/9849719/what-do-square-brackets-mean-in-array-initialization-in-c/9849782#comment125282837_9849782
 /////////////
 */
