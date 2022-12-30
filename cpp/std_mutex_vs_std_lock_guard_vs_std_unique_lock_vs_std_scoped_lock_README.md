@@ -58,6 +58,7 @@ Smart locks:
 ## General References:
 1. Concurrency support library: https://en.cppreference.com/w/cpp/thread
 1. Spurious wakeup: https://en.wikipedia.org/wiki/Spurious_wakeup
+1. *****+++ My own answer on [Is there a `notify_one()` queue for `std::condition_variable`s?](https://stackoverflow.com/a/74024531/4561887)
 
 
 <a id="1-stdmutex-c11"></a>
