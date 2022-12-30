@@ -46,8 +46,10 @@ www.ElectricRCAircraftGuy.com
 <!-- MarkdownTOC -->
 
 1. [Status:](#status)
-1. [For beginners and experts alike: not your average "hello world" examples](#for-beginners-and-experts-alike-not-your-average-hello-world-examples)
-1. [How to clone this repo and all git submodules](#how-to-clone-this-repo-and-all-git-submodules)
+1. [Description: _for beginners and experts alike!_--not your average "hello world" examples](#description-_for-beginners-and-experts-alike_--not-your-average-hello-world-examples)
+1. [How to clone this repo and all git submodules and git lfs files \(including tracked binary files, such as PDFs\)](#how-to-clone-this-repo-and-all-git-submodules-and-git-lfs-files-including-tracked-binary-files-such-as-pdfs)
+        1. [To clone this repo plus all sub-repos \(git submodules\) and all `git lfs` Large File Storage files](#to-clone-this-repo-plus-all-sub-repos-git-submodules-and-all-git-lfs-large-file-storage-files)
+        1. [To update this repo as a _user_ of it, to match it exactly as I have made it as the developer of it](#to-update-this-repo-as-a-user-of-it-to-match-it-exactly-as-i-have-made-it-as-the-developer-of-it)
 1. [A Few Folder & File Notes](#a-few-folder--file-notes)
 1. [Examples of more advanced principles taught herein:](#examples-of-more-advanced-principles-taught-herein)
     1. [1. C and C++:](#1-c-and-c)
@@ -76,43 +78,42 @@ www.ElectricRCAircraftGuy.com
 See the `tree` output below to see the file/folder structure.
 
 
-<a id="for-beginners-and-experts-alike-not-your-average-hello-world-examples"></a>
-# For beginners and experts alike: not your average "hello world" examples
+<a id="description-_for-beginners-and-experts-alike_--not-your-average-hello-world-examples"></a>
+# Description: _for beginners and experts alike!_--not your average "hello world" examples
 
 Note that these are NOT just your standard "simple" hello world demos for absolute beginners. Rather, they are simple enough for beginners but also contain some advanced techniques and tips & tricks to act as good reminders or teaching for more expert programmers too. I, myself, regularly reference my own examples here to remind myself of some of these details which are easy to forget. There's no sense stressing about trying to remember everything. _Instead of trying to remember everything, just remember where to look (here in this case)_. 
 
 
-<a id="how-to-clone-this-repo-and-all-git-submodules"></a>
-# How to clone this repo and all git submodules
+<a id="how-to-clone-whole-repo"></a>
+<a id="how-to-clone-this-repo-and-all-git-submodules-and-git-lfs-files-including-tracked-binary-files-such-as-pdfs"></a>
+# How to clone this repo and all git submodules and git lfs files (including tracked binary files, such as PDFs)
 
-This repo contains [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which simply means that this is a git repo which contains other git repos. 
+This repo contains [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which simply means that this is a git repo which contains other git repos. It also uses [`git lfs` (Large File Storage)](https://git-lfs.com/) to more-efficiently store certain binary files, such as PDFs. 
 
-So, **to clone this repo plus all sub-repos (git submodules)**, you must do the following:
+**For details on how to use `git submodule` and `git lfs`, see my notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [how-to-clone-whole-repo](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles#how-to-clone-whole-repo).** See also the `= git submodules: =` section of my "git & Linux cmds doc" notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [eRCaGuy_dotfiles/git & Linux cmds, help, tips & tricks - Gabriel.txt](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt).
+
+In short:
+
+<a id="to-clone-this-repo-plus-all-sub-repos-git-submodules-and-all-git-lfs-large-file-storage-files"></a>
+### To clone this repo plus all sub-repos (git submodules) and all `git lfs` Large File Storage files
+
 ```bash
 # Clone this repo
 git clone https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world.git
+# Pull all Git LFS files (large binary files, such as PDFs, tracked with `git lfs`)
+git lfs pull
 # Recursively clone and update all subrepos (git submodules) it may contain
 git submodule update --init --recursive
 ```
 
-**To update this repo:**
+<a id="to-update-this-repo-as-a-user-of-it-to-match-it-exactly-as-i-have-made-it-as-the-developer-of-it"></a>
+### To update this repo as a _user_ of it, to match it exactly as I have made it as the developer of it
+
 ```bash
-# Update the main repo by pulling the latest from upstream
 git pull
-# Recursively update all git submodules (use the same cmd as previously above)
+git lfs pull
 git submodule update --init --recursive
 ```
-
-Note: if you ever need **to add a repo as a submodule inside another repo:**
-```bash
-# General format
-git submodule add URL_to_repo
-
-# Ex:
-git submodule add https://gitlab.com/ElectricRCAircraftGuy/systemd-by-example.git
-```
-
-For more on git submodules, see the `= git submodules: =` section of my "git & Linux cmds doc" notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [eRCaGuy_dotfiles/git & Linux cmds, help, tips & tricks - Gabriel.txt](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt).
 
 
 <a id="a-few-folder--file-notes"></a>
