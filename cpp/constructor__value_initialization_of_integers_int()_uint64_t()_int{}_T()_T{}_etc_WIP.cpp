@@ -5,9 +5,9 @@ GS
 Sept. 2022
 
 Main references:
-1. What does int() do in C++? - https://stackoverflow.com/q/17131911/4561887
-1. What is a call to `char()`, `uint8_t()`, `int64_t()`, integer `T()`, etc, as a function in C++? -
-   https://stackoverflow.com/q/72367123/4561887
+1. What does `int()` do in C++? - https://stackoverflow.com/q/17131911/4561887
+1. [my question] What is a call to `char()`, `uint8_t()`, `int64_t()`, integer `T()`, etc, as a
+   function in C++? - https://stackoverflow.com/q/72367123/4561887
 ---
 1. https://en.cppreference.com/w/cpp/language/value_initialization - using a
    constructor (for classes) or constructor-like initialization (for integers or
@@ -87,7 +87,7 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
 # 1. In C++
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 "constructor__value_initialization_of_integers_int()_uint64_t()_int{}_T()_T{}_etc.cpp" -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 "constructor__value_initialization_of_integers_int()_uint64_t()_int{}_T()_T{}_etc_WIP.cpp" -o bin/a && bin/a
 ```
 
 References:
@@ -170,14 +170,14 @@ int main()
     // A few more random examples, to show it works with other types too
 
     // Set all uint64_t types to 77
-    uint64_t u64_20 = 77;           // 77
-    uint64_t u64_21 = uint64_t(77); // 77
-    uint64_t u64_22 = uint64_t{77}; // 77
-    uint64_t u64_23{77};            // 77
-    std::cout << "u64_20 = " << u64_20 << "\n";
-    std::cout << "u64_21 = " << u64_21 << "\n";
-    std::cout << "u64_22 = " << u64_22 << "\n";
-    std::cout << "u64_23 = " << u64_23 << "\n\n";
+    uint64_t u64_00 = 77;           // 77
+    uint64_t u64_01 = uint64_t(77); // 77
+    uint64_t u64_02 = uint64_t{77}; // 77
+    uint64_t u64_03{77};            // 77
+    std::cout << "u64_00 = " << u64_00 << "\n";
+    std::cout << "u64_01 = " << u64_01 << "\n";
+    std::cout << "u64_02 = " << u64_02 << "\n";
+    std::cout << "u64_03 = " << u64_03 << "\n\n";
 
     // Set all double types to 77.1234
     double d20 = 77.1234;           // 77.1234
@@ -191,6 +191,8 @@ int main()
 
     // Try it with types whose typename is multiple words. Ex: `unsigned int`
 
+    //////////// todo: finish this ///////
+    // unsigned int ui00 = (unsigned int){78};            // 77.1234
 
 
     return 0;
@@ -201,6 +203,40 @@ int main()
 /*
 SAMPLE OUTPUT:
 
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 "constructor__value_initialization_of_integers_int()_uint64_t()_int{}_T()_T{}_etc_WIP.cpp" -o bin/a && bin/a
+
+    real    0m0.568s
+    user    0m0.496s
+    sys 0m0.066s
+    Default constructors [correction: **value initialization** of integer and floating point types!]:
+
+    i0 = 0
+    i1 = 0
+    i2 = 0
+    i3 = 0
+
+    i10 = 0
+    i11 = 0
+    i12 = 0
+    i13 = 0
+    i14 = 0
+    i15 = 0
+    i16 = 0
+
+    i20 = 99
+    i21 = 99
+    i22 = 99
+    i23 = 99
+
+    u64_00 = 77
+    u64_01 = 77
+    u64_02 = 77
+    u64_03 = 77
+
+    d20 = 77.1234
+    d21 = 77.1234
+    d22 = 77.1234
+    d23 = 77.1234
 
 
 */
