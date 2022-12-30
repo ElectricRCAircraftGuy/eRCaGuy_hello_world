@@ -12,8 +12,7 @@ Learn to call an sdbus method (separate/remote-process function) from a C progra
 
 This C program simply does in C what is the equivalent of this call from the command-line:
 ```bash
-busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager \
-StartUnit ss "cups.service" "replace"
+busctl call org.freedesktop.systemd1 /org/freedesktop/systemd1 org.freedesktop.systemd1.Manager StartUnit ss "cups.service" "replace"
 ```
 What that command-line command above does is call a method to a separate, running process on the
 same PC, via an sdbus method call.
@@ -27,13 +26,11 @@ From the 1st reference below:
 > Make sure to run it as root though, since access to the StartUnit method is privileged:
 1. In C:
 ```bash
-gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm \
-$(pkg-config --cflags --libs libsystemd) && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=c17 sdbus_method_call_GS_edit.c -o bin/a -lm $(pkg-config --cflags --libs libsystemd) && sudo bin/a
 ```
 2. In C++
 ```bash
-g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a \
-$(pkg-config --cflags --libs libsystemd) && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=c++17 sdbus_method_call_GS_edit.c -o bin/a $(pkg-config --cflags --libs libsystemd) && sudo bin/a
 ```
 
 Notes:
@@ -41,8 +38,17 @@ Notes:
 source code!
 
 References:
-1. *****http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html - see
-  "Invoking a Method, from C, with sd-bus"
+1. The 3 definitive sdbus sources are:
+    1. *****blog post from Lennart Poettering, original author of systemd and sdbus:
+       http://0pointer.net/blog/the-new-sd-bus-api-of-systemd.html - see especially:
+       "Invoking a Method, from C, with sd-bus"
+    1. *****Official systemd and sdbus full API reference page:
+       https://www.freedesktop.org/software/systemd/man/index.html
+    1. *****Official D-bus specification for basic types:
+       https://dbus.freedesktop.org/doc/dbus-specification.html#basic-types
+1. A possible 4th main source is this 3rd-party book (in the form of a markdown readme.md):
+   https://gitlab.com/franks_reich/systemd-by-example
+
 
 */
 
@@ -67,7 +73,7 @@ int main(int argc, char *argv[])
     if (retcode < 0)
     {
         fprintf(stderr, "Failed to connect to system bus: %s\n", strerror(-retcode));
-        goto finish;
+        goto cleanup;
     }
 
     // Issue the method call and store the response message in `message`
@@ -84,7 +90,7 @@ int main(int argc, char *argv[])
     if (retcode < 0)
     {
         fprintf(stderr, "Failed to issue method call: %s\n", error.message);
-        goto finish;
+        goto cleanup;
     }
 
     // Parse the response message
@@ -92,12 +98,12 @@ int main(int argc, char *argv[])
     if (retcode < 0)
     {
         fprintf(stderr, "Failed to parse response message: %s\n", strerror(-retcode));
-        goto finish;
+        goto cleanup;
     }
 
     printf("Queued service job as %s.\n", path);
 
-finish:
+cleanup:
     sd_bus_error_free(&error);
     sd_bus_message_unref(message);
     sd_bus_unref(bus);
