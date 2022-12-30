@@ -252,6 +252,8 @@ For more on git submodules, see the `= git submodules: =` section of my "git & L
     1. In short, it's a C program which uses system calls to write and call a Python script which then uses a system call to ping. Pretty neat. I posted the code also in my answer here: https://stackoverflow.com/a/70285228/4561887.
 1. Iterate over C `enum` and C++ `enum class`: [Stack Overflow: How can I iterate over an enum?](https://stackoverflow.com/a/69774217/4561887)
 1. 4 ways to do function pointers in C++ (2 of which work also in C) - [cpp/function_ptr_typedef_vs_std_function.cpp](cpp/function_ptr_typedef_vs_std_function.cpp)
+1. Libcurl usage (`#include <curl/curl.h>`) and advanced error handling--ex: `enum class Error_code`, `struct Error`, `return Error::Ok()`, etc.
+    1. See the `cpp/curl_lib*` `.h`, `.cpp`, and `unittest.cpp` files.
 
 
 <a id="build-notes"></a>
