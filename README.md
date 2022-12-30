@@ -90,8 +90,8 @@ Note that these are NOT just your standard "simple" hello world demos for absolu
 
 This repo contains [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules), which simply means that this is a git repo which contains other git repos. It also uses [`git lfs` (Large File Storage)](https://git-lfs.com/) to more-efficiently store certain binary files, such as PDFs. 
 
-1. **For details on how to use `git submodule` and `git lfs`, see my notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [how-to-clone-whole-repo](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles#how-to-clone-whole-repo).** 
-1. See also the `= git submodules: =` section of my "git & Linux cmds doc" notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [eRCaGuy_dotfiles/git & Linux cmds, help, tips & tricks - Gabriel.txt](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt).
+- **For details on how to use `git submodule` and `git lfs`, see my notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [how-to-clone-whole-repo](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles#how-to-clone-whole-repo).** 
+- See also the `= git submodules: =` section of my "git & Linux cmds doc" notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [eRCaGuy_dotfiles/git & Linux cmds, help, tips & tricks - Gabriel.txt](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt).
 
 In short:
 
