@@ -12,7 +12,9 @@ STATUS: wip
 Note 30 Dec. 2022: I made some misc. changes to this file but don't remember why. So, take a look
 at this file's history next time I look at it so I can see what changes I last made:
 ```bash
-# See: https://stackoverflow.com/a/5493663/4561887
+# See:
+# 1. https://stackoverflow.com/a/5493663/4561887
+# 1. [my answer] https://stackoverflow.com/a/74965393/4561887
 git log --follow -p -- c/alsa_aplay__play_tone_sound_WIP.c
 ```
 
