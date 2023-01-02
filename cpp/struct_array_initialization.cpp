@@ -1,11 +1,21 @@
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-GS
+Gabriel Staples
+www.ElectricRCAircraftGuy.com
 Written:          22 Dec. 2020
 Added to my repo:  2 Jan. 2023
 
 Demonstrate how to initialize a C-style array of structs in C++.
+
+Arduino set LED struct:
+- demonstrate an alternative way to initialize an array of structs in C++, both
+  inside a function after construction, and during initialization at
+  construction.
+- Note: changing the contents of the array of structs inside a function is most
+  useful when struct contents need to be changed often, not necessarily when
+  initializing a struct once. If it just needs to be done once, you can just
+  use the technique to initialize the array of structs once at construction.
 
 STATUS: Done and works!
 
