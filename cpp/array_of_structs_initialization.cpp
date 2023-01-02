@@ -1,0 +1,1 @@
+struct_array_initialization.cpp
