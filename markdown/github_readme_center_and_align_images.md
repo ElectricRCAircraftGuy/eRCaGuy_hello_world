@@ -666,7 +666,7 @@ Centering the image in markdown requires that we use the extra control that HTML
 
 Here's more info. on what is going on here:
 
-1. The `<img` part of the above code is the HTML "**start tag**", while the `>` at the end is the HTML "**end tag**". 
+1. The [`<img`](https://www.scaler.com/topics/html/html-image-tag/) part of the above code is the HTML "**start tag**", while the `>` at the end is the HTML "**end tag**". 
 1. Everything from the start tag to the end tag, inclusive, makes up this HTML `img` "**element**". 
 1. HTML `img` **"tags"/"elements"** are used to insert images into HTML. 
 1. Each of the assignments inside the element is configuring an HTML "**attribute**". 
