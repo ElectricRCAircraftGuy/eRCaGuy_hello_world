@@ -37,6 +37,7 @@ __name__() {
 }
 
 # Only run `main` if this script is being **run**, NOT sourced (imported)
+# - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$(__name__)" = "__main__" ]; then
     main
 fi
