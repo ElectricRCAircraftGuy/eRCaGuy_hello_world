@@ -11,7 +11,13 @@
 # Check this script with: `shellcheck hello_world_basic.sh`
 
 # Run command:
+#
 #       ./hello_world_basic.sh
+#
+# Source (import) command to get access to any functions herein:
+# [my answer] https://stackoverflow.com/a/62626515/4561887):
+#
+#       . ./hello_world_basic.sh
 
 # References:
 # 1.

@@ -2,7 +2,7 @@
 
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-# check_if_sourced_or_executed.sh
+# if__name__==__main___check_if_sourced_or_executed.sh
 
 # By Gabriel Staples
 # First written: 10 Jan. 2022
@@ -36,14 +36,14 @@
 #           cd path/to/eRCaGuy_hello_world
 # 1. Execute the script in 2 ways:
 #   A. As an executable script
-#           ./bash/check_if_sourced_or_executed.sh
+#           ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 #   B. By calling the bash interpreter
-#           bash ./bash/check_if_sourced_or_executed.sh
+#           bash ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 # 2. Source the script in 2 ways:
 #   A. Bash source call
-#           source ./bash/check_if_sourced_or_executed.sh
+#           source ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 #   B. (Recommended) POSIX-compliant source call
-#           . ./bash/check_if_sourced_or_executed.sh
+#           . ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 
 
 main() {
@@ -126,7 +126,7 @@ fi
 #
 #       ----------------------------------------------------------------------------------
 #
-#       eRCaGuy_hello_world$ ./bash/check_if_sourced_or_executed.sh
+#       eRCaGuy_hello_world$ ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 #       Technique 1 (can be placed anywhere):
 #         See: https://unix.stackexchange.com/a/424495/114401
 #         This script is being EXECUTED.
@@ -150,7 +150,7 @@ fi
 #
 #       ----------------------------------------------------------------------------------
 #
-#       eRCaGuy_hello_world$ bash ./bash/check_if_sourced_or_executed.sh
+#       eRCaGuy_hello_world$ bash ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 #       Technique 1 (can be placed anywhere):
 #         See: https://unix.stackexchange.com/a/424495/114401
 #         This script is being EXECUTED.
@@ -174,7 +174,7 @@ fi
 #
 #       ----------------------------------------------------------------------------------
 #
-#       eRCaGuy_hello_world$ source ./bash/check_if_sourced_or_executed.sh
+#       eRCaGuy_hello_world$ source ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 #       Technique 1 (can be placed anywhere):
 #         See: https://unix.stackexchange.com/a/424495/114401
 #         This script is being SOURCED.
@@ -191,7 +191,7 @@ fi
 #
 #       ----------------------------------------------------------------------------------
 #
-#       eRCaGuy_hello_world$ . ./bash/check_if_sourced_or_executed.sh
+#       eRCaGuy_hello_world$ . ./bash/if__name__==__main___check_if_sourced_or_executed.sh
 #       Technique 1 (can be placed anywhere):
 #         See: https://unix.stackexchange.com/a/424495/114401
 #         This script is being SOURCED.
