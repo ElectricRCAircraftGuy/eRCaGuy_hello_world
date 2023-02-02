@@ -12,8 +12,10 @@
 
 # keywords: bell sound; play sounds in bash
 
-# Check this script with: `shellcheck sound_bell_lib.sh`
-
+# Check this script with:
+#
+##      shellcheck bash/sound_bell_lib.sh
+#
 # Run command:
 #
 #       bash/sound_bell_lib.sh
@@ -32,6 +34,7 @@
 
 
 RETURN_CODE_SUCCESS=0
+# shellcheck disable=SC2034
 RETURN_CODE_ERROR=1
 
 # ------------------------------ Library START ---------------------------------

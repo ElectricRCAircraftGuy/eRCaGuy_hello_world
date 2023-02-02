@@ -8,8 +8,10 @@
 
 # keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
 
-# Check this script with: `shellcheck hello_world_best.sh`
-
+# Check this script with:
+#
+##      shellcheck bash/hello_world_best.sh
+#
 # Run command:
 #
 #       bash/hello_world_best.sh
