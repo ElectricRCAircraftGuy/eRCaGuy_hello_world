@@ -21,6 +21,8 @@
 
 # References:
 # 1. "eRCaGuy_hello_world/bash/if__name__==__main___check_if_sourced_or_executed_basic.sh"
+# 1. [my answer] What is the bash equivalent to Python's `if __name__ == '__main__'`?:
+#    https://stackoverflow.com/a/70662116/4561887
 
 
 main() {

@@ -30,18 +30,19 @@
 #    - he learned it from Dennis Williamson apparently.
 
 
-__name__() {
-    # Get the last element in this bash built-in array to see if this script
-    # is being sourced or executed. See `man bash` and search for "FUNCNAME".
-    # This prints either "main" or "source".
-    printf "%s" "${FUNCNAME[-1]}"
-}
-
 main() {
     echo "Running main."
 }
 
-if [ "$(__name__)" = "main" ]; then
+__name__() {
+    # Get the last element in this bash built-in array to see if this script
+    # is being sourced or executed. See `man bash` and search for "FUNCNAME".
+    # This prints either "__main__" or "__source__".
+    printf "%s" "__${FUNCNAME[-1]}__"
+}
+
+# Only run `main` if this script is being **run**, NOT sourced (imported)
+if [ "$(__name__)" = "__main__" ]; then
     echo "This script is being run."
     main
 else
