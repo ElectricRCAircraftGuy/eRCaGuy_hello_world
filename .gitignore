@@ -12,7 +12,7 @@
 #   ```
 
 /git_branch_hash_backups/
-/temp/
+temp/
 
 # Temporary LibreOffice Writer & Calc files
 *.odt#
