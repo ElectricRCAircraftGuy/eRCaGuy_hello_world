@@ -409,32 +409,26 @@ main() {
     echo ""
 } # main
 
-# Set the global variable `run` to "true" if the script is being **executed** (not sourced) and
-# `main` should run, and set `run` to "false" otherwise. One might source this script but intend
-# NOT to run it if they wanted to import functions from the script.
+# Determine if the script is being sourced or executed (run).
 # See:
-# 1. my answer: https://stackoverflow.com/a/70662049/4561887
-# 1. https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/check_if_sourced_or_executed.sh
-run_check() {
-    # This is akin to `if __name__ == "__main__":` in Python.
-    if [ "${FUNCNAME[-1]}" == "main" ]; then
-        # This script is being EXECUTED, not sourced
-        run="true"
-    fi
-}
+# 1. "eRCaGuy_hello_world/bash/if__name__==__main___check_if_sourced_or_executed_best.sh"
+# 1. My answer: https://stackoverflow.com/a/70662116/4561887
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+    # This script is being run.
+    __name__="__main__"
+else
+    # This script is being sourced.
+    __name__="__source__"
+fi
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Main program entry point
 # ----------------------------------------------------------------------------------------------------------------------
 
-# Only run main function if this file is being executed, NOT sourced.
-run="false"
-run_check
-if [ "$run" == "true" ]; then
+# Only run `main` if this script is being **run**, NOT sourced (imported).
+# - See my answer: https://stackoverflow.com/a/70662116/4561887
+if [ "$__name__" = "__main__" ]; then
     parse_args "$@"
     time main
-    # Explicitly exit after `main` to prevent any code from running afterwards
-    # in case someone modifies this script and adds more code below.
-    # See: https://unix.stackexchange.com/a/449508/114401
     exit $RETURN_CODE_SUCCESS
 fi
