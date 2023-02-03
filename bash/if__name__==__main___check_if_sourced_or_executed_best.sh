@@ -11,16 +11,16 @@
 
 # keywords:
 
-# Check this script with: `shellcheck if__name__==__main___check_if_sourced_or_executed_basic.sh`
+# Check this script with: `shellcheck if__name__==__main___check_if_sourced_or_executed_best.sh`
 
 # Run command:
 #
-#       ./if__name__==__main___check_if_sourced_or_executed_basic.sh
+#       ./if__name__==__main___check_if_sourced_or_executed_best.sh
 #
 # Source (import) command to get access to these functions:
 # [my answer] https://stackoverflow.com/a/62626515/4561887):
 #
-#       . ./if__name__==__main___check_if_sourced_or_executed_basic.sh
+#       . ./if__name__==__main___check_if_sourced_or_executed_best.sh
 
 # References:
 # 1. See: "eRCaGuy_hello_world/bash/print_FUNCNAME_and_BASH_SOURCE_builtin_bash_arrays.sh"
@@ -34,15 +34,22 @@ main() {
     echo "Running main."
 }
 
-__name__() {
-    # Get the last element in this bash built-in array to see if this script
-    # is being sourced or executed. See `man bash` and search for "FUNCNAME".
-    # This prints either "__main__" or "__source__".
-    printf "%s" "__${FUNCNAME[-1]}__"
-}
+# Check if this script is being sourced or executed.
+# See:
+# 1. This answer here where I first learned about `"${BASH_SOURCE[0]}" = "$0"`:
+#    https://stackoverflow.com/a/29967433/4561887
+# 1. My answer here: https://stackoverflow.com/a/70662116/4561887
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+    # This script is being run.
+    __name__="__main__"
+else
+    # This script is being sourced.
+    __name__="__source__"
+fi
 
 # Only run `main` if this script is being **run**, NOT sourced (imported)
-if [ "$(__name__)" = "__main__" ]; then
+# - See my answer: https://stackoverflow.com/a/70662116/4561887
+if [ "$__name__" = "__main__" ]; then
     echo "This script is being run."
     main
 else
@@ -54,11 +61,11 @@ fi
 #
 # 1) WHEN RUN
 #
-#       eRCaGuy_hello_world$ bash/if__name__==__main___check_if_sourced_or_executed_basic.sh
+#       eRCaGuy_hello_world$ bash/if__name__==__main___check_if_sourced_or_executed_best.sh
 #       This script is being run.
 #       Running main.
 #
 # 2) WHEN SOURCED
 #
-#       eRCaGuy_hello_world$ . bash/if__name__==__main___check_if_sourced_or_executed_basic.sh
+#       eRCaGuy_hello_world$ . bash/if__name__==__main___check_if_sourced_or_executed_best.sh
 #       This script is being sourced.

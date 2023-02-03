@@ -22,25 +22,29 @@
 #       . bash/hello_world_best.sh
 
 # References:
-# 1. "eRCaGuy_hello_world/bash/if__name__==__main___check_if_sourced_or_executed_basic.sh"
-# 1. [my answer] What is the bash equivalent to Python's `if __name__ == '__main__'`?:
+# 1. "eRCaGuy_hello_world/bash/if__name__==__main___check_if_sourced_or_executed_best.sh"
+# 1. ***** [my answer] What is the bash equivalent to Python's `if __name__ == '__main__'`?:
 #    https://stackoverflow.com/a/70662116/4561887
+# 1. This answer here where I first learned about `"${BASH_SOURCE[0]}" = "$0"`:
+#    https://stackoverflow.com/a/29967433/4561887
+# 1.
 
 
 main() {
     echo "Running main."
 }
 
-__name__() {
-    # Get the last element in this bash built-in array to see if this script
-    # is being sourced or executed. See `man bash` and search for "FUNCNAME".
-    # This prints either "__main__" or "__source__".
-    printf "%s" "__${FUNCNAME[-1]}__"
-}
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+    # This script is being run.
+    __name__="__main__"
+else
+    # This script is being sourced.
+    __name__="__source__"
+fi
 
 # Only run `main` if this script is being **run**, NOT sourced (imported)
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
-if [ "$(__name__)" = "__main__" ]; then
+if [ "$__name__" = "__main__" ]; then
     main
 fi
 

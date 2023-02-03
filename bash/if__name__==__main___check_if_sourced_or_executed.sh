@@ -70,9 +70,9 @@ run_check() {
     fi
 
 
-    echo "Technique 2 [MY 2ND FAVORITE] (can be placed anywhere):"
-    echo "  Modified from: https://stackoverflow.com/a/29967433/4561887"
-    if [ "${BASH_SOURCE[0]}" == "$0" ]; then
+    echo "Technique 2 [BEST] (can be placed anywhere):"                         # <========== UPDATE: THIS IS THE BEST! IT HANDLES NESTED SCRIPTS.
+    echo "  Modified from: https://stackoverflow.com/a/29967433/4561887"        #             Do NOT use Technique 4. It does NOT handle nested
+    if [ "${BASH_SOURCE[0]}" == "$0" ]; then                                    #             scripts where one script calls our sources another.
         echo "  This script is being EXECUTED."
         run="true"
     else
@@ -89,7 +89,7 @@ run_check() {
     fi
 
 
-    echo "Technique 4 [MY 1ST FAVORITE] (MUST be **inside** a function):"
+    echo "Technique 4 [does NOT handle nested scripts] (MUST be **inside** a function):"
     echo "  Modified from: https://stackoverflow.com/a/14706745/4561887"
     echo "  and https://unix.stackexchange.com/a/424552/114401"
     if [ "${FUNCNAME[-1]}" == "main" ]; then
