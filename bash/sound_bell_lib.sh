@@ -39,6 +39,7 @@ RETURN_CODE_ERROR=1
 
 # ------------------------------ Library START ---------------------------------
 
+# Description:
 # Play the bell sound "ding" to alert the user of something.
 #
 # Usage:
