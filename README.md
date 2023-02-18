@@ -59,6 +59,7 @@ www.ElectricRCAircraftGuy.com
     1. [4. bash:](#4-bash)
     1. [5. awk:](#5-awk)
     1. [6. Arduino:](#6-arduino)
+1. [Useful tips and tricks:](#useful-tips-and-tricks)
 1. [File Structure:](#file-structure)
 1. [Changelog](#changelog)
     1. [\[v0.3.0\] - 2020-05-23](#v030---2020-05-23)
@@ -436,6 +437,45 @@ git submodule update --init --recursive
 <a id="6-arduino"></a>
 ## 6. Arduino:
 1. [arduino/Blink/Blink.ino](arduino/Blink/Blink.ino) - see how to blink built-in LED 13, how to manually "bit-bang" PWM it to dim it, and how to plot a couple opposing sawtooth waves you can view in the Arduino Serial Plotter. Pretty cool!
+
+
+<a id="useful-tips-and-tricks"></a>
+# Useful tips and tricks:
+
+Put this one-line bash script at the top of your C file: `//usr/bin/env gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit`
+
+**hello_world.c:**
+```c
+//usr/bin/env gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit
+
+#include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
+#include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+#include <stdio.h>   // For `printf()`
+
+// int main(int argc, char *argv[])  // alternative prototype
+int main()
+{
+    printf("Hello World.\n\n");
+
+    return 0;
+}
+```
+
+Now run your C file as an executable:
+```bash
+chmod +x hello_world.c
+./hello_world.c
+```
+
+It turns out you can do this with **almost any** compiled language program to make it "feel" like a scripted program.
+
+Pretty awesome. I first learned about it for Go, then just applied the concept to C.
+
+See: [Unix & Linux: Shebang starting with `//`?](https://unix.stackexchange.com/a/162535/114401)
+
+**Explanation:**
+
+In this particular case above, it works because `//` is a comment in C, so that line is ignored in C, and multiple slashes are ignored in Bash, making `//usr/bin/env gcc` act like `/usr/bin/env gcc` in Bash, which simply calls the gcc compiler. That Bash line then calls the compiled C program with all args passed to it, as `/tmp/a "$@";`, then it calls `exit` afterwards to exit before trying to execute any more lines from this file, since trying to execute the C lines in Bash would of course result in errors.
 
 
 <a id="file-structure"></a>
