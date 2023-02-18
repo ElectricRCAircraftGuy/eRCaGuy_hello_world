@@ -31,7 +31,7 @@
 # See a full table of colors here:
 # 1. https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
 # 1. https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
-ANSI_OFF="\e[m"
+ANSI_OFF="\e[m"         # the combination of ANSI_START + ANSI_END with no numeric codes in between
 ANSI_START="\e["
 ANSI_END="m"
 ANSI_BOLD=";1"
