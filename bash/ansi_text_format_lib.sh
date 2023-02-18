@@ -160,6 +160,11 @@ ansi_echo() {
     echo -e "${f}$@${F}"
 }
 
+# An alternative to (and probably better-named than) `ansi_echo`.
+f_echo() {
+    ansi_echo "$@"
+}
+
 run_tests() {
     echo "Running tests."
 
