@@ -26,6 +26,7 @@ References:
     1. https://stackoverflow.com/a/75491520/4561887
 1. What's the appropriate Go shebang line? -
    https://stackoverflow.com/q/7707178/4561887
+    1. ***** [my answer] https://stackoverflow.com/a/75491727/4561887
 1. Shebang starting with `//`? - https://unix.stackexchange.com/a/162535/114401
 1.
 

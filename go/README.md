@@ -12,6 +12,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     1. https://go.dev/ - official Go website
     1. https://www.tutorialspoint.com/go/index.htm
 1. [my answer] [How to specify an output name or path when building in Go (golang)](https://stackoverflow.com/a/75491520/4561887)
+1. [my answer] [What's the appropriate Go shebang line?](https://stackoverflow.com/a/75491727/4561887)
 
 
 ## Common commands, building, and help
@@ -137,3 +138,4 @@ go version
     1. [Google search for "hashbang for go"](https://www.google.com/search?q=hashbang+for+go&oq=hashbang+for+go&aqs=chrome..69i57.2310j0j7&sourceid=chrome&ie=UTF-8)
     1. [What's the appropriate Go shebang line?](https://stackoverflow.com/q/7707178/4561887)
     1. \*\*\*\*\*+ https://unix.stackexchange.com/a/162535/114401
+    1. [Run C or C++ file as a script](https://stackoverflow.com/a/29709521/4561887)
