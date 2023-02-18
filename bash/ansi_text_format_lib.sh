@@ -2,14 +2,22 @@
 
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+# GS
+# Feb. 18 2023
+# https://gabrielstaples.com/
+# https://www.electricrcaircraftguy.com/
+
 # A general purpose ANSI text formatting library in Bash. Easily make your terminal text bold, red,
 # blue, blinking, inverted colors (highlighted), etc.
 # - See all the possible codes on Wikipedia, starting here:
 #   https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
 #
-# Status: wip
+# Status: done and works!
+# I need to add more ANSI codes, but this is a very-well-done and functional library now! I am
+# very pleased with it.
 
-# keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
+# keywords: text formatting in your terminal in Bash (or any language for that matter, C, C++,
+# Python, Go, etc.)
 
 # Check this script with:
 #
@@ -35,7 +43,7 @@
 # 1.
 
 # Notes:
-# 1. NB: WHEN USING `echo`, DON'T FORGET THE `-e` to escape the color codes! Ex:
+# 1. NB: WHEN USING `echo`, DON'T FORGET THE `-e` to escape the color codes! Ex:   <======== REQUIRED TO GET THE FORMATTING WHEN USING `echo` ===========
 #       echo -e "some string with color codes in it"
 
 # TODO (newest on bottom):
@@ -61,14 +69,14 @@ ANSI_INVERTED=";7"      # inverted colors (ie: the text looks **highlighted**); 
 ANSI_HIGHLIGHTED="$ANSI_INVERTED" # alias
 ANSI_CROSSED_OUT=";9"
 ANSI_NORMAL_INTENSITY=";22" # neither bold nor faint
-# Foreground (FG) colors: 30-97  (not continuous); TODO: FILL THE REST IN!
+# Foreground (FG) colors: 30-97  (not continuous); TODO: ADD THE REST OF THE CODES!
 # - See: https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 ANSI_FG_BLK=";30"       # foreground color black
 ANSI_FG_RED=";31"       # foreground color red
 ANSI_FG_BLU=";34"       # foreground color blue
 ANSI_FG_BR_BLU=";94"    # foreground color bright blue
 ANSI_FG_BR_YLW=";93"    # foreground color bright yellow
-# Background (BG) colors: 40-107 (not continuous); TODO: FILL THE REST IN!
+# Background (BG) colors: 40-107 (not continuous); TODO: ADD THE REST OF THE CODES!
 # - See: https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 ANSI_BG_BLK=";40"       # background color black
 ANSI_BG_RED=";41"       # background color red
@@ -93,10 +101,36 @@ F="${ANSI_OFF}"
 
 # Set the `f` format variable by writing any and all passed-in ANSI numeric codes in between
 # `ANSI_START` and `ANSI_END`.
+#
 # Usage:
+#       set_f ansi_format_codes...
+#
+# Prints to stdout:
+#       NA
+#
+# Example:
 #       set_f ANSI_BOLD ANSI_UNDERLINE ANSI_SLOW_BLINK ANSI_FG_BR_BLU
 #       echo -e "${f}This string is bold, underlined, blinking, bright blue.${F} This is not."
+#
 set_f() {
+    f="$(make_f_str "$@")"
+}
+
+# Make an ANSI format string. This is really useful when you want to make multiple `f` type format
+# strings to be used in the same `echo -e` or print command.
+#
+# Usage:
+#       make_f_str ansi_format_codes...
+#
+# Prints to stdout:
+#       The formatted f string for you to manually store into your own format variable.
+#
+# Example:
+#       f1="$(make_f_str ANSI_ITALIC ANSI_FG_RED)"      # italic red font
+#       f2="$(make_f_str ANSI_UNDERLINE ANSI_FG_BLU)"   # underlined blue font
+#       echo -e "${f1}I am italic red.${F} ${f2}I am underlined blue.${F} I am normal."
+#
+make_f_str() {
     format_str='${ANSI_START}'
     for format_arg in "$@"; do
         format_str="$(printf "%s\${%s}" "$format_str" "$format_arg")"
@@ -106,26 +140,40 @@ set_f() {
     # now do variable substitution in that string to replace all `${variable_name}` parts with the
     # value of those variables
     format_str="$(eval echo "$format_str")"
-    # echo "$format_str"  # debugging
-
-    f="$format_str"
+    echo "$format_str"
 }
 
-make_format_str() {
-    echo ""
-}
+run_tests() {
+    echo "Running tests."
 
+    # Test 4 ways to use this library:
 
-main() {
-    echo "Running main."
+    # 1. Do it manually with the ANSI codes directly.
+    echo -e "${ANSI_START}${ANSI_INVERTED}${ANSI_END}I am highlighted.${ANSI_OFF} I am normal."
+    # or
+    echo -e "${ANSI_START}${ANSI_INVERTED}${ANSI_END}I am highlighted.${F} I am normal."
 
+    # 2. Manually use the ANSI codes to create your own format f variables.
+    f="${ANSI_START}${ANSI_INVERTED}${ANSI_END}"
+    echo -e "${f}I am highlighted.${F} I am normal."
+
+    # 3. Call `set_f`, then use the `f` format variable.
     set_f ANSI_BOLD ANSI_UNDERLINE ANSI_SLOW_BLINK ANSI_FG_BR_BLU
     echo -e "${f}This string is bold, underlined, blinking, bright blue.${F} This is not."
 
-    # branch_info="${F}${git_branch}${f} ${F}${git_short_hash}${f}"
-    # echo -e "$branch_info"  # NB: DON'T FORGET THE `-e` here to escape the color codes!
+    # 4. Call `make_f_str` and then write its output to your own format variables.
+    f1="$(make_f_str ANSI_ITALIC ANSI_FG_RED)"      # italic red font
+    f2="$(make_f_str ANSI_UNDERLINE ANSI_FG_BLU)"   # underlined blue font
+    echo -e "${f1}I am italic red.${F} ${f2}I am underlined blue.${F} I am normal."
+    # Same as above. Apparently the `${F}` is NOT required between subsequent format settings
+    # unless you need to disable certain formatting, such as highlighting, background colors, or
+    # underlining, for instance, on the space characters between the formatted strings as well.
+    echo -e "${f1}I am italic red. ${f2}I am underlined blue.${F} I am normal."
+}
 
-    # set_format "$ANSI_INV"
+main() {
+    echo "Running main."
+    run_tests
 }
 
 # Determine if the script is being sourced or executed (run).
@@ -149,12 +197,18 @@ fi
 
 # SAMPLE OUTPUT:
 #
-# 1) WHEN RUN (it prints "Running main.")
+# 1) WHEN RUN.
+# - NB: run this yourself to see the pretty formatting!
 #
-#       eRCaGuy_hello_world$ bash/ansi_text_format_lib.sh
+#       eRCaGuy_hello_world/bash$ ./ansi_text_format_lib.sh
 #       Running main.
+#       Running tests.
+#       I am highlighted. I am normal.
+#       I am highlighted. I am normal.
+#       I am highlighted. I am normal.
+#       This string is bold, underlined, blinking, bright blue. This is not.
+#       I am italic red. I am underlined blue. I am normal.
+#       I am italic red. I am underlined blue. I am normal.
 #
 #
 # 2) WHEN SOURCED (no output)
-#
-#       eRCaGuy_hello_world$ . bash/ansi_text_format_lib.sh
