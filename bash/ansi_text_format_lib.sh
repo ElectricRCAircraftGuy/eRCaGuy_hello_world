@@ -143,6 +143,23 @@ make_f_str() {
     echo "$format_str"
 }
 
+# A simple wrapper to wrap your text output you'd like to print with the currently-set `f` format
+# string.
+#
+# Example Usage:
+#       # source this file
+#       . ./ansi_text_format_lib.sh
+#       # Set your format string
+#       set_f ANSI_BOLD ANSI_UNDERLINE ANSI_SLOW_BLINK ANSI_FG_BR_BLU
+#       # view the current format string
+#       echo "$f"
+#       # Now print something in that format
+#       ansi_echo "This library works very well! I am very pleased with its usage and format! :)"
+#
+ansi_echo() {
+    echo -e "${f}$@${F}"
+}
+
 run_tests() {
     echo "Running tests."
 
