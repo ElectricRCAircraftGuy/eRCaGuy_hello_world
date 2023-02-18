@@ -1,6 +1,11 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 
+# See also
+
+1. [Running a C file as an executable Bash script](../README.md#running-a-c-file-as-an-executable-bash-script)
+
+
 # Other readmes/markdown files herein:
 
 _To see all `*.md` files herein, run: `ls -1 | grep -i '\.md'`._

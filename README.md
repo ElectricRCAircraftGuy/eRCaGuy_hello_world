@@ -60,6 +60,7 @@ www.ElectricRCAircraftGuy.com
     1. [5. awk:](#5-awk)
     1. [6. Arduino:](#6-arduino)
 1. [Useful tips and tricks:](#useful-tips-and-tricks)
+    1. [Running a C file as an executable Bash script](#running-a-c-file-as-an-executable-bash-script)
 1. [File Structure:](#file-structure)
 1. [Changelog](#changelog)
     1. [\[v0.3.0\] - 2020-05-23](#v030---2020-05-23)
@@ -441,6 +442,10 @@ git submodule update --init --recursive
 
 <a id="useful-tips-and-tricks"></a>
 # Useful tips and tricks:
+
+
+<a id="running-a-c-file-as-an-executable-bash-script"></a>
+## Running a C file as an executable Bash script
 
 Put this one-line bash script at the top of your C file: `//usr/bin/env gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit`
 
