@@ -34,6 +34,10 @@
 #      - The area at and above my `gs_git_show_branch_and_hash` func
 # 1.
 
+# Notes:
+# 1. NB: WHEN USING `echo`, DON'T FORGET THE `-e` to escape the color codes! Ex:
+#       echo -e "some string with color codes in it"
+
 # TODO (newest on bottom):
 # 1. [ ] Take a whole day sometime and go through the Wikipedia article carefully
 # (https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters),
@@ -87,13 +91,36 @@ f="${ANSI_START}${ANSI_INVERTED}${ANSI_END}"
 # format off; will always be this
 F="${ANSI_OFF}"
 
+# Set the `f` format variable by writing any and all passed-in ANSI numeric codes in between
+# `ANSI_START` and `ANSI_END`.
+# Usage:
+#       set_f ANSI_BOLD ANSI_UNDERLINE ANSI_SLOW_BLINK ANSI_FG_BR_BLU
+#       echo -e "${f}This string is bold, underlined, blinking, bright blue.${F} This is not."
 set_f() {
-    f=""
+    format_str='${ANSI_START}'
+    for format_arg in "$@"; do
+        format_str="$(printf "%s\${%s}" "$format_str" "$format_arg")"
+    done
+    format_str="$format_str"'${ANSI_END}'
+
+    # now do variable substitution in that string to replace all `${variable_name}` parts with the
+    # value of those variables
+    format_str="$(eval echo "$format_str")"
+    # echo "$format_str"  # debugging
+
+    f="$format_str"
+}
+
+make_format_str() {
+    echo ""
 }
 
 
 main() {
     echo "Running main."
+
+    set_f ANSI_BOLD ANSI_UNDERLINE ANSI_SLOW_BLINK ANSI_FG_BR_BLU
+    echo -e "${f}This string is bold, underlined, blinking, bright blue.${F} This is not."
 
     # branch_info="${F}${git_branch}${f} ${F}${git_short_hash}${f}"
     # echo -e "$branch_info"  # NB: DON'T FORGET THE `-e` here to escape the color codes!
