@@ -20,6 +20,20 @@
 # Test multiple ways to build and print regular bash "indexed" arrays
 
 # ----------------------------------------
+# 0. Array splicing (AKA: joining, combining, merging, etc.)
+# NB: Bash does *not* have nested nor multidimensional arrays, so this is simply *combining* arrays!
+# See: https://stackoverflow.com/a/12317983/4561887
+# ----------------------------------------
+
+a1=(a b c d)
+a2=(d e f g)
+a3=(1 2 3 "${a1[@]}" 4 5 "${a2[@]}" 6 7)
+echo "${a1[@]}"  # output: a b c d
+echo "${a2[@]}"  # output: d e f g
+echo "${a3[@]}"  # output: 1 2 3 a b c d 4 5 d e f g 6 7
+echo ""
+
+# ----------------------------------------
 # 1. Build up one element at-a-time
 # ----------------------------------------
 
