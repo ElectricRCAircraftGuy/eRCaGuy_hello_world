@@ -32,6 +32,7 @@
 
 main() {
     echo "Running main."
+    # Add your main function code here
 }
 
 # Determine if the script is being sourced or executed (run).
