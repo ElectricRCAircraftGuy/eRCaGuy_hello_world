@@ -20,6 +20,22 @@
 # Test multiple ways to build and print regular bash "indexed" arrays
 
 # ----------------------------------------
+# -1. See if you can have empty arrays (arrays of size 0 elements)
+# Answer: yes! Run this example.
+# ----------------------------------------
+a1=("")  # array of size 1 element, which is an empty string
+a2=(a b "${a1[@]}" c)
+echo "${a2[@]}"
+echo "number of elements = ${#a2[@]}"  # 4
+
+a1=()  # array of size 0 elements
+a2=(a b "${a1[@]}" c)
+echo "${a2[@]}"
+echo "number of elements = ${#a2[@]}"  # 3; there you have it! You CAN have arrays of zero elements!
+
+echo ""
+
+# ----------------------------------------
 # 0. Array splicing (AKA: joining, combining, merging, etc.)
 # NB: Bash does *not* have nested nor multidimensional arrays, so this is simply *combining* arrays!
 # See: https://stackoverflow.com/a/12317983/4561887
