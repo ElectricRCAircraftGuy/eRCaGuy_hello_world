@@ -1,3 +1,6 @@
+///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=c++17 "$0" -o /tmp/a && /tmp/a "$@"; exit
+// For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
+
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
@@ -46,5 +49,12 @@ SAMPLE OUTPUT:
     user    0m0.775s
     sys 0m0.087s
     Hello world!
+
+
+You can also run this file as an executable directly!:
+
+    eRCaGuy_hello_world/cpp$ ./hello_world_extra_basic.cpp
+    Hello world!
+
 
 */
