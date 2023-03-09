@@ -1,4 +1,4 @@
-///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=c++17 "$0" -o /tmp/a && /tmp/a "$@"; exit
+///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=gnu++17 "$0" -o /tmp/a && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -13,8 +13,11 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # gcc features, including gcc extensions, POSIX cmds, and Linux sytem cmds.
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
+# [run once ever] install ccache
+sudo apt update && sudo apt install ccache
+
 # 1. In C++
-time g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 hello_world_extra_basic.cpp -o bin/a && bin/a
 ```
 
 References:
