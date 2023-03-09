@@ -110,6 +110,7 @@ int main()
     printf("--------\n");
     grandParent_p->func(u1);
     // THIS CALL HERE IS a **great** example of run-time (late binding) polymorphism!
+    // --which occurs via the C++ run-time "vtable" (virtual table).
     //
     // EXPLANATION: `grandParent_p` is a pointer to the most-base (or highest up, depending on how
     // you think about it) class, since it is of type `GrandParent*`. However, it currently points
