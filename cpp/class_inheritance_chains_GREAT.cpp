@@ -85,7 +85,7 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world$ cpp/class_inheritance_chains.cpp
+    eRCaGuy_hello_world$ cpp/class_inheritance_chains_GREAT.cpp
     A: 5
     B: 4.3
     C: R

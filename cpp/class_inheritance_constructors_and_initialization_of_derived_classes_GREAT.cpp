@@ -92,7 +92,7 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world$ cpp/class_inheritance_constructors_and_initialization_of_derived_classes.cpp
+    eRCaGuy_hello_world$ cpp/class_inheritance_constructors_and_initialization_of_derived_classes_GREAT.cpp
     Cost: 1.3
     Id:   5
 
