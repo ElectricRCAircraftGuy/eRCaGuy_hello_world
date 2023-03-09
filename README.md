@@ -18,6 +18,20 @@ www.ElectricRCAircraftGuy.com
 1. My [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo.
 
 
+## Popular online interactive tools & resources
+1. Free:
+    1. https://www.onlinegdb.com/ - compile, run, save, share, and debug with `gdb`, your code online
+    1. https://godbolt.org/ - Compiler Explorer: view the compiled assembler output of your code
+    1. \*\*\*\*\* [My favorite for C++!] https://cppinsights.io/ - a tool for understanding and expanding cryptic C++ so that it goes from implicit to explicit! See how `auto` expands, what explicit types implicit types are, how range-based `for` loop expand, how arrays, structs, classes, etc., are initialized, etc.
+        1. My answer here references it: [Coderpad's new C++ example is cryptic: meaning of `auto` and `const char* const&`](https://stackoverflow.com/a/75656629/4561887)
+    1. https://cdecl.org/ - convert C and C++ pointers and complex types to plain English
+    1. https://regex101.com/ - expand, test, and understand regular expressions
+    1. https://asciiflow.com/#/ - draw ASCII diagrams and documentation, for text-based readmes, online.
+1. Paid:
+    1. https://coderpad.io/ - for sharing code when giving or taking online interviews; practice in the sandbox before an interview here: https://app.coderpad.io/sandbox
+    1. https://www.lucidchart.com/pages/ - a popular diagramming tool used by many top tech companies
+
+
 ## Also very useful:
 1. **Learn X in Y minutes**: for _most-excellent_ software tutorials written in code in the language itself which you are learning!
     1. Main Website: https://learnxinyminutes.com/
@@ -53,6 +67,8 @@ www.ElectricRCAircraftGuy.com
 1. [A Few Folder & File Notes](#a-few-folder--file-notes)
 1. [Examples of more advanced principles taught herein:](#examples-of-more-advanced-principles-taught-herein)
     1. [1. C and C++:](#1-c-and-c)
+            1. [Online community wiki reference pages](#online-community-wiki-reference-pages)
+            1. [Code examples:](#code-examples)
         1. [Additional C and C++ build notes \(ex: w/`gcc` or `clang` compilers\):](#additional-c-and-c-build-notes-ex-wgcc-or-clang-compilers)
     1. [2. Python:](#2-python)
     1. [3. markdown:](#3-markdown)
@@ -139,8 +155,20 @@ git submodule update --init --recursive
 <a id="examples-of-more-advanced-principles-taught-herein"></a>
 # Examples of more advanced principles taught herein:
 
+
 <a id="1-c-and-c"></a>
 ## 1. C and C++:
+
+
+<a id="online-community-wiki-reference-pages"></a>
+#### Online community wiki reference pages
+1. https://en.cppreference.com/ - most popular; hard to understand; cryptic; pedantic; most-thorough and complete; written like it's for a programming language lawyer; covers up to C++17 and is working on C++20
+1. https://cplusplus.com/reference/ - much easier to understand; better examples and explanations; written like it's for normal humans and programmers; but less complete and less-thorough; maybe only covers up to C++11
+
+
+<a id="code-examples"></a>
+#### Code examples:
+
 1. How to generate intermediate build files, including .ii, .s, and .o.
     1. See ["cpp/hello_world.cpp"](cpp/hello_world.cpp)
 1. How to make a single file compile in both C and C++ by using the `#ifdef __cplusplus` `extern "C" {` brace trick
