@@ -8,6 +8,12 @@ Started: 12 Feb. 2022
 [Place newest on TOP]
 
 
+## 20230310:
+1. Add demos!:
+    1. [ ] aligned fixed size memory pool in C
+    1. [ ] aligned fixed size memory pool in C++
+
+
 ## 20221207:
 1. [ ]  Analyze [this sample data](https://github.com/Atores1/exampleData) and write an algorithm to do automatic peak detection on it! Add an answer to the question: [Finding realtime reliable and precise peak detection algorithm for noisy signals](https://stackoverflow.com/q/74679201/4561887). Ensure your code is capable of running on even the weakest of 8-bit AVR-based Arduinos. Have a signal generator/simulator send the Arduino this data over serial, live, from your computer, so your algorithm can do live peak detection on the Arduino.
 
