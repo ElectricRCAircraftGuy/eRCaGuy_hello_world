@@ -52,6 +52,7 @@ www.ElectricRCAircraftGuy.com
             1. make⭐ - https://learnxinyminutes.com/docs/make/
             1. linker scripts (Russian only--use Google Translate) - https://learnxinyminutes.com/docs/linker/
             1. vim - https://learnxinyminutes.com/docs/vim/
+1. https://www.learncpp.com/
 
 
 # Table of Contents
