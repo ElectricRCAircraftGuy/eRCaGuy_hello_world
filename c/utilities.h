@@ -25,10 +25,13 @@ See also:
 #include <stdlib.h>
 #include <time.h>
 
-/// Debug printf function.
-/// See: https://stackoverflow.com/a/1941336/4561887
+/// Debug printf macro (works in both C and C++)
+/// See:
+/// 1. https://stackoverflow.com/a/1941336/4561887
+/// 1. [my answer] https://stackoverflow.com/a/67667132/4561887
+/// 1. The fix to make this compatible with C++ too: https://stackoverflow.com/a/72777133/4561887
 #ifdef DEBUG
-    #define DEBUG_PRINTF(...) printf("DEBUG: "__VA_ARGS__)
+    #define DEBUG_PRINTF(...) printf("DEBUG: " __VA_ARGS__)
 #else
     #define DEBUG_PRINTF(...) \
         do                    \
