@@ -227,16 +227,46 @@ References:
 
 
 
+// #include <iostream>
+// #include <string_view>
+
+// void check_hash(std::size_t hash)
+// {
+//     if (hash == std::hash<std::string_view>{}(std::string_view{"FOOD", 4}))
+//     {
+//         printf("FOOD\n");
+//     }
+//     else if (hash == std::hash<std::string_view>{}(std::string_view{"TREE", 4}))
+//     {
+//         printf("TREE\n");
+//     }
+// }
+
+// int main()
+// {
+//     std::cout << "Test\n";
+
+//     std::size_t num
+//         = std::hash<std::string_view>{}(std::string_view{"FOOD", 4});
+//     printf("num = %lu\n", num);
+//     check_hash(num);
+
+//     return 0;
+// }
+
 #include <iostream>
 #include <string_view>
 
+#define HASH(string, num_chars) \
+    std::hash<std::string_view>{}(std::string_view{(string), (num_chars)})
+
 void check_hash(std::size_t hash)
 {
-    if (hash == std::hash<std::string_view>{}(std::string_view{"FOOD", 4}))
+    if (hash == HASH("FOOD", 4))
     {
         printf("FOOD\n");
     }
-    else if (hash == std::hash<std::string_view>{}(std::string_view{"TREE", 4}))
+    else if (hash == HASH("TREE", 4))
     {
         printf("TREE\n");
     }
@@ -246,8 +276,7 @@ int main()
 {
     std::cout << "Test\n";
 
-    std::size_t num
-        = std::hash<std::string_view>{}(std::string_view{"FOOD", 4});
+    std::size_t num = HASH("FOOD", 4);
     printf("num = %lu\n", num);
     check_hash(num);
 
