@@ -1,4 +1,12 @@
-Looking at the excellent answers [from @ManuelSchneid3r here](https://stackoverflow.com/a/13513907/4561887) and [@amritkrs here](https://stackoverflow.com/a/41954177/4561887), I have finally been able to put together (over more than 1 year of effort now) a more up-to-date set of instructions, as well as additional insight and information not provided by any other answer here. 
+<!--
+GS
+12 Mar. 2023
+My answer with this content: https://stackoverflow.com/a/75718815/4561887
+-->
+
+Looking at the excellent answers [from @ManuelSchneid3r here](https://stackoverflow.com/a/13513907/4561887) and [@amritkrs here](https://stackoverflow.com/a/41954177/4561887), I have finally been able to put together (over more than 1 year of effort now) a more up-to-date set of instructions, as well as additional insight and information not provided by any other answer here, and which I have been trying to figure out for 5 years. 
+
+This includes a lot about gcc/g++ libraries, installing libraries, naming .a statically-linked library files, where g++ searches for includes, etc.
 
 ## How to install Google Test (`gtest`) and Google Mock (`gmock`) as shared, static `.a` libraries, system-wide, on Linux/Unix
 
@@ -350,7 +358,7 @@ sudo rm -r /usr/local/lib/cmake/GTest
 
     The `-lpthread` library is now an empty binary apparently and doesn't do anything except satisfy ancient requirements where that library must still be included in some places. But, `-pthread` handles that all for you, so just use `-pthread` alone and be done!
 
-That about covers it. I now know more about g++, libraries, and gtest.
+_That about covers it. I now know more about g++, libraries, and gtest._
 
 
 ## References:
