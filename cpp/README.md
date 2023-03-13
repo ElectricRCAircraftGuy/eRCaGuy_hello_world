@@ -10,8 +10,10 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. [LeetCode answers herein](#leetcode-answers-herein)
 1. [`ccache` - "a fast C/C++ compiler cache"](#ccache---a-fast-cc-compiler-cache)
 1. [Library setup & installation](#library-setup--installation)
+            1. [UPDATE 13 Mar. 2023: how to install headers and libraries system-wide into `/usr/local/`!](#update-13-mar-2023-how-to-install-headers-and-libraries-system-wide-into-usrlocal)
 1. [C++ Googletest setup: how to build googletest \(gtest and gmock\) with the gcc/g++ compiler](#c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler)
     1. [References:](#references)
+    1. [UPDATE 13 Mar. 2023: From my answer here:](#update-13-mar-2023-from-my-answer-here)
     1. [First, clone the googletest source code and symlink it into your repo](#first-clone-the-googletest-source-code-and-symlink-it-into-your-repo)
     1. [Build all of gtest and gmock as static library archive `*.a` files](#build-all-of-gtest-and-gmock-as-static-library-archive-a-files)
         1. [Option 1 \[recommended/my preference\]: _manually_ build the `*.a` static library files with g++:](#option-1-recommendedmy-preference-manually-build-the-a-static-library-files-with-g)
@@ -115,6 +117,16 @@ time ccache g++ -Wall -Wextra -Werror -O3 -std=c++17 -I"json/single_include" jso
 
 See the major headings below for instructions to install and set up various libraries.
 
+<a id="update-13-mar-2023-how-to-install-headers-and-libraries-system-wide-into-usrlocal"></a>
+#### UPDATE 13 Mar. 2023: how to install headers and libraries system-wide into `/usr/local/`!
+
+_I just learned that you can install headers system-wide into `/usr/local/include/` in order to automatically make them available to `gcc`/`g++`. And, you can install .a static library and .so shared object dynamic library files (both types _must_ be prefixed with `lib`!) system-wide into `/usr/local/lib/` to make them automatically available! Ex: copying `libgtest.a` into path `/usr/local/lib/libgtest.a` automatically makes it available as the `-lgtest` linker flag, passed to `g++`!_ 
+
+See my full findings, notes, and instructions on all this in these answer of mine:
+1. [The "easy" way: install gtest's headers and .a static library files system-wide into `/usr/local/include` and `/usr/local/lib`, respectively](https://stackoverflow.com/a/75719098/4561887)
+1. [How to install Google Test (`gtest`) and Google Mock (`gmock`) as shared, static `.a` libraries, system-wide, on Linux/Unix](https://stackoverflow.com/a/75718815/4561887)
+1. [Meaning of `-l` (lowercase "L") flags in gcc/g++](https://stackoverflow.com/a/75719053/4561887)
+
 
 <a id="c-googletest-setup-how-to-build-googletest-gtest-and-gmock-with-the-gccg-compiler"></a>
 # C++ Googletest setup: how to build googletest (gtest and gmock) with the gcc/g++ compiler
@@ -126,6 +138,61 @@ See the major headings below for instructions to install and set up various libr
     1. https://github.com/google/googletest/tree/main/googletest
 1. \*\*\*\*\*+ https://ethz-adrl.github.io/ct/ct_core/doc/html/md__home_adrl_code_src_control-toolbox_ct_core_build_test_googletest-src_googletest_README.html - this is the main source for all of the examples below because it is the _only_ source I could find which showed me how to use g++ to build googletest from scratch. It is where I learned how to build `gtest` and the associated static library files (including the `libgtest.a` and `libgtest_main.a` static library .a archive files, for instance) with g++. 
 1. I have now posted some of these instructions below here on Stack Overflow as well: [How do I build and use googletest (gtest) and googlemock (gmock) with gcc/g++ or clang?](https://stackoverflow.com/a/72108315/4561887)
+
+<a id="update-13-mar-2023-from-my-answer-here"></a>
+## UPDATE 13 Mar. 2023: From [my answer here](https://stackoverflow.com/a/75719098/4561887): 
+
+> ## The "easy" way: install gtest's headers and .a static library files system-wide into `/usr/local/include` and `/usr/local/lib`, respectively
+> 
+> With another year's worth of effort, for a total of about 5 years on this, I finally figured out the "easy" way. 
+> 
+> I initially literally just wanted to know what `g++` command to run to build my own unit test files. Here is the answer:
+> 
+> 1. Install gtest and gmock system-wide as static, `.a` shared libraries in `/usr/local/lib/`. Also, install their header files system-wide into `/usr/local/include/`. 
+> 
+>     ```bash
+>     sudo apt update
+>     sudo apt install cmake
+> 
+>     # You can find some of these instructions, here: 
+>     # https://github.com/google/googletest/tree/main/googletest
+>     time git clone https://github.com/google/googletest.git
+>     cd googletest        # "Main directory of the cloned repository."
+>     mkdir build          # "Create a directory to hold the build output."
+>     cd build
+>     time cmake ..        # "Generate native make build scripts for GoogleTest."
+>                             # Takes ~2 seconds.
+>     time make            # Run those makefiles just autogenerated by cmake above.
+>                             # Takes ~10 seconds.
+>     sudo make install    # Install the .a library files, and headers, into 
+>                             # /user/local/.
+>     ```
+> 
+> 1. Use the `-pthread`, `-lgtest`, `-lgtest_main`, `-lgmock`, and `-lgmock_main` linker flags, passed directly to `g++`, as necessary. 
+> 
+>     Example:
+> 
+>     ```bash
+>     # Build and run an example googletest unit test that comes in the repo:
+>     # - required in this case: `-pthread`, `-lgtest`, and `-lgtest_main`
+> 
+>     mkdir -p bin
+> 
+>     time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
+>         googletest/googletest/samples/sample1_unittest.cc \
+>         googletest/googletest/samples/sample1.cc \
+>         -lgtest -lgtest_main -o bin/a && time bin/a
+>     ```
+> 
+> For a **ton** more details, longer explanations, and more info., see my full answer here: [How to install Google Test (`gtest`) and Google Mock (`gmock`) as shared, static `.a` libraries, system-wide, on Linux/Unix](https://stackoverflow.com/a/75718815/4561887)!
+> 
+> For more information on the `-l` flags, see also my other answer here: [Meaning of `-l` (lowercase "L") flags in gcc/g++](https://stackoverflow.com/a/75719053/4561887)
+
+
+---
+
+
+**Old answer:**
 
 
 <a id="first-clone-the-googletest-source-code-and-symlink-it-into-your-repo"></a>
