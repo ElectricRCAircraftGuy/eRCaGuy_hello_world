@@ -6,7 +6,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 Started Mar. 2022
 
 (description)
-STATUS: wip (work in progress)
+STATUS: (status)
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
