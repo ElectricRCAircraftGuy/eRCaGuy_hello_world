@@ -248,10 +248,115 @@ sudo rm -r /usr/local/lib/cmake/GTest
 
 ## Going further: general information about libraries; debugging; gcc/g++ compiler flags; etc.
 
-/////////[see: /home/gabriel/GS/dev/eRCaGuy_hello_world/markdown/stack_exchange/gtest_build_and_install_NOTES.md]
+1. When compiling, `g++` searches your include directories for all header files your code includes. The default C++ system-wide include paths can be found by running `$(gcc -print-prog-name=cc1plus) -v` and then pressing Ctrl + C after a second to kill it (see here: [Where does gcc look for C and C++ header files?](https://stackoverflow.com/a/344525/4561887)). They include primarily:
+    ```bash
+    /usr/include        # system-added includes
+    /usr/local/include  # user-added includes
+
+    # as well as some more include paths to pull in compiler includes
+    ```
+
+    Include directories also include any that you have passed to `g++` via `-I` flags, such as `-I"path/to/some/personal/include_dir1" -I"path/to/include_dir2"`, etc.  
+
+    Storing gtest's includes in `/usr/local/include` directly means that you never have to pass custom `-I` flags to specify where they will be. The compiler just always has them available now!
+
+1. Similar to the above "include" concept, library files, such as statically-linked .a files (or dynamically-linked .so files) can be linked to your executable by passing them as inputs to `g++`. 
+
+    Example: this command, from [my answer here](https://stackoverflow.com/a/72108315/4561887), manually specifies the `gtest` and `gmock` include directories, as well as the pre-built .a files, and builds the `googletest/googletest/samples/sample1_unittest.cc` example program:
+    ```bash
+    # Note: the specified .a files here must actually be locally stored in
+    # a local "bin" path, as specified in this command
+    time ( \
+        time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
+        -I"googletest/googletest/include" -I"googletest/googlemock/include" \
+        googletest/googletest/samples/sample1_unittest.cc \
+        googletest/googletest/samples/sample1.cc \
+        bin/libgtest.a bin/libgtest_main.a \
+        -o bin/a \
+        && time bin/a \
+    )
+    ```
+
+    Or, by copying the includes to `/usr/local/include` and the .a static library files to `/usr/local/lib`, you can simplify that command greatly and run this instead! The include directories no longer need to be specified at all, and instead of passing `path/to/libgtest.a` and `path/to/libgtest_main.a`, you simply pass `-lgtest` and `-lgtest_main`, respectively, instead:
+    ```bash
+    time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
+        googletest/googletest/samples/sample1_unittest.cc \
+        googletest/googletest/samples/sample1.cc \
+        -lgtest -lgtest_main -o bin/a && time bin/a
+    ```
+
+1. Instead of running `sudo make install` to install the gtest and gmock headers and libraries into `/usr/local/include` and `/usr/local/lib`, respectively, you can **manually install the header files and libraries** by copying them like this if you want:
+    ```bash
+    # manually install the .a libraries, and header files
+
+    # give access to g++ flags `-lgtest`, `-lgtest_main`, `-lgmock`, and
+    # `-lgmock_main`, by copying over the .a static library files
+    sudo cp -i -t /usr/local/lib \
+        lib/libgtest.a lib/libgtest_main.a lib/libgmock.a lib/libgmock_main.a
+    # give access to include header files `<gtest/gmock.h>` `<gtest/gtest.h>`, 
+    # `<gtest/gtest_prod.h>`, etc.
+    # 1. gtest header file includes
+    sudo cp -a path/to/googletest/googletest/include/gtest /usr/local/include
+    # 2. gmock header file includes
+    sudo cp -a path/to/googletest/googlemock/include/gmock /usr/local/include 
+    ```
+
+    I first learned that concept [in @ManuelSchneid3r's answer here](https://stackoverflow.com/a/13513907/4561887). I tested it myself. 
+
+1. Without header files installed or a `-I` path specified to them, you'll see failures to include your desired headers, such as `fatal error: gtest/gtest.h: No such file or directory` here:
+    ```bash
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread  googletest/googletest/samples/sample1_unittest.cc     googletest/googletest/samples/sample1.cc     -lgtest -lgtest_main     -o bin/a      && time bin/a
+    googletest/googletest/samples/sample1_unittest.cc:46:10: fatal error: gtest/gtest.h: No such file or directory
+       46 | #include "gtest/gtest.h"
+          |          ^~~~~~~~~~~~~~~
+    compilation terminated.
+
+    real    0m0.046s
+    user    0m0.039s
+    sys 0m0.007s
+    ```
+
+1. Without libraries (.a or .so files) installed, and if you try to use `-lgtest` for example instead of passing `path/to/libgtest.a` directly, you'll see failures to link via the `ld` linker, such as `cannot find -lgtest` here:
+    ```bash
+    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread  googletest/googletest/samples/sample1_unittest.cc     googletest/googletest/samples/sample1.cc     -lgtest -lgtest_main     -o bin/a      && time bin/a
+    /usr/bin/ld: cannot find -lgtest
+    /usr/bin/ld: cannot find -lgtest_main
+    collect2: error: ld returned 1 exit status
+
+    real    0m1.895s
+    user    0m1.776s
+    sys 0m0.119s
+    ```
+1. If you copy your library files to a known `g++` system-wide library path, such as `/usr/local/lib` (recommended for user-installed .a and .so libraries) or `/usr/lib` (for system-installed .a and .so libraries), the .a files **must** be named `libwhatever.a`, for instance, in order to be used as `-lwhatever`. 
+
+    You cannot call them `lwhatever.a`, or `libwhatever`. They _must_ be named `libwhatever.a`. 
+
+    So, **having file `/usr/local/lib/libgtest.a` enables the `-lgtest` library linker flag**, but `/usr/local/lib/lgtest.a` does not. 
+
+    If your name is wrong and then try to use the `-lgtest` flag, you'll see the `/usr/bin/ld: cannot find -lgtest` linker error as previously shown above, since this library is not properly named and "installed".
+
+    Again, this means if you call it `/usr/local/lib/libwhatever.a`, then you must use `-lwhatever` as the linker flag to that library.
+
+    Note that per `ld --help`, the `-l` (lowercase "L") flags are apparently passed to the `ld` linker, and presumably the `l` stands for `l`ibrary. See my question here: [Meaning of `-l` (lowercase "L") flags in gcc/g++](https://stackoverflow.com/q/75710217/4561887). From `ld --help`:
+
+    >     -l LIBNAME, --library LIBNAME  
+    >                                 Search for library LIBNAME
+
+1. Looking at library files inside `/usr/local/lib` and `/usr/lib`, the linker naming convention for libraries, whether static .a or dynamic .so files, seems to **require** that the library file name *must* be prefixed with `lib`!
+
+1. Gtest uses POSIX threads (pthreads) under the hood, so you must always pass the `-pthread` flag to `g++` too.
+
+1. A [google search for `g++ "-lpthread" vs "-pthread"`](https://www.google.com/search?q=g%2B%2B+%22-lpthread%22+vs+%22-pthread%22&oq=g%2B%2B+%22-lpthread%22+vs+%22-pthread%22&aqs=chrome..69i57.191j0j9&sourceid=chrome&ie=UTF-8) reveals this answer: [Difference between `-pthread` and `-lpthread` while compiling](https://stackoverflow.com/a/23251828/4561887), which says that the difference between `-lpthread` and `-pthread` is historical, so on today's gcc/g++ and clang compilers, **you should always just use `-pthread` to bring in POSIX threads.** 
+
+    The `-lpthread` library is now an empty binary apparently and doesn't do anything except satisfy ancient requirements where that library must still be included in some places. But, `-pthread` handles that all for you, so just use `-pthread` alone and be done!
+
+That about covers it. I now know more about g++, libraries, and gtest.
 
 
-## Other references:
-1. 
-1. 
-1. 
+## References:
+1. [Answer by @ManuelSchneid3r](https://stackoverflow.com/a/13513907/4561887)
+1. [Answer by @amritkrs](https://stackoverflow.com/a/41954177/4561887)
+1. https://github.com/google/googletest
+    1. https://github.com/google/googletest/tree/main/googletest
+1. My Q&A: [How do I build and use googletest (gtest) and googlemock (gmock) with gcc/g++ or clang?](https://stackoverflow.com/q/72108314/4561887)
+1. MY Q: [Meaning of `-l` (lowercase "L") flags in gcc/g++](https://stackoverflow.com/q/75710217/4561887)
