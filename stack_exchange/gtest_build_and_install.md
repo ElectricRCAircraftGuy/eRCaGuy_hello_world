@@ -4,60 +4,12 @@ Looking at the excellent answers [from @ManuelSchneid3r here](https://stackoverf
 
 _Tested on Ubuntu 20.04 with the latest (unreleased, `git pull`ed) version of [googletest](https://github.com/google/googletest) (more recent than v1.13.0)._
 
-**If in a hurry, just jump straight down to the "Install" section below and run those several commands.**
+**If in a hurry, just run the several commands in the install section, then look at the "Example usage" shortly after.**
 
 Note: googletest has undergone a variety of changes over the last few years. For example, gtest and gmock are now packaged under the same repo, here: https://github.com/google/googletest. So, following my instructions will install _both_ for you.
 
 
-#### 1. Background: the following installation instructions will:
-
-1. Install gtest and gmock `*.a` static library files into `/usr/local/lib` so that you can build and run your gtest and gmock programs using these simple `g++` build flags (used by the linker, `ld`):
-
-    1. `-lgtest`
-        Link against the `/usr/local/lib/libgtest.a` static library file, which provides general googletest functionality.
-    1. `-lgtest_main`
-        Link against the `/usr/local/lib/libgtest_main.a` static library file, which provides a default `main()` function needed by googletest.
-    1. `-lgmock`
-        Link against the `/usr/local/lib/libgmock.a` static library file, which provides general googlemock functionality.
-    1. `-lgmock_main`
-        Link against the `/usr/local/lib/libgmock_main.a` static library file, which provides a default `main()` function needed by googlemock.
-    1. `-pthread` 
-        Required by googletest, since it uses POSIX threads under the hood.
-
-    _Notes:_
-    1. Order matters. Ensure your flags above come *after* the files which need them. 
-    1. If you were to set the necessary CMake define to build shared dynamically-linked .so libraries instead of the static .a libraries we are building, then the `-l` flags above would cause the run-time linker to link against those instead, at run-time. See [@amritkrs's answer](https://stackoverflow.com/a/41954177/4561887) for more info. on that. Following my instructions, however, will cause those same `-l` flags to link at build-time instead, placing the entire pre-built .a static library file binaries into your executables. 
-
-    Example usage: 
-    ```bash
-    # Build and run an example googletest unit test that comes in the repo:
-    # - required in this case: `-pthread`, `-lgtest`, and `-lgtest_main`
-
-    mkdir -p bin
-
-    time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
-        googletest/googletest/samples/sample1_unittest.cc \
-        googletest/googletest/samples/sample1.cc \
-        -lgtest -lgtest_main -o bin/a && time bin/a
-    ```
-
-1. Install all gtest and gmock header files that you need to include in your programs into `/usr/local/include/gtest` and `/usr/local/include/gmock`, respectively. 
-
-    This allows you to includes the necessary files in your programs, like this:
-
-    ```cpp
-    // Include in your unit tests
-    #include <gtest/gtest.h>
-    #include <gmock/gmock.h>
-
-    // Include in your production code to give gtest access to private members
-    // in your classes, as friends, via the 
-    // `FRIEND_TEST(TestSuiteName, TestName);` macro, for instance.
-    #include <gtest/gtest_prod.h>
-    ```
-
-
-#### 2. Install
+#### 1. Install the latest gtest and gmock from source
 
 If you want the latest _released_ version, find it here: https://github.com/google/googletest/releases. 
 
@@ -164,7 +116,57 @@ Install the project...
 ```
 
 
-#### 3. Run an example unit test
+#### 2. Background: the above installation instructions have just:
+
+1. Installed gtest and gmock `*.a` static library files into `/usr/local/lib` so that you can build and run your gtest and gmock programs using these simple `g++` build flags (used by the linker, `ld`):
+
+    1. `-lgtest`
+        Link against the `/usr/local/lib/libgtest.a` static library file, which provides general googletest functionality.
+    1. `-lgtest_main`
+        Link against the `/usr/local/lib/libgtest_main.a` static library file, which provides a default `main()` function needed by googletest.
+    1. `-lgmock`
+        Link against the `/usr/local/lib/libgmock.a` static library file, which provides general googlemock functionality.
+    1. `-lgmock_main`
+        Link against the `/usr/local/lib/libgmock_main.a` static library file, which provides a default `main()` function needed by googlemock.
+    1. `-pthread` 
+        Required by googletest, since it uses POSIX threads under the hood.
+
+    _Notes:_
+    1. Order matters. Ensure your flags above come *after* the files which need them. 
+    1. If you were to set the necessary CMake define to build shared dynamically-linked .so libraries instead of the static .a libraries we are building, then the `-l` flags above would cause the run-time linker to link against those instead, at run-time. See [@amritkrs's answer](https://stackoverflow.com/a/41954177/4561887) for more info. on that. Following my instructions, however, will cause those same `-l` flags to link at build-time instead, placing the entire pre-built .a static library file binaries into your executables. 
+
+1. Installed all gtest and gmock header files that you need to include in your programs into `/usr/local/include/gtest` and `/usr/local/include/gmock`, respectively. 
+
+    This allows you to includes the necessary files in your programs, like this:
+
+    ```cpp
+    // Include in your unit tests
+    #include <gtest/gtest.h>
+    #include <gmock/gmock.h>
+
+    // Include in your production code to give gtest access to private members
+    // in your classes, as friends, via the 
+    // `FRIEND_TEST(TestSuiteName, TestName);` macro, for instance.
+    #include <gtest/gtest_prod.h>
+    ```
+
+
+#### 3. Example usage: 
+
+```bash
+# Build and run an example googletest unit test that comes in the repo:
+# - required in this case: `-pthread`, `-lgtest`, and `-lgtest_main`
+
+mkdir -p bin
+
+time g++ -Wall -Wextra -Werror -O3 -std=c++17 -pthread \
+    googletest/googletest/samples/sample1_unittest.cc \
+    googletest/googletest/samples/sample1.cc \
+    -lgtest -lgtest_main -o bin/a && time bin/a
+```
+
+
+#### 4. Run an example unit test
 
 Manually test-build and run a sample test included in the repo:
 ```bash
@@ -216,7 +218,7 @@ sys 0m0.002s
 ```
 
 
-#### 4. Uninstall
+#### 5. Uninstall
 
 To remove/uninstall gtest and gmock, just manually remove all of the files that were copied over by `sudo make install`. Hare are the commands to do that:
 
@@ -244,7 +246,7 @@ sudo rm -r /usr/local/lib/cmake/GTest
 ```
 
 
-## Going further: general information about libraries; debugging; etc.
+## Going further: general information about libraries; debugging; gcc/g++ compiler flags; etc.
 
 /////////[see: /home/gabriel/GS/dev/eRCaGuy_hello_world/markdown/stack_exchange/gtest_build_and_install_NOTES.md]
 
