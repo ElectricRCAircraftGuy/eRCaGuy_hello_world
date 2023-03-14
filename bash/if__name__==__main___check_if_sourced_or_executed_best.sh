@@ -51,7 +51,7 @@ fi
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$__name__" = "__main__" ]; then
     echo "This script is being run."
-    main
+    main "$@"
 else
     echo "This script is being sourced."
 fi
