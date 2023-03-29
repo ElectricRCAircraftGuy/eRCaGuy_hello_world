@@ -21,7 +21,7 @@ time g++ -Wall -Wextra -Werror -O3 -std=c++17 hello_world_extra_basic.cpp -o bin
 ```
 
 References:
-1.
+1. See my answer here: https://stackoverflow.com/a/75656629/4561887
 
 */
 
