@@ -25,12 +25,10 @@ References:
 
 */
 
-// C++ includes
-#include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
-
-// C includes
+// C++ (incl. C) includes
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
 #include <cstdio>   // For `printf()`
+#include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
