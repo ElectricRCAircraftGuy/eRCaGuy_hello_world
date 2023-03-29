@@ -9,6 +9,9 @@ THIS FILE ISN'T IN A SHAPE TO JUST INCLUDE AS-IS. INSTEAD, COPY-PASTE WHAT YOU N
 
 TODO(gabriel): CONSIDER CLEANING UP THIS FILE TO MAKE IT SO YOU CAN JUST INCLUDE IT DIRECTLY.
 
+keywords to easily grep or ripgrep in this repo for this program and what it teaches
+KEYWORDS: interview prep
+
 See also:
 1. eRCaGuy_hello_world/c/rounding_integer_division/rounding_integer_division.cpp
 2. https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Arduino.h
@@ -41,7 +44,7 @@ See also:
 
 /// Get the number of elements in any C array
 /// - Usage example: [my own answer]:
-///   https://arduino.stackexchange.com/questions/80236/initializing-array-of-structs/80289#80289
+///   https://arduino.stackexchange.com/a/80289/7727
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
 // Definitions: `rows` = "rows"; `cols` = "columns"
