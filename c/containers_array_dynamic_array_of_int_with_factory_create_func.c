@@ -9,6 +9,9 @@ struct below a little bit C++-like, similar to the `std::array<int, NUM_ELEMENTS
 
 STATUS: done and works!
 
+keywords to easily grep or ripgrep in this repo for this program and what it teaches
+KEYWORDS: interview prep
+
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
 # Why `-std=gnu17` vs `-std=c17`, and `-std=gnu++17` vs `-std=c++17`?
