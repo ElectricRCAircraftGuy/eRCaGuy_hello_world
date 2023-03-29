@@ -6,7 +6,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 Concatenate two (or more) C++ `std::string`s.
 - For a comparison to the higher complexities in memory management required in C,
-  see "eRCaGuy_hello_world/c/str_concatenate.c".
+  see "eRCaGuy_hello_world/c/str_concatenate.c". <====== EXAMPLE IN C =======
 
 STATUS: done and works!
 
@@ -46,8 +46,8 @@ std::string str_concat(std::string str1, std::string str2)
 {
     std::cout << "Calling 1st function\n"; // debugging
 
-    std::string result = str1 + str2;
-    return result; // compiler will optimize this using copy elision / return value optimization
+    std::string str_combined = str1 + str2;
+    return str_combined; // compiler will optimize this using copy elision / return value optimization
 }
 
 // Polymorphism: overload the function name above:
@@ -57,14 +57,14 @@ std::string str_concat(std::initializer_list<std::string> strings)
 {
     std::cout << "Calling 2nd function\n"; // debugging
 
-    std::string result;
+    std::string str_combined;
 
     for (const std::string& str : strings)
     {
-        result += str;
+        str_combined += str;
     }
 
-    return result; // compiler will optimize this using copy elision / return value optimization
+    return str_combined; // compiler will optimize this using copy elision / return value optimization
 }
 
 // TODO: write yet another example which concatenates with C++20's uber-fast `std::format`
