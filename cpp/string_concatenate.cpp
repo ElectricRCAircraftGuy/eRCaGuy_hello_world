@@ -5,8 +5,10 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 Concatenate two (or more) C++ `std::string`s.
+- For a comparison to the higher complexities in memory management required in C,
+  see "eRCaGuy_hello_world/c/str_concatenate.c".
 
-STATUS: (status)
+STATUS: done and works!
 
 keywords to easily grep or ripgrep in this repo for this program and what it teaches
 KEYWORDS: interview prep
@@ -27,6 +29,9 @@ time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 string_concatenate.cpp -o bin/a 
 References:
 1. `std::move()` template function: https://cplusplus.com/reference/utility/move/
 1. ***** https://en.cppreference.com/w/cpp/utility/move - great example!
+1. C++20's `std::format` lib: https://en.cppreference.com/w/cpp/utility/format/format
+    1. Same thing, by the same author, for earlier versions of C++: `fmt` library:
+       https://github.com/fmtlib/fmt
 
 */
 
@@ -36,7 +41,7 @@ References:
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 #include <string>
 
-/// Concatenate 2 C++ `std::string`s, and efficiently return the result.
+/// Concatenate **two** C++ `std::string`s, and efficiently return the result.
 std::string str_concat(std::string str1, std::string str2)
 {
     std::cout << "Calling 1st function\n"; // debugging
@@ -61,6 +66,13 @@ std::string str_concat(std::initializer_list<std::string> strings)
 
     return result; // compiler will optimize this using copy elision / return value optimization
 }
+
+// TODO: write yet another example which concatenates with C++20's uber-fast `std::format`
+// library, available as `fmt` for earlier versions of C++!
+// See:
+// 1. [older versions of C++] https://github.com/fmtlib/fmt
+// 1. [C++20] https://en.cppreference.com/w/cpp/utility/format/format
+
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
