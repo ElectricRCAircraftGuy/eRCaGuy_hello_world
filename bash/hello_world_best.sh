@@ -4,9 +4,10 @@
 
 # (description)
 #
-# Status: (status)
+# STATUS: (status)
 
-# keywords: (keywords to easily grep or ripgrep in this repo for this program and what it teaches)
+# keywords to easily grep or ripgrep in this repo for this program and what it teaches
+# KEYWORDS:
 
 # Check this script with:
 #
