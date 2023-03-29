@@ -7,7 +7,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 Concatenate two (or more) C-strings (character arrays) in various ways.
 
 - For a comparison to the simpler usage in C++ (just use the `+` operator),
-  see "eRCaGuy_hello_world/cpp/string_concatenate.cpp".  <======
+  see "eRCaGuy_hello_world/cpp/string_concatenate.cpp". <====== SIMPLER EXAMPLE IN C++ =======
 
   - C++ is seemingly simpler since it handles the low-level memory management **for you**! However,
     this is at the trade-off of:
