@@ -139,7 +139,7 @@ git submodule update --init --recursive
 <a id="a-few-folder--file-notes"></a>
 # A Few Folder & File Notes
 
-1. Find some sample interview preparation code and notes by running `./find_interview_prep.sh` at the root of the repo. Example:
+1. Find some sample interview preparation code and notes by running `./find_interview_prep.sh`, which is located at the root of the repo. Note: you can _be_ in _any_ directory when you run it, and it will always return the same answer, since it runs from its location, not from the location you are in when you call the executable. Example run and output:
     ```bash
     eRCaGuy_hello_world$ ./find_interview_prep.sh 
     Finding all "interview prep" files in directory "/home/gabriel/GS/dev/eRCaGuy_hello_world" and lower.
