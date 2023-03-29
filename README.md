@@ -139,6 +139,14 @@ git submodule update --init --recursive
 <a id="a-few-folder--file-notes"></a>
 # A Few Folder & File Notes
 
+1. Find some sample interview preparation code and notes by running `./find_interview_prep.sh` at the root of the repo. Example:
+    ```bash
+    eRCaGuy_hello_world$ ./find_interview_prep.sh 
+    Finding all "interview prep" files in directory "/home/gabriel/GS/dev/eRCaGuy_hello_world" and lower.
+    find_interview_prep.sh
+    cpp/string_concatenate.cpp
+    Done. 2 file(s) found.
+    ```
 1. You can add this as an **Eclipse project**--for source code navigation _only_, NOT for building! The Eclipse project files/folders are:
     1. `.cproject` file
     1. `.project` file
