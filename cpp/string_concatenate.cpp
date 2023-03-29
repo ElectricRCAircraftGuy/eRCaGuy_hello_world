@@ -59,6 +59,13 @@ std::string str_concat(std::initializer_list<std::string> strings)
 
     std::string str_combined;
 
+    // TODO: speed profile a possible optimization here to increase the speed when concatenating
+    // *many* strings! It *may* be faster to loop through all strings, summing their lengths, then
+    // pre-allocate `str_combined` by calling `str_combined.reserve(total_len)` once now. This way,
+    // the `for` loop below will NOT have to dynamically grow the underlying memory storage for the
+    // string repeatedly (or at all even, in this case). For very large concatenations, avoiding
+    // all of these `operator new()` calls could potentially save a *lot* of time!
+
     for (const std::string& str : strings)
     {
         str_combined += str;
