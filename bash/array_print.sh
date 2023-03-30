@@ -166,6 +166,20 @@ fi
 #
 #
 #
-# 2) WHEN SOURCED (no output)
+# 2) WHEN SOURCED (no output, but it brings in all functions herein so you can use them!)
 #
 #       eRCaGuy_hello_world$ . bash/array_print.sh
+#       eRCaGuy_hello_world$ array=(1 2 3 4)
+#       eRCaGuy_hello_world$ print_array array
+#           array
+#       eRCaGuy_hello_world$ print_array "${array[@]}"
+#           1
+#           2
+#           3
+#           4
+#       eRCaGuy_hello_world$ print_array2 array
+#           1
+#           2
+#           3
+#           4
+

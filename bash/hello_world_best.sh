@@ -64,6 +64,6 @@ fi
 #       Running main.
 #
 #
-# 2) WHEN SOURCED (no output)
+# 2) WHEN SOURCED (no output, but it brings in all functions herein so you can use them!)
 #
 #       eRCaGuy_hello_world$ . bash/hello_world_best.sh
