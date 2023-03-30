@@ -11,7 +11,9 @@
 # STATUS: done and works!
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
-# KEYWORDS: print bash array
+#
+# KEYWORDS: print bash arrays; bash arrays print; print array print arrays print printArrays
+# arrayPrint
 
 # Check this script with:
 #
