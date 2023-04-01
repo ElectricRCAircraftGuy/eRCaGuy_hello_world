@@ -147,9 +147,9 @@ C++ has solved the _dangerous_ behavior above by having the `dynamic_cast<>()` c
 
 This one's easy: just put your `S_Base` struct at the _very beginning_ of your `S_Child` struct and they are automatically aligned. Now, a pointer to your `S_Child` object points to the _exact same address_ as a pointer to the `S_Base` object within it, since the child _contains_ the base object. 
 
-They are automatically aligned so long as you don't use any alignment or padding keywords or compiler extensions to change things. Padding is automatically added by the compiler _after_ struct members, as needed, never before the first member. 
+They are automatically aligned so long as you don't use any alignment or padding keywords or compiler extensions to change things. Padding is automatically added by the compiler _after_ struct members, as needed, never before the first member. See more on that here: [Structure padding and packing](https://stackoverflow.com/q/4306186/4561887).
 
-Simple example:
+Simple example (with*out* any virtual table polymorphism function stuff):
 ```c
 typedef struct parent_s
 {
@@ -195,7 +195,9 @@ if (p_child == nullptr)
 }
 ```
 
-**Key takeaway:** basically, just think of each object as a memory blob, or memory pool. If the memory pool you have (are pointing to) is *larger than* the expected size based on the pointer type pointing to it, you're fine! Your program owns that memory. But, if the memory pool you have (are pointing to) is *smaller than* the expected size based on the pointer type pointint to it, you're not fine! Accessing memory outside your allocated memory blob is _undefined behavior_. 
+**Key takeaway:** 
+
+Once you first get alignment by putting the parent right at the beginning inside the child, basically just think of each object as a memory blob, or memory pool. If the memory pool you have (are pointing to) is *larger than* the expected size based on the pointer type pointing to it, you're fine! Your program owns that memory. But, if the memory pool you have (are pointing to) is *smaller than* the expected size based on the pointer type pointint to it, you're not fine! Accessing memory outside your allocated memory blob is _undefined behavior_. 
 
 In the case of OOP and parent/child relationships, the child object must always be larger than the parent object because _it contains_ a parent object within it. So, casting a child to a parent type is fine, since the child type is larger than the parent type and the child type holds the parent type *first* in its memory, but casting a parent type to a child type is *not* fine unless the memory blob being pointed to was created initially as a child of that child type. 
 
@@ -311,5 +313,7 @@ Last note: you probably know more about virtual tables (vtables) than I do. At t
 
 ## See also
 
+1. https://cplusplus.com/doc/tutorial/typecasting/ - **excellent** article on typecasting! See in particular the "dynamic_cast" section, and the code snippet therein.
+1. [Structure padding and packing](https://stackoverflow.com/q/4306186/4561887)
 1. [my answer] [When should static_cast, dynamic_cast, const_cast, and reinterpret_cast be used?](https://stackoverflow.com/a/75838664/4561887)
 1. https://en.wikipedia.org/wiki/Undefined_behavior
