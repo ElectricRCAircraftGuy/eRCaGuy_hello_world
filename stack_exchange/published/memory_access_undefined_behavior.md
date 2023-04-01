@@ -174,17 +174,25 @@ parent_t* p_parent = &child; // ok; p_parent IS a "valid complete object of the
                              // parent's
 child_t* p_child = &child; // ok; p_child is a "valid complete object of 
                            // the target [child] type"
-child_t* p_child = (child_t*)parent; // DANGEROUS! Technically this cast is 
-                                     // *not* undefined behavior *yet*, but it
-                                     // could lead to it if you try to access
-                                     // child members outside the memory blob 
-                                     // created for the parent. 
-                                     // 
-                                     // p_child is NOT a "valid complete object
-                                     // of the target [child] type".
-                                     //
-                                     // In C++, this dynamic cast would fail at
-                                     // runtime. 
+child_t* p_child = (child_t*)&parent; // DANGEROUS! Technically this cast is 
+                                      // *not* undefined behavior *yet*, but it
+                                      // could lead to it if you try to access
+                                      // child members outside the memory blob 
+                                      // created for the parent. 
+                                      // 
+                                      // p_child is NOT a "valid complete object
+                                      // of the target [child] type".
+```
+
+For the last (dangerous) cast above, C++ would allow you to have a dynamic cast which would fail at runtime if and only if you called it with C++ dynamic_cast syntax, _and_ checked for errors, like this: 
+```cpp
+child_t* p_child = dynamic_cast<child_t*>(&parent);
+if (p_child == nullptr)
+{
+    printf("Error: dynamic cast failed. p_child is NOT a \"valid complete "
+           "object of the target [child_t] type.\"");
+    // do error handling here
+}
 ```
 
 **Key takeaway:** basically, just think of each object as a memory blob, or memory pool. If the memory pool you have (are pointing to) is *larger than* the expected size based on the pointer type pointing to it, you're fine! Your program owns that memory. But, if the memory pool you have (are pointing to) is *smaller than* the expected size based on the pointer type pointint to it, you're not fine! Accessing memory outside your allocated memory blob is _undefined behavior_. 
@@ -299,3 +307,9 @@ Just a warning though: passing around pointers and storing pointers to vtables a
 If you want "object-_oriented_" C with inheritance and all, don't do it. If you want "object-_based_" C, via opaque pointers/structs for basic private-member encapsulation and data hiding, that's just fine! Here's how I prefer to do that: [Option 1.5 ("Object-based" C Architecture)](https://stackoverflow.com/a/54488289/4561887).
 
 Last note: you probably know more about virtual tables (vtables) than I do. At the end of the day, it's your code, so do whichever architecture you want, but I don't want to be working in that code base :).
+
+
+## See also
+
+1. [my answer] [When should static_cast, dynamic_cast, const_cast, and reinterpret_cast be used?](https://stackoverflow.com/a/75838664/4561887)
+1. https://en.wikipedia.org/wiki/Undefined_behavior
