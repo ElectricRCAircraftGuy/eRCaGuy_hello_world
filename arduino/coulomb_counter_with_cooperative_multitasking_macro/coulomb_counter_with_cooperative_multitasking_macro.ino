@@ -28,6 +28,8 @@ References:
 /// By Gabriel Staples
 /// See: https://arduino.stackexchange.com/questions/75932/calculating-amp-hrs-of-a-solar-panel/75937#75937
 
+// TODO: improve this `CREATE_TASK_TIMER()` macro to be easier to use! See: TODO.md: 20230406.
+
 /// @brief      A function-like macro to get a certain set of events to run at a desired, fixed
 ///             interval period or frequency.
 /// @details    This is a timestamp-based time polling technique frequently used in bare-metal
