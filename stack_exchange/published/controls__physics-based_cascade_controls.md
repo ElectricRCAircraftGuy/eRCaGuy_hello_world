@@ -98,7 +98,7 @@ From inner-most to outer-most controller, here is what you need:
 
     Then you could set your velocity controller to a fixed value while changing your commanded heading to always point down the path. I do this using a "lead point" technique, or "pure pursuit" algorithm, as demonstrated in my [3 videos here](https://github.com/ElectricRCAircraftGuy#heres-one-of-my-favorite-projects-ive-ever-done-autonomous-quadcopter-flight-controller-i-wrote-myself): [1](https://www.youtube.com/watch?v=LjuPA43HceQ), [2](https://www.youtube.com/watch?v=wY3oh2GIfCI), [3](https://www.youtube.com/watch?v=H5kXzpPFdII&t=35s). Since my vehicle is a hovering quadcopter drone, however, I have the luxury of changing my commanded _thrust vector_ rather than my _heading_, so I can just command a fixed heading if I want (ie: keep the drone always pointing North) while changing the commanded thrust vector to move in different 2D (x-y) directions.
 
-    **Getting exact measurements:**
+    ### Getting exact measurements with wheel encoders vs numerical integration:
 
     While integrating velocity over time will obtain distance, numerical integration or estimating is best used in this case to calculate commanded velocity outputs for the feed-forward parts of your _controller_ which will output a desired velocity _command_ for a certain duration of _time_ in order to achieve a desired _change in position_. 
 
@@ -109,7 +109,7 @@ From inner-most to outer-most controller, here is what you need:
     Again, remember that you shouldn't necessarily integrate to _estimate_ the _actual_ distance traveled. Rather, _measure_ the actual distance traveled by counting encoder ticks since that's a more-precise measurement.
 
 
-**How to measure encoder "ticks" or distance moved:**
+## How to measure encoder "ticks" or distance moved:
 
 _Remember that for all these controllers:_
 1. You read the **wheel encoders** to determine wheel motion. 
@@ -119,6 +119,8 @@ _Remember that for all these controllers:_
     1. Here is what those pulses look like ([image source](https://www.rcgroups.com/forums/showthread.php?952523-too-long-battery-wires-will-kill-ESC-over-time-precautions-solutions-workarounds)): [![enter image description here][3]][3]. 
     1. The little pulses are the 8 KHz\~16 KHz motor PWM throttle pulses. You need to digitally filter these out in software. The big trapezoidal commutation frequency waves are the commutation waveforms, and _their frequency is directly proportional to your motor RPM_. Hence, you can measure commutation frequency to calculate motor rotational frequency, or RPM. The relationship is scaled by the number of permanent magnetic poles in the brushless motor. I'd have to dig up my notes, but I believe the equation is something like this: `RPM = freq_commutation/(num_magnetic_poles*120)`. The point is, the commutation frequency can be read in software by a microcontroller's input capture pin, and then converted to motor rotational velocity via a simple equation based on the number of permanent magnetic poles in the motor. Note that higher-end motor drivers (ESCs--Electronic Speed Controllers) use sinusoidal commutation waveforms, which are more efficient and have better torque, instead of trapezoidal, but the commutation frequency principal is the same.
 
+
+## Summary of the cascaded physics-based controllers used
 
 The **types of controllers you will be using** in your case are these, again, from inner-most to outer-most controller:
 
