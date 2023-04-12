@@ -5,7 +5,7 @@ https://stackoverflow.com/a/72724753/4561887
 
 ## Quick summary:
 
-#### How to avoid drift:
+#### How to avoid drift when self-balancing:
 
 Jump straight down to the "In summary" section below. Here that section is, quoted, for convenience:
 
