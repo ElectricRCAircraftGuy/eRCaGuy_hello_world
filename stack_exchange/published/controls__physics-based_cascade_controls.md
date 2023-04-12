@@ -3,6 +3,23 @@ GS
 https://stackoverflow.com/a/72724753/4561887
 -->
 
+## Quick summary:
+
+#### How to avoid drift:
+
+Jump straight down to the "In summary" section below. Here that section is, quoted, for convenience:
+
+> To keep your 2-wheeled robot balanced with*out* letting it drift forward/backward, you should have a _linear velocity_ controller with a command of 0 m/s, rather than just an _angle controller_ with an angle command of 0 deg. Your **linear velocity controller** calculates a desired _acceleration_ which feeds into your **linear acceleration controller**, which calculates a desired _tilt angle, or pitch_, which feeds into your **pitch angle controller**, which adjusts motor throttles to achieve that pitch (using, for example, a PID or LQR controller, or a physics-based controller you can come up with for this inner, self-balancing loop as well). 
+> 
+> _To achieve your objective you stated, of no longer drifting or rolling forwards, you'd stop there._
+> 
+> **But, I'd go further:** what if your vehicle has *already* drifted or rolled a little bit, wouldn't you want to move it back to where it started to "undo" that drift?
+> 
+> Here's how:...[add a _position controller_ too, which feeds into the _velocity controller_]...
+
+Details:
+
+
 ## Physics-based ["cascaded controls"](https://en.wikipedia.org/wiki/PID_controller#Cascade_control), and control systems: the many layers of control
 
 **AKA: a full description of all of the necessary control loops for a robust vehicle controller, including for self-balancing systems like 2-wheeled self-balancing Segway-like robots, or quadcopters/drones.**
@@ -57,11 +74,13 @@ From inner-most to outer-most controller, here is what you need:
 
     ### _In summary_
 
-    Your **linear velocity controller** calculates a desired _acceleration_ which feeds into your **linear acceleration controller**, which calculates a desired _tilt angle, or pitch_, which feeds into your **pitch angle controller**, which adjusts motor throttles to achieve that pitch (using, for example, a PID or LQR controller, or a physics-based controller you can come up with for this inner, self-balancing loop as well). 
+    To keep your 2-wheeled robot balanced with*out* letting it drift forward/backward, you should have a _linear velocity_ controller with a command of 0 m/s, rather than just an _angle controller_ with an angle command of 0 deg. Your **linear velocity controller** calculates a desired _acceleration_ which feeds into your **linear acceleration controller**, which calculates a desired _tilt angle, or pitch_, which feeds into your **pitch angle controller**, which adjusts motor throttles to achieve that pitch (using, for example, a PID or LQR controller, or a physics-based controller you can come up with for this inner, self-balancing loop as well). 
 
-    _To achieve your objective you stated, of no longer rolling forwards, you'd stop there._
+    _To achieve your objective you stated, of no longer drifting or rolling forwards, you'd stop there._
 
-But, I'd go further:
+    **But, I'd go further:** what if your vehicle has *already* drifted or rolled a little bit, wouldn't you want to move it back to where it started to "undo" that drift?
+
+    Here's how: add yet another layer of control as a _linear position controller_ outside your _velocity controller!_ 
 
 4. **Linear position controller:** You will *adjust linear velocity* over time to control *linear position*. With your wheel encoders, you can figure out how far you've gone, and control *position* to get the robot to return back to where it started. Or, you can simply command any arbitrary position to have it drive certain distances and navigate around the room. This is another feed-forward controller based on simple physics/math, where the equation of motion is simply `v*t = d`, where `v [m/s]` is velocity, `t [sec]` is time, and `d [m]` is distance. 
 
@@ -125,6 +144,8 @@ The **types of controllers you will be using** in your case are these, again, fr
             [![enter image description here][4]][4]
     1. The above **linear position controllers** are all "dead-reckoning"-based, using wheel encoder ticks to measure distance by looking at _relative distance changes_ from a known starting location. Adding any _absolute position measurements_ would require an absolute position "truth source", such as off-board camera-based positioning systems such as a [Vicon motion capture system](https://www.vicon.com/hardware/cameras/) or [OptiTrack](https://optitrack.com/) system (used by [@Stuff Made Here](https://www.youtube.com/watch?v=xHWXZyfhQas)), acoustic-based positioning systems, GPS, etc., to obtain "truth data" of absolute position. This "truth data" could be used to tweak your robot's internal dead-reckoning position estimates slowly over time.
 
+
+## Final (and philosophical) thoughts
 
 Anyway, the way I see it, that's the idea. That's the type of approach I took on my quadcopter controller: [Quadrotor 2 - Physics-based Flight controller demo w/lead point navigation & Arduino interface to RC Tx](https://www.youtube.com/watch?v=H5kXzpPFdII&t=35s), and that controller would also work perfectly for a 2-wheeled Segway-like self-balancing robot, too, since the quadcopter is governed by the same principles as the self-balancing robot. Controls has many options and layers. Physics should be part of many if not most of them. 
 
