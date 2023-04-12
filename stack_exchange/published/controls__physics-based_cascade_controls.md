@@ -170,6 +170,7 @@ I'll also mention that I believe the entire thing above could be done on almost 
 1. Potential vehicle I could buy to experiment with my full algorithm as I described it: [ELEGOO Tumbller Self-Balancing Robot Car Kit Compatible with Arduino, STEM Kits STEM Toys for Kids](https://amzn.to/3zdF00E). This would be a really fun project.
 1. Google search for ["how to write an lqr controller"](https://www.google.com/search?q=how+to+write+an+lqr+controller&oq=how+to+write+an+lqr+controller&aqs=chrome..69i57.6257j0j7&sourceid=chrome&ie=UTF-8) (LQR = Linear Quadratic Regulator)
 1. Google search for ["cascade control"](https://www.google.com/search?q=cascade+control&oq=cascade+control&aqs=chrome..69i57.3705j0j9&client=ms-android-google&sourceid=chrome-mobile&ie=UTF-8). This refers to the idea of "nested control loops", which is what my controller described above is/does.
+    1. https://en.wikipedia.org/wiki/PID_controller#Cascade_control
 
 <!--
 Notes and feedback from a friend:
