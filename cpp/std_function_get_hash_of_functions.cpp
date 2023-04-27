@@ -27,30 +27,16 @@ time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 hello_world_extra_basic.cpp -o b
 ```
 
 References:
-1.
+1. The question: https://stackoverflow.com/q/76114714/4561887
+1. Answer by @KamilCuk: https://stackoverflow.com/a/76114883/4561887
 
 */
 
-// // C++ (incl. C) includes
-// #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
-// #include <cstdio>   // For `printf()`
-// #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
-
-// // int main(int argc, char *argv[])  // alternative prototype
-// int main()
-// {
-//     printf("Hello ");
-//     std::cout << "world!\n\n";
-
-//     return 0;
-// }
-
-
+// #include <cstdint>
 #include <functional>
 #include <iostream>
+// #include <string>
 #include <vector>
-#include <string>
-#include <cstdint>
 
 int f(int a)
 {
@@ -63,11 +49,6 @@ int f2(int a)
 }
 
 typedef int (*func_t)(int);
-
-// void print_func_addr(int (*const * func_ptr)(int))
-// {
-
-// }
 
 int main()
 {
@@ -82,39 +63,46 @@ int main()
         [](int a) {return -a;},
     };
 
-    // for (auto&& a : fn) {
-    //     const auto t = a.target<int(*)(int)>();
-    //     const auto hash = t ?
-    //         (size_t)(uintptr_t)(void*)*t :
-    //         std::hash<std::string_view>{}(a.target_type().name());
-    //     std::cout << hash << '\n';
-    // }
+    // 1. Print addresses to `f` and `f2`
 
     printf("%zu\n", (size_t)f);
-    // printf("%zu\n", (size_t)&f); // same as above
+    // printf("%zu\n", (size_t)&f); // same as above since functions
+                                    // automatically adjust to ptrs
 
     printf("%zu\n", (size_t)f2);
-    // printf("%zu\n", (size_t)&f2); // same as above
+    // printf("%zu\n", (size_t)&f2); // same as above since functions
+                                     // automatically adjust to ptrs
 
     printf("\n");
 
+    // 2. Now try to obtain the addresses to functions wrapped by
+    // `std::function<>` objects in the `functions` vector
+
     for (const std::function<int(int)>& func : functions)
     {
-        // obtain a ptr to the function wrapped by the `std::function<>`
-        // int(*const * ptr)(int) = func.target<int(*)(int)>();
-        // auto ptr = func.target<int(*)(int)>();
-
-        // int (*const * func_ptr)(int)  = func.target<int(*)(int)>();
-        const func_t* func_ptr = func.target<func_t>();
+        // int (* const * func_ptr)(int) = func.target<int(*)(int)>();
+        const func_t* func_ptr = func.target<func_t>(); // same as above, but
+                                                        // waaaay cleaner and
+                                                        // easier to read!
 
         if (func_ptr == nullptr)
         {
-            printf("Error: nullptr!\n");
+            printf("Error: nullptr! (Probably pointing to a lambda "
+                   "function).\n");
         }
         else
         {
             printf("%zu\n", (size_t)(*func_ptr));
+            // printf("%zu\n", (size_t)(func_ptr)); // same as above
         }
+
+        /////////
+        std::cout << "typeid = " << func.target_type().name() << "\n";
+        std::cout << "typeid = " << func.target_type().hash_code() << "\n";
+
+
+        // Now print the mangled function **names** too just for fun!
+
     }
 }
 
