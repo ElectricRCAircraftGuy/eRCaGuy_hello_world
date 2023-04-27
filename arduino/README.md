@@ -12,3 +12,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     1. It uses my sophisticated `CREATE_TASK_TIMER()` cooperative multi-tasking macro.
     1. I first wrote about this technique starting in 2018 here: [Stack Overflow: How to do **high-resolution, timestamp-based, non-blocking, single-threaded cooperative multi-tasking**](https://stackoverflow.com/a/50032992/4561887)
 
+
+# Arduino examples of note
+
+1. https://docs.arduino.cc/built-in-examples/analog/Smoothing - this is a brilliant and extremely efficient basic _moving average_ algorithm for basic data smoothing and digital signal processing (DSP). If you aren't doing your moving averages in professional code like this, you should be. It's the most-efficient technique for a moving average that I've ever seen, and a template and model for all.
