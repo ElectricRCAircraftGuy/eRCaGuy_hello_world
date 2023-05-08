@@ -12,10 +12,10 @@ KEYWORDS:
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
-./hello.rs
+./hello_world.rs
 
 # OR
-rustc hello.rs --out-dir bin && bin/hello
+rustc hello_world.rs --out-dir bin && bin/hello_world
 ```
 
 References:
@@ -47,11 +47,11 @@ fn main()
 /*
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/rust$ rustc hello.rs --out-dir bin && bin/hello
+    eRCaGuy_hello_world/rust$ rustc hello_world.rs --out-dir bin && bin/hello_world
     Hello World!
     I'm a Rustacean!
 
-    eRCaGuy_hello_world/rust$ ./hello.rs
+    eRCaGuy_hello_world/rust$ ./hello_world.rs
     Hello World!
     I'm a Rustacean!
 
