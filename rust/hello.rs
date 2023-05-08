@@ -1,4 +1,4 @@
-///usr/bin/env rustc gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit
+///usr/bin/env rustc "$0" -o /tmp/a && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -15,11 +15,11 @@ To compile and run (assuming you've already `cd`ed into this dir):
 ./hello.rs
 
 # OR
-rustc hello.rs && ./hello
+rustc hello.rs --out-dir bin && bin/hello
 ```
 
 References:
-1. This code was originally copied and modified from here:
+1. This code was originally learned from the official "Rust By Example" online book here:
    https://doc.rust-lang.org/stable/rust-by-example/hello.html
 1.
 
@@ -34,7 +34,8 @@ comment
 */
 
 // This is the main function.
-fn main() {
+fn main()
+{
     // Statements here are executed when the compiled binary is called.
 
     // Print text to the console via the `println!()` macro.
@@ -46,6 +47,12 @@ fn main() {
 /*
 SAMPLE OUTPUT:
 
+    eRCaGuy_hello_world/rust$ rustc hello.rs --out-dir bin && bin/hello
+    Hello World!
+    I'm a Rustacean!
 
+    eRCaGuy_hello_world/rust$ ./hello.rs
+    Hello World!
+    I'm a Rustacean!
 
 */
