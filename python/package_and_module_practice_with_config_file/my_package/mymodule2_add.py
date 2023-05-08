@@ -10,13 +10,17 @@ By Gabriel Staples
 Modified from @Aya's excellent answer here: https://stackoverflow.com/a/16985066/4561887
 """
 
+# from my_package.mymodule1_int import to_int
+from mymodule1_int import to_int
+
 # Exported function
-def to_int(a):
-    return int(a)
+def add(a, b):
+    return to_int(a) + to_int(b)
 
 # Test function for module
 def _test():
-    assert to_int('1') == 1
+    assert add('1', '1') == 2
+    print("Tests passed!")
 
 if __name__ == '__main__':
     _test()

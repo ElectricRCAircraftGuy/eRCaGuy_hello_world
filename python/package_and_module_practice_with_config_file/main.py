@@ -10,7 +10,7 @@ By Gabriel Staples
 Modified from @Aya's excellent answer here: https://stackoverflow.com/a/16985066/4561887
 """
 
-from my_package.add_strings_as_int import add
+from my_package.mymodule2_add import add
 
 # works!
 import config

@@ -10,15 +10,17 @@ By Gabriel Staples
 Modified from @Aya's excellent answer here: https://stackoverflow.com/a/16985066/4561887
 """
 
-from my_package.int import to_int
-
 # Exported function
-def add(a, b):
-    return to_int(a) + to_int(b)
+def to_int(a):
+    return int(a)
+
+# def get_MY_CONSTANT3():
+#     return ##########
 
 # Test function for module
 def _test():
-    assert add('1', '1') == 2
+    assert to_int('1') == 1
+    print("Tests passed!")
 
 if __name__ == '__main__':
     _test()

@@ -26,3 +26,9 @@ See:
     > (5) python - Python3 project remove __pycache__ folders and .pyc files .... https://stackoverflow.com/questions/28991015/python3-project-remove-pycache-folders-and-pyc-files.
 
     See also my comment under this answer, and this answer, here: https://stackoverflow.com/questions/16869024/what-is-pycache/48143622#comment134373559_48143622
+
+
+# Example runs
+
+```bash
+```
