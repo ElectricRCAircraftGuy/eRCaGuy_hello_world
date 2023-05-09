@@ -104,18 +104,19 @@ typedef struct ring_buffer_s
     ///   operator on a power-of-2 number gets reduced to a simple instruction.
     size_t len;
 
+    // NB: for efficiency and simplicity, **and especially** for the ability to see when the buffer
+    // is full! [this is ingenious!], for the following two indices, we will **not** store
+    // the "modulus"ed value into the index variables. Instead, we will perform the modulus
+    // operation only at usage time when we *use* this index!
+    //
+    // This way, we can always tell when the ring buffer is **empty** because `i_write == i_read`,
+    // and we can tell when the ring buffer is **full* because `i_write - i_read == len`. See more
+    // on this in my discussion notes at the top of this file.
+
     /// The write index where you will write new data.
-    /// - NB: for efficiency and simplicity, **and especially** for the ability to see when the
-    ///   buffer is full! [this is ingenious!]--we will not store the "modulus"ed value into this
-    ///   index. Instead, we will perform the modulus operation only at usage time when we *use*
-    ///   this index!
     size_t i_write;
 
     /// The read index where you will read out the oldest data.
-    /// - NB: for efficiency and simplicity, **and especially** for the ability to see when the
-    ///   buffer is full! [this is ingenious!]--we will not store the "modulus"ed value into this
-    ///   index. Instead, we will perform the modulus operation only at usage time when we *use*
-    ///   this index!
     size_t i_read;
 } ring_buffer_t;
 
