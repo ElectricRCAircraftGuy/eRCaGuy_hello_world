@@ -125,7 +125,7 @@ int main()
     // print the starting array
     array2d_print(array2d);
 
-    // now rotate and print NUM_ROWS times
+    // now rotate and print the array NUM_ROWS times
     for (size_t i = 0; i < NUM_ROWS(array2d.array); i++)
     {
         array2d_rotateup(&array2d);
