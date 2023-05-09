@@ -45,14 +45,14 @@ See also:
 /// Get the number of elements in any C array
 /// - Usage example: [my own answer]:
 ///   https://arduino.stackexchange.com/a/80289/7727
-#define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
+#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
 
 // Definitions: `rows` = "rows"; `cols` = "columns"
 // See usage of the next two macros in "array_2d_practice.c".
 /// Get number of rows in a 2D array
 #define NUM_ROWS(array_2d) ARRAY_LEN(array_2d)
 /// Get number of columns in a 2D array
-#define NUM_COLS(array_2d) ARRAY_LEN(array_2d[0])
+#define NUM_COLS(array_2d) ARRAY_LEN((array_2d)[0])
 
 // For floating-point comparisons:
 // - Modified from: https://docs.microsoft.com/en-us/cpp/build/why-floating-point-numbers-may-lose-precision?view=msvc-160

@@ -45,14 +45,14 @@ References:
 // Get the number of elements in any C array
 // - from my repo here:
 //   https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/c/utilities.h#L42
-#define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
+#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
 
 /// Definitions: `rows` = "rows"; `cols` = "columns"
 
 /// Get number of rows in a 2D array
 #define NUM_ROWS(array_2d) ARRAY_LEN(array_2d)
 /// Get number of columns in a 2D array
-#define NUM_COLS(array_2d) ARRAY_LEN(array_2d[0])
+#define NUM_COLS(array_2d) ARRAY_LEN((array_2d)[0])
 
 
 struct Array2d
