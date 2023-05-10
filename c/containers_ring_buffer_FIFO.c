@@ -156,7 +156,7 @@ typedef struct ring_buffer_s
 {
     /// Ptr to an array of the data you want to store.
     /// - Choose the correct type here for your data. I'll use `int`.
-    atomic_int* array;
+    volatile atomic_int* array;
 
     // Note: you can replace the `size_t` type in all 3 places below with any **unsigned** integer
     // type, such as `uint8_t`, `uint16_t`, `uint32_t`, etc., if desired, for space efficiency, so
@@ -178,10 +178,10 @@ typedef struct ring_buffer_s
     // on this in my discussion notes at the top of this file.
 
     /// The write index where you will write new data.
-    atomic_size_t i_write;
+    volatile atomic_size_t i_write;
 
     /// The read index where you will read out the oldest data.
-    atomic_size_t i_read;
+    volatile atomic_size_t i_read;
 } ring_buffer_t;
 
 
@@ -344,17 +344,17 @@ ring_buffer_error_t ring_buffer_read_safe(ring_buffer_t* ring_buffer, int* data)
 }
 
 
-//////////// make ring buffer volatile, and move it out here!
+// Make the ring buffer global (and with `volatile` members) so that it can be shared between an ISR
+// and your main loop. This way the ISR can write to it, for instance, while the main loop reads
+// from it.
+#define NUM_ELEMENTS 8
+ring_buffer_t ring_buffer;
+atomic_int array[NUM_ELEMENTS];
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
     printf("Highly-efficient ring buffer demo.\n\n");
-
-    ring_buffer_t ring_buffer;
-
-    const uint8_t NUM_ELEMENTS = 8;
-    atomic_int array[NUM_ELEMENTS];
 
     ring_buffer_init(&ring_buffer, array, ARRAY_LEN(array));
     printf("Ring buffer size is %zu.\n\n", ring_buffer.len);
@@ -370,7 +370,11 @@ int main()
         printf("Error: %s.\n\n", ring_buffer_error_str(ring_buffer_error));
     }
 
-    // now write until it is full
+    // Now write until it is full.
+    //
+    // NB: an ISR could be doing this writing, and it is still perfectly safe with my
+    // implementation, again, so long as the data is only moving **one context direction**-ex: from
+    // the ISR to the main loop, and NOT also from the main loop to the ISR.
     ring_buffer_error = RING_BUFFER_ERROR_OK;
     int fake_data = 0;
     while (ring_buffer_error == RING_BUFFER_ERROR_OK)
