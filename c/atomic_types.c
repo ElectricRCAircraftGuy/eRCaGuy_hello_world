@@ -44,6 +44,7 @@ References:
         GS: I have *not* yet seen this to be needed, but I'll do it above anyway!
 1. My attempts at making this work on Arduino here: https://stackoverflow.com/a/39693278/4561887
     - see also the comments below my answer and @Michael Burr's answer.
+1. ***** my answer with some of this code below!: https://stackoverflow.com/a/76223047/4561887
 
 */
 
