@@ -103,12 +103,12 @@ To compile and run (assuming you've already `cd`ed into this dir):
 sudo apt update && sudo apt install ccache
 
 # 1. In C:
-./containers_ring_buffer_FIFO.c
+./containers_ring_buffer_FIFO_GREAT.c
 # or:
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_ring_buffer_FIFO.c -o bin/a -lm -latomic && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_ring_buffer_FIFO_GREAT.c -o bin/a -lm -latomic && bin/a
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_ring_buffer_FIFO.c -o bin/a -latomic && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_ring_buffer_FIFO_GREAT.c -o bin/a -latomic && bin/a
 ```
 
 References:
@@ -347,7 +347,7 @@ ring_buffer_error_t ring_buffer_read_safe(ring_buffer_t* ring_buffer, int* data)
 // Make the ring buffer global (and with `volatile` members) so that it can be shared between an ISR
 // and your main loop. This way the ISR can write to it, for instance, while the main loop reads
 // from it.
-#define NUM_ELEMENTS 8
+#define NUM_ELEMENTS 8  // be sure to choose a power of 2 for the ring buffer to be speed-efficient!
 ring_buffer_t ring_buffer;
 atomic_int array[NUM_ELEMENTS];
 
@@ -421,7 +421,7 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ ./containers_ring_buffer_FIFO.c
+    eRCaGuy_hello_world/c$ ./containers_ring_buffer_FIFO_GREAT.c
     Highly-efficient ring buffer demo.
 
     Ring buffer size is 8.
@@ -454,7 +454,7 @@ In C:
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_ring_buffer_FIFO.c -o bin/a && bin/a
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_ring_buffer_FIFO_GREAT.c -o bin/a -latomic && bin/a
 
     [same output as in C, above]
 
