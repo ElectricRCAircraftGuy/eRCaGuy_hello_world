@@ -42,7 +42,8 @@ References:
     1. NB: "On gcc and clang, some of the functionality described here requires linking against
         `-latomic`." See: https://en.cppreference.com/w/cpp/atomic/atomic
         GS: I have *not* yet seen this to be needed, but I'll do it above anyway!
-1.
+1. My attempts at making this work on Arduino here: https://stackoverflow.com/a/39693278/4561887
+    - see also the comments below my answer and @Michael Burr's answer.
 
 */
 
