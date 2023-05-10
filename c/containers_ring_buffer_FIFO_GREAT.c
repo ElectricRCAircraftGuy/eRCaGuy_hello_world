@@ -134,7 +134,10 @@ References:
     #include <atomic> // for `atomic_*` types in C++
     // This is required for C++ since all `atomic_*` type aliases are in namespace `std`, as in
     // `std::atomic_bool`, for instance, instead of just `atomic_bool`!
-    using namespace std;
+    // using namespace std;
+    // the above is overkill; just do this instead:
+    using atomic_int = std::atomic_int;
+    using atomic_size_t = std::atomic_size_t;
 #else
     #include <stdatomic.h> // for `atomic_*` types in C
 #endif
