@@ -1,4 +1,4 @@
-///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit
+///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm -latomic && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -10,39 +10,84 @@ Based on skills learned from 2012 to 2023.
 
 Demonstrate a basic, efficient ring buffer FIFO in C (that also runs in C++).
 
-- NB: I am *not* handling usage of the keyword `volatile`, and concurrency/interrupt issues, to make
-  this ring buffer implementation ISR-safe. I'll save that for another demonstration.
+- NB: This code assumes that your hardware and compiler supports modern C11 (see here:
+  https://en.cppreference.com/w/c/thread#Atomic_operations) or C++11 (see here:
+  https://en.cppreference.com/w/cpp/atomic/atomic) atomic types, so that the ring buffer array
+  data (stored in `array`), and the indices (`i_write` and `i_read`) have at least **atomic
+  copies**. This means that they MUST be able to be written to or read from withOUT being
+  interrupted in the middle of reading or writing bytes from or to those variables. If this is NOT
+  the case for your compiler or architecture, you have two options to fix this code:
+
+    1. Use naturally-atomic read-and-write types for those 3 variables.
+
+        1. For 8-bit Arduino AVR microcontrollers, that means they must be **8-bit** variable types!
+            Ex:
+            ```cpp
+            uint8_t* array;  // for the data in the ring buffer
+            uint8_t i_write; // ring buffer write index
+            uint8_t i_read;  // ring buffer read index
+            ```
+            See my detailed Q&A here: https://stackoverflow.com/a/39693278/4561887
+
+        1. For 32-bit STM32 microcontrollers, that means they must be **32-bit or smaller** variable
+        types! See my answer here: https://stackoverflow.com/a/52785864/4561887
+
+    2. Use atomic access guards. See some of my very-detailed Q&As on this here:
+        1. my Q&A on STM32 mcus: https://stackoverflow.com/q/71626597/4561887
+        1. my Q&A on Arduino AVR mcus: https://stackoverflow.com/a/39693278/4561887
+        1. my ans. on spin locks: https://stackoverflow.com/a/73819087/4561887
 
 - Note: I have written many ring buffers, and studied a variety of different techniques, and this
-  implementation is the best of all of them! It is the best I have ever written or seen, for the
+  implementation is the **best of all of them!** It is the best I have ever written or seen, for the
   following reasons:
+  <============== REASONS WHY THIS IMPLEMENTATION IS THE BEST WAY TO DO IT ===============
 
-    1. It does NOT have the "reduced by one" problem, where the usable space in the array has to
-       be reduced by 1 element in order to see when the buffer is full.
+    1. Benefit 1: first and foremost: this implementation is **lock free** so long as the following
+    conditions are met:
 
-    2. It does NOT have to store an additional `size_t count` variable to count the number of
-       elements in the array.
+        1. There is only **single-direction** usage (ex: where only the ISR ever writes and adds
+        elements, and only the main loop ever reads and removes elements) **and**:
 
-    - Rather, it works by never writing the "modulus"ed value into the `i_write` and `i_read`
-      indices. This way, for a buffer of length 2, for instance, the buffer is empty if `i_write ==
-      i_read`, and it is full if `i_write - i_read == len`. This works because `i_read` might be 0,
-      for instance, while `i_write` is 2 (where `2 % len` is 0). If you performed the modulus
-      and *then* stored that "modulus"ed value into `i_read` and `i_write` instead, then `i_write`
-      would be 0 instead of 2, and you would have no way to identify when the buffer is full vs
-      empty without violating one of my other two bullets just above. That's the ingenuity of this
-      approach! I came up with it on my own during a live interview. I had never seen nor heard of
-      this approach before, but when it occurred to me, I knew it was the best approach I had ever
-      seen, and I have since decided to make it my standard way of doing ring buffers. The only
-      reason I might change and use a different technique is if this approach of performing the
-      modulus operation **during indexing usage** turns out to be slower. In that case, I might
-      make the tiny sacrifice in **space efficiency** to get a gain in **time efficiency**, but I
-      haven't yet done any speed profiling to see if that is a time gain that can be achieved.
+        1. The hardware & compiler supports the `atomic_*` types to guarantee atomic reads, **or**:
+
+            1. the variable types are small enough to have **naturally atomic** reads and writes
+            (see above), or
+
+            1. atomic access guards are used for all reads and writes on the 3 variables of
+            interest (data and indices x 2) (see above).
+
+    2. Benefit 2: it does NOT have the "reduced by one" problem, where the usable space in the array
+    has to be reduced by 1 element in order to see when the buffer is full.
+
+    3. Benefit 3: it does NOT have to store an additional `size_t count` variable to count the
+    number of elements in the array.
+
+        - Rather, this implementation works by **never** writing the "modulus"ed value into the
+          `i_write` and `i_read` indices. This way, the buffer is empty if `i_write == i_read`, and
+          it is full if `i_write - i_read == len`. This works because for a buffer of length 2, for
+          instance, `i_read` might be 0, for instance, while `i_write` is 2 (where `2 % len` is 0).
+          If you performed the modulus and *then* stored that "modulus"ed value into `i_read` and
+          `i_write` instead, then `i_write` would be 0 instead of 2, and you'd have a situation
+          where `i_write - i_read` would equal 0 *both* when it is empty *and* when it is full!
+
+          This is problematic, as you would have no way to identify when the buffer is full vs.
+          empty without violating one of my other two bullets just above. That's the ingenuity of
+          this approach! I came up with it on my own during a live interview years ago. I had never
+          seen nor heard of this approach before, but when it occurred to me, I knew it was the
+          best approach I had ever seen, and I have since decided to make it my standard way of
+          doing ring buffers. The only reason I might change and use a different technique is if
+          this approach of performing the modulus operation **during indexing usage** turns out to
+          be slower. In that case, I might make the tiny sacrifice in **space efficiency** to get a
+          gain in **time efficiency**, but I haven't yet done any speed profiling to see if that is
+          a time gain that can be achieved.
 
 STATUS: done and works!
 
 TODO:
 1. [ ] Break this out into its own library module, and write unit tests (using gtest in C++) for it
    too! New files that will be created:
+
+    1. containers_ring_buffer_FIFO_lib.h
     1. containers_ring_buffer_FIFO_lib.c
     1. containers_ring_buffer_FIFO_lib_unittest.cpp
 
@@ -60,20 +105,39 @@ sudo apt update && sudo apt install ccache
 # 1. In C:
 ./containers_ring_buffer_FIFO.c
 # or:
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_ring_buffer_FIFO.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 containers_ring_buffer_FIFO.c -o bin/a -lm -latomic && bin/a
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_ring_buffer_FIFO.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 containers_ring_buffer_FIFO.c -o bin/a -latomic && bin/a
 ```
 
 References:
+
+1. ***** [my answer] Here are all techniques I am aware of to force atomicity in Atmel
+   AVR microcontrollers, such as Arduino - https://stackoverflow.com/a/39693278/4561887
 1. Ring buffer - https://en.m.wikipedia.org/wiki/Circular_buffer
 1. [my answer] Efficiently rotating a 2D array up by treating it as a "ring
    buffer" or "circular buffer" - https://stackoverflow.com/a/76210820/4561887
 1. [my answer] Error codes and error handling in C - https://stackoverflow.com/a/59221452/4561887
+1. Atomic variable types:
+    1. In C:    https://en.cppreference.com/w/c/thread#Atomic_operations
+    1. In C++:  https://en.cppreference.com/w/cpp/atomic/atomic
+    1.          https://en.cppreference.com/w/cpp/header/atomic
+    1. ---
+    1.          https://en.cppreference.com/w/cpp/header/stdatomic.h
+1. eRCaGuy_hello_world/c/atomic_types.c
+    1. My answer with some of this code: https://stackoverflow.com/a/76223047/4561887
 
 */
 
+#ifdef __cplusplus
+    #include <atomic> // for `atomic_*` types in C++
+    // This is required for C++ since all `atomic_*` type aliases are in namespace `std`, as in
+    // `std::atomic_bool`, for instance, instead of just `atomic_bool`!
+    using namespace std;
+#else
+    #include <stdatomic.h> // for `atomic_*` types in C
+#endif
 
 #include <assert.h>  // For `static_assert()` in C. See my answer:
                      // https://stackoverflow.com/a/54993033/4561887
@@ -92,7 +156,7 @@ typedef struct ring_buffer_s
 {
     /// Ptr to an array of the data you want to store.
     /// - Choose the correct type here for your data. I'll use `int`.
-    int* array;
+    atomic_int* array;
 
     // Note: you can replace the `size_t` type in all 3 places below with any **unsigned** integer
     // type, such as `uint8_t`, `uint16_t`, `uint32_t`, etc., if desired, for space efficiency, so
@@ -114,10 +178,10 @@ typedef struct ring_buffer_s
     // on this in my discussion notes at the top of this file.
 
     /// The write index where you will write new data.
-    size_t i_write;
+    atomic_size_t i_write;
 
     /// The read index where you will read out the oldest data.
-    size_t i_read;
+    atomic_size_t i_read;
 } ring_buffer_t;
 
 
@@ -129,8 +193,10 @@ typedef struct ring_buffer_s
 /// \param[in]      array           The array where the data will be written.
 /// \param[in]      len             The length of (# of elements in) the array.
 /// \return         None
-void ring_buffer_init(ring_buffer_t* ring_buffer, int* array, size_t len)
+void ring_buffer_init(ring_buffer_t* ring_buffer, atomic_int* array, size_t len)
 {
+    // Watch out: we are *not* checking for NULL input ptrs here, to make this safer.
+
     ring_buffer->array = array;
     ring_buffer->len = len;
     ring_buffer->i_write = 0;
@@ -139,12 +205,6 @@ void ring_buffer_init(ring_buffer_t* ring_buffer, int* array, size_t len)
 
 /// An *un*safe write function to add an element into the buffer. It does NOT check for overwrite
 /// when the buffer is full.
-///
-/// If you are confident you will never call this function when your buffer is full, this version
-/// has the benefit of being ISR-safe withOUT having to worry about mutexes, turning off interrupts,
-/// or race conditions or other locking primitives between the ISR and the main loop. That
-/// frequently comes up in interviews, so they may want you to be aware of this "lock-free" concept
-/// even though it doesn't check for overwrite, which is the downside.
 void ring_buffer_write(ring_buffer_t* ring_buffer, int data)
 {
     ring_buffer->array[ring_buffer->i_write % ring_buffer->len] = data;
@@ -153,12 +213,6 @@ void ring_buffer_write(ring_buffer_t* ring_buffer, int data)
 
 /// An *un*safe read function to read an element from the buffer. It does NOT check to ensure
 /// valid, previously-written data is being read.
-///
-/// If you are confident you will never call this function when your buffer is empty, this version
-/// has the benefit of being ISR-safe withOUT having to worry about mutexes, turning off interrupts,
-/// or race conditions or other locking primitives between the ISR and the main loop. That
-/// frequently comes up in interviews, so they may want you to be aware of this "lock-free" concept
-/// even though it doesn't check for an empty buffer, which is the downside.
 int ring_buffer_read(ring_buffer_t* ring_buffer)
 {
     int data = ring_buffer->array[ring_buffer->i_read % ring_buffer->len];
@@ -167,7 +221,7 @@ int ring_buffer_read(ring_buffer_t* ring_buffer)
 }
 
 
-// "Safe" versions
+// "Safe" versions, with error-checking code
 
 
 /// Ring buffer library error codes
@@ -226,20 +280,10 @@ const char* ring_buffer_error_str(ring_buffer_error_t err)
 /// Get the number of elements currently stored inside the ring buffer
 size_t ring_buffer_get_count(const ring_buffer_t* ring_buffer)
 {
-    // If you were sharing this ring buffer with an ISR, you'd have to do something like this to
-    // force the reading of these two variables to be treated as a single, atomic operation!
-    //
-    // See:
-    // 1. my Q&A on STM32 mcus: https://stackoverflow.com/q/71626597/4561887
-    // 1. my Q&A on Arduino AVR mcus: https://stackoverflow.com/a/39693278/4561887
-    // 1. my ans. on spin locks: https://stackoverflow.com/a/73819087/4561887
-    //
-    // disable_interrupts();
-    size_t i_write_copy = ring_buffer->i_write;
-    size_t i_read_copy = ring_buffer->i_read;
-    // restore_interrupts();
-
-    size_t num_elements_in_buffer = i_write_copy - i_read_copy;
+    // NB: this implementation is **lock-free** for **single-direction** usage! See notes at the top
+    // of this file for details. Therefore, no atomic access guards nor concurrency primitives are
+    // needed here, so long as `i_write` and `i_read` both have at least **atomic read** capability!
+    size_t num_elements_in_buffer = ring_buffer->i_write - ring_buffer->i_read;
     return num_elements_in_buffer;
 }
 
@@ -300,6 +344,8 @@ ring_buffer_error_t ring_buffer_read_safe(ring_buffer_t* ring_buffer, int* data)
 }
 
 
+//////////// make ring buffer volatile, and move it out here!
+
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
@@ -308,7 +354,7 @@ int main()
     ring_buffer_t ring_buffer;
 
     const uint8_t NUM_ELEMENTS = 8;
-    int array[NUM_ELEMENTS];
+    atomic_int array[NUM_ELEMENTS];
 
     ring_buffer_init(&ring_buffer, array, ARRAY_LEN(array));
     printf("Ring buffer size is %zu.\n\n", ring_buffer.len);
