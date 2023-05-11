@@ -8,7 +8,31 @@ GS
 9 May 2023
 Based on skills learned from 2012 to 2023.
 
-Demonstrate a basic, efficient ring buffer FIFO in C (that also runs in C++).
+SUMMARY:
+
+Demonstrate a basic, efficient **lock-free** SPSC (Single-Producer Single-Consumer) ring buffer FIFO
+queue in C (that also runs in C++).
+
+This queue is intended to work lock-free in a SPSC context only, such as on a bare-metal
+microcontroller where an ISR needs to send data to the main loop, for example.
+
+TODO:
+
+1. [ ] For a **single-core** MPMC (Multi-Producer Multi-Consumer) context with multiple threads,
+consider using an RTOS mutex (ex: on an mcu running an RTOS) or a C or C++ mutex to protect the 3
+volatile variables together.
+
+1. [ ] For a **multi-core** MPMC (Multi-Producer Multi-Consumer) context with multiple threads,
+consider using either:
+
+    1. [ ] a `std::condition_variable` to wake up the other threads to read; see my C++ example
+    here:
+    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/cpp/std_mutex_vs_std_lock_guard_vs_std_unique_lock_vs_std_scoped_lock_README.md#stdcondition_variable
+
+    1. [ ] OR a probably-more-efficient **spin lock** to protect the data. See my example here:
+    https://stackoverflow.com/a/73819087/4561887
+
+DETAILS of this SPSC lock-free implementation:
 
 - NB: This code assumes that your hardware and compiler supports modern C11 (see here:
   https://en.cppreference.com/w/c/thread#Atomic_operations) or C++11 (see here:
