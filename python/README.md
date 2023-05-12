@@ -3,7 +3,8 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 # Notes
 
-`wip` means "work-in-progress".
+1. `wip` means "work-in-progress".
+1. To learn about **private variables** which begin with a single underscore `_`, **internal Python variables** which begin with two underscores `__`, **class variables** which are shared among all instances of a class, **instance variables**, which are generally prefixed with `self.` in a class, and `__slots__`, which are a special way to store **instance variables** in a list inside your object instead of in a dict inside your object, see: [slots_practice/slots_practice.py](slots_practice/slots_practice.py).
 
 
 # Pylint linter and static code analyzer for Python
