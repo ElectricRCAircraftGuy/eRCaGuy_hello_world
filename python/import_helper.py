@@ -42,34 +42,91 @@ References:
 """
 
 
-# -------------------------- allow higher-up package imports START ---------------------------------
-# Allow module importing in Python at higher-up directory levels, similar to what I can do in Bash.
-# See my Bash answer here: https://stackoverflow.com/a/60157372/4561887
 import os
+import pathlib
 import sys
-FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
-SCRIPT_DIRECTORY = os.path.dirname(FULL_PATH_TO_SCRIPT)
-SCRIPT_FILENAME = os.path.basename(FULL_PATH_TO_SCRIPT)
-# the number of levels deep from this file's directory up to the root dir
-# containing the package; update this value appropriately
-NUM_LEVELS_DEEP = 1
-ROOT_DIR_CONTAINING_PACKAGE = SCRIPT_DIRECTORY
-for i in range(NUM_LEVELS_DEEP):
-    ROOT_DIR_CONTAINING_PACKAGE = os.path.dirname(ROOT_DIR_CONTAINING_PACKAGE)
-sys.path.append(ROOT_DIR_CONTAINING_PACKAGE)
-# -------------------------- allow higher-up package imports END -----------------------------------
 
-def do_debug_prints():
-    printf(f"__file__ = {__file__}")
+# pretty print; see: https://stackoverflow.com/a/1523664/4561887
+from pprint import pprint
 
-    print(f"ROOT_DIR_CONTAINING_PACKAGE = {ROOT_DIR_CONTAINING_PACKAGE}") ######
+
+DEFAULT_SYS_PATH = sys.path
+HOME = str(pathlib.Path.home())
+
+
+def add_python_path(path_to_dir):
+    """
+    Add a path string to the `sys.path` list so that one can import packages and modules relative to
+    this path.
+
+    Parameters:
+        path_to_dir (string): the path to the directory to add
+
+    Returns:
+        NA
+    """
+    full_dir_path = os.path.abspath(path_to_dir)
+    sys.path.insert(0, full_dir_path)
+
+
+def add_higher_up_path(starting_path_to_file, num_levels_up=1):
+    """
+    Add the directory `num_levels_up` from `starting_path` to the `sys.path` list so that one can
+    import packages and modules relative to that higher-up path.
+
+    Parameters:
+        starting_path_to_file (string): the path to the file from which to start the upwards path
+            search; typically you will want to pass in `__file__`
+        num_levels_up (int): the number of directories to go up, starting from the directory in
+            which the file represented by `starting_path_to_file` resides.
+
+    Returns:
+        NA
+    """
+    full_file_path = os.path.abspath(starting_path_to_file)
+    starting_dir = os.path.dirname(full_file_path)
+
+    upper_dir = starting_dir
+    for i in range(num_levels_up):
+        upper_dir = os.path.dirname(upper_dir)
+
+    sys.path.insert(0, upper_dir)
 
 
 def _test():
     """
     Run some basic demos/tests and print the results.
     """
-    print("import_helper demo/tests:")
+    print("import_helper demo/tests:\n")
+
+    print("Before: sys.path = ")
+    pprint(sys.path)
+    print()
+
+    dir_to_add = f"{HOME}/whatever12345/"
+    print(f"Adding {dir_to_add}")
+    add_python_path(dir_to_add)
+    print("After: sys.path = ")
+    pprint(sys.path)
+    print()
+
+    print(f"__file__ = {__file__}")
+    print(f"os.path.abspath(__file__) = {os.path.abspath(__file__)}")
+
+    add_higher_up_path(__file__)
+    print("with 1 dir up: sys.path = ")
+    pprint(sys.path)
+    print()
+
+    add_higher_up_path(__file__, 2)
+    print("with 2 dirs up: sys.path = ")
+    pprint(sys.path)
+    print()
+
+    add_higher_up_path(__file__, 3)
+    print("with 3 dirs up: sys.path = ")
+    pprint(sys.path)
+    print()
 
 
 # Only run `main()` if this script is **run**, NOT imported
@@ -82,7 +139,70 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/python$ ./import_helper.py
-    Hello world!
+    eRCaGuy_hello_world$ python/import_helper.py
+    import_helper demo/tests:
+
+    Before: sys.path =
+    ['/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+    '/usr/lib/python38.zip',
+    '/usr/lib/python3.8',
+    '/usr/lib/python3.8/lib-dynload',
+    '/home/gabriel/.local/lib/python3.8/site-packages',
+    '/usr/local/lib/python3.8/dist-packages',
+    '/usr/lib/python3/dist-packages',
+    '/usr/lib/python3.8/dist-packages']
+
+    Adding /home/gabriel/whatever12345/
+    After: sys.path =
+    ['/home/gabriel/whatever12345',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+    '/usr/lib/python38.zip',
+    '/usr/lib/python3.8',
+    '/usr/lib/python3.8/lib-dynload',
+    '/home/gabriel/.local/lib/python3.8/site-packages',
+    '/usr/local/lib/python3.8/dist-packages',
+    '/usr/lib/python3/dist-packages',
+    '/usr/lib/python3.8/dist-packages']
+
+    __file__ = python/import_helper.py
+    os.path.abspath(__file__) = /home/gabriel/GS/dev/eRCaGuy_hello_world/python/import_helper.py
+    with 1 dir up: sys.path =
+    ['/home/gabriel/GS/dev/eRCaGuy_hello_world',
+    '/home/gabriel/whatever12345',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+    '/usr/lib/python38.zip',
+    '/usr/lib/python3.8',
+    '/usr/lib/python3.8/lib-dynload',
+    '/home/gabriel/.local/lib/python3.8/site-packages',
+    '/usr/local/lib/python3.8/dist-packages',
+    '/usr/lib/python3/dist-packages',
+    '/usr/lib/python3.8/dist-packages']
+
+    with 2 dirs up: sys.path =
+    ['/home/gabriel/GS/dev',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+    '/home/gabriel/whatever12345',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+    '/usr/lib/python38.zip',
+    '/usr/lib/python3.8',
+    '/usr/lib/python3.8/lib-dynload',
+    '/home/gabriel/.local/lib/python3.8/site-packages',
+    '/usr/local/lib/python3.8/dist-packages',
+    '/usr/lib/python3/dist-packages',
+    '/usr/lib/python3.8/dist-packages']
+
+    with 3 dirs up: sys.path =
+    ['/home/gabriel/GS',
+    '/home/gabriel/GS/dev',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+    '/home/gabriel/whatever12345',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+    '/usr/lib/python38.zip',
+    '/usr/lib/python3.8',
+    '/usr/lib/python3.8/lib-dynload',
+    '/home/gabriel/.local/lib/python3.8/site-packages',
+    '/usr/local/lib/python3.8/dist-packages',
+    '/usr/lib/python3/dist-packages',
+    '/usr/lib/python3.8/dist-packages']
 
 """
