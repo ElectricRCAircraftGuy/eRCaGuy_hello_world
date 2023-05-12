@@ -111,8 +111,11 @@ div() {
     divide "$@"
 }
 
+# Note: make "private" functions begin with an underscore `_` so that users know they are not
+# intended for use outside this library.
+
 # Assert that the two input argument strings are equal, and exit if they are not
-assert_eq() {
+_assert_eq() {
     if [ "$1" != "$2" ]; then
         echo "Error: assertion failed. Arguments not equal! arg1 = $1; arg2 = $2"
         echo "Exiting."
@@ -129,48 +132,48 @@ _test() {
     printf "%s\n" "Running 'add 1.1 2.1 3.1 4.1'"
     result="$(add 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" "10.4"
+    _assert_eq "$result" "10.4"
 
     printf "%s\n" "Running 'add 100.2 923.2334'"
     result="$(add 100.2 923.2334)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" "1023.4334"
+    _assert_eq "$result" "1023.4334"
 
     # subtract
 
     printf "%s\n" "Running 'subtract 1.1 2.1 3.1 4.1'"
     result="$(subtract 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" "-8.2"
+    _assert_eq "$result" "-8.2"
 
     printf "%s\n" "Running 'sub 1.1 2.1 3.1 4.1'"
     result="$(sub 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" "-8.2"
+    _assert_eq "$result" "-8.2"
 
     # multiply
 
     printf "%s\n" "Running 'multiply 1.1 2.1 3.1 4.1'"
     result="$(multiply 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" "29.3601"
+    _assert_eq "$result" "29.3601"
 
     printf "%s\n" "Running 'mul 1.1 2.1 3.1 4.1'"
     result="$(mul 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" "29.3601"
+    _assert_eq "$result" "29.3601"
 
     # divide
 
     printf "%s\n" "Running 'divide 1.1 2.1 3.1 4.1'"
     result="$(divide 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" ".0412123936"
+    _assert_eq "$result" ".0412123936"
 
     printf "%s\n" "Running 'div 1.1 2.1 3.1 4.1'"
     result="$(div 1.1 2.1 3.1 4.1)"
     printf "%s\n\n" "result = $result"
-    assert_eq "$result" ".0412123936"
+    _assert_eq "$result" ".0412123936"
 
 
     echo "All tests passed!"
