@@ -109,24 +109,37 @@ def _test():
     print("After: sys.path = ")
     pprint(sys.path)
     print()
+    assert sys.path[0] == dir_to_add[:-1]  # `-1` since the trailing `/` gets stripped off
 
-    print(f"__file__ = {__file__}")
-    print(f"os.path.abspath(__file__) = {os.path.abspath(__file__)}")
+    # file_path = __file__  # us this instead for personal, manual checking
+    file_path = f"{HOME}/whatever12345/dir1/dir2/dir3/filename"
 
-    add_higher_up_path(__file__)
+    print(f"file_path = {file_path}")
+    print(f"os.path.abspath(file_path) = {os.path.abspath(file_path)}\n")
+
+    add_higher_up_path(file_path)
     print("with 1 dir up: sys.path = ")
     pprint(sys.path)
     print()
+    assert sys.path[0] == f"{HOME}/whatever12345/dir1/dir2"
 
-    add_higher_up_path(__file__, 2)
+    add_higher_up_path(file_path, 2)
     print("with 2 dirs up: sys.path = ")
     pprint(sys.path)
     print()
+    assert sys.path[0] == f"{HOME}/whatever12345/dir1"
 
-    add_higher_up_path(__file__, 3)
+    add_higher_up_path(file_path, 3)
     print("with 3 dirs up: sys.path = ")
     pprint(sys.path)
     print()
+    assert sys.path[0] == f"{HOME}/whatever12345"
+
+    add_higher_up_path(file_path, 4)
+    print("with 4 dirs up: sys.path = ")
+    pprint(sys.path)
+    print()
+    assert sys.path[0] == f"{HOME}"
 
 
 # Only run `main()` if this script is **run**, NOT imported
@@ -164,10 +177,11 @@ SAMPLE OUTPUT:
     '/usr/lib/python3/dist-packages',
     '/usr/lib/python3.8/dist-packages']
 
-    __file__ = python/import_helper.py
-    os.path.abspath(__file__) = /home/gabriel/GS/dev/eRCaGuy_hello_world/python/import_helper.py
+    file_path = /home/gabriel/whatever12345/dir1/dir2/dir3/filename
+    os.path.abspath(file_path) = /home/gabriel/whatever12345/dir1/dir2/dir3/filename
+
     with 1 dir up: sys.path =
-    ['/home/gabriel/GS/dev/eRCaGuy_hello_world',
+    ['/home/gabriel/whatever12345/dir1/dir2',
     '/home/gabriel/whatever12345',
     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
     '/usr/lib/python38.zip',
@@ -179,8 +193,8 @@ SAMPLE OUTPUT:
     '/usr/lib/python3.8/dist-packages']
 
     with 2 dirs up: sys.path =
-    ['/home/gabriel/GS/dev',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+    ['/home/gabriel/whatever12345/dir1',
+    '/home/gabriel/whatever12345/dir1/dir2',
     '/home/gabriel/whatever12345',
     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
     '/usr/lib/python38.zip',
@@ -192,9 +206,24 @@ SAMPLE OUTPUT:
     '/usr/lib/python3.8/dist-packages']
 
     with 3 dirs up: sys.path =
-    ['/home/gabriel/GS',
-    '/home/gabriel/GS/dev',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+    ['/home/gabriel/whatever12345',
+    '/home/gabriel/whatever12345/dir1',
+    '/home/gabriel/whatever12345/dir1/dir2',
+    '/home/gabriel/whatever12345',
+    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+    '/usr/lib/python38.zip',
+    '/usr/lib/python3.8',
+    '/usr/lib/python3.8/lib-dynload',
+    '/home/gabriel/.local/lib/python3.8/site-packages',
+    '/usr/local/lib/python3.8/dist-packages',
+    '/usr/lib/python3/dist-packages',
+    '/usr/lib/python3.8/dist-packages']
+
+    with 4 dirs up: sys.path =
+    ['/home/gabriel',
+    '/home/gabriel/whatever12345',
+    '/home/gabriel/whatever12345/dir1',
+    '/home/gabriel/whatever12345/dir1/dir2',
     '/home/gabriel/whatever12345',
     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
     '/usr/lib/python38.zip',
