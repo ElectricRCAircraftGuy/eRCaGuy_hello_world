@@ -39,6 +39,7 @@
 # 1. How to show zero before decimal point in bc? - https://unix.stackexchange.com/a/197902/114401
 
 
+# shellcheck disable=SC2034  # Unused variables left for readability; see: https://github.com/koalaman/shellcheck/wiki/SC2034
 RETURN_CODE_SUCCESS=0
 RETURN_CODE_ERROR=1
 
