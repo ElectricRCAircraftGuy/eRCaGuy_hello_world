@@ -18,7 +18,7 @@ So, how do you write, import, and use libraries in Bash?
 
 --------
 
-Here's a really beautiful, almost Pythonic style I've come with over the years for writing and using Bash libraries. Bash is a beautiful "glue"-type language which allows you to easily tie together executables from many languages. Considering how long Bash has been around, I'm not sure why the below style isn't more popular, but perhaps it hasn't been thought of or used this way before. So, here goes. I think you'll find it really useful.
+Here's a really beautiful, almost Python-like style I've come with over the years for writing and using Bash libraries. Bash is a beautiful "glue"-type language which allows you to easily tie together executables from many languages. Considering how long Bash has been around, I'm not sure why the below style isn't more popular, but perhaps it hasn't been thought of or used this way before. So, here goes. I think you'll find it really useful.
 
 You can also see a general starting point I use for all of my bash scripts in my [hello_world_best.sh](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/hello_world_best.sh) file in my [eRCaGuy_hello_world](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world) repo. 
 
@@ -257,5 +257,5 @@ Can Python do this? No, not natively at least. Bash is _much easier_ than Python
 
 ## Going further
 
-See my full and really-useful Bash floating point library in my [eRCaGuy_hello_world](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world) repo here: [floating_point_math.sh](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/floating_point_math.sh).
-
+1. See my full and really-useful Bash floating point library in my [eRCaGuy_hello_world](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world) repo here: [floating_point_math.sh](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/floating_point_math.sh).
+1. See some alternative notes of mine on Bash library installation and usage in my readme here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/tree/master/bash/libraries
