@@ -43,6 +43,7 @@ import textwrap
 # 1. For **absolute path imports**, add the filesystem root to the `sys.path` list variable
 import sys
 filesystem_root = "/"  # filesystem root
+# Allow importing Python packages relative to the filesystem root!
 sys.path.insert(0, filesystem_root)
 
 # 2. Print the `sys.path` now so we can see that `'/'` has been added

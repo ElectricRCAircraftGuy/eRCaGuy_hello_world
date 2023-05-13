@@ -46,6 +46,8 @@ import os
 import sys
 FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
 SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
+# Allow importing Python packages relative to one dir up from the level of this
+# script!
 sys.path.insert(0, f"{SCRIPT_DIRECTORY}/..")  # up one dir
 
 # 2. Print the `sys.path` now so we can see that `'/'` has been added
@@ -60,6 +62,8 @@ print()
 import constants
 
 # 4. Let's add one more, for fun. We'll import the same constants in a slightly different way still!
+# Allow importing Python packages relative to 3 dirs up from the level of this
+# script!
 sys.path.insert(0, f"{SCRIPT_DIRECTORY}/../../..")  # up three dirs
 import eRCaGuy_hello_world.python.constants
 
