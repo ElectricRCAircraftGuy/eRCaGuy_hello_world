@@ -6,6 +6,10 @@ I'm going to post this in a new Q&A on Stack Overflow.
 
 "How do you write, import, and use libraries in Bash?"
 My Q&A: https://stackoverflow.com/a/76241159/4561887
+
+Update: My Q&A was almost instantly downvoted and closed. I moved my answer to
+here instead, where it fits better:
+https://stackoverflow.com/a/76241268/4561887
 -->
 
 I'm familiar with Python. It has packages and modules you can `import`. I also know that C and C++ have libraries you can `#include`. 

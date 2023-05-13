@@ -3,7 +3,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 # See also
 
-1. \*\*\*\*\*+ [my answer--VERY USEFUL] [How do you write, import, and use libraries in Bash?](https://stackoverflow.com/a/76241159/4561887)
+1. \*\*\*\*\*+ [my answer--VERY USEFUL] [How do you write, import, and use libraries in Bash?](https://stackoverflow.com/a/76241268/4561887)
 
 
 # Bash libraries
