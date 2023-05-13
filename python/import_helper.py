@@ -54,10 +54,16 @@ DEFAULT_SYS_PATH = sys.path
 HOME = str(pathlib.Path.home())
 
 
-def add_python_path(path_to_dir):
+def add_path_to_dir(path_to_dir):
     """
-    Add a path string to the `sys.path` list so that one can import packages and modules relative to
-    this path.
+    Add a path string to the `sys.path` list (which also contains all paths from within the
+    `PYTHONPATH` environment variable) so that one can import packages and modules relative to this
+    path.
+
+    See:
+    1. https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH
+    1. https://docs.python.org/3/library/sys.html#sys.path
+    1. https://stackoverflow.com/a/3402176/4561887
 
     Parameters:
         path_to_dir (string): the path to the directory to add
@@ -105,7 +111,7 @@ def _test():
 
     dir_to_add = f"{HOME}/whatever12345/"
     print(f"Adding {dir_to_add}")
-    add_python_path(dir_to_add)
+    add_path_to_dir(dir_to_add)
     print("After: sys.path = ")
     pprint(sys.path)
     print()
