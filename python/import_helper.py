@@ -109,6 +109,10 @@ def _test():
     pprint(sys.path)
     print()
 
+    # ---------------------------------
+    # Test `add_path_to_dir()`
+    # ---------------------------------
+
     dir_to_add = f"{HOME}/whatever12345/"
     print(f"Adding {dir_to_add}")
     add_path_to_dir(dir_to_add)
@@ -117,6 +121,10 @@ def _test():
     print()
     assert sys.path[0] == dir_to_add[:-1]  # `-1` since the trailing `/` gets stripped off
 
+    # ---------------------------------
+    # Test `add_higher_up_path()`
+    # ---------------------------------
+
     # file_path = __file__  # us this instead for personal, manual checking
     file_path = f"{HOME}/whatever12345/dir1/dir2/dir3/filename"
 
@@ -124,6 +132,13 @@ def _test():
     print(f"os.path.abspath(file_path) = {os.path.abspath(file_path)}\n")
 
     add_higher_up_path(file_path)
+    print("with 1 dir up: sys.path = ")
+    pprint(sys.path)
+    print()
+    assert sys.path[0] == f"{HOME}/whatever12345/dir1/dir2"
+
+    # same thing as just above
+    add_higher_up_path(file_path, num_levels_up=1)
     print("with 1 dir up: sys.path = ")
     pprint(sys.path)
     print()
