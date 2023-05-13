@@ -1,6 +1,11 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 
+# See also
+
+1. \*\*\*\*\*+ [my answer--VERY USEFUL] [How do you write, import, and use libraries in Bash?](https://stackoverflow.com/a/76241159/4561887)
+
+
 # Bash libraries
 
 These files are bash libraries which are intended to be run directly in order to run their internal unit tests, _or_ imported (sourced) anywhere in order to use them at the command-line or in your own Bash programs!
