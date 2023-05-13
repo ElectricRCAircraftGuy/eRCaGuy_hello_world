@@ -31,6 +31,9 @@
 # 1.
 
 
+RETURN_CODE_SUCCESS=0
+RETURN_CODE_ERROR=1
+
 # Add your library functions here. Ex:
 
 my_func1() {
@@ -96,7 +99,8 @@ else
     __name__="__source__"
 fi
 
-# Only run `main` if this script is being **run**, NOT sourced (imported).
+# Code entry point. Only run `main` if this script is being **run**, NOT
+# sourced (imported).
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$__name__" = "__main__" ]; then
     main "$@"

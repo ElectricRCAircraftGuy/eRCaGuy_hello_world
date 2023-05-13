@@ -43,7 +43,10 @@
 RETURN_CODE_SUCCESS=0
 RETURN_CODE_ERROR=1
 
-SCALE=10  # decimal digit precision to use in `bc`
+# decimal digit precision to use in the `bc` math program; use a smaller number
+# to get *less* precision and *faster* results, and use a larger value to get
+# *more* precision and *slower* results
+SCALE=10
 
 # Add all arguments and output the result
 # Ex:
@@ -204,7 +207,7 @@ fi
 
 # SAMPLE OUTPUT:
 #
-# 1) WHEN RUN (it prints "Running main.")
+# 1) WHEN RUN
 #
 #       eRCaGuy_hello_world$ time bash/floating_point_math.sh
 #       Running tests.

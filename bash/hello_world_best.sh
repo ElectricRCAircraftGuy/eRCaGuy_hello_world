@@ -58,7 +58,7 @@ fi
 
 # SAMPLE OUTPUT:
 #
-# 1) WHEN RUN (it prints "Running main.")
+# 1) WHEN RUN
 #
 #       eRCaGuy_hello_world$ bash/hello_world_best.sh
 #       Running main.
