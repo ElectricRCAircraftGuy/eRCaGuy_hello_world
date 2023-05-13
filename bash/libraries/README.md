@@ -8,6 +8,8 @@ These files are bash libraries which are intended to be run directly in order to
 
 # Installation 
 
+These steps are similar to those found in [../../python/libraries/README.md](../../python/libraries/README.md#installation).
+
 ```bash
 # make a "libs_bash" dir in your home dir
 mkdir -p ~/libs_bash
@@ -22,7 +24,7 @@ ln -si "$(pwd)/libraries" ~/libs_bash/
 # START OF BLOCK TO RUN ALL AT ONCE
 cat << "EOF" >> ~/.bashrc
 
-# Added by eRCaGuy_hello_world: 
+# Added by eRCaGuy_hello_world for importing Bash libraries: 
 # https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 if [ -d "$HOME/libs_bash/libraries" ] ; then
     export BASHLIBS="$HOME/libs_bash/libraries"
@@ -46,12 +48,11 @@ Done!
 
 If you take a look at the bottom of your `~/.bashrc` file, you will now see this:
 ```bash
-# Added by eRCaGuy_hello_world: 
+# Added by eRCaGuy_hello_world for importing Bash libraries: 
 # https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 if [ -d "$HOME/libs_bash/libraries" ] ; then
     export BASHLIBS="$HOME/libs_bash/libraries"
 fi
-
 ```
 
 
