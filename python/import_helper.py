@@ -121,18 +121,29 @@ def _test():
     print()
     assert sys.path[0] == dir_to_add[:-1]  # `-1` since the trailing `/` gets stripped off
 
-    dir_to_add = f"{HOME}/whatever12345/" /////////////// DO IT RELATIVE TO THIS FILE!
-    # MAKE THIS THE *BEST* USAGE EXAMPLE!
+    # Best example, in my opinion--make it relative to `__file__`. <========
+    FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
+    SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
+    dir_to_add = SCRIPT_DIRECTORY
     print(f"Adding {dir_to_add}")
     add_import_path(dir_to_add)
     print("After: sys.path = ")
     pprint(sys.path)
     print()
-    assert sys.path[0] == dir_to_add[:-1]  # `-1` since the trailing `/` gets stripped off
+    assert sys.path[0] == SCRIPT_DIRECTORY
 
     # ---------------------------------
     # Test `add_higher_up_import_path()`
     # ---------------------------------
+
+    # Best example, in my opinion--make it relative to `__file__`. <========
+    add_higher_up_import_path(__file__, num_levels_up=0)
+    print("with 0 dirs up: sys.path = ")
+    pprint(sys.path)
+    print()
+    assert sys.path[0] == SCRIPT_DIRECTORY
+
+    # --- a more complex & thorough example ---
 
     # file_path = __file__  # us this instead for personal, manual checking
     file_path = f"{HOME}/whatever12345/dir1/dir2/dir3/filename"
@@ -171,6 +182,8 @@ def _test():
     print()
     assert sys.path[0] == f"{HOME}"
 
+    print("ALL TESTS PASSED.")
+
 
 # Only run `main()` if this script is **run**, NOT imported
 if __name__ == '__main__':
@@ -187,81 +200,162 @@ SAMPLE OUTPUT:
 
     Before: sys.path =
     ['/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
-    '/usr/lib/python38.zip',
-    '/usr/lib/python3.8',
-    '/usr/lib/python3.8/lib-dynload',
-    '/home/gabriel/.local/lib/python3.8/site-packages',
-    '/usr/local/lib/python3.8/dist-packages',
-    '/usr/lib/python3/dist-packages',
-    '/usr/lib/python3.8/dist-packages']
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
 
     Adding /home/gabriel/whatever12345/
     After: sys.path =
     ['/home/gabriel/whatever12345',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
-    '/usr/lib/python38.zip',
-    '/usr/lib/python3.8',
-    '/usr/lib/python3.8/lib-dynload',
-    '/home/gabriel/.local/lib/python3.8/site-packages',
-    '/usr/local/lib/python3.8/dist-packages',
-    '/usr/lib/python3/dist-packages',
-    '/usr/lib/python3.8/dist-packages']
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
+
+    Adding /home/gabriel/GS/dev/eRCaGuy_hello_world/python
+    After: sys.path =
+    ['/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
+
+    with 0 dirs up: sys.path =
+    ['/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
 
     file_path = /home/gabriel/whatever12345/dir1/dir2/dir3/filename
     os.path.abspath(file_path) = /home/gabriel/whatever12345/dir1/dir2/dir3/filename
 
     with 1 dir up: sys.path =
     ['/home/gabriel/whatever12345/dir1/dir2',
-    '/home/gabriel/whatever12345',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
-    '/usr/lib/python38.zip',
-    '/usr/lib/python3.8',
-    '/usr/lib/python3.8/lib-dynload',
-    '/home/gabriel/.local/lib/python3.8/site-packages',
-    '/usr/local/lib/python3.8/dist-packages',
-    '/usr/lib/python3/dist-packages',
-    '/usr/lib/python3.8/dist-packages']
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
+
+    with 1 dir up: sys.path =
+    ['/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
 
     with 2 dirs up: sys.path =
     ['/home/gabriel/whatever12345/dir1',
-    '/home/gabriel/whatever12345/dir1/dir2',
-    '/home/gabriel/whatever12345',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
-    '/usr/lib/python38.zip',
-    '/usr/lib/python3.8',
-    '/usr/lib/python3.8/lib-dynload',
-    '/home/gabriel/.local/lib/python3.8/site-packages',
-    '/usr/local/lib/python3.8/dist-packages',
-    '/usr/lib/python3/dist-packages',
-    '/usr/lib/python3.8/dist-packages']
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
 
     with 3 dirs up: sys.path =
     ['/home/gabriel/whatever12345',
-    '/home/gabriel/whatever12345/dir1',
-    '/home/gabriel/whatever12345/dir1/dir2',
-    '/home/gabriel/whatever12345',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
-    '/usr/lib/python38.zip',
-    '/usr/lib/python3.8',
-    '/usr/lib/python3.8/lib-dynload',
-    '/home/gabriel/.local/lib/python3.8/site-packages',
-    '/usr/local/lib/python3.8/dist-packages',
-    '/usr/lib/python3/dist-packages',
-    '/usr/lib/python3.8/dist-packages']
+     '/home/gabriel/whatever12345/dir1',
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
 
     with 4 dirs up: sys.path =
     ['/home/gabriel',
-    '/home/gabriel/whatever12345',
-    '/home/gabriel/whatever12345/dir1',
-    '/home/gabriel/whatever12345/dir1/dir2',
-    '/home/gabriel/whatever12345',
-    '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
-    '/usr/lib/python38.zip',
-    '/usr/lib/python3.8',
-    '/usr/lib/python3.8/lib-dynload',
-    '/home/gabriel/.local/lib/python3.8/site-packages',
-    '/usr/local/lib/python3.8/dist-packages',
-    '/usr/lib/python3/dist-packages',
-    '/usr/lib/python3.8/dist-packages']
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/whatever12345/dir1',
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/whatever12345/dir1/dir2',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/whatever12345',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python',
+     '/home/gabriel/libs_python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world/python/libraries',
+     '/home/gabriel/GS/dev/eRCaGuy_hello_world',
+     '/usr/lib/python38.zip',
+     '/usr/lib/python3.8',
+     '/usr/lib/python3.8/lib-dynload',
+     '/home/gabriel/.local/lib/python3.8/site-packages',
+     '/usr/local/lib/python3.8/dist-packages',
+     '/usr/lib/python3/dist-packages',
+     '/usr/lib/python3.8/dist-packages']
+
+    ALL TESTS PASSED.
 
 """
