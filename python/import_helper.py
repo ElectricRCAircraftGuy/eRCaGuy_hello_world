@@ -54,7 +54,7 @@ DEFAULT_SYS_PATH = sys.path
 HOME = str(pathlib.Path.home())
 
 
-def add_path_to_dir(path_to_dir):
+def add_import_path(path_to_dir):
     """
     Add a path string to the `sys.path` list (which also contains all paths from within the
     `PYTHONPATH` environment variable) so that one can import packages and modules relative to this
@@ -75,21 +75,21 @@ def add_path_to_dir(path_to_dir):
     sys.path.insert(0, full_dir_path)
 
 
-def add_higher_up_path(starting_path_to_file, num_levels_up=1):
+def add_higher_up_import_path(path_to_file, num_levels_up=1):
     """
     Add the directory `num_levels_up` from `starting_path` to the `sys.path` list so that one can
     import packages and modules relative to that higher-up path.
 
     Parameters:
-        starting_path_to_file (string): the path to the file from which to start the upwards path
+        path_to_file (string): the path to the file from which to start the upwards path
             search; typically you will want to pass in `__file__`
-        num_levels_up (int): the number of directories to go up, starting from the directory in
-            which the file represented by `starting_path_to_file` resides.
+        num_levels_up (int): the number of directories to go up from the directory in
+            which the `path_to_file` file resides.
 
     Returns:
         NA
     """
-    full_file_path = os.path.abspath(starting_path_to_file)
+    full_file_path = os.path.abspath(path_to_file)
     starting_dir = os.path.dirname(full_file_path)
 
     upper_dir = starting_dir
@@ -110,19 +110,28 @@ def _test():
     print()
 
     # ---------------------------------
-    # Test `add_path_to_dir()`
+    # Test `add_import_path()`
     # ---------------------------------
 
     dir_to_add = f"{HOME}/whatever12345/"
     print(f"Adding {dir_to_add}")
-    add_path_to_dir(dir_to_add)
+    add_import_path(dir_to_add)
+    print("After: sys.path = ")
+    pprint(sys.path)
+    print()
+    assert sys.path[0] == dir_to_add[:-1]  # `-1` since the trailing `/` gets stripped off
+
+    dir_to_add = f"{HOME}/whatever12345/" /////////////// DO IT RELATIVE TO THIS FILE!
+    # MAKE THIS THE *BEST* USAGE EXAMPLE!
+    print(f"Adding {dir_to_add}")
+    add_import_path(dir_to_add)
     print("After: sys.path = ")
     pprint(sys.path)
     print()
     assert sys.path[0] == dir_to_add[:-1]  # `-1` since the trailing `/` gets stripped off
 
     # ---------------------------------
-    # Test `add_higher_up_path()`
+    # Test `add_higher_up_import_path()`
     # ---------------------------------
 
     # file_path = __file__  # us this instead for personal, manual checking
@@ -131,32 +140,32 @@ def _test():
     print(f"file_path = {file_path}")
     print(f"os.path.abspath(file_path) = {os.path.abspath(file_path)}\n")
 
-    add_higher_up_path(file_path)
+    add_higher_up_import_path(file_path)
     print("with 1 dir up: sys.path = ")
     pprint(sys.path)
     print()
     assert sys.path[0] == f"{HOME}/whatever12345/dir1/dir2"
 
     # same thing as just above
-    add_higher_up_path(file_path, num_levels_up=1)
+    add_higher_up_import_path(file_path, num_levels_up=1)
     print("with 1 dir up: sys.path = ")
     pprint(sys.path)
     print()
     assert sys.path[0] == f"{HOME}/whatever12345/dir1/dir2"
 
-    add_higher_up_path(file_path, 2)
+    add_higher_up_import_path(file_path, 2)
     print("with 2 dirs up: sys.path = ")
     pprint(sys.path)
     print()
     assert sys.path[0] == f"{HOME}/whatever12345/dir1"
 
-    add_higher_up_path(file_path, 3)
+    add_higher_up_import_path(file_path, 3)
     print("with 3 dirs up: sys.path = ")
     pprint(sys.path)
     print()
     assert sys.path[0] == f"{HOME}/whatever12345"
 
-    add_higher_up_path(file_path, 4)
+    add_higher_up_import_path(file_path, 4)
     print("with 4 dirs up: sys.path = ")
     pprint(sys.path)
     print()
