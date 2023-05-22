@@ -59,7 +59,7 @@ First off, let's make sure you actually want to to be formatting your filesystem
 time sudo mkexfatfs -n "my_exFAT" -s 1 /dev/sda1     #   0.5 KiB (512 byte) 
                                                          #     clusters    (10 sec)
 time sudo mkexfatfs -n "my_exFAT" -s 8 /dev/sda1     #   4 KiB clusters (1.340 sec)
-time sudo mkexfatfs -n "my_exFAT" -s 16 /dev/sda1    #   8 KiB clusters (1.340 sec)
+time sudo mkexfatfs -n "my_exFAT" -s 16 /dev/sda1    #   8 KiB clusters (0.698 sec)
 time sudo mkexfatfs -n "my_exFAT" -s 64 /dev/sda1    #  32 KiB clusters (0.230 sec)
 time sudo mkexfatfs -n "my_exFAT" -s 256 /dev/sda1   # 128 KiB clusters (0.075 sec)
 time sudo mkexfatfs -n "my_exFAT" -s 65536 /dev/sda1 # 32 MiB clusters (0.120 sec) 
@@ -68,192 +68,83 @@ time sudo mkexfatfs -n "my_exFAT" -s 65536 /dev/sda1 # 32 MiB clusters (0.120 se
 
 A "cluster" is the smallest chunk of memory possible to be used by the file system. So, if a cluster is 4 KiB, for instance, and your file is only **1 byte**, it will still take up a full cluster, or **4 KiB**, on disk. This is what Windows refers to as "Size on disk". In this case, the file "Size" is 1 byte, whereas the "Size on disk" is 4 KiB, or 4096 bytes. See: [Super User: What is the difference between “Size” and “Size on disk?”](https://superuser.com/a/66826/425838).
 
-512 bytes (0.5 KiB) (1 x 512-byte sector)
+[![enter image description here][2]][2]
 
-```bash
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%   87.36MB/s    0:00:57 (xfr#1, to-chk=0/1)
 
-real    0m57.566s
-user    0m3.128s
-sys 0m8.873s
-
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%   96.84MB/s    0:00:51 (xfr#1, to-chk=0/1)
-
-real    0m51.939s
-user    0m3.305s
-sys 0m8.844s
-
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m15.015s
-user    0m0.002s
-sys 0m0.234s
-```
-
-4 KiB (8 x 512-byte sectors)
-```bash
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  285.36MB/s    0:00:17 (xfr#1, to-chk=0/1)
-
-real    0m17.664s
-user    0m2.400s
-sys 0m7.169s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m2.061s
-user    0m0.000s
-sys 0m0.245s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  352.37MB/s    0:00:14 (xfr#1, to-chk=0/1)
-
-real    0m14.322s
-user    0m2.257s
-sys 0m6.031s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m1.842s
-user    0m0.004s
-sys 0m0.245s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  309.35MB/s    0:00:16 (xfr#1, to-chk=0/1)
-
-real    0m16.296s
-user    0m2.526s
-sys 0m6.033s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m1.981s
-user    0m0.000s
-sys 0m0.271s
-```
-
-8 KiB
-```bash
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  333.19MB/s    0:00:15 (xfr#1, to-chk=0/1)
-
-real    0m15.138s
-user    0m2.440s
-sys 0m6.730s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m1.301s
-user    0m0.000s
-sys 0m0.315s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  320.87MB/s    0:00:15 (xfr#1, to-chk=0/1)
-
-real    0m15.711s
-user    0m2.786s
-sys 0m7.296s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m1.111s
-user    0m0.001s
-sys 0m0.303s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  360.62MB/s    0:00:13 (xfr#1, to-chk=0/1)
-
-real    0m13.987s
-user    0m2.391s
-sys 0m6.371s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m1.175s
-user    0m0.000s
-sys 0m0.278s
+I ran some speed tests by using `rsync` 
 
 ```
+----------------------------------------------------
+0.5 KiB (512 byte) clusters (1 x 512 byte sector)
+----------------------------------------------------
+exFAT creation time (sec):  10
 
+Write time (sec):   57.566  51.939
+Write speed (MB/s): 87.36   96.84
+Erase time (sec):   unk     15.015
 
+----------------------------------------------------
+4 KiB clusters (8 x 512 byte sectors)
+----------------------------------------------------
+exFAT creation time (sec):  1.340
 
+Write time (sec):   17.664  14.322  16.296
+Write speed (MB/s): 285.36  352.37  309.35
+Erase time (sec):   2.061   1.842   1.981
 
+----------------------------------------------------
+8 KiB clusters (16 x 512 byte sectors)
+----------------------------------------------------
+exFAT creation time (sec):  0.698
 
+Write time (sec):   15.138  15.711  13.987
+Write speed (MB/s): 333.19  320.87  360.62
+Erase time (sec):   1.301   1.111   1.175
 
-32 KiB (64 x 512-byte sectors)
-```bash
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  360.59MB/s    0:00:13 (xfr#1, to-chk=0/1)
+----------------------------------------------------
+32 KiB clusters (64 x 512 byte sectors)
+----------------------------------------------------
+exFAT creation time (sec):  0.230
 
-real    0m13.989s
-user    0m2.306s
-sys 0m6.831s
-$ echo 1 > test.txt^C
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
+Write time (sec):   13.989  15.317  13.017
+Write speed (MB/s): 360.59  329.26  387.60
+Erase time (sec):   0.583   0.495   0.546
 
-real    0m0.583s
-user    0m0.004s
-sys 0m0.350s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  329.26MB/s    0:00:15 (xfr#1, to-chk=0/1)
+----------------------------------------------------
+128 KiB clusters (256 x 512 byte sectors)
+----------------------------------------------------
+exFAT creation time (sec):  0.075
 
-real    0m15.317s
-user    0m2.714s
-sys 0m7.590s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
+Write time (sec):   12.873  13.866  12.202
+Write speed (MB/s): 392.01  363.88  413.63
+Erase time (sec):   0.396   0.343   0.380
 
-real    0m0.495s
-user    0m0.001s
-sys 0m0.255s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  387.60MB/s    0:00:12 (xfr#1, to-chk=0/1)
+----------------------------------------------------
+32 MiB clusters (65536 x 512 byte sectors)
+----------------------------------------------------
+exFAT creation time (sec):  0.120
 
-real    0m13.017s
-user    0m2.481s
-sys 0m6.543s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m0.546s
-user    0m0.001s
-sys 0m0.269s
-
+Write time (sec):   11.544  12.334  11.554
+Write speed (MB/s): 437.09  409.12  436.98
+Erase time (sec):   0.315   0.360   0.336
 ```
-
-
-128 KiB (256 x 512-byte sectors)
-```bash
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  392.01MB/s    0:00:12 (xfr#1, to-chk=0/1)
-
-real    0m12.873s
-user    0m2.614s
-sys 0m6.879s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m0.396s
-user    0m0.000s
-sys 0m0.275s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  363.88MB/s    0:00:13 (xfr#1, to-chk=0/1)
-
-real    0m13.866s
-user    0m2.730s
-sys 0m7.436s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m0.343s
-user    0m0.000s
-sys 0m0.252s
-$ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
-  5,268,953,088 100%  413.63MB/s    0:00:12 (xfr#1, to-chk=0/1)
-
-real    0m12.202s
-user    0m2.416s
-sys 0m6.069s
-$ time rm /media/gabriel/my_exFAT/Win10_2004_English_x64.iso 
-
-real    0m0.380s
-user    0m0.001s
-sys 0m0.279s
-
-```
-
 
 
 32 MiB (65536 x 512-byte sectors)
 ```bash
+ time sudo mkexfatfs -n "my_exFAT" -s 65536 /dev/sda1 # 32 MiB clusters (0.075 sec) 
+mkexfatfs 1.3.0
+Creating... done.
+Flushing... done.
+File system created successfully.
+
+real    0m0.129s
+user    0m0.014s
+sys 0m0.048s
+
+
+
+
 $ time rsync --info=progress2 /home/gabriel/Downloads/OSs/Windows/Win10_2004_English_x64.iso /media/gabriel/my_exFAT/
   5,268,953,088 100%  437.09MB/s    0:00:11 (xfr#1, to-chk=0/1)
 
@@ -294,3 +185,4 @@ sys 0m0.328s
 
 
   [1]: https://i.stack.imgur.com/al2Xg.jpg
+  [2]: https://i.stack.imgur.com/8hsqy.jpg
