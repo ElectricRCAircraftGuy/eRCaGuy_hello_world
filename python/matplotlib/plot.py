@@ -48,6 +48,8 @@ plt.plot(range(len(labels)), values, 'bo') # Plotting data
 plt.xticks(range(len(labels)), labels) # Redefining x-axis labels
 
 for i, v in enumerate(values):
+    # GS note: using `plt.text()` here works just fine too!
+    # plt.text(i, v+25, "%d" %v, ha="center")
     ax.text(i, v+25, "%d" %v, ha="center")
 plt.ylim(-10, 595)
 plt.show()
