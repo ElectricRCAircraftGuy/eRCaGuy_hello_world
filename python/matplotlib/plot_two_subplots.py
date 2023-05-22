@@ -34,6 +34,8 @@ References:
 1. This code below is modified from @Sheldore's answer here:
    https://stackoverflow.com/a/52244724/4561887
 1. ...and from my own answer here: https://stackoverflow.com/a/76309590/4561887
+1. What does the argument mean in fig.add_subplot(111)? -
+   https://stackoverflow.com/q/3584805/4561887
 
 """
 
@@ -56,7 +58,17 @@ y_speed = [
 # -----------
 # Figure 1
 # -----------
-f1 = plt.figure()
+
+# Specify the figure width and height in inches: (width, height)!
+# See:
+# 1. https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html
+# 2. https://stackoverflow.com/a/28575650/4561887
+f1 = plt.figure(figsize=(14, 4.8)) # default is `(6.4, 4.8)` inches
+
+# -----
+# subplot 1 on figure 1
+# -----
+f1.add_subplot(1, 2, 1)  # 1 rows, 2 columns, plot 1
 plt.plot(x_cluster_size, y_speed, 'b-o', label='When writing a 5.3 GB file')
 plt.legend(loc='lower right')
 plt.xscale('log', base=2)
@@ -75,10 +87,10 @@ for i, x in enumerate(x_cluster_size):
     else:
         plt.text(x, y-20, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="left")
 
-# -----------
-# Figure 2
-# -----------
-f2 = plt.figure()
+# -----
+# subplot 2 on figure 1
+# -----
+f1.add_subplot(1, 2, 2)  # 1 rows, 2 columns, plot 2
 values = [7, 57, 121, 192, 123, 240, 546]
 labels = ['1950s', '1960s', '1970s', '1980s', '1990s', '2000s', '2010s']
 
@@ -102,6 +114,8 @@ plt.show()
 """
 SAMPLE OUTPUT:
 
-Two separate figures, in two separate GUI windows, are displayed.
+Two side-by-side subplots, within 1 figure inside 1 GUI window, are displayed.
+- Since we set the custom window size when we called `plt.figure()`, the window
+  will be stretched to be wider than a normal plot window!
 
 """

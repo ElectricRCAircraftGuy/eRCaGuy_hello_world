@@ -11,7 +11,7 @@ Do some plotting; learn to use matplotlib subplots a bit.
 - This code below is modified from @Sheldore's answer here:
   https://stackoverflow.com/a/52244724/4561887
 
-Status: (status)
+Status: done and works!
 
 keywords: (keywords)
 
@@ -60,7 +60,6 @@ plt.show()
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/python$ ./hello_world.py
-    Hello world!
+A single figure is displayed in its own GUI window.
 
 """
