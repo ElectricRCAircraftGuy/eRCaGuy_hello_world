@@ -31,7 +31,8 @@ python3 plot_hello_world_set_all_titles_axis_labels_etc.py
 ```
 
 References:
-1. myself; and API documenttation at https://matplotlib.org/. Ex:
+1. ***** My answer with this code!: https://stackoverflow.com/a/76311048/4561887
+1. API documenttation at https://matplotlib.org/. Ex:
    https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots_adjust.html
 
 """
