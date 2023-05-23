@@ -20,30 +20,15 @@ sudo mkexfatfs -n "my_exFAT" -s 8 /dev/sda1  # `-s 8` -> 4 KiB cluster size!
 1. https://gabrielstaples.com/exfat-clusters/
 1. https://unix.stackexchange.com/a/746786/114401
 
+HERE'S MY FINAL ANSWER WITH THIS CONTENT: https://unix.stackexchange.com/a/746801/114401
 -->
 
-## How to format an exFAT filesystem on Linux with the desired cluster size to tune your selection along the tradeoff curve between speed and disk usage
+### How to format an exFAT filesystem on Linux with the desired cluster size to tune your selection along the tradeoff curve between speed and disk usage
 
-Setting the cluster size is really important, it turns out, when formatting exFAT, as it significantly affects the speed and disk usage (see the plots I made, below). 
 
-Read more here:
-1. My answer: [Is it best to reformat the hard drive to exFAT using 512kb chunk, or smaller or bigger chunks?](https://superuser.com/a/1785239/425838)
-1. My website article: https://gabrielstaples.com/exfat-clusters/
+### Quick summary
 
-If you use the Gnome Disks utility on Linux to format the exFAT drive, it chooses the cluster size for you, probably according to Microsoft's default values here: [Support.Microsoft.com: Default cluster size for NTFS, FAT, and exFAT](https://support.microsoft.com/en-us/topic/default-cluster-size-for-ntfs-fat-and-exfat-9772e6f1-e31a-00d7-e18f-73169155af95):
-
-> #### Default cluster sizes for exFAT
->
-> The following table describes the default cluster sizes for exFAT.
-> 
-> | Volume size | Windows 7, Windows Server 2008 R2, Windows Server 2008, <br>Windows Vista, Windows Server 2003, Windows XP |
-> | ----------- | ------- |
-> | 7 MB–256 MB | 4 KB |
-> | 256 MB–32 GB | 32 KB |
-> | 32 GB–256 TB | 128 KB |
-> | \> 256 TB | Not supported |
-
-So, here's **how to manually set your own cluster size**. I recommend a cluster size of **8 KiB**. The below information is a summary from my website here: https://gabrielstaples.com/exfat-clusters/#formatting-an-exfat-drive-on-linux-ubuntu:
+Here's how to manually set your own cluster size. I recommend a cluster size of **8 KiB**. The below information is a summary from my website here: https://gabrielstaples.com/exfat-clusters/#formatting-an-exfat-drive-on-linux-ubuntu:
 
 1. First, use gparted to prepare a partition. Format it to anything initially--ex: ext4. We'll change that later from the command line.
 1. Install dependencies. See: https://itsfoss.com/format-exfat-linux/
@@ -56,16 +41,36 @@ So, here's **how to manually set your own cluster size**. I recommend a cluster 
     ```bash
     sudo umount /media/your_name/your_disk
     ```
-1. Format your partition as exFAT, setting the cluster size to 8 KiB, assuming your sector size is 512 bytes:
+1. Format your partition as exFAT, setting the cluster size to 8 KiB. This assuming your sector size is 512 bytes, as `-s 16` says to use a cluster size of 16 sectors, which would be 16 sectors x 512 bytes/sector = 8192 bytes in a cluster. Note that you can change the `-n "name"` part to whatever you want your volume name to be, up to 15 chars (see `man mkexfatfs`):
     ```bash
-    time sudo mkexfatfs -n "my_exFAT" -s 16 /dev/sda999    #   8 KiB clusters (0.698 sec) <=== WHAT I USE AND RECOMMEND: 8 KiB clusters
+    # 8 KiB clusters (takes 0.698 sec) <=== WHAT I USE AND RECOMMEND
+    time sudo mkexfatfs -n "my_exFAT" -s 16 /dev/sda999    
     ```
 
     This just takes a few seconds.
 1. Done!
 
 
-If you'd like to use other cluster sizes, here are some more examples. YOu can use any power of 2 after `-s`, for a max cluster size of 32 MiB:
+### Details
+
+Setting the cluster size is really important, it turns out, when formatting exFAT, as it significantly affects the speed and disk usage (see the plots I made, below). 
+
+If you use the Gnome Disks utility on Linux to format the exFAT drive, it chooses the cluster size for you, probably according to Microsoft's default values as shown in the table just below: [Support.Microsoft.com: Default cluster size for NTFS, FAT, and exFAT](https://support.microsoft.com/en-us/topic/default-cluster-size-for-ntfs-fat-and-exfat-9772e6f1-e31a-00d7-e18f-73169155af95):
+
+> #### Default cluster sizes for exFAT
+>
+> The following table describes the default cluster sizes for exFAT.
+> 
+> | Volume size | Windows 7, Windows Server 2008 R2, Windows Server 2008, <br>Windows Vista, Windows Server 2003, Windows XP |
+> | ----------- | ------- |
+> | 7 MB–256 MB | 4 KB |
+> | 256 MB–32 GB | 32 KB |
+> | 32 GB–256 TB | 128 KB |
+> | \> 256 TB | Not supported |
+
+When I used Gnome Disks to format my exFAT drive the first time, I realized later that it had used a cluster size of 128 KiB on my 500 GB SSD. This corresponds to the default values recommended by Microsoft in the table above.
+
+If you'd like to use other cluster sizes, here are some more examples. YOu can use any power of 2 (to specify the number of sectors per cluster) after `-s`. The maximum cluster size allowed is 32 MiB, or 65536 512-byte sectors:
 
 ```bash
 # Set the name after `-n` to whatever you want too. `-s` specifies how many
@@ -83,12 +88,14 @@ time sudo mkexfatfs -n "my_exFAT" -s 256 /dev/sda999   # 128 KiB clusters (0.075
 time sudo mkexfatfs -n "my_exFAT" -s 65536 /dev/sda999 # 32 MiB clusters (0.120 sec) [absolute max cluster size allowed!]
 ```
 
-For details and plots on how cluster size affects speed and disk usage, see my links above.
-
 Here are the tradeoff curves of cluster size vs speed and disk usage, as I first presented on my website here: https://gabrielstaples.com/exfat-clusters/
 
 [![enter image description here][1]][1]
 
+
+
+### See also
+1. My answer: [Is it best to reformat the hard drive to exFAT using 512kb chunk, or smaller or bigger chunks?](https://superuser.com/a/1785239/425838)
 
 
 
