@@ -45,9 +45,9 @@ from statistics import mean
 def gb_to_tb(gb):
     return gb/1024
 
-# -----------
+# ==================================================================================================
 # Figure 1
-# -----------
+# ==================================================================================================
 
 # Specify the figure width and height in inches: (width, height)!
 # See:
@@ -55,9 +55,9 @@ def gb_to_tb(gb):
 # 2. https://stackoverflow.com/a/28575650/4561887
 f1 = plt.figure(figsize=(14, 9.6)) # default is `(6.4, 4.8)` inches
 
-# -----
+# --------------------------------------------------
 # subplot: top-left
-# -----
+# --------------------------------------------------
 
 f1.add_subplot(2, 2, 1)  # 2 rows, 2 columns, plot 1
 
@@ -91,10 +91,10 @@ for i, x in enumerate(x_cluster_size):
     else:
         plt.text(x, y-20, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="left")
 
-# -----
+# --------------------------------------------------
 # subplot: top-right
 # Wasted space as a function of exFAT cluster size
-# -----
+# --------------------------------------------------
 axes2 = f1.add_subplot(2, 2, 2)
 
 gb_0_5 = 74  # GB used for a cluster size of 0.5 KiB (measured)
@@ -141,10 +141,10 @@ for i, x in enumerate(x_cluster_size):
     else:
         plt.text(x, y+20, f"({x} KiB, {y:.0f} GB)", horizontalalignment="left", rotation=50)
 
-# -----
+# --------------------------------------------------
 # subplot: bottom-left
 # Same as just above, but withOUT the last point, to zoom in
-# -----
+# --------------------------------------------------
 
 f1.add_subplot(2, 2, 3)
 
@@ -176,7 +176,7 @@ plt.title("Wasted space: Size on disk as a function of exFAT cluster size\n" +
           "(for a filesystem of ~74 GB of data) [Zoomed in]")
 
 # display (x, y) values next to each point
-for i, x in enumerate(x_cluster_size):
+for i, x in enumerate(x_cluster_size[:-1]):
     y = y_size_on_disk_gb[i]
     if i == len(x_cluster_size) - 2:
         plt.text(x+x*.2, y-10, f"({x} KiB, {y:.0f} GB)", horizontalalignment="center", rotation=0)
@@ -185,10 +185,10 @@ for i, x in enumerate(x_cluster_size):
     else:
         plt.text(x, y+3, f"({x} KiB, {y:.0f} GB)", horizontalalignment="left", rotation=50)
 
-# -----
+# --------------------------------------------------
 # subplot: bottom-right
 # Same as top-right plot, but in % increase instead
-# -----
+# --------------------------------------------------
 
 axes = f1.add_subplot(2, 2, 4)
 
@@ -199,7 +199,7 @@ if y_size_increase_pct[0] == 0:
 # print(y_size_increase_pct)
 plt.plot(x_cluster_size, y_size_increase_pct, 'b-o',
     label='For a representative MacOS system with\n~1M files and 74 GB of data')
-plt.legend(loc='upper left')
+plt.legend(loc=(0.015, 0.75)) # https://stackoverflow.com/a/61574999/4561887
 plt.xscale('log', base=2)
 plt.yscale('log', base=10)
 plt.ylabel('Percent "size on disk" growth\nover actual disk size (%)')
@@ -212,18 +212,19 @@ axes.yaxis.get_major_formatter().set_scientific(False)
 axes.yaxis.get_major_formatter().set_useOffset(False)
 
 # display (x, y) values next to each point
-for i, x in enumerate(x_cluster_size[:-1]):
+for i, x in enumerate(x_cluster_size):
     y = y_size_increase_pct[i]
     if i == len(x_cluster_size) - 1:
         plt.text(x-x*.2, y-y*.2, f"({x} KiB, {y:.2f}%)", horizontalalignment="right", rotation=0)
     else:
         plt.text(x+x*.4, y-y*.2, f"({x} KiB, {y:.2f}%)", horizontalalignment="left", rotation=0)
 
-# -----------
+# ================================================
 # Show all figures
-# -----------
+# ================================================
 
 plt.subplots_adjust(hspace=0.4)
+plt.subplots_adjust(wspace=0.3)
 plt.show()
 
 
