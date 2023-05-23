@@ -227,7 +227,8 @@ for i, x in enumerate(x_cluster_size):
 # https://matplotlib.org/3.1.1/gallery/subplots_axes_and_figures/figure_title.html
 f1.suptitle("exFAT speed & disk usage vs cluster size", fontsize=18)
 # Figure footer
-f1.text(0.5, 0.015, "Source: Gabriel Staples, 22 May 2023, gabrielstaples.com",
+f1.text(0.5, 0.015,
+        "Source: Gabriel Staples, 22 May 2023, https://gabrielstaples.com/exfat-clusters/",
         horizontalalignment="center")
 
 plt.subplots_adjust(hspace=0.4)
