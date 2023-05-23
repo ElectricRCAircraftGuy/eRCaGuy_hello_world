@@ -11,7 +11,7 @@ Demonstrate setting a supertitle with `fig.suptitle()`, and a subtitle or footer
 title with `fig.text()`!
 Update: while I'm at it, just make this the main "hello world" of how to plot!
 
-Status: wip
+Status: done and works!
 
 keywords: (keywords)
 
@@ -20,14 +20,14 @@ installation instructions to install the latest version from GitHub.
 For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
 https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
-pylint hello_world.py
+pylint plot_hello_world_set_all_titles_axis_labels_etc.py
 ```
 
 Run command:
 ```bash
-./hello_world.py
+./plot_hello_world_set_all_titles_axis_labels_etc.py
 # OR
-python3 hello_world.py
+python3 plot_hello_world_set_all_titles_axis_labels_etc.py
 ```
 
 References:
@@ -113,6 +113,7 @@ plt.show()
 """
 SAMPLE OUTPUT:
 
-A single figure is displayed in its own GUI window.
+A single figure is displayed in its own GUI window, with a ton of useful titles
+and info.
 
 """
