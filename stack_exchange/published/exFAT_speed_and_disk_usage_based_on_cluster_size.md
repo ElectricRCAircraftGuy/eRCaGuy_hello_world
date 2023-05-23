@@ -6,6 +6,17 @@ My answer: https://superuser.com/a/1785239/425838
 -->
 
 
+# UPDATE: THIS DOCUMENT ENDED UP BECOMING THESE 2 THINGS:
+1. https://gabrielstaples.com/exfat-clusters/
+1. https://unix.stackexchange.com/a/746786/114401
+
+
+
+------------
+----
+----
+
+
 ## exFAT speed and disk usage based on cluster size
 
 I just spent the day testing and plotting, and it turns out that exFAT cluster size has a *significant* (I mean: huuuuge!) effect on both _speed_ and _disk usage_ for a given application. 
