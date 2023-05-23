@@ -33,6 +33,8 @@ python3 plot_best_fit_polynomial.py
 ```
 
 References:
+1. ***** Update: I've posted some of this code online in my answer here:
+   https://stackoverflow.com/a/76311162/4561887
 1. *****+ See the example at the bottom of this page, which is where I
    originally modified this code from:
    https://numpy.org/doc/stable/reference/routines.polynomials.classes.html
