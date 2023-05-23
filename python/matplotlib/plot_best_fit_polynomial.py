@@ -90,18 +90,18 @@ y = np.sin(x) + np.random.normal(scale=.1, size=x.shape)
 #    https://numpy.org/doc/stable/reference/generated/numpy.polynomial.chebyshev.Chebyshev.html
 #
 # Obtain a 5th degree (order) least-squares fit curve to the x, y data
-cheby = Chebyshev.fit(x, y, deg=5)
+cheby_series = Chebyshev.fit(x, y, deg=5)
 # Lines-space: get evenly-spaced points to plot a line; see:
 # https://numpy.org/doc/stable/reference/generated/numpy.polynomial.chebyshev.Chebyshev.linspace.html
-xx_cheby, yy_cheby = cheby.linspace()
+xx_cheby, yy_cheby = cheby_series.linspace()
 
-print(f"cheby.domain = \n{cheby.domain}")
-print(f"cheby.window = \n{cheby.window}")
+print(f"cheby_series.domain = \n{cheby_series.domain}")
+print(f"cheby_series.window = \n{cheby_series.window}")
 
 # let's do it for a Polynomial series too; see:
 # https://numpy.org/doc/stable/reference/generated/numpy.polynomial.polynomial.Polynomial.html
-poly = Polynomial.fit(x, y, deg=5)
-xx_poly, yy_poly = poly.linspace()
+poly_series = Polynomial.fit(x, y, deg=5)
+xx_poly, yy_poly = poly_series.linspace()
 
 # plot
 
@@ -124,5 +124,7 @@ SAMPLE OUTPUT:
 A single figure is displayed in its own GUI window. It consists of some dosts scattered around the
 shape of a sine wave, with a thick Chebyshev best fit curve and a thin black Polynomial best fit
 curve on top of that, both in the shape of a sine wave.
+
+Also, the domain and window for the Chebyshev series only are printed to stdout.
 
 """
