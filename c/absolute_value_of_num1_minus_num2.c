@@ -34,7 +34,8 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 absolute_value_of_num1_minus_num2.c -
 ```
 
 References:
-1.
+1. ***** See my answer with this code here: How to safely and efficiently find
+   `abs((int)num1 - (int)num2)` - https://stackoverflow.com/a/76420269/4561887
 1.
 
 */
