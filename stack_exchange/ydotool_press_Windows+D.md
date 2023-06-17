@@ -1,6 +1,6 @@
 <!--
 GS
-4 June 2023
+4~15 June 2023
 
 https://askubuntu.com/q/1470593/327339
 https://askubuntu.com/questions/1470593/how-can-i-write-a-program-to-press-keys-such-as-windows-d-in-wayland-repla?noredirect=1#comment2577739_1470593
@@ -8,15 +8,25 @@ https://askubuntu.com/questions/1470593/how-can-i-write-a-program-to-press-keys-
 https://github.com/ReimuNotMoe/ydotool
 https://askubuntu.com/a/1299008/327339
 https://askubuntu.com/questions/903532/how-can-i-add-show-desktop-to-the-gnome-dash-or-ubuntu-dock/1109490#1109490
+
+Update: let's make this a website article first instead! 
+I'll put it here: https://gabrielstaples.com/ydotool-tutorial/
 -->
 
 
-## `ydotool` works well in both X11 _and_ Wayland to press any keys, including <kbd>Windows</kbd> + <kbd>D</kbd>
+# `ydotool` tutorial
 
 
-## 1. Build and install it:
+## `ydotool` works well in both the X11 _and_ Wayland window managers to press any keys, including <kbd>Windows</kbd> + <kbd>D</kbd>
 
-_Tested on Ubuntu 22.04.2 with both the X11 and Wayland window managers (for how to change between the two, see my notes and screenshot [in my answer here](https://askubuntu.com/a/1109490/327339))._
+Here is a full tutorial.
+
+Note: `ydotool` is a universal replacement of `xdotool`, which is a tool to move the mouse and do keypresses in the X11 window manager. The `ydotool` program was created because `xdotool` doesn't work in Wayland, which is the new window manager that Ubuntu is slowly moving towards, even though Wayland currently [is still very buggy should be turned _off_ in most cases](https://askubuntu.com/a/1470563/327339).
+
+_Tested on Ubuntu 22.04.2 with both the X11 and Wayland window managers (for how to change between the two, see my notes and screenshots [in my answer here](https://askubuntu.com/a/1470563/327339))._
+
+
+## 1. Build and install `ydotool`:
 
 First, build and install it:
 ```bash
@@ -56,6 +66,26 @@ ydotoold --version
 
 ## 2. Now, use it: have `ydotool` press <kbd>Windows</kbd> + <kbd>D</kbd>
 
+#### Quick summary:
+```bash
+# start the background daemon (`sudo -b` runs it in the background; see
+# `sudo -h`)
+sudo -b ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
+
+# Have ydotool press Windows + D once to hide all windows, then make it wait 2
+# seconds, then have it press Windows + D again to show all windows:
+YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0; \
+    sleep 2; \
+    YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
+
+# (Optional) see the `ydotoold` background running processes
+ps auxf | grep ydotoold
+# (Optional) kill the `ydotoold` background running processes
+sudo pkill ydotoold
+```
+
+#### Details:
+
 ```bash
 # in one terminal, start the required background daemon process as root, but
 # setting its socket file to be accessible by your main user withOUT `sudo`
@@ -73,7 +103,40 @@ That's it!
 
 Manually press <kbd>Windows</kbd> + <kbd>D</kbd> now to show all windows again so you can see your terminal. 
 
-Even better: this time, let's have it press the keys to **hide all windows, wait 2 seconds, and then** press the keys to **show all windows again:**
+I'll talk about what the `key 125:1 32:1 32:0 125:0` part means farther below.
+
+Even better, you can just run the daemon in the background by using `sudo -b` instead of `sudo`. See `sudo -h` for details. Therefore, this also works, running both commands in the same terminal:
+```bash
+# start the daemon in the background
+sudo -b ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
+# Press "Enter" a couple times to clear the output from the command above, and
+# then, in the same terminal, run this command
+YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
+```
+
+You can leave the background `ydotoold` background daemon running forever, but if you'd like to kill it, here's how:
+1. Kill `ydotoold`:
+    ```bash
+    sudo pkill ydotoold
+    ```
+1. (Optional) see if `ydotoold` is running
+    See https://unix.stackexchange.com/a/453654/114401
+    ```bash
+    ps auxf | grep ydotoold
+    ```
+
+    Example run and output *before* killing `ydotoold`. As you can see, my single call to `ydotoold` above actually spawned *3* `ydotoold` processes, because the one I called spawned a sub process, which spawned a sub sub process.
+    ```bash
+    $ ps auxf | grep ydotoold
+    root     1772293  0.0  0.0  23004  5952 pts/4    S    22:00   0:00  |   |   \_ sudo ydotoold --socket-path=/home/gabriel/.ydotool_socket --socket-own=1000:1000
+    root     1772304  0.0  0.0  23004   944 pts/6    Ss+  22:00   0:00  |   |   |   \_ sudo ydotoold --socket-path=/home/gabriel/.ydotool_socket --socket-own=1000:1000
+    root     1772305  0.0  0.0   2776   956 pts/6    S    22:00   0:00  |   |   |       \_ ydotoold --socket-path=/home/gabriel/.ydotool_socket --socket-own=1000:1000
+    gabriel+ 1792351  0.0  0.0  17864  2476 pts/4    S+   22:09   0:00  |   |   \_ grep --color=auto ydotoold
+    ```
+
+Better key-press example still: this time, let's have `ydotool` **hide all windows, wait 2 seconds, and then show all windows.** 
+
+It will press <kbd>Windows</kbd> + <kbd>D</kbd> to hide all windows, then I'll have it wait 2 seconds and then press <kbd>Windows</kbd> + <kbd>D</kbd> again to show all windows:
 ```bash
 # Note: copy and paste all 3 lines at once:
 YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0; \
@@ -86,10 +149,14 @@ Voila! I'm so happy I got this working! I now have a viable means of getting my 
 
 ## What do keycodes `125:1 32:1 32:0 125:0` mean?
 
+The `YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h` help menu 
+
+With your `ydotoold` daemon running, you can access additional sub-help menus, like this:
 ```bash
 ######## do bug report: 1) help menu only shows if you properly connect to the server, 2) what does the stuff below mean? about xwayland server?
 YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h
 ```
+125 means... 1 means... release in reverse order...
 
 
 ## Warnings in Wayland
@@ -133,6 +200,17 @@ unable to find device pointer:ydotoold virtual device
 >        In most instances, using xinput with an Xwayland device  is  indicative
 >        of  a  bug  in  a shell script and xinput will print a warning. Use the
 >        Wayland Compositor's native device configuration methods instead.
+
+In X11, I don't get the warning. Here is the output when I run the daemon:
+```bash
+$ sudo ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
+[sudo] password for gabriel: 
+Socket path: /home/gabriel/.ydotool_socket
+Removing old stale socket
+Socket permission: 0600
+Socket ownership: UID=1000, GID=1000
+READY
+```
 
 
 ## 
@@ -183,3 +261,4 @@ YDOTOOL_SOCKET="/tmp/.ydotool_socket" ./ydotool key 125:1 32:1 32:0 125:0
 1. [Ask Ubuntu Equivalent to xdotool for Wayland](https://askubuntu.com/a/1299008/327339) - mentions `ydotool`
 1. [my answer] [Ask Ubuntu: How can I add "Show desktop" to the GNOME dash or Ubuntu Dock?](https://askubuntu.com/a/1109490/327339)
 1. [my answer] [Get the User ID (UID) and Group ID (GID) for the running user](https://askubuntu.com/a/1472531/327339)
+1. Where I learned about `sudo -b`: [Running a program in the background as sudo](https://stackoverflow.com/a/67472605/4561887)
