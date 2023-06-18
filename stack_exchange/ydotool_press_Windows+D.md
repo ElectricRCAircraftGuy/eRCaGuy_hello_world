@@ -14,10 +14,10 @@ I'll put it here: https://gabrielstaples.com/ydotool-tutorial/
 -->
 
 
-# `ydotool` tutorial
+# Tutorial: Getting started with `ydotool` to automate key presses (or mouse movements) in Linux
 
 
-## `ydotool` works well in both the X11 _and_ Wayland window managers to press any keys, including <kbd>Windows</kbd> + <kbd>D</kbd>
+## `ydotool` works well in both the X11 _and_ Wayland window managers to press any keys, including <kbd>Windows</kbd> + <kbd>D</kbd>, for example
 
 Here is a full tutorial.
 
@@ -27,6 +27,8 @@ _Tested on Ubuntu 22.04.2 with both the X11 and Wayland window managers (for how
 
 
 ## 1. Build and install `ydotool`:
+
+See: <https://github.com/ReimuNotMoe/ydotool#build>. 
 
 First, build and install it:
 ```bash
@@ -68,36 +70,65 @@ ydotoold --version
 
 #### Quick summary:
 ```bash
-# start the background daemon (`sudo -b` runs it in the background; see
-# `sudo -h`)
+# 1. start the `ydotoold` background daemon (`sudo -b` runs it in the
+# background; see `sudo -h`).
+# - It takes a couple seconds to fully start up and print "READY". Once it does
+#   that, hit Enter a couple times to clear out the command line.
 sudo -b ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
 
-# Have ydotool press Windows + D once to hide all windows, then make it wait 2
-# seconds, then have it press Windows + D again to show all windows:
+# 2. Use `ydotool`
+# - Have ydotool press Windows + D once to hide all windows, then make it wait 2
+#   seconds, then have it press Windows + D again to show all windows:
 YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0; \
     sleep 2; \
     YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
 
-# (Optional) see the `ydotoold` background running processes
+# 3. Additional commands you may need: to show, kill, and help
+
+# See the `ydotoold` background running processes
 ps auxf | grep ydotoold
-# (Optional) kill the `ydotoold` background running processes
+
+# Kill the `ydotoold` background running processes
 sudo pkill ydotoold
+
+# View the `ydotool` main help menu, including a list of all sub-commands.
+ydotool -h
+
+# View the `ydotool` sub-command help menus. 
+# - Bug ( https://github.com/ReimuNotMoe/ydotool/issues/206 ): the daemon *must*
+#   be running first to see these help menus!
+YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h
+YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool click -h
+YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool mousemove -h
+# etc. 
+
+# Open the Linux C header file containing all available key codes that `ydotool`
+# can press
+gedit /usr/include/linux/input-event-codes.h
 ```
 
 #### Details:
 
 ```bash
-# in one terminal, start the required background daemon process as root, but
-# setting its socket file to be accessible by your main user withOUT `sudo`
-sudo ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
+# In one terminal, start the required background daemon process as root, but
+# setting its socket file to be accessible by your main user withOUT `sudo`. 
+# - Allowing our user to access this daemon withOUT running it as `root` is
+#   accomplished by setting the owner of the socket file to our own user via
+#   the `--socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"` 
+#   options.
+# - It takes a couple seconds to fully start up and print "READY". Once it does
+#   that, hit Enter a couple times to clear out the command line.
+sudo -b ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
 
-# In another terminal, send a signal to this running background daemon via the
-# open socket inter-process-communication (IPC) pseudo-file. Here, we send the
-# Windows + D shortcut key:
+# In the same terminal, or another terminal, send a signal to this running
+# background daemon via the open socket inter-process-communication
+# (IPC) pseudo-file. Here, we send the Windows + D shortcut key:
 #
 # Windows + D press and release: window toggle: this hides all windows.
 YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
 ```
+
+The `125:1 32:1 32:0 125:0` key codes tell the program to, in this order: "press the Windows key, press the D key, release the D key, release the Windows key".
 
 That's it! 
 
@@ -105,22 +136,14 @@ Manually press <kbd>Windows</kbd> + <kbd>D</kbd> now to show all windows again s
 
 I'll talk about what the `key 125:1 32:1 32:0 125:0` part means farther below.
 
-Even better, you can just run the daemon in the background by using `sudo -b` instead of `sudo`. See `sudo -h` for details. Therefore, this also works, running both commands in the same terminal:
-```bash
-# start the daemon in the background
-sudo -b ydotoold --socket-path="$HOME/.ydotool_socket" --socket-own="$(id -u):$(id -g)"
-# Press "Enter" a couple times to clear the output from the command above, and
-# then, in the same terminal, run this command
-YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
-```
+Note that `sudo -b` runs this daemon as a background process. If you leave off `-b`, then you'll have to use two separate terminals, as the daemon will take up the first terminal. 
 
 You can leave the background `ydotoold` background daemon running forever, but if you'd like to kill it, here's how:
 1. Kill `ydotoold`:
     ```bash
     sudo pkill ydotoold
     ```
-1. (Optional) see if `ydotoold` is running
-    See https://unix.stackexchange.com/a/453654/114401
+1. (Optional) see if `ydotoold` is running:
     ```bash
     ps auxf | grep ydotoold
     ```
@@ -133,30 +156,137 @@ You can leave the background `ydotoold` background daemon running forever, but i
     root     1772305  0.0  0.0   2776   956 pts/6    S    22:00   0:00  |   |   |       \_ ydotoold --socket-path=/home/gabriel/.ydotool_socket --socket-own=1000:1000
     gabriel+ 1792351  0.0  0.0  17864  2476 pts/4    S+   22:09   0:00  |   |   \_ grep --color=auto ydotoold
     ```
+1. Here is what the main `ydotool` help menu looks like. It shows the various sub-commands available:
+    ```bash
+    $ ydotool -h
+    Usage: ydotool <cmd> <args>
+    Available commands:
+      click
+      mousemove
+      type
+      key
+      debug
+      bakers
+    Use environment variable YDOTOOL_SOCKET to specify daemon socket.
+    ```
+1. Here are some of the sub-command menus. Note that due to [this bug](https://github.com/ReimuNotMoe/ydotool/issues/206), you _must_ have the `ydotoold` daemon running first in order for the sub-command help menus to show up:
+    1. `key`: `YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h`
+        ```bash
+        $ YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h
+        Usage: key [OPTION]... [KEYCODES]...
+        Emit key events.
 
-Better key-press example still: this time, let's have `ydotool` **hide all windows, wait 2 seconds, and then show all windows.** 
+        Options:
+          -d, --key-delay=N          Delay N milliseconds between key events
+          -h, --help                 Display this help and exit
 
-It will press <kbd>Windows</kbd> + <kbd>D</kbd> to hide all windows, then I'll have it wait 2 seconds and then press <kbd>Windows</kbd> + <kbd>D</kbd> again to show all windows:
-```bash
-# Note: copy and paste all 3 lines at once:
-YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0; \
-    sleep 2; \
-    YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
-```
+        Since there's no way to know how many keyboard layouts are there in the world,
+        we're using raw keycodes now.
+
+        Syntax: <keycode>:<pressed>
+        e.g. 28:1 28:0 means pressing on the Enter button on a standard US keyboard.
+             (where :1 for pressed means the key is down and then :0 means the key is released)     
+             42:1 38:1 38:0 24:1 24:0 38:1 38:0 42:0 - "LOL"
+
+        Non-interpretable values, such as 0, aaa, l0l, will only cause a delay.
+
+        See `/usr/include/linux/input-event-codes.h' for available key codes (KEY_*).
+        ```
+    1. `click`: `YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool click -h`
+        ```bash
+        $ YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool click -h
+        Usage: click [OPTION]... [BUTTONS]...
+        Click mouse buttons.
+
+        Options:
+          -r, --repeat=N             Repeat entire sequence N times
+          -D, --next-delay=N         Delay N milliseconds between input events (up/down,                                
+                                     a complete click means doubled time)
+          -h, --help                 Display this help and exit
+
+        How to specify buttons:
+          Now all mouse buttons are represented using hexadecimal numeric values, with an optional
+        bit mask to specify if mouse up/down needs to be omitted.
+          0x00 - LEFT
+          0x01 - RIGHT
+          0x02 - MIDDLE
+          0x03 - SIDE
+          0x04 - EXTR
+          0x05 - FORWARD
+          0x06 - BACK
+          0x07 - TASK
+          0x40 - Mouse down
+          0x80 - Mouse up
+          Examples:
+            0x00: chooses left button, but does nothing (you can use this to implement extra sleeps)
+            0xC0: left button click (down then up)
+            0x41: right button down
+            0x82: middle button up
+          The '0x' prefix can be omitted if you want.
+        ```
+    1. `mousemove`: `YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool mousemove -h`
+        ```bash
+        $ YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool mousemove -h
+        Usage: mousemove [OPTION]... [-x <xpos> -y <ypos>] [-- <xpos> <ypos>]
+        Move mouse pointer or wheel.
+
+        Options:
+          -w, --wheel                Move mouse wheel relatively
+          -a, --absolute             Use absolute position, not applicable to wheel
+          -x, --xpos                 X position
+          -y, --ypos                 Y position
+          -h, --help                 Display this help and exit
+
+        You need to disable mouse speed acceleration for correct absolute movement.
+        ```
 
 Voila! I'm so happy I got this working! I now have a viable means of getting my ["show desktop"](https://askubuntu.com/a/1109490/327339) button to work again once I am forced to use Wayland, and once it [is less buggy](https://askubuntu.com/a/1470563/327339) and actually functions right.
 
 
-## What do keycodes `125:1 32:1 32:0 125:0` mean?
+## What do keycodes `125:1 32:1 32:0 125:0` mean, and how do I find key codes I want to use?
 
-The `YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h` help menu 
+See the `YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h` help menu above. It states: 
 
-With your `ydotoold` daemon running, you can access additional sub-help menus, like this:
 ```bash
-######## do bug report: 1) help menu only shows if you properly connect to the server, 2) what does the stuff below mean? about xwayland server?
-YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key -h
+Syntax: <keycode>:<pressed>
+e.g. 28:1 28:0 means pressing on the Enter button on a standard US keyboard.
+     (where :1 for pressed means the key is down and then :0 means the key is released)     
+     42:1 38:1 38:0 24:1 24:0 38:1 38:0 42:0 - "LOL"
+
+Non-interpretable values, such as 0, aaa, l0l, will only cause a delay.
+
+See `/usr/include/linux/input-event-codes.h' for available key codes (KEY_*).
 ```
-125 means... 1 means... release in reverse order...
+
+So, open up your Linux `/usr/include/linux/input-event-codes.h` file to see all key codes:
+```bash
+# (my preference) open in the Sublime Text GUI
+subl /usr/include/linux/input-event-codes.h
+# open in the gedit GUI
+gedit /usr/include/linux/input-event-codes.h
+# open in nano (Ctrl + x to exit)
+nano /usr/include/linux/input-event-codes.h
+# open in vim (:q then Enter to exit)
+vi /usr/include/linux/input-event-codes.h
+```
+
+You can see what appears to be a _more-recent version_ of this file online in the Linux kernel here: <https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h>. 
+
+As you can see [in that file here](https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h#L202), key code `125` is the `KEY_LEFTMETA`: 
+
+>     #define KEY_LEFTMETA      125
+
+Key code `32` is `KEY_D`: 
+
+>     #define KEY_D         32
+
+A [Google search for "input-event-codes.h which is the super or windows key?"](https://www.google.com/search?q=input-event-codes.h+which+is+the+super+or+windows+key%3F&oq=input-event-codes.h+which+is+the+super+or+windows+key%3F&aqs=chrome..69i57.477j0j9&sourceid=chrome&ie=UTF-8) helped me find [this](https://github.com/PixlOne/logiops/issues/201#issuecomment-773745032), where @hasimsait said it was `KEY_LEFTMETA`. That's how I knew to use that key for the <kbd>Windows</kbd> (<kbd>Super</kbd>) key. 
+
+From the `ydotool key -h` help menu above, we learned: `Syntax: <keycode>:<pressed>`, where `1` is pressed, and `0` is not pressed. So, `32:1 32:0` means to press and then release the <kbd>D</kbd> key. That would type a lower-case `d` if your cursor was in a text editor. 
+
+Therefore, `125:1 32:1 32:0 125:0` means, in this order: "press the Windows key, press the D key, release the D key, release the Windows key". 
+
+Notice that to activate the <kbd>Windows</kbd> + <kbd>D</kbd> shortcut key, you must _release the buttons in the opposite order they were pressed!_ You hold the <kbd>Windows</kbd> key while pressing and releasing the <kbd>D</kbd> key. So, be sure to release the buttons with `<keycode>:0` in the _opposite order_ that you pressed them.
 
 
 ## Warnings in Wayland
@@ -213,52 +343,14 @@ READY
 ```
 
 
-## 
-
-
-Run this again to show all windows:
-```bash
-# Windows + D press and release: window toggle: this shows all windows.
-YDOTOOL_SOCKET="$HOME/.ydotool_socket" ydotool key 125:1 32:1 32:0 125:0
-```
-
-
-```bash
-sudo ./ydotoold
-
-# in another:
-#######
-# ./ydotool key --clearmodifiers Super+d
-YDOTOOL_SOCKET="/tmp/.ydotool_socket" sudo ./ydotool key Super+d
-
-# help menu
-YDOTOOL_SOCKET="/tmp/.ydotool_socket" sudo ./ydotool key -h
-
-# Windows + D press and release
-YDOTOOL_SOCKET="/tmp/.ydotool_socket" sudo ./ydotool key 125:1 32:1 32:0 125:0
-
-# see all keycodes (the help menu above told me about this file!)
-subl /usr/include/linux/input-event-codes.h
-
-
-# to avoid using `sudo`, change permissions!
-# TODO: just add yourself to the group instead--or make your user the owner! Do NOT give everyone permissions!
-sudo chmod 666 /tmp/.ydotool_socket
-YDOTOOL_SOCKET="/tmp/.ydotool_socket" ./ydotool key 125:1 32:1 32:0 125:0
-
-sudo chown gabriel /tmp/.ydotool_socket
-sudo chown "$USER" /tmp/.ydotool_socket  # better
-YDOTOOL_SOCKET="/tmp/.ydotool_socket" ./ydotool key 125:1 32:1 32:0 125:0
-
-```
-
-
 ## References:
 
 1. [The comment from @Rinzwind
  where I first found out about `ydotool`](https://askubuntu.com/questions/1470593/how-can-i-write-a-program-to-press-keys-such-as-windows-d-in-wayland-repla?noredirect=1#comment2577739_1470593)
 1. https://github.com/ReimuNotMoe/ydotool - official repository for `ydotool`
 1. [Ask Ubuntu Equivalent to xdotool for Wayland](https://askubuntu.com/a/1299008/327339) - mentions `ydotool`
+1. [my answer] Bugs in Wayland, and how to change between the X11 and Wayland window managers in Ubuntu: [Ask Ubuntu: "failed to enable link training" when resuming from suspend](https://askubuntu.com/a/1470563/327339)
 1. [my answer] [Ask Ubuntu: How can I add "Show desktop" to the GNOME dash or Ubuntu Dock?](https://askubuntu.com/a/1109490/327339)
 1. [my answer] [Get the User ID (UID) and Group ID (GID) for the running user](https://askubuntu.com/a/1472531/327339)
 1. Where I learned about `sudo -b`: [Running a program in the background as sudo](https://stackoverflow.com/a/67472605/4561887)
+1. Where I learned about the `-f` part of `ps auxf` to graphically show the process hierarchy (previously I just used `ps aux`): [Unix & Linux: How to view the names all child processes spawned by a program](https://unix.stackexchange.com/a/453654/114401)
