@@ -1,6 +1,6 @@
 <!--
 GS
-4~15 June 2023
+4~17 June 2023
 
 https://askubuntu.com/q/1470593/327339
 https://askubuntu.com/questions/1470593/how-can-i-write-a-program-to-press-keys-such-as-windows-d-in-wayland-repla?noredirect=1#comment2577739_1470593
@@ -11,6 +11,11 @@ https://askubuntu.com/questions/903532/how-can-i-add-show-desktop-to-the-gnome-d
 
 Update: let's make this a website article first instead! 
 I'll put it here: https://gabrielstaples.com/ydotool-tutorial/
+Filename: 2023-06-17-ydotool-tutorial.md
+
+I'll put bits of it here too: 
+1. My Q: https://askubuntu.com/q/1470593/327339
+1. https://askubuntu.com/q/956640/327339
 -->
 
 
