@@ -72,7 +72,28 @@ while True:
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/python$ ./zmq_demo_server.py
-    Hello world!
+Note: I hit Ctrl + C at the end to kill it.
+
+    eRCaGuy_hello_world$ python/zmq_demo_server.py
+    Starting ZMQ server. Waiting for client.
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    Received request: b'Hello'
+    ^CTraceback (most recent call last):
+    File "/home/gabriel/GS/dev/eRCaGuy_hello_world/python/zmq_demo_server.py", line 60, in <module>
+        message = socket.recv()
+    File "zmq/backend/cython/socket.pyx", line 805, in zmq.backend.cython.socket.Socket.recv
+    File "zmq/backend/cython/socket.pyx", line 841, in zmq.backend.cython.socket.Socket.recv
+    File "zmq/backend/cython/socket.pyx", line 194, in zmq.backend.cython.socket._recv_copy
+    File "zmq/backend/cython/checkrc.pxd", line 13, in zmq.backend.cython.checkrc._check_rc
+    KeyboardInterrupt
+
 
 """
