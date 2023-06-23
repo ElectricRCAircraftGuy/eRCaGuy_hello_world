@@ -35,6 +35,33 @@ python3 zmq_demo_server.py
 
 References:
 1. This code has been modified from here: https://zeromq.org/languages/python/
+1. https://zguide.zeromq.org/docs/chapter2/
+    '''
+    Like a favorite dish, ZeroMQ sockets are easy to digest. Sockets have a life in four parts, just like BSD sockets:
+
+    Creating and destroying sockets, which go together to form a karmic circle of socket life (see zmq_socket(), zmq_close()).
+
+    Configuring sockets by setting options on them and checking them if necessary (see zmq_setsockopt(), zmq_getsockopt()).
+
+    Plugging sockets into the network topology by creating ZeroMQ connections to and from them (see zmq_bind(), zmq_connect()).
+
+    Using the sockets to carry data by writing and receiving messages on them (see zmq_msg_send(), zmq_msg_recv()).
+    '''
+
+    ''' To create a connection between two nodes, you use zmq_bind() in one node and zmq_connect()
+    in the other. As a general rule of thumb, the node that does zmq_bind() is a “server”, sitting
+    on a well-known network address, and the node which does zmq_connect() is a “client”, with
+    unknown or arbitrary network addresses. Thus we say that we “bind a socket to an endpoint” and
+    “connect a socket to an endpoint”, the endpoint being that well-known network address. '''
+
+    '''
+    https://zguide.zeromq.org/docs/chapter2/#Signaling-Between-Threads-PAIR-Sockets
+
+    When you start making multithreaded applications with ZeroMQ, you'll encounter the question of
+    how to coordinate your threads. Though you might be tempted to insert “sleep” statements, or use
+    multithreading techniques such as semaphores or mutexes, the only mechanism that you should use
+    are ZeroMQ messages.
+    '''
 
 """
 
@@ -58,19 +85,32 @@ ZMQ socket types/patterns:
 Built-in core ZeroMQ patterns:
 
 1. Request-reply (synchronous: REQ-REP; and asynchronous: DEALER-ROUTER, DEALER-DEALER,
-   ROUTER-ROUTER, etc.) - a "remote procedure call [RPC] and task distribution pattern"
+   ROUTER-ROUTER; mixed: REQ-ROUTER, DEALER-REP, etc.) - a "remote procedure call [RPC] and task
+   distribution pattern"
     - For the official specification, see: https://rfc.zeromq.org/spec/28/
 
-    - REQ socket type: "If no services are available, then any send operation on the socket will block until at least
+    - REQ socket type [usually a client]: "If no services are available, then any send operation on the socket will block until at least
       one service becomes available. The REQ socket will not discard any messages."
 
-    - REP socket type: "If the original requester does not exist any more the reply is silently
+    - REP socket type [usually a server]: "If the original requester does not exist any more the reply is silently
       discarded.
 
-    - ROUTER socket type:
+    "DEALER is like an asynchronous REQ socket, and ROUTER is like an asynchronous REP socket."
+      See: https://zguide.zeromq.org/docs/chapter3/
+
+    - DEALER socket type [usually a client]:
+        - "talks to a set of anonymous peers"
+        - "works as an asynchronous replacement for REQ, for clients that talk to REP or ROUTER
+          servers."
+        - "Now, let's replace the REQ client with a DEALER. This gives us an asynchronous client
+          that can talk to multiple REP servers. If we rewrote the “Hello World” client using
+          DEALER, we'd be able to send off any number of “Hello” requests without waiting for
+          replies." See: https://zguide.zeromq.org/docs/chapter3/.
+
+    - ROUTER socket type [usually a server]:
+        - "talks to a set of peers, using explicit addressing"
         - "works as an asynchronous replacement for REP, and is often used as the basis for servers
           that talk to DEALER clients."
-
 
 2. Pub-sub (PUB-SUB) - a data distribution pattern.
     - "The publish-subscribe pattern is used for one-to-many distribution of data from a single
