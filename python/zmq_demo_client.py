@@ -52,17 +52,31 @@ context = zmq.Context()
 
 #  Socket to talk to server
 print("Connecting to hello world server…")
+# Use a "Request" **synchronous** socket type; see: https://zeromq.org/socket-api/: "ZeroMQ patterns
+# are implemented by pairs of sockets with matching types."
 socket = context.socket(zmq.REQ)
+# GS: use `connect()` instead of `bind()` on what you might consider the more "dynamic component",
+# ie: the client. "As a general rule use bind from the most stable points in your architecture, and
+# use connect from dynamic components with volatile endpoints."
+# - See: https://zeromq.org/socket-api/
+#   - "Bind vs Connect" and its sub-section, "When should I use bind and when connect?"
+# - See documentation for `zmq.Socket.connect()` here:
+#   https://pyzmq.readthedocs.io/en/latest/api/zmq.html#zmq.Socket.connect
+#   - format: `protocol://interface:port`.
+#       - Supported protocols are `tcp`, `udp`, `pgm`, `inproc`, and `ipc`.
+#       - Note that `localhost` is equivalent to interface `127.0.0.1`.
 socket.connect("tcp://localhost:5555")
 
 #  Do 10 requests, waiting each time for a response
-for request in range(10):
-    print("Sending request %s …" % request)
+for request_num in range(10):
+    print("Sending request_num %s …" % request_num)
+    # GS: a REQ socket type MUST send first. It cannot go into receive mode until it sends first.
+    # - See: https://zeromq.org/socket-api/: "Send/receive pattern: Send, Receive, Send, Receive, …"
     socket.send(b"Hello")
 
     #  Get the reply.
     message = socket.recv()
-    print("Received reply %s [ %s ]" % (request, message))
+    print("Received reply %s [ %s ]" % (request_num, message))
 
 
 
