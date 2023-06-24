@@ -45,7 +45,16 @@ toggle_windows() {
     # https://askubuntu.com/a/905480/327339
 
     status="$(wmctrl -m | grep "showing the desktop" | sed -r 's/(.*)(ON|OFF)/\2/g')"
+    if [ $status == "ON" ]; then
+        wmctrl -k off
+    else
+        wmctrl -k on
+    fi
+}
 
+# My own version
+toggle_windows2() {
+    status="$(wmctrl -m | grep "showing the desktop" | grep -Eo "ON|OFF")"
     if [ $status == "ON" ]; then
         wmctrl -k off
     else
@@ -54,12 +63,14 @@ toggle_windows() {
 }
 
 echo "Toggling windows once to hide all windows."
-toggle_windows
+# toggle_windows
+toggle_windows2
 
 sleep 1
 
 echo "Toggling windows again to show all windows."
-toggle_windows
+# toggle_windows
+toggle_windows2
 
 
 # SAMPLE OUTPUT:
