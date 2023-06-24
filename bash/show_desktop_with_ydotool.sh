@@ -19,8 +19,8 @@
 # STATUS: done and works!
 #
 # Works in Ubuntu 22.04.2?:
-# 1. [yes] with the X11 window manager - result: WORKS.
-# 2. [ ] with the Wayland window manager - result: ?
+# 1. [yes] with the X11 window manager - result: WORKS, but requires `sudo` for the daemon.
+# 2. [yes] with the Wayland window manager - result: WORKS, but requires `sudo` for the daemon.
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
 #
@@ -71,7 +71,7 @@ press_windows_plus_d
 
 # SAMPLE OUTPUT:
 #
-# 1) WHEN RUN
+# 1) WHEN RUN in the X11 window manager:
 #
 #       eRCaGuy_hello_world$ bash/show_desktop_with_ydotool.sh
 #       Socket path: /home/gabriel/.ydotool_socket
@@ -83,4 +83,15 @@ press_windows_plus_d
 #       Pressing Windows + D again to show all windows.
 #
 #
+# 2) WHEN RUN in the Wayland window manager:
 #
+#       eRCaGuy_hello_world/bash$ ./show_desktop_with_ydotool.sh
+#       Socket path: /home/gabriel/.ydotool_socket
+#       Removing old stale socket
+#       Socket permission: 0600
+#       Socket ownership: UID=1000, GID=1000
+#       READY
+#       WARNING: running xinput against an Xwayland server. See the xinput man page for details.
+#       unable to find device pointer:ydotoold virtual device
+#       Pressing Windows + D once to hide all windows.
+#       Pressing Windows + D again to show all windows.

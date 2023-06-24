@@ -18,7 +18,7 @@
 #
 # Works in Ubuntu 22.04.2?:
 # 1. [yes] with the X11 window manager - result: WORKS.
-# 2. [ ] with the Wayland window manager - result: ?
+# 2. [no] with the Wayland window manager - result: Does NOT work!
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
 #
