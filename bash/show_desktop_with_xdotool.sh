@@ -37,14 +37,17 @@
 # 1. See link above.
 # 1.
 
+press_windows_plus_d() {
+    xdotool key --clearmodifiers Super+d
+}
 
 echo "Pressing Windows + D once to hide all windows."
-xdotool key --clearmodifiers Super+d
+press_windows_plus_d
 
 sleep 1
 
 echo "Pressing Windows + D again to show all windows."
-xdotool key --clearmodifiers Super+d
+press_windows_plus_d
 
 
 
