@@ -41,6 +41,9 @@
 # 1.
 
 toggle_windows() {
+    # This code was originally copied from this answer by @AndAC here:
+    # https://askubuntu.com/a/905480/327339
+
     status="$(wmctrl -m | grep "showing the desktop" | sed -r 's/(.*)(ON|OFF)/\2/g')"
 
     if [ $status == "ON" ]; then
