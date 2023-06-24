@@ -37,14 +37,15 @@
 # 1. See link above.
 # 1.
 
-SEC=5
 
-echo "Running command in $SEC seconds."
-echo "Press Windows + D to come back."
-
-sleep "$SEC"
-
+echo "Pressing Windows + D once to hide all windows."
 xdotool key --clearmodifiers Super+d
+
+sleep 1
+
+echo "Pressing Windows + D again to show all windows."
+xdotool key --clearmodifiers Super+d
+
 
 
 # SAMPLE OUTPUT:
@@ -52,10 +53,11 @@ xdotool key --clearmodifiers Super+d
 # 1) WHEN RUN
 #
 #       eRCaGuy_hello_world$ time bash/show_desktop_with_xdotool.sh
-#       Running command in 5 seconds.
-#       Press Windows + D to come back.
+#       Pressing Windows + D once to hide all windows.
+#       Pressing Windows + D again to show all windows.
 #
-#       real    0m5.084s
-#       user    0m0.008s
-#       sys 0m0.004s
+#       real    0m1.141s
+#       user    0m0.007s
+#       sys 0m0.002s
+#
 #
