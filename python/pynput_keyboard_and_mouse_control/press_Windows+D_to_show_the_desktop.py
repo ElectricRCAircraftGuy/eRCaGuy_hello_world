@@ -13,7 +13,7 @@ Status: Done, but does NOT work on Linux Ubuntu 22.04.2, even in the X11 window 
 bug in pynput.
 See:
 1. My bug report: https://github.com/moses-palmer/pynput/issues/556
-1. My answer here: todo
+1. ***** My answer here with this code: https://stackoverflow.com/a/76544123/4561887
 
 keywords: (keywords)
 
@@ -33,6 +33,7 @@ python3 pynput_press_Windows+D_to_show_the_desktop.py
 ```
 
 References:
+1. My answer: https://stackoverflow.com/a/76544123/4561887
 1. My answer: https://askubuntu.com/a/1109490/327339
 1. ***** https://pynput.readthedocs.io/en/latest/keyboard.html
 1. https://stackoverflow.com/q/63489008/4561887 - How to press the windows key with pynput?
