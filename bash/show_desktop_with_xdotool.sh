@@ -15,6 +15,10 @@
 #       sudo apt install xdotool
 #
 # STATUS: done and works!
+#
+# Works in Ubuntu 22.04.2?:
+# 1. [yes] with the X11 window manager - result: WORKS.
+# 2. [ ] with the Wayland window manager - result: ?
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
 #
