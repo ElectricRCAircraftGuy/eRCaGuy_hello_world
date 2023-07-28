@@ -11,10 +11,7 @@ As of Aug. 2021, also see here: https://stackoverflow.com/questions/29136057/can
 
 Ideally, GitHub search would support parenthesis for nesting and grouping, and logical `AND`, `OR`, and `NOT` operators. What I would like is for them to support something like this:
 
-    is:open AND is:pr AND (review-requested:ElectricRCAircraftGuy OR 
-    assignee:ElectricRCAircraftGuy) AND NOT(review-requested:"team:ORGNAME/team-1") AND 
-    archived:false AND (author:my-teammate-1 OR author:my-teammate-2 OR 
-    author:my-teammate-3)
+`is:open AND is:pr AND (review-requested:ElectricRCAircraftGuy OR assignee:ElectricRCAircraftGuy) AND NOT(review-requested:"team:ORGNAME/team-1") AND archived:false AND (author:my-teammate-1 OR author:my-teammate-2 OR author:my-teammate-3)`
 
 Instead, their search is much more limiting, and also pretty convoluted since it has VERY DIFFERENT behavior depending on *where* you type your search. Since the above search style is not supported, let's consider this more limited search attempt instead:
 
