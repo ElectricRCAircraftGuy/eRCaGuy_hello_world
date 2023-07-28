@@ -22,15 +22,13 @@ Instead, their search is much more limiting, and also pretty convoluted since it
 
 **My search:**
 
-> is:open is:pr review-requested:ElectricRCAircraftGuy archived:false 
-<br>author:my-teammate-1 author:my-teammate-2 author:my-teammate-3
+`is:open is:pr review-requested:ElectricRCAircraftGuy archived:false author:my-teammate-1 author:my-teammate-2 author:my-teammate-3`
 
 ----
 
 The behavior I WANT is this:
 
-> is:open AND is:pr AND review-requested:ElectricRCAircraftGuy AND archived:false AND
-<br>(author:my-teammate-1 OR author:my-teammate-2 OR author:my-teammate-3)
+`is:open AND is:pr AND review-requested:ElectricRCAircraftGuy AND archived:false AND (author:my-teammate-1 OR author:my-teammate-2 OR author:my-teammate-3)`
 
 But depending on _where_ you do this search, you will get _two very different behaviors_. If I go to https://github.com/ --> **Pull requests** (at top) and type the search into this search bar highlighted in yellow here:
 
@@ -38,12 +36,11 @@ But depending on _where_ you do this search, you will get _two very different be
 
 ...then I get this search behavior:
 
-> is:open AND is:pr AND review-requested:ElectricRCAircraftGuy AND archived:false AND author:my-teammate-3
+`is:open AND is:pr AND review-requested:ElectricRCAircraftGuy AND archived:false AND author:my-teammate-3`
 
 Notice that all `author` fields *except for* the last one were DELETED. You can only search for ONE OF A GIVEN FIELD AT A TIME! This is sooo limiting! It is as though I had done this search:
 
-> is:open is:pr review-requested:ElectricRCAircraftGuy archived:false 
-    author:my-teammate-3
+`is:open is:pr review-requested:ElectricRCAircraftGuy archived:false author:my-teammate-3`
 
 However, if I use the global search bar, highlighted below, which is available pretty much anywhere on https://github.com/, and copy and paste **My search** into this search bar:
 
@@ -51,44 +48,33 @@ However, if I use the global search bar, highlighted below, which is available p
 
 ...then I get this search behavior, which is exactly what I want in this case:
 
-> is:open AND is:pr AND review-requested:ElectricRCAircraftGuy AND archived:false AND 
-<br>(author:my-teammate-1 OR author:my-teammate-2 OR author:my-teammate-3)
+`is:open AND is:pr AND review-requested:ElectricRCAircraftGuy AND archived:false AND (author:my-teammate-1 OR author:my-teammate-2 OR author:my-teammate-3)`
 
 This means that in the global search bar, each search term is joined with `AND` under the hood, unless there are multiples of a given field, and then each of those is joined with `OR` under the hood, as shown above. In the local Pull Request search bar, however, each search term is joined with `AND` under the hood, and if there are multiples of a given field, all of the multiples are deleted *except for the last one*, which is retained. This is what I call "convoluted" search behavior, since the results are 1) confusing, 2) different, depending on which search bar you use, and 3) limiting: even if you knew everything about GitHub search it still impossible to obtain the search results you might want. It's very hard to understand what's happening without extensive research and trial and error, which is exactly what I had to do. :(
 
 So, what are your options if you want to see a list of all "Review requests" by my-teammate-1 OR my-teammate-2 OR my-teammate-3? Well, you can do and bookmark a single global search, like this:
 
-> is:open is:pr review-requested:ElectricRCAircraftGuy archived:false 
-<br>author:my-teammate-1 author:my-teammate-2 author:my-teammate-3
+`is:open is:pr review-requested:ElectricRCAircraftGuy archived:false author:my-teammate-1 author:my-teammate-2 author:my-teammate-3`
 
 OR you can do and bookmark 3 separate Pull Request searches, like this:
 
 1. Open, non-archived PRs requesting my review AND by `my-teammate-1`
     
-> is:open is:pr review-requested:ElectricRCAircraftGuy archived:false 
-    author:my-teammate-1
+    `is:open is:pr review-requested:ElectricRCAircraftGuy archived:false author:my-teammate-1`
     
 1. Open, non-archived PRs requesting my review AND by `my-teammate-2`
     
-> is:open is:pr review-requested:ElectricRCAircraftGuy archived:false 
-    author:my-teammate-2
+    `is:open is:pr review-requested:ElectricRCAircraftGuy archived:false author:my-teammate-2`
     
 1. Open, non-archived PRs requesting my review AND by `my-teammate-3`
     
-> is:open is:pr review-requested:ElectricRCAircraftGuy archived:false 
-    author:my-teammate-3
-    
+    `is:open is:pr review-requested:ElectricRCAircraftGuy archived:false author:my-teammate-3`
 
 The display results of the Pull Request searches are displayed in a nicer format, so even though doing and bookmarking the 3 Pull Request searches is more of a pain than doing and bookmarking a single global search of the same thing, it might be what you prefer to do. 
 
 And if you want to do something more complicated, such as get this behavior:
 
-> is:open AND is:pr
-<br>AND (review-requested:ElectricRCAircraftGuy OR 
-assignee:ElectricRCAircraftGuy)<br>AND NOT(review-requested:"team:ORGNAME/team-1") <br>AND 
-archived:false
-<Br>AND (author:my-teammate-1 OR author:my-teammate-2 OR 
-author:my-teammate-3)
+`is:open AND is:pr AND (review-requested:ElectricRCAircraftGuy OR assignee:ElectricRCAircraftGuy) AND NOT(review-requested:"team:ORGNAME/team-1") AND archived:false AND (author:my-teammate-1 OR author:my-teammate-2 OR author:my-teammate-3)`
 
 ...sorry, it's not currently possible. You'll have to create multiple sub-searches taking advantage of the search bar behavior that works for you, and using the `-` sign where necessary to exclude results. But, you can request that GitHub implement this more advanced search behavior by opening an issue [here (not affiliated with GitHub--just a place to track issues)](https://github.com/isaacs/github) and then [sending them a message here](https://support.github.com/contact) and giving them the links to your issue and to this Stack Overflow answer.
 
@@ -127,7 +113,7 @@ Reminder: [read here](https://webapps.stackexchange.com/questions/57933/how-to-s
     1. **[BEST]** Using the **GitHub global search bar (main search bar at top-left of any GitHub page)**:
         - This search bar allows multiple authors at once, but displays slightly differently than (doesn't look as good as) the Pull request search above:
 
-          > is:open is:pr archived:false author:username-1 author:username-2 author:username-3 author:username-4
+            `is:open is:pr archived:false author:username-1 author:username-2 author:username-3 author:username-4`
 
         - Here is what the URL looks like after performing this search in the GitHub global search bar: https://github.com/search?q=is%3Aopen+is%3Apr+archived%3Afalse+author%3Ausername-1+author%3Ausername-2+author%3Ausername-3+author%3Ausername-4
 
@@ -145,7 +131,7 @@ Reminder: [read here](https://webapps.stackexchange.com/questions/57933/how-to-s
     1. **[BEST]** Using the **GitHub global search bar (main search bar at top-left of any GitHub page)**:
         - This search bar allows multiple authors at once, but displays slightly differently than (doesn't look as good as) the Pull request search above:
 
-            > is:open is:pr archived:false review-requested:my-username author:username-1 author:username-2 author:username-3 author:username-4
+            `is:open is:pr archived:false review-requested:my-username author:username-1 author:username-2 author:username-3 author:username-4`
 
         - URL produced by the above global search: https://github.com/search?q=is%3Aopen+is%3Apr+archived%3Afalse+review-requested%3Amy-username+author%3Ausername-1+author%3Ausername-2+author%3Ausername-3+author%3Ausername-4
 
