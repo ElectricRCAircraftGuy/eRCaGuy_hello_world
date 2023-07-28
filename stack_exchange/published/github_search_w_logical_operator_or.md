@@ -99,11 +99,12 @@ Reminder: [read here](https://webapps.stackexchange.com/questions/57933/how-to-s
         1. Direct link: https://github.com/pulls
         1. Now use the search bar at the top-center/top-right.
         1. _Note that this search bar is limited to only one author at a time:_
-
-                is:open is:pr archived:false author:username-1
-                is:open is:pr archived:false author:username-2 
-                is:open is:pr archived:false author:username-3 
-                is:open is:pr archived:false author:username-4
+            ```
+            is:open is:pr archived:false author:username-1
+            is:open is:pr archived:false author:username-2 
+            is:open is:pr archived:false author:username-3 
+            is:open is:pr archived:false author:username-4
+            ```
 
         1. Here is a sample URL for the first of the 4 searches just above: https://github.com/pulls?q=is%3Aopen+is%3Apr+archived%3Afalse+author%3Ausername-1
 
@@ -117,11 +118,12 @@ Reminder: [read here](https://webapps.stackexchange.com/questions/57933/how-to-s
 1. **REVIEWS REQUESTED OF ME BY OTHERS:**
     1. Using the **Pull request search bar**:
         - Note that this search bar is limited to only one author at a time: 
-
-                is:open is:pr archived:false review-requested:my-username author:username-1
-                is:open is:pr archived:false review-requested:my-username author:username-2
-                is:open is:pr archived:false review-requested:my-username author:username-3
-                is:open is:pr archived:false review-requested:my-username author:username-4
+            ```
+            is:open is:pr archived:false review-requested:my-username author:username-1
+            is:open is:pr archived:false review-requested:my-username author:username-2
+            is:open is:pr archived:false review-requested:my-username author:username-3
+            is:open is:pr archived:false review-requested:my-username author:username-4
+            ```
 
         - Here is a sample URL for the first search above: https://github.com/pulls?q=is%3Aopen+is%3Apr+archived%3Afalse+review-requested%3Amy-username+author%3Ausername-1
 
