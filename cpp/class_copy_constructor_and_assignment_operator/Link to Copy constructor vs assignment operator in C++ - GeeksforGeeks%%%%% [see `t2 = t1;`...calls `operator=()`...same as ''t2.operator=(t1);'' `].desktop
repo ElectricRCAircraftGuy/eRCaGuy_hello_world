@@ -4,4 +4,4 @@ Name=Link to Copy constructor vs assignment operator in C++ - GeeksforGeeks
 Type=Link
 URL=https://www.geeksforgeeks.org/copy-constructor-vs-assignment-operator-in-c/
 Icon=text-html
-Name[en_US]=Link to Copy constructor vs assignment operator in C++ - GeeksforGeeks%%%%% [see `t2 = t1;  // calls assignment operator, same as ''t2.operator=(t1);'' `]
+Name[en_US]=Link to Copy constructor vs assignment operator in C++ - GeeksforGeeks%%%%% [see `t2 = t1;`...calls `operator=()`...same as ''t2.operator=(t1);'' `]
