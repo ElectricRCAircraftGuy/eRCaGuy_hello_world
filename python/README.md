@@ -26,6 +26,18 @@ Use this linter to check your Python code for errors.
 
 See my answer here: [Ask Ubuntu: Installing Pylint for Python3 on Ubuntu](https://askubuntu.com/a/1397185/327339)
 
+#### New instructions:
+
+See: https://github.com/PyCQA/pylint#install
+
+```bash
+pip3 install pylint
+# upgrade to the latest version; see: https://stackoverflow.com/a/47071257/4561887
+pip3 install pylint --upgrade
+```
+
+#### Old instructions:
+
 `pylint` versions before 2.0.0 or so had separate executables for Python2 vs Python3 code. In the old versions, `pylint` was for Python2 and `pylint3` was for Python3. As of version 2.0.0 or so, we are back to _one_ executable named `pylint`, and it handles _only_ Python3 code. To get this latest version from the GitHub releases page, do this:
 
 1. Go to the ["Releases" page for `pylint` on GitHub](https://github.com/PyCQA/pylint/releases), and download the source code for the latest release (ex: v2.12.2).
@@ -37,6 +49,13 @@ See my answer here: [Ask Ubuntu: Installing Pylint for Python3 on Ubuntu](https:
     ```
     See also: https://github.com/PyCQA/pylint#install
 1. Check your version and ensure it now says `pylint 2.12.2`
+    ```bash
+    pylint --version
+    ```
+
+#### Run `pylint`
+
+1. Check your version:
     ```bash
     pylint --version
     ```
