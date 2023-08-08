@@ -4,6 +4,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 # Socket examples & study
 
 1. \*\*\*\*\*+ EXCELLENT example code, UDP sending and receiving examples, multicast, etc: https://wiki.python.org/moin/UdpCommunication
+1. TCP example code: https://wiki.python.org/moin/TcpCommunication
 1. https://docs.python.org/3/library/select.html#poll-objects - select — Waiting for I/O completion — Python 3.11.4 documentation [GS notes: how to do Ethernet polling in Python: create a socket, call `poll.register(fd)` to pass in the socket fd file descriptor, then call `poll.poll([timeout_ms])` to get back an iterable tuple of `(fd, event)` 2-tuples telling me which socket file descriptors are ready to be read and have data right now!; how to do ethernet socket polling in Python--see my notes to the left!]
 
 
@@ -45,3 +46,7 @@ From: https://wiki.python.org/moin/UdpCommunication
         print("received message: %s" % data)
     ```
 
+From: https://wiki.python.org/moin/TcpCommunication
+
+1. TCP sender ("client"): see link above.
+1. TCP receiver ("server"): see link above.
