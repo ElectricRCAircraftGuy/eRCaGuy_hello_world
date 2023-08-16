@@ -20,21 +20,49 @@ _Tested on Ubuntu 22.04.2._
 
 References:
 1. Official source code: https://invisible-island.net/ncurses/announce.html
+    1. Official source code download archives page: https://invisible-island.net/archives/ncurses/
+
+        The latest version at the time of this writing is `6.4-20230812`, from 12 Aug. 2023.
+
 1. GitHub mirror of the official source code: https://github.com/mirror/ncurses
 
 ```bash
-# download
+# 1. Download
+# - NB: the absolute latest version will be found here instead, on the official archives download
+#   page: https://invisible-island.net/archives/ncurses/
+
+# Option 1.1 (easiest, by far, so do this): clone from the Github mirror
 git clone https://github.com/mirror/ncurses.git
 cd ncurses
 
-# build and install
+# Option 1.2 (best only if you need the absolute latest version): find the latest version on the
+# archives page, and download and extract it. 
+# TODO: if I ever need the absolute latest version, figure this out.
+
+# 2. Build and install
 time ./configure    # takes ~8 sec
 time make           # takes ~45 sec
 sudo make install   # installs libraries into /usr/include and other places
 
-# See all installed header files authored by Thomas E. Dickey, the author of ncurses
+# 3. (Optional) See all installed header files authored by Thomas E. Dickey, the author of ncurses
 rg -il 'Thomas.{0,30}Dickey' /usr/include
 ```
+
+# TODO
+
+1. Write Option 1.2 above, to get the latest source code. Here are the start of my notes on it so far:
+    ```bash
+    # Option 1.2 (best only if you need the absolute latest version): find the latest version on the
+    # archives page, and download and extract it. 
+    # - this guarantees you will get the absolute latest version straight from where the author puts
+    #   it first. 
+    # - Archives page: https://invisible-island.net/archives/ncurses/
+    # - Ex: the latest version at this moment is 6.4-20230812, so here is that download URL.
+    #   https://invisible-island.net/archives/ncurses/6.4/ncurses-6.4-20230812.patch.gz
+    # Download (replace this URL with the latest version at the time you look)
+    wget https://invisible-island.net/archives/ncurses/6.4/ncurses-6.4-20230812.patch.gz
+    ...
+    ```
 
 
 # Build a program with it
