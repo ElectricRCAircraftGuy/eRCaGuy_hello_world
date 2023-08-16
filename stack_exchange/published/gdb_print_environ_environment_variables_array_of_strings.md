@@ -6,15 +6,90 @@ https://stackoverflow.com/q/32917033/4561887
 My answer: https://stackoverflow.com/a/76903706/4561887
 -->
 
+
+This also answers the question: **"in GDB, how do you print all C-strings in an array of C-strings (ie: all `char*` C-strings in a `char**` variable), stopping once you reach a terminating NULL ptr value in the array."**
+
+
 ## How to print the entire `environ` variable, containing strings of all of your C or C++ program's environment variables, in GDB
+
+
+## Quick summary
+
+From the bottom of Option 2 below, this is probably the easiest and fastest, while still producing nice output:
+
+```bash
+set $i = 0
+printf "environ[%i]: \e[;94m%p\e[m: \"%s\"\n", $i, environ[$i], environ[$i++]
+```
+Now, press and hold down <kbd>Enter</kbd> until it outputs the full array and you get passed the `(nil): "(null)"` output at the end. 
+
+Or, go look at Option 4 below, and add my `print_environ` function to your `~/.gdbinit` file, and then run this, which is by far the best:
+```bash
+# print all environment variables as they are currently defined in your 
+# C or C++ program
+print_environ
+```
+
+_If you're just looking for the best answers, first read the note just below, then jump down to Options 2 and 4 below and be done._
+
+
+## A note about the `environ` variable and when it is updated
+
+Important! The `environ` variable can be expected to only contain a snapshot of your environment variables as available to your program at program start. [The documentation](https://man7.org/linux/man-pages/man7/environ.7.html) states:
+
+> This array of strings is made available to the process by the [`execve(2)`](https://man7.org/linux/man-pages/man2/execve.2.html) call when a new program is started.
+
+I have also done a lot of manual testing and trial-and-error in GDB while debugging my practice [environment_variables_getenv_and_setenv.c](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/c/environment_variables_getenv_and_setenv.c) C program in my [eRCaGuy_hello_world](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/tree/master) repo, and have found the following to be true.
+
+Once your program starts running, if it modifies any environment variables via [`setenv()`](https://man7.org/linux/man-pages/man3/setenv.3.html), then the `environ` variable will *not* be correspondingly updated! This is a quirk of how `environ` works. Rather, once you have added new environment variables *or* modified existing environment variables in your program, the *only* reliable way that I am aware of to recall their new values is via the [`getenv()`](https://man7.org/linux/man-pages/man3/getenv.3.html) function. Luckily, GDB can call functions in your program directly via the GDB `call` command. So, as long as you have `#include <stdlib.h>` in your program within the section you are currently debugging in GDB, you can call the C function `getenv()` directly in GDB, like this!:
+
+```bash
+# This will NOT reliably show new or updated environment variables that your
+# program has manipulated. 
+# - In some rare cases, some of the environment variables may seem to show some
+#   changes, but I cannot explain when, how, or why. So, once your program has
+#   started adding new environment variables or modifying existing ones, don't
+#   trust this output to be reliable anymore. Instead, call `getenv()` directly, 
+#   as shown below. 
+print_environ
+
+# This *will* reliable read new or updated environment variables as manipulated
+# by your program! 
+# - Ex: read the current value of the "SHELL" environment variable via the
+#   `getenv("SHELL")` C call: 
+call getenv("SHELL")
+```
+
+Example call and output while debugging my [environment_variables_getenv_and_setenv.c](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/c/environment_variables_getenv_and_setenv.c) program:
+```bash
+(gdb) call getenv("SHELL")
+$15 = 0x555555559c76 "bar_4"
+```
+
+You can of course also call `setenv()` inside GDB too, to create or modify an existing environment variable. Here, we will set `MY_NEW_VAR="whatever"`, and then get its value:
+```bash
+call setenv("MY_NEW_VAR", "whatever", 1)
+call getenv("MY_NEW_VAR")
+```
+
+Here is my example call and output while debugging my program above:
+```bash
+(gdb) call setenv("MY_NEW_VAR", "whatever", 1)
+$17 = 0
+(gdb) call getenv("MY_NEW_VAR")
+$18 = 0x555555559fcb "whatever"
+```
+
+Again, `print_environ`, which prints the full content of the `environ` array of strings, can _not_ be trusted to contain any new environment variables or updated values for them. Use `call getenv("MY_NEW_VAR")` instead.
+
+
+## Answer details
 
 All Linux programs have a magical [external `char ** environ` variable](https://man7.org/linux/man-pages/man7/environ.7.html) automatically set. It points to an array of pointers to strings which contain the environment variables in plain text. An example of the string at index `0`, for instance, meaning: `environ[0]` in C or C++, might be: `"SHELL=/bin/bash"`. The end of this array of pointers to strings is marked with a `NULL` (decimal `0`) value to indicate there are no more strings.
 
 So, you can print all environment variables as follows. For `environ` to be available, you must be inside the `main()` function somewhere. 
 
 So, first begin debugging, then set a breakpoint at the start of `main()`, and run to that point. Then, run the following commands inside GDB. 
-
-_If you're just looking for the best answers, jump down to Options 2 and 4 below and be done._
 
 Note that in all cases below, you can NOT copy and paste a chunk of my GDB commands at once, or else they won't run. GDB is a pain, and doesn't like the end-of-line chars, so you much manually type these commands or be very careful to copy only a single line of text at a time, and _not_ include the end-of-line chars when copying the commands.
 
@@ -252,8 +327,23 @@ environ[59]: 0x7fffffffef81: "OLDPWD=/home/gabriel/GS/dev/eRCaGuy_hello_world"
 Done!
 
 
+## Printing an `environ[n]` output above
+
+The nice thing about seeing the `environ[n]` indices above is that it makes it easy to re-call just that one string in case you just want to check that one environment variable whose index you now know. Ex:
+
+```bash
+print environ[3]
+```
+
+But, as stated above in the section titled "A note about the `environ` variable and when it is updated", this cannot be relied upon to give you any new or updated environment variable information. Rather, you should use this GDB call to call the C function `getenv()` instead:
+```bash
+call getenv("MY_NEW_VAR")
+```
+
+
 ## References
 
+1. [`extern char **environ;`](https://man7.org/linux/man-pages/man7/environ.7.html) variable containing an array of strings of environment variables
 1. My answer on [How to view a pointer like an array in GDB?](https://stackoverflow.com/a/64055978/4561887)
 1. I first learned about this `set $i = 0` and `print environ[$i++]` technique, which uses [Convenience Variables](https://sourceware.org/gdb/onlinedocs/gdb/Convenience-Vars.html#Convenience-Vars), here: https://sourceware.org/gdb/onlinedocs/gdb/Arrays.html. Note that `RET` means to press <kbd>Return</kbd>: 
 

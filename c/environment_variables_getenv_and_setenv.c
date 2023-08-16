@@ -31,6 +31,9 @@ sudo apt update && sudo apt install ccache
 # or:
 gcc -Wall -Wextra -Werror -O3 -std=gnu17 environment_variables_getenv_and_setenv.c -o bin/a -lm && bin/a
 
+# For debugging with GDB
+gcc -Wall -Wextra -Werror -O0 -ggdb -std=gnu17 environment_variables_getenv_and_setenv.c -o bin/a -lm && gdb bin/a
+
 # 2. In C++
 g++ -Wall -Wextra -Werror -O3 -std=gnu++17 environment_variables_getenv_and_setenv.c -o bin/a && bin/a
 ```
@@ -70,7 +73,8 @@ int main()
     uint32_t i = 0;
     while (true)
     {
-        const char* ENV_VARIABLE_NAME = "FOO";
+        const char* ENV_VARIABLE_NAME = "SHELL"; // default name to use to
+                                    // create a new variable instead: "FOO"
 
         // Set environment variable with the counter in it. Ex: `FOO="bar_1".
         char env_var_value[100];
