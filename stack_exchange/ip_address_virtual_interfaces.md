@@ -18,8 +18,8 @@ _Tested on Ubuntu 18.04 and 22.04._
     # 2. Ensure the "dummy" Linux kernel module is installed.
     sudo lsmod | grep dummy
 
-    # 3. View all existing socket interfaces/adapters, whether WiFi, Ethernet, or
-    # virtual (dummy)
+    # 3. View all existing socket interfaces/adapters, whether WiFi, Ethernet,
+    # or virtual (dummy)
     ip address
     ip a  # or (short version of the command above)
 
@@ -31,35 +31,10 @@ _Tested on Ubuntu 18.04 and 22.04._
 
     # 6. Change this new interface's IP address to whatever you like: 
     # Ex: `10.0.0.1/24` in this case. 
-    #
-    # - Note that the `/24` means that the first 24 bits of the 32-bit netmask will
-    #   be set to 1's. This is the same as `255.255.255.0`. 
-    #
-    #   Netmask options may include:
-    #   
-    #       # whole-bytes:
-    #       /32 = 255.255.255.255
-    #       /24 = 255.255.255.0   <== most common
-    #       /16 = 255.255.0.0
-    #       /8  = 255.0.0.0
-    #       /0  = 0.0.0.0  - (I don't even know if this is a valid option)
-    #       
-    #       # others:
-    #       /32 = 255.255.255.255
-    #       /31 = 255.255.255.254
-    #       /30 = 255.255.255.252
-    #       /29 = 255.255.255.248
-    #       /28 = 255.255.255.240
-    #       /27 = 255.255.255.224
-    #       /26 = 255.255.255.192
-    #       /25 = 255.255.255.128
-    #       /24 = 255.255.255.0
-    #       /23 = 255.255.254.0
-    #       /22 = 255.255.252.0
-    #       /21 = 255.255.248.0
-    #       /20 = 255.255.240.0
-    #       etc. etc. 
-    #
+    # - Note that the `/24` means that the first (most-significant, or
+    #   left-most) 24 bits of the 32-bit netmask will be set to 1's. This
+    #   (`/24`) is the same as `255.255.255.0`. See below for details and a
+    #   full list of possible netmasks. 
     sudo ip address change dev eth_dummy 10.0.0.1/24
 
     # 7. See the newly-created device and the IP address you just
@@ -81,7 +56,60 @@ _Tested on Ubuntu 18.04 and 22.04._
 Done!
 
 
-## 2. More details
+## 2. Netmasks
+
+Here is a full list of possible netmasks when setting the IP address and netmask as `ip/netmask`, such as `10.0.0.1/24`. The `/24` here means that the first (most-significant, or left-most) 24 bits of the 32-bit netmask will be set to `1`s. Netmask `/24` is the same as `255.255.255.0`. 
+
+Here is a full list of possible netmasks:
+
+Whole-byte netmasks:
+```
+/32 = 255.255.255.255
+/24 = 255.255.255.0     # <== most common
+/16 = 255.255.0.0
+/8  = 255.0.0.0
+/0  = 0.0.0.0           # (I don't even know if this is a valid option)
+```
+
+All netmasks:
+```
+/32 = 255.255.255.255
+/31 = 255.255.255.254
+/30 = 255.255.255.252
+/29 = 255.255.255.248
+/28 = 255.255.255.240
+/27 = 255.255.255.224
+/26 = 255.255.255.192
+/25 = 255.255.255.128
+/24 = 255.255.255.0     # <== most common
+/23 = 255.255.254.0
+/22 = 255.255.252.0
+/21 = 255.255.248.0
+/20 = 255.255.240.0
+/19 = 255.255.224.0
+/18 = 255.255.192.0
+/17 = 255.255.128.0
+/16 = 255.255.0.0
+/15 = 255.254.0.0
+/14 = 255.252.0.0
+/13 = 255.248.0.0
+/12 = 255.240.0.0
+/11 = 255.224.0.0
+/10 = 255.192.0.0
+/9 = 255.128.0.0
+/8 = 255.0.0.0
+/7 = 254.0.0.0
+/6 = 252.0.0.0
+/5 = 248.0.0.0
+/4 = 240.0.0.0
+/3 = 224.0.0.0
+/2 = 192.0.0.0
+/1 = 128.0.0.0
+/0 = 0.0.0.0            # (I don't even know if this is a valid option)
+```
+
+
+## 3. More details
 
 `lsmod` shows "the status of modules in the Linux Kernel" (see `man lsmod`). Try it out! Just type in
 ```bash
