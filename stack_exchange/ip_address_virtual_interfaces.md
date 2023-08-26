@@ -29,13 +29,14 @@ _Tested on Ubuntu 18.04 and 22.04._
     # 5. View it. You'll now see "eth_dummy" as one of your attached interfaces.
     ip address
 
-    # 6. Change this new interface's IP address to whatever you like: 
-    # Ex: `10.0.0.1/24` in this case. 
+    # 6. Add an IP address and netmask to this new dummy interface. Use any IP
+    # address and netmask you like. Ex: `10.0.0.1/24` in this case. 
     # - Note that the `/24` means that the first (most-significant, or
     #   left-most) 24 bits of the 32-bit netmask will be set to 1's. This
     #   (`/24`) is the same as `255.255.255.0`. See below for details and a
-    #   full list of possible netmasks. 
-    sudo ip address change dev eth_dummy 10.0.0.1/24
+    #   full list of possible netmasks.
+    # - See `ip address help` for command syntax help. 
+    sudo ip address add 10.0.0.1/24 dev eth_dummy
 
     # 7. See the newly-created device and the IP address you just
     # assigned to it.
@@ -44,10 +45,32 @@ _Tested on Ubuntu 18.04 and 22.04._
 
     That's it!
 
+1. Add as many IP addresses as you want to your dummy interface: 
+
+    In case you are using sockets to receive from (bind to, and receive on) many different IP addresses at once, you can easily add them all to this one dummy interface. 
+
+    Here, I am adding two more IP addresses and netmasks as I see fit:
+    ```bash
+    sudo ip address add 192.168.2.1/24 dev eth_dummy
+    sudo ip address add 10.5.4.1/8 dev eth_dummy
+    ```
+
+    `ip address` now shows the following for my `eth_dummy` virtual (`type dummy`) interface. So, I can have my C, C++, Python, etc. sockets bind to IP addresses `10.0.0.1`, `192.168.2.1`, and `10.5.4.1` on this interface. This is great for airplane travel when you need to test your network and simulated output packets without having a real network switch plugged into your computer (I'm on an airplane now as I write this. Pretty sure that puts me in the "mile high" coding club). 
+    ```bash
+    10: eth_dummy: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN group default qlen 1000
+        link/ether 4a:e7:bc:8f:2e:2d brd ff:ff:ff:ff:ff:ff
+        inet 10.0.0.1/24 scope global eth_dummy
+           valid_lft forever preferred_lft forever
+        inet 192.168.2.1/24 scope global eth_dummy
+           valid_lft forever preferred_lft forever
+        inet 10.5.4.1/8 scope global eth_dummy
+           valid_lft forever preferred_lft forever
+    ```
+
 1. To delete this dummy interface:
     ```bash
     # 1. Delete this `eth_dummy` dummy device you created.
-    sudo ip link delete eth_dummy type dummy
+    sudo ip link delete eth_dummy
 
     # 2. Ensure 'eth_dummy' is deleted and doesn't show up here now.
     ip address
@@ -209,6 +232,7 @@ TYPE := { vlan | veth | vcan | vxcan | dummy | ifb | macvlan | macvtap |
 1. `man ip link`
 1. `ip address help`
 1. `man ip address`
+1. [Server Fault: understanding "ip addr change" and "ip addr replace" commands](https://serverfault.com/a/666521/357116) - very useful to understand the difference between `ip address add`, `ip address change`, and `ip address replace`, as well as `ip address del`.
 
 
 ## Related
