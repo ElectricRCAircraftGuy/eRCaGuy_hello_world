@@ -10,7 +10,7 @@ _Tested on Ubuntu 18.04 and 22.04._
 
 ## 1. The basics
 
-1. Create a virtual (dummy) adapter/interface
+1. **Create a virtual (dummy) adapter/interface device**
     ```bash
     # 1. Install the "dummy" socket interface Linux kernel module.
     sudo modprobe dummy
@@ -45,7 +45,9 @@ _Tested on Ubuntu 18.04 and 22.04._
 
     That's it!
 
-1. Add as many IP addresses as you want to your dummy interface: 
+1. **Add IP addresses to your interface:** 
+
+    You can add as many IP addresses as you want to your network interface. 
 
     In case you are using sockets to receive from (bind to, and receive on) many different IP addresses at once, you can easily add them all to this one dummy interface. 
 
@@ -67,7 +69,23 @@ _Tested on Ubuntu 18.04 and 22.04._
            valid_lft forever preferred_lft forever
     ```
 
-1. To delete this dummy interface:
+1. **Delete or update existing IP addresses on your interface:**
+
+    To change an existing IP address on your interface, you must delete and re-add it. The `ip address change` command is something else entirely--[it changes flags/configuration parameters on an existing IP address](https://serverfault.com/a/666521/357116). So, delete and re-add an IP address on your interface like this:
+    ```bash
+    # general form
+    sudo ip address del <current_ip_address> dev <interface_device_name>
+    sudo ip address add <new_ip_address> dev <interface_device_name>
+
+    # Example: change `10.5.4.1/8` above to `32.42.52.62/28`
+    sudo ip address del 10.5.4.1/8 dev eth_dummy
+    sudo ip address add 32.42.52.62/28 dev eth_dummy
+
+    # verify the change
+    ip address
+    ```
+
+1. **Delete the entire dummy interface device:**
     ```bash
     # 1. Delete this `eth_dummy` dummy device you created.
     sudo ip link delete eth_dummy
@@ -78,8 +96,64 @@ _Tested on Ubuntu 18.04 and 22.04._
 
 Done!
 
+To learn more about the `ip address add` and `ip address change` type commands, see:
+1. `ip address help`, as well as: 
+1. This answer here: [Server Fault: understanding "ip addr change" and "ip addr replace" commands](https://serverfault.com/a/666521/357116). 
 
-## 2. Netmasks
+
+## Details
+
+
+## 2. Non-standard forms
+
+I have observed, [as has @Martin on ServerFault](https://serverfault.com/q/476926/357116), that:
+
+> If I execute `ip addr change 10.11.12.6/24 dev eth0` or `ip addr replace 10.11.12.6/24 dev eth0` then `10.11.12.6` is just added to `eth0`.
+
+This is also the case with `ip addr add 10.11.12.6/24 dev eth0`. 
+
+So, you can also *add* a new IP address to your interface using `ip address change` or `ip address replace` instead of `ip address add`. Don't do that, however. That's just confusing. The `add` command is intended to *add* a new IP address, and the `change` command is intended to *change* config flags in an existing IP address. Note that `change` does *not* update nor change the IP address itself. To do that, use `del` to delete an existing IP address first, and then `add` to add a new one. Nobody really seems to know what `replace` is for or how it's different from `change`. The source code holds the answer I suppose. 
+
+So these technically all do the same thing:
+```bash
+# add IP address 10.11.12.6/24
+sudo ip address add 10.11.12.6/24 dev eth_dummy     # standard way to add this IP (recommended)
+sudo ip address change 10.11.12.6/24 dev eth_dummy  # non-standard way to add this IP
+sudo ip address replace 10.11.12.6/24 dev eth_dummy # non-standard way to add this IP
+```
+
+And you can also put the IP address at the end of the command too, but that's also a non-standard form. `ip address help` shows the IP (as `IFADDR`, or "interface address") coming *before* the word `dev`. So, here are the alternative forms:
+```bash
+sudo ip address add 10.11.12.6/24 dev eth_dummy     # standard way to add this IP (recommended)
+sudo ip address add dev eth_dummy 10.11.12.6/24     # non-standard way to add this IP
+```
+
+And you don't have to type out the whole word `address`. The `ip` command is smart enough that once it sees some of the `address` argument, it accepts it, since no other argument to `ip` in this position begins with `a`. So, these all work:
+```bash
+sudo ip address add 10.11.12.6/24 dev eth_dummy  # standard form
+# "short", non-standard forms:
+sudo ip addres add 10.11.12.6/24 dev eth_dummy
+sudo ip addre add 10.11.12.6/24 dev eth_dummy
+sudo ip addr add 10.11.12.6/24 dev eth_dummy
+sudo ip add add 10.11.12.6/24 dev eth_dummy  # yeah that's confusing: `add add...`
+sudo ip ad add 10.11.12.6/24 dev eth_dummy
+sudo ip a add 10.11.12.6/24 dev eth_dummy
+```
+
+Lastly, don't forget the `/number` part at the end to specify the netmask. Consider the following:
+```bash
+# This:
+sudo ip address add 10.11.12.6 dev eth_dummy
+# Defaults to this, which isn't very useful
+sudo ip address add 10.11.12.6/32 dev eth_dummy
+
+# So, remember to specify your own useful netmask, such as 
+# `/24` (255.255.255.0), instead, like this:
+sudo ip address add 10.11.12.6/24 dev eth_dummy
+```
+
+
+## 3. Netmasks
 
 Here is a full list of possible netmasks when setting the IP address and netmask as `ip/netmask`, such as `10.0.0.1/24`. The `/24` here means that the first (most-significant, or left-most) 24 bits of the 32-bit netmask will be set to `1`s. Netmask `/24` is the same as `255.255.255.0`. 
 
@@ -132,7 +206,7 @@ All netmasks:
 ```
 
 
-## 3. More details
+## 4. More details
 
 `lsmod` shows "the status of modules in the Linux Kernel" (see `man lsmod`). Try it out! Just type in
 ```bash
@@ -161,7 +235,7 @@ After you have created your new virtual interface, you will see it in the output
 
 ----
 
-Wait, but my coworker ran `sudo ip addr change dev eth_dummy 10.0.0.1`, in place of `sudo ip address change dev eth_dummy 10.0.0.1` (notice `addr` in place of `address`). Or, maybe they ran `sudo ip a change dev eth_dummy 10.0.0.1` (notice `a` in place of `address`). What's up with that!?
+Wait, but my coworker ran `sudo ip addr change 10.0.0.1 dev eth_dummy`, in place of `sudo ip address change 10.0.0.1 dev eth_dummy` (notice `addr` in place of `address`). Or, maybe they ran `sudo ip a change 10.0.0.1 dev eth_dummy` (notice `a` in place of `address`). What's up with that!?
 
 Well, this particular command only needs enough of its characters to ensure it knows what you mean. In other words, _once you have enough characters in the command for it to know you couldn't possibly mean any other command, it accepts it._ Since no other subcommand after `ip` starts with the letter `a`, `ip a` is enough. Therefore, all of the below commands are equivalent:
 ```bash
@@ -192,7 +266,7 @@ where  OBJECT := { link | address | addrlabel | route | rule | neigh | ntable |
                     -rc[vbuf] [size] | -n[etns] name | -a[ll] | -c[olor]}
                     ```
 
-And `ip address help` (or `man ip address`), _to see the existence of the `ip address change` command!_:
+And you can run `ip address help` (or `man ip address`), _to see the existence of the `ip address add` and `ip address change` commands!_:
 ```bash
 $ ip address help
 Usage: ip address {add|change|replace} IFADDR dev IFNAME [ LIFETIME ]
