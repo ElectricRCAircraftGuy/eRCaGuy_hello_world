@@ -6,7 +6,8 @@ https://unix.stackexchange.com/a/593142/114401
 -->
 
 
-## Adding virtual (dummy) interface devices on Linux, and an introduction to the `ip address` command and adding or deleting IP addresses and netmasks
+## Adding virtual (dummy) interface devices on Linux
+...and an introduction to the `ip address` command and adding or deleting IP addresses and netmasks.
 
 _Tested on Ubuntu 18.04 and 22.04._
 
