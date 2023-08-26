@@ -340,8 +340,9 @@ TYPE := { vlan | veth | vcan | vxcan | dummy | ifb | macvlan | macvtap |
 1. [Server Fault: understanding "ip addr change" and "ip addr replace" commands](https://serverfault.com/a/666521/357116) - very useful to understand the difference between `ip address add`, `ip address change`, and `ip address replace`, as well as `ip address del`.
 
 
-## Related
+## See also
 1. [my answer] [AskUbuntu: How to enable/disable networking (ethernet or wifi) devices, arbitrarily](https://askubuntu.com/questions/168032/how-to-disable-built-in-wifi-and-use-only-usb-wifi-card/1320155#1320155)
+1. [LinuxHandbook.com: How to Change IP Address in Linux](https://linuxhandbook.com/change-ip-address/)
 
 
 
