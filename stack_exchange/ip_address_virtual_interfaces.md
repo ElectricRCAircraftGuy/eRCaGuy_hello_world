@@ -8,6 +8,40 @@ https://unix.stackexchange.com/a/593142/114401
 _Tested on Ubuntu 18.04 and 22.04._
 
 
+## Quick summary
+
+```bash
+# See all network interface devices and their IPs and netmasks
+ip address
+ip a  # Or (same thing) short version
+
+# Create a virtual (dummy) interface named `eth_dummy`.
+sudo ip link add eth_dummy type dummy
+# see that it exists now
+ip a
+
+# Give it 3 IP addresses with netmask `/24` (255.255.255.0)
+sudo ip address add 10.0.0.1/24 dev eth_dummy
+sudo ip address add 192.168.2.1/24 dev eth_dummy
+sudo ip address add 200.201.202.203/24 dev eth_dummy
+# See that it has these 3 IP addresses with netmask `/24` now
+ip a
+
+# Delete `200.201.202.203/24` on the `eth_dummy` virtual (dummy) interface
+sudo ip address del 200.201.202.203/24 dev eth_dummy
+# See that the above IP is gone now
+ip a 
+
+# Delete the whole `eth_dummy` interface
+sudo ip link delete eth_dummy
+# See that it is gone now
+ip a
+```
+
+
+## Details
+
+
 ## 1. The basics
 
 1. **Create a virtual (dummy) adapter/interface device**
@@ -98,10 +132,7 @@ Done!
 
 To learn more about the `ip address add` and `ip address change` type commands, see:
 1. `ip address help`, as well as: 
-1. This answer here: [Server Fault: understanding "ip addr change" and "ip addr replace" commands](https://serverfault.com/a/666521/357116). 
-
-
-## Details
+1. This answer here: [Server Fault: understanding "ip addr change" and "ip addr replace" commands](https://serverfault.com/a/666521/357116).
 
 
 ## 2. Non-standard forms
