@@ -108,11 +108,27 @@ def git_get_short_hash2():
     return git_short_hash
 
 
+# (Best for most cases, if I copy this file into another project)
 def git_get_short_hash3():
-    """
-    Same as `git_get_short_hash2()`, but cd's into the directory **where this script is located**
-    first.
-    """
+    '''
+    Same as `git_get_short_hash2()`, but first `cd`s into the directory **where this script is
+    located**.
+
+    Example usage:
+    - Use this function in another program of yours like this, for instance:
+
+    ```python
+    import git_get_short_hash.git_get_short_hash3 as git_get_short_hash
+    import textwrap
+
+    git_short_hash = git_get_short_hash()
+    program_info_str = textwrap.dedent(f"""\
+        Program version: {git_short_hash}
+    """)
+    print(program_info_str)
+    mylogfile.write(program_info_str)
+    ```
+    '''
 
     # See: https://stackoverflow.com/a/431715/4561887
     os.chdir(SCRIPT_DIRECTORY)
