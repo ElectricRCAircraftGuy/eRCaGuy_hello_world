@@ -8,6 +8,7 @@
 # Get a short git hash that also indicates if a repo has a "dirty" git status,
 # for use in software versioning systems to track software versions.
 # - See my answer here: https://stackoverflow.com/a/76856090/4561887
+# - SEE ALSO THE PYTHON VERSION: "eRCaGuy_hello_world/python/git_get_short_hash.py"
 #
 # STATUS: done and works!
 
@@ -30,7 +31,7 @@
 
 # References:
 # 1. My answer: https://stackoverflow.com/a/76856090/4561887
-# 1.
+# 1. SEE ALSO THE PYTHON VERSION: "eRCaGuy_hello_world/python/git_get_short_hash.py"
 
 
 RETURN_CODE_SUCCESS=0
