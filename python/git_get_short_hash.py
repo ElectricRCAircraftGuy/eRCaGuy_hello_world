@@ -108,6 +108,18 @@ def git_get_short_hash2():
     return git_short_hash
 
 
+def git_get_short_hash3():
+    """
+    Same as `git_get_short_hash2()`, but cd's into the directory **where this script is located**
+    first.
+    """
+
+    # See: https://stackoverflow.com/a/431715/4561887
+    os.chdir(SCRIPT_DIRECTORY)
+    git_short_hash = git_get_short_hash2()
+    return git_short_hash
+
+
 def main():
     """
     The main function of this program.
@@ -116,6 +128,9 @@ def main():
     print(git_short_hash)
 
     git_short_hash = git_get_short_hash2()
+    print(git_short_hash)
+
+    git_short_hash = git_get_short_hash3()
     print(git_short_hash)
 
 
@@ -130,13 +145,15 @@ SAMPLE OUTPUT:
 (while in this git repo):
 
     eRCaGuy_hello_world$ python/git_get_short_hash.py
-    1f6413d-dirty
-    1f6413d-dirty
+    c628ba7-dirty
+    c628ba7-dirty
+    c628ba7-dirty
 
 (while NOT in a git repo):
 
     $ eRCaGuy_hello_world/python/git_get_short_hash.py
     (not a git repo)
     None
+    c628ba7-dirty
 
 """
