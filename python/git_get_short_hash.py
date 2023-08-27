@@ -99,9 +99,9 @@ def git_get_short_hash2():
 
     # See if the `git status` is clean or dirty
 
-    result = subprocess.run(['test', '-z', '"$(git status --porcelain)"'],
-        capture_output=True, text=True)
-    if result.returncode != 0:
+    result_of_git_status = subprocess.run(['git', 'status', '--porcelain'],
+        capture_output=True, text=True).stdout
+    if len(result_of_git_status) != 0:
         # git status is dirty
         git_short_hash += "-dirty"
 
