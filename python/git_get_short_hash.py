@@ -118,11 +118,15 @@ def git_get_short_hash3():
     - Use this function in another program of yours like this, for instance:
 
     ```python
-    import git_get_short_hash.git_get_short_hash3 as git_get_short_hash
+    import git_get_short_hash
     import textwrap
+
+    # Alias the function to a shorter name
+    git_get_short_hash = git_get_short_hash.git_get_short_hash3
 
     git_short_hash = git_get_short_hash()
     program_info_str = textwrap.dedent(f"""\
+        My other program details here...
         Program version: {git_short_hash}
     """)
     print(program_info_str)
