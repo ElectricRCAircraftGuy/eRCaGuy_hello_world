@@ -8,10 +8,14 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 Programs written with it include `gpsmon` (I'm guessing), `htop` (I'm guessing), and `ncdu` (I'm guessing, based on its initials: 'n''c'urses 'd'isk 'u'sage). 
 
 
-# Getting started
+# Getting started / References
 
-1. https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html
+1. \*\*\*\*\*+ https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/index.html
     1. Hello world: https://tldp.org/HOWTO/NCURSES-Programming-HOWTO/helloworld.html
+1. Examples from others:
+    1. Logan Wright: 
+        1. https://github.com/loganwrightAI/LinuxCMDProjects
+            1. https://github.com/loganwrightAI/LinuxCMDProjects/issues/1
 
 
 # Build and install the latest version of `ncurses` from source code
