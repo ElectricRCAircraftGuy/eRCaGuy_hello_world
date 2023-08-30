@@ -53,6 +53,22 @@ References:
 /// Safely and efficiently return `abs((int8_t)num1 - (int8_t)num2)`
 uint8_t abs_num1_minus_num2_int8(int8_t num1, int8_t num2)
 {
+    // Note: due to implicit type promotion rules, rule 2 in my answer here
+    // (https://stackoverflow.com/a/72654668/4561887) applies, and both the `>`
+    // comparison, as well as subtraction, take place below as `int` types.
+    // While signed `int` overflow and underflow is undefined behavior, none of
+    // that occurs here.
+    // - It's just useful to understand that even though we are doing
+    //   `(uint8_t)num1 -(uint8_t)num2`, the C compiler really sees it as this:
+    //   `(int)(uint8_t)num1 - (int)(uint8_t)num2`.
+    // - This is because all small types smaller than `int`, such as `uint8_t`,
+    //   are first automatically implicitly cast to `int` before any
+    //   mathematical operation or comparison occurs.
+    // - The C++ compiler therefore sees it as this:
+    //   `static_cast<int>(static_cast<unsigned char>(num1)) - static_cast<int>(static_cast<unsigned char>(num2))`.
+    //   - Run this code through https://cppinsights.io/ to see that.
+    //     See here: https://cppinsights.io/s/bfc425f6 --> and click the play
+    //     button.
     uint8_t abs_diff = num1 > num2 ?
         (uint8_t)num1 - (uint8_t)num2 :
         (uint8_t)num2 - (uint8_t)num1;
