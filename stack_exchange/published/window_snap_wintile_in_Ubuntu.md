@@ -78,25 +78,71 @@ That's it! This is an _excellent_ extension to use keyboard shortcuts to resize 
 
 ## Extension 2: WinTile (allows you to drag with the mouse your windows to resize and snap them to left, right, or corners)
 
+_Tested in Ubuntu 22.04 with both the X11 and Wayland window manager servers, and in Ubuntu 18.04 and 20.04 with X11._ It works phenomenally-well in Ubuntu 22.04, with both the X _and_ Wayland window manager servers, and easily snaps windows into corners or edges.
+
 Note: WinTile also adds the ability to snap to corners with the keyboard using <kbd>Super</kbd> + <kbd>left Arrow</kbd> and then <kbd>Super</kbd> + <kbd>upper Arrow</kbd>, for instance.
 
-_Tested in Ubuntu 22.04 with both the X11 and Wayland window manager servers, and in Ubuntu 18.04 and 20.04 with X11._
- 
-**If in a hurry, just jump straight down to the "Install WinTile" section below. It's just a few short steps.**
-
-**As of 3 July 2023 it is now up-to-date with the necessary bug-fixes it was missing for a few years, and you no longer have to install [WinTile Reloaded](https://github.com/ElectricRCAircraftGuy/wintile-reloaded)!**
-
-The [**WinTile** tool](https://extensions.gnome.org/extension/1723/wintile-windows-10-window-tiling-for-gnome/) works phenomenally-well in Ubuntu 22.04, with both the X _and_ Wayland window manager servers, and easily snaps windows into corners or edges.
-
-It takes some getting used-to compared to the tools I've been using for the past 8 years: CompizConfig in Unity in Ubuntu 14.04 and 16.04 and the ["Put Windows"](https://askubuntu.com/a/1089033/327339) tool in GNOME in Ubuntu 18.04 and 20.04, but overall it gives a more-natural experience if you're using a mouse. Just drag the window towards the monitor edge or towards the corner and it automatically resizes and snaps accordingly! [Here is an animated gif](https://github.com/Fmstrat/wintile/raw/master/demo.gif) from the GitHub page: https://github.com/Fmstrat/wintile: 
+[Here is an animated gif](https://github.com/Fmstrat/wintile/raw/master/demo.gif) from the GitHub page: https://github.com/Fmstrat/wintile: 
 
 [![enter image description here][9]][9]
 
-Here is the main WinTile repo: https://github.com/Fmstrat/wintile. 
+Here are the repos: 
+1. WinTile: https://github.com/Fmstrat/wintile
+1. WinTile Reloaded: https://github.com/ElectricRCAircraftGuy/wintile-reloaded
+
+
+## Option 2.1: WinTile Reloaded (what I recommend you try first; is generally less buggy; is forked off of WinTile)
+
+_Note: to see my previous "WinTile Reloaded" installation instructions instead, see an earlier version of this answer here: <https://askubuntu.com/revisions/1446690/19>._
+
+#### Install it
+
+We will use my repo fork at https://github.com/ElectricRCAircraftGuy/wintile-reloaded. Here's how to install it:
+
+Open a terminal with <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>T</kbd> and run the following commands, one-at-a-time:
+
+```bash
+cd ~/.local/share/gnome-shell/extensions
+# clone the tool
+git clone https://github.com/ElectricRCAircraftGuy/wintile-reloaded.git
+# rename it
+mv wintile-reloaded wintile-reloaded@jaajeur.xyz
+
+# log out of Ubuntu
+gnome-session-quit
+```
+
+#### Enable and configure it
+
+After logging out of Ubuntu and logging back in, press your Windows key and search for "Extension Manager". As of Ubuntu 22.04, it's a blue puzzle piece, as previously shown above. Click it. Click the slider to activate "WinTile RELOADED". Click the gear icon and set your settings like this:
+
+[![enter image description here][17]][17]
+
+That's it! Drag windows to the corners or edges of your monitor to your heart's content. 
+
+Note that there are two ways to change the settings:
+1. Option 1: via the browser:
+    1. Go here: https://extensions.gnome.org/local/.
+    1. Under the "Installed Extensions" heading, look for "WinTile RELOADED".
+    1. Click the little tool (blue screwdriver and wrench) icon.
+1. Option 2 [my preference]: via the `gnome-shell-extension-manager` GUI that you should have installed as part of the "Extension 1" instructions above. 
+    1. Press your <kbd>Super</kbd> (<kbd>Windows</kbd>) key, and type in "extensions". Open the "Extensions" tool.
+    1. Find "WinTile RELOADED" and click the round settings button.
+
+In both cases, the above settings window is opened. Here are the possible settings to tweak. **I decreased my `Delay in ms before preview displays` setting from the default `500` ms to `100` ms to make it much snappier,** and I **decreased my `Number of columns` setting from `3` to `2`.**
+
+#### Final thoughts
+
+I *love* this tool and use it *extensively*! 
+
+Overall, it's not quite as versatile as "Put Windows" or "Awesome Tiles", but WinTile works great in Ubuntu 22.04, with both Wayland and X window servers, and it's more-intuitive for Windows users and those who like to use trackpads or mice 🖱. 
+
+It takes some getting used-to compared to the tools I've been using for the past 8 years: CompizConfig in Unity in Ubuntu 14.04 and 16.04 and the ["Put Windows"](https://askubuntu.com/a/1089033/327339) tool in GNOME in Ubuntu 18.04 and 20.04, but overall it gives a more-natural experience if you're using a mouse. Just drag the window towards the monitor edge or towards the corner and it automatically resizes and snaps accordingly! 
+
+
+## Option 2.2: WinTile (has more features and commits)
 
 #### Install WinTile from the Gnome Extension Manager
-
-_Note: to see my old "WinTile Reloaded" installation instructions instead, see this older version of this answer here: <https://askubuntu.com/revisions/1446690/19>._
 
 Press your Windows key and search for "Extension Manager". As of Ubuntu 22.04, it's a blue puzzle piece, as previously shown above. Click it. Click the "Browse" tab at the top, then search for "wintile". Click the "Install" button to install it. Here you can see mine is already "Installed":
 
@@ -160,13 +206,10 @@ In both cases, the below settings window is opened. Here are the possible settin
 [![enter image description here][16]][16]
 
 
-I *love* this tool and use it *extensively*! 
+## WinTile issues, and WinTile Reloaded references:
 
-Overall, it's not quite as versatile as "Put Windows" or "Awesome Tiles", but WinTile works great in Ubuntu 22.04, with both Wayland and X window servers, and it's more-intuitive for Windows users and those who like to use trackpads or mice 🖱. 
-
-#### WinTile issues, and WinTile Reloaded references:
 1. To see my old "WinTile Reloaded" installation instructions, see this older version of this answer here: https://askubuntu.com/revisions/1446690/19
-
+1. All my issues: https://github.com/Fmstrat/wintile/issues?q=is%3Aissue+author%3AElectricRCAircraftGuy+
 1. https://github.com/Fmstrat/wintile/issues/81
 1. https://github.com/Fmstrat/wintile/issues/91
 1. https://github.com/Fmstrat/wintile/issues/168
@@ -207,3 +250,4 @@ See also my personal website article: [Common ways to fix video driver (and rela
   [14]: https://i.stack.imgur.com/pj3Vc.png
   [15]: https://i.stack.imgur.com/EIb2U.png
   [16]: https://i.stack.imgur.com/koD0R.png
+  [17]: https://i.stack.imgur.com/f8ln0.png
