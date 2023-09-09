@@ -2,8 +2,8 @@
 
 # GS
 # 9 Sept. 2023
-# Bing AI: Plotting sine waves in Python (open in Edge browser only):
-# https://sl.bing.net/iaa7CFoBq2e
+# Bing AI [open in Edge browser only]: Plotting sine waves in Python:
+# https://sl.bing.net/i0je9FwGFGe
 #
 # Requirements:
 #
