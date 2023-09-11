@@ -341,6 +341,42 @@ def time_unix_to_tai10(timestamp_unix_ns):
     timestamp_tai10_ns = time_tai_to_tai10(time_unix_to_tai(timestamp_unix_ns))
     return timestamp_tai10_ns
 
+# BONUS FUNCTION:
+def time_tai10_to_unix_simple(timestamp_tai10_ns):
+    """
+    Convert from TAI to Unix time, for the **simplest of cases.**
+
+    Assume:
+
+    1. The TAI timstamp coming in also uses the Unix epoch of 1 Jan 1970. This isn't technically how
+       it is supposed to be according to the TAI standard, but it may be how some people or
+       libraries are making TAI timestamps.
+    2. The TAI time being passed in is actually TAI-10 time, meaning that 10 seconds has already
+       been subtracted from it, as would have been done when TAI time was first introduced in 1 Jan.
+       1972.
+    3. All timestamps being converted are after 1 Jan. 2017, on and after which point the number of
+       leap seconds to subtract from TAI time to get Unix or UTC time (note: Unix time and TAI time
+       not the same thing, but it applies to both) would be **37** leap seconds. Refer to the leap
+       seconds table in the references just below.
+    4. Unix = TAI - leap_seconds, and
+       TAI = Unix + leap_seconds
+
+    If the above assumptions are all true, then you only need to subtract (37 - 10 = 27) leap
+    seconds from TAI time to get Unix time. ie:
+
+    Unix = TAI - 27    but taking into account proper units (ex: ns vs sec)
+
+    See also:
+    1. leap-seconds.list Leap Seconds table:
+        1. https://www.ietf.org/timezones/data/leap-seconds.list
+        1. And on your local Linux Ubuntu computer here: "/usr/share/zoneinfo/leap-seconds.list"
+    1. Wikipedia: Unix Time: https://en.wikipedia.org/wiki/Unix_time
+    1. Wikipedia: UTC Time:  https://en.wikipedia.org/wiki/Coordinated_Universal_Time
+    1. Wikipedia: TAI Time:  https://en.wikipedia.org/wiki/International_Atomic_Time
+    """
+    timestamp_unix_ns = timestamp_tai10_ns - 27_000_000_000
+    return timestamp_unix_ns
+
 def run_unit_tests():
     print("Running unit tests.")
 
