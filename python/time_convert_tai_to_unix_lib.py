@@ -18,7 +18,15 @@ https://metacpan.org/pod/Time::TAI::Simple#ABOUT-TAI,-TAI10,-TAI35
   still confused about some of these details. Also, not everyone and not every library does this the
   same.
 
-Status: WIP
+Status: meh; close enough for now! I've unit tested only the `get_leap_seconds_from_unix_time()` and
+`get_leap_seconds_from_tai_time()` functions, and they work. But, even they are slightly botched
+because the `LEAP_SECONDS_TABLE_NEW` is imperfect, as my timestamps are not perfectly aligned, and
+I'm not even sure whether the column 1 in the leap seconds file table is TAI time, Unix time, UTC
+time, or something else!
+
+- See my `utc_time_string = "1 Jan. 2023"` type practice code below. I think I need to incorporate
+  that type of thing into my unit tests too, to check dates just before and after each new leap
+  second entry in the table.
 
 keywords: (keywords)
 
@@ -86,6 +94,7 @@ References:
 
 
 SCRATCH:
+
 ```python
 import datetime
 import time
@@ -93,6 +102,25 @@ import time
 timestamp_unix_sec = time.time()
 timestamp_utc_object = datetime.datetime.fromtimestamp(timestamp_unix_sec, tz=datetime.timezone.utc)
 ```
+
+I need to study this. ChatGPT provided it here:
+https://chat.openai.com/share/9733229e-37c2-4275-b9e5-f33ad990becc
+```python
+from datetime import datetime
+
+# Define the UTC time string
+utc_time_string = "1 Jan. 2023"
+
+# Create a datetime object from the UTC time string
+utc_datetime = datetime.strptime(utc_time_string, "%d %b. %Y")
+
+# Calculate the Unix timestamp
+unix_timestamp = (utc_datetime - datetime(1970, 1, 1)).total_seconds()
+
+# Print the Unix timestamp
+print(int(unix_timestamp))
+```
+
 """
 
 
@@ -319,8 +347,36 @@ def run_unit_tests():
     print("LEAP_SECONDS_TABLE_NEW:")
     pprint.pprint(LEAP_SECONDS_TABLE_NEW)
 
-    # TODO: add unit tests!
+    assert get_leap_seconds_from_unix_time(0) == 0
+    assert get_leap_seconds_from_unix_time(1) == 0
 
+    assert get_leap_seconds_from_unix_time(63072000000000000 - 1) == 0
+    assert get_leap_seconds_from_unix_time(63072000000000000 - 0) == 10
+    assert get_leap_seconds_from_unix_time(63072000000000000 + 1) == 10
+
+    assert get_leap_seconds_from_unix_time(741484800000000000 - 1) == 27
+    assert get_leap_seconds_from_unix_time(741484800000000000 - 0) == 28
+    assert get_leap_seconds_from_unix_time(741484800000000000 + 1) == 28
+
+    assert get_leap_seconds_from_unix_time(1483228800000000000 - 1) == 36
+    assert get_leap_seconds_from_unix_time(1483228800000000000 - 0) == 37
+    assert get_leap_seconds_from_unix_time(1483228800000000000 + 1) == 37
+
+    assert get_leap_seconds_from_tai_time(63072010000000000 - 1) == 0
+    assert get_leap_seconds_from_tai_time(63072010000000000 - 0) == 10
+    assert get_leap_seconds_from_tai_time(63072010000000000 + 1) == 10
+
+    assert get_leap_seconds_from_tai_time(741484828000000000 - 1) == 27
+    assert get_leap_seconds_from_tai_time(741484828000000000 - 0) == 28
+    assert get_leap_seconds_from_tai_time(741484828000000000 + 1) == 28
+
+    assert get_leap_seconds_from_tai_time(1483228837000000000 - 1) == 36
+    assert get_leap_seconds_from_tai_time(1483228837000000000 - 0) == 37
+    assert get_leap_seconds_from_tai_time(1483228837000000000 + 1) == 37
+
+    # TODO: add a lot more more unit tests!
+
+    print("ALL UNIT TESTS PASSED!")
 
 def main():
     """
@@ -339,8 +395,38 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/python$ ./time_convert_tai_to_unix_lib
-.py
-    Hello world!
+    eRCaGuy_hello_world$ python/time_convert_tai_to_unix_lib.py
+    Running unit tests.
+    LEAP_SECONDS_TABLE_NEW:
+    [(63072000000000000, 63072010000000000, 10, '1 Jan 1972'),
+    (78796800000000000, 78796811000000000, 11, '1 Jul 1972'),
+    (94694400000000000, 94694412000000000, 12, '1 Jan 1973'),
+    (126230400000000000, 126230413000000000, 13, '1 Jan 1974'),
+    (157766400000000000, 157766414000000000, 14, '1 Jan 1975'),
+    (189302400000000000, 189302415000000000, 15, '1 Jan 1976'),
+    (220924800000000000, 220924816000000000, 16, '1 Jan 1977'),
+    (252460800000000000, 252460817000000000, 17, '1 Jan 1978'),
+    (283996800000000000, 283996818000000000, 18, '1 Jan 1979'),
+    (315532800000000000, 315532819000000000, 19, '1 Jan 1980'),
+    (362793600000000000, 362793620000000000, 20, '1 Jul 1981'),
+    (394329600000000000, 394329621000000000, 21, '1 Jul 1982'),
+    (425865600000000000, 425865622000000000, 22, '1 Jul 1983'),
+    (489024000000000000, 489024023000000000, 23, '1 Jul 1985'),
+    (567993600000000000, 567993624000000000, 24, '1 Jan 1988'),
+    (631152000000000000, 631152025000000000, 25, '1 Jan 1990'),
+    (662688000000000000, 662688026000000000, 26, '1 Jan 1991'),
+    (709948800000000000, 709948827000000000, 27, '1 Jul 1992'),
+    (741484800000000000, 741484828000000000, 28, '1 Jul 1993'),
+    (773020800000000000, 773020829000000000, 29, '1 Jul 1994'),
+    (820454400000000000, 820454430000000000, 30, '1 Jan 1996'),
+    (867715200000000000, 867715231000000000, 31, '1 Jul 1997'),
+    (915148800000000000, 915148832000000000, 32, '1 Jan 1999'),
+    (1136073600000000000, 1136073633000000000, 33, '1 Jan 2006'),
+    (1230768000000000000, 1230768034000000000, 34, '1 Jan 2009'),
+    (1341100800000000000, 1341100835000000000, 35, '1 Jul 2012'),
+    (1435708800000000000, 1435708836000000000, 36, '1 Jul 2015'),
+    (1483228800000000000, 1483228837000000000, 37, '1 Jan 2017')]
+    ALL UNIT TESTS PASSED!
+
 
 """
