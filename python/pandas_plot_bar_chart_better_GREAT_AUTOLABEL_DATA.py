@@ -24,14 +24,14 @@ installation instructions to install the latest version from GitHub.
 For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
 https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
-pylint pandas_plot_bar_chart.py
+pylint pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA
 ```
 
 Run command:
 ```bash
-./pandas_plot_bar_chart.py
+./pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA
 # OR
-python3 pandas_plot_bar_chart.py
+python3 pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA
 ```
 
 References:
@@ -109,7 +109,7 @@ plt.show()
 """
 SAMPLE OUTPUT:
 
-eRCaGuy_hello_world$ python/pandas_plot_bar_chart_better.py
+eRCaGuy_hello_world$ python/pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA
 results_df =
    index                 Method  Time_sec  text_x  text_y  time_multiplier          text_label
 0      0               iterrows    104.96       0  109.96       111.659574  104.96 sec\n111.7x
