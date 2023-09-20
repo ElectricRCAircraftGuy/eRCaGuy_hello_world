@@ -45,6 +45,36 @@ References:
 import matplotlib.pyplot as plt
 import pandas as pd
 
+def add_newlines_every_n_chars(s, n):
+    """Add a newline character to a string at the nearest underscore to the nth character. This is
+    useful for making long labels fit on a plot.
+    - Aided by GitHub CoPilot
+
+    TODO: add unit tests
+    """
+    # return '\n'.join(s[i:i+n] for i in range(0, len(s), n))
+
+    remaining_chars = len(s)
+    i = 0
+
+    while remaining_chars > n:
+        # Find the nearest underscore to the nth character
+        split_index = s.find('_', i + n//2, i + n + n//2)
+
+        if split_index == -1:
+            # If there is no underscore in the range, split at the nth character
+            split_index = n - 1
+
+        split_index += 1
+        # Split the string
+        s = s[:split_index] + '\n' + s[split_index:]
+
+        remaining_chars -= split_index
+        i += split_index
+
+    return s
+
+
 results_dict = {
     "Method": ["iterrows", "default_named_itertuples", "nameless_itertuples", "polyvalent_itertuples"],
     "Time_sec": [104.96, 1.26, 0.94, 2.94],
@@ -59,9 +89,12 @@ results_df = results_df.sort_values(by="Time_sec", axis='rows', ascending=False)
 #   column, pass argument `drop=True`.
 results_df = results_df.reset_index()
 
+results_df["Method_short_names"] = results_df["Method"].apply(
+    lambda s: add_newlines_every_n_chars(s, 15))
+
 # create a bar chart
 fig = plt.figure(figsize=(10, 7))  # default is `(6.4, 4.8)` inches
-plt.bar(results_df["Method"], results_df["Time_sec"])
+plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
 plt.title('Time vs iteration method (*Lower* is better)', fontsize=14)
 plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
 plt.ylabel('Time (sec)', fontsize=12)
