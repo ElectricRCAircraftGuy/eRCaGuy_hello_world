@@ -19,14 +19,14 @@ installation instructions to install the latest version from GitHub.
 For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
 https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
-pylint pandas_read_and_plot_csv.py
+pylint pandas_read_and_plot_csv_GREAT.py
 ```
 
 Run command:
 ```bash
-./pandas_read_and_plot_csv.py
+./pandas_read_and_plot_csv_GREAT.py
 # OR
-python3 pandas_read_and_plot_csv.py
+python3 pandas_read_and_plot_csv_GREAT.py
 ```
 
 References:
