@@ -14,7 +14,7 @@ The question I'm trying to answer is:
 What are the various ways to do iteration-like things over a Pandas dataframe with*out* actually
 doing Python iteration, which is slow, and how do they compare in speed?
 
-Status: WIP
+Status: Done and works!
 
 keywords: (keywords)
 
