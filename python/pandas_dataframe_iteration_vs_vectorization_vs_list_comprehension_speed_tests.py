@@ -223,8 +223,8 @@ def main():
     # Create an array (numpy list of lists) of fake data
     MIN_VAL = -1000
     MAX_VAL = 1000
-    # NUM_ROWS = 1_000_000
-    NUM_ROWS = 100_000
+    NUM_ROWS = 1_000_000
+    # NUM_ROWS = 100_000
     NUM_COLS = 4
     data = np.random.randint(MIN_VAL, MAX_VAL, size=(NUM_ROWS, NUM_COLS))
 
@@ -796,5 +796,32 @@ results_df =
 7      3        4_vectorization__with_apply_for_corner_case  0.016455  4_vectorization_\n_with_\napply_\nfor_corner_\...       7  0.146759         1.000000    0.016 sec\n1.0x
 
 [it also opens up a bar chart plot]
+
+
+=========================
+longer data with 1,000,000 rows
+=========================
+...
+Checking stats for technique "1_raw_for_loop"
+Checking stats for technique "2_iterrows_in_for_loop"
+Checking stats for technique "3_itertuples_in_for_loop"
+Checking stats for technique "4_vectorization__with_apply_for_corner_case"
+Checking stats for technique "5_apply_function_with_lambda"
+Checking stats for technique "6_list_comprehension_w_zip_and_direct_variable_assignment"
+Checking stats for technique "7_list_comprehension_w_zip_and_row_tuple"
+Checking stats for technique "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
+Tests passed: the results of all techniques are equal!
+
+results_df =
+   index                                             Method   Time_sec                                 Method_short_names  text_x     text_y  time_multiplier          text_label
+0      1                             2_iterrows_in_for_loop  27.612887                           2_iterrows_\nin_for_loop       0  28.993531       170.093183  27.613 sec\n170.1x
+1      0                                     1_raw_for_loop  16.524901                                   1_raw_for_\nloop       1  17.905545       101.792073  16.525 sec\n101.8x
+2      4                       5_apply_function_with_lambda   9.163090                   5_apply_\nfunction_\nwith_lambda       2  10.543734        56.443904    9.163 sec\n56.4x
+3      7  8_list_comprehension_w__to_numpy__and_direct_v...   1.048867  8_list_\ncomprehension_\nw__to_\nnumpy_\n_and_...       3   2.429511         6.460938     1.049 sec\n6.5x
+4      2                           3_itertuples_in_for_loop   0.680029                         3_itertuples_\nin_for_loop       4   2.060673         4.188924      0.68 sec\n4.2x
+5      5  6_list_comprehension_w_zip_and_direct_variable...   0.501746  6_list_\ncomprehension_\nw_zip_\nand_direct_\n...       5   1.882390         3.090712     0.502 sec\n3.1x
+6      6           7_list_comprehension_w_zip_and_row_tuple   0.495199   7_list_\ncomprehension_\nw_zip_\nand_row_\ntuple       6   1.875843         3.050384     0.495 sec\n3.1x
+7      3        4_vectorization__with_apply_for_corner_case   0.162340  4_vectorization_\n_with_\napply_\nfor_corner_\...       7   1.542984         1.000000     0.162 sec\n1.0x
+
 
 """
