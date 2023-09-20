@@ -358,13 +358,13 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 6 [EASIEST/BEST]: using a list comprehension with direct " +
+    print("\n=== Technique 6 [EASIEST/BEST]: using a list comprehension with `zip()` and direct " +
           "variable assignment ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = "list_comprehension_with_direct_variable_assignment"
+    name = "list_comprehension_w_zip_and_direct_variable_assignment"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -403,12 +403,12 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 7: using a list comprehension with `row` tuple ===")
+    print("\n=== Technique 7: using a list comprehension with `zip()` and `row` tuple ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = "list_comprehension_with_row_tuple"
+    name = "list_comprehension_w_zip_and_row_tuple"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -445,13 +445,74 @@ def main():
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
-    # =================================== END OF TECHNIQUES ========================================
+    # ==============================================================================================
+    print("\n=== Technique 8: using a list comprehension with `.to_numpy()` and direct " +
+          "variable assignment ===")
+    # Notes:
+    # 1. This could be done with a `row` tuple, as just above, too, but I won't show that minor
+    # variation.
+    # 1. For more styles and ways to use list comprehensions, see:
+    # https://stackoverflow.com/a/55557758/4561887. This answer also states:
+    #   > When dealing with mixed data types you should iterate over `zip(df['A'], df['B'], ...)`
+    #   > instead of `df[['A', 'B']].to_numpy()` as the latter implicitly upcasts data to the most
+    #   > common type. As an example, if `A` is numeric and `B` is string, `to_numpy()` will cast
+    #   > the entire array to string, which may not be what you want. Fortunately, zipping your
+    #   > columns together is the most straightforward workaround to this.
+    # ==============================================================================================
 
+    name = "list_comprehension_w__to_numpy__and_direct_variable_assignment"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    df["val"] = [
+        # Note: this *could* be a lambda here instead of a function call. I'm using a function call.
+        calculate_val(
+            A_i_minus_2,
+            A_i_minus_1,
+            A,
+            A_i_plus_1,
+            B,
+            C,
+            D
+        ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+        # Note: this `[[...]]` syntax is called "double-bracket indexing" and is used to select a
+        # subset of columns from the dataframe, kind of like boolean indexing. The inner `[]`
+        # brackets create a list from the column names within them, and the outer `[]` brackets
+        # accept this list to index into the dataframe and select just this list of columns.
+        # - One of the **list comprehension** examples in this answer here uses `.to_numpy()` like
+        #   this: https://stackoverflow.com/a/55557758/4561887
+        in df[[
+            "A_i_minus_2",
+            "A_i_minus_1",
+            "A",
+            "A_i_plus_1",
+            "B",
+            "C",
+            "D"
+        ]].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
+                       # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
+    ]
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # =================================== END OF TECHNIQUES ========================================
     assert_all_stats_are_equal(val_stats)
 
-    # plot_data(dataframe)
-    # Show all figures
-    plt.show()
+    # Now plot the results in a bar chart
+    # - See: "eRCaGuy_hello_world/python/pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
+    # plot_data(results_df) ##### TODO: add plotting code per the example in the file above; increase the number of samples to get longer calculation times
+
+    plt.show()  # show all figures
 
 
 # Only run `main()` if this script is **run**, NOT imported
