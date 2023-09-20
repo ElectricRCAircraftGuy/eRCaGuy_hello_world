@@ -123,7 +123,7 @@ def assert_all_stats_are_equal(stats_dict):
         print(f"Checking stats for technique \"{name}\"")
         assert_series_equal(stats_series, stats_series_first)
 
-    print(f"{FGR}The results of all techniques are equal!{F}")
+    print(f"{FGR}Tests passed: the results of all techniques are equal!{F}")
 
 
 def main():
@@ -186,7 +186,7 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 2: use `iterrows()` in a Python `for` loop ===")
+    print("\n=== Technique 2 [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===")
     # ==============================================================================================
 
     name = "iterrows_in_for_loop"
@@ -280,10 +280,10 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 4: `apply()` plus vectorization ===")
+    print("\n=== Technique 4 [FASTEST]: vectorization, w/`apply()` for one corner-case ===")
     # ==============================================================================================
 
-    name = "apply_plus_vectorization"
+    name = "vectorization__with_apply_for_corner_case"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -321,19 +321,17 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 5: using the `apply()` function ===")
+    print("\n=== Technique 5: using the `apply()` function with a lambda ===")
     # See:
     # 1. How to use `apply()` with multiple columns in a given row!:
     # https://stackoverflow.com/a/30566899/4561887
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html
     # ==============================================================================================
 
-    name = "apply_function"
+    name = "apply_function_with_lambda"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
-    # Note: `axis='columns'` or `axis=1` means to "apply function to each row", rather than to each
-    # column.
     df["val"] = df.apply(
         lambda row: calculate_val(
             row["A_i_minus_2"],
@@ -344,7 +342,7 @@ def main():
             row["C"],
             row["D"]
         ),
-        axis='columns'
+        axis='columns' # same as `axis=1`: "apply function to each row", rather than to each column
     )
 
     df["val"] = val  # put this column back into the dataframe
@@ -360,6 +358,94 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
+    print("\n=== Technique 6 [EASIEST/BEST]: using a list comprehension with direct " +
+          "variable assignment ===")
+    # For more styles and ways to use list comprehensions, see:
+    # https://stackoverflow.com/a/55557758/4561887
+    # ==============================================================================================
+
+    name = "list_comprehension_with_direct_variable_assignment"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    df["val"] = [
+        # Note: this *could* be a lambda here instead of a function call. I'm using a function call.
+        calculate_val(
+            A_i_minus_2,
+            A_i_minus_1,
+            A,
+            A_i_plus_1,
+            B,
+            C,
+            D
+        ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+        in zip(
+            df["A_i_minus_2"],
+            df["A_i_minus_1"],
+            df["A"],
+            df["A_i_plus_1"],
+            df["B"],
+            df["C"],
+            df["D"]
+        )
+    ]
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # ==============================================================================================
+    print("\n=== Technique 7: using a list comprehension with `row` tuple ===")
+    # For more styles and ways to use list comprehensions, see:
+    # https://stackoverflow.com/a/55557758/4561887
+    # ==============================================================================================
+
+    name = "list_comprehension_with_row_tuple"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    df["val"] = [
+        calculate_val(
+            row[0],
+            row[1],
+            row[2],
+            row[3],
+            row[4],
+            row[5],
+            row[6],
+        ) for row
+        in zip(
+            df["A_i_minus_2"],
+            df["A_i_minus_1"],
+            df["A"],
+            df["A_i_plus_1"],
+            df["B"],
+            df["C"],
+            df["D"]
+        )
+    ]
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # =================================== END OF TECHNIQUES ========================================
 
     assert_all_stats_are_equal(val_stats)
 
