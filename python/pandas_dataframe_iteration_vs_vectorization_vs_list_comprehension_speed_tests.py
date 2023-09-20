@@ -73,8 +73,86 @@ def mkdir(directory):
         os.makedirs(directory)
 
 
-def plot_data(dataframe):
-    pass
+def add_newlines_every_n_chars(s, n):
+    """
+    Copied from my own code in "pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
+
+    Add a newline character to a string at the nearest underscore to the nth character. This is
+    useful for making long labels fit on a plot.
+    - Aided by GitHub CoPilot
+
+    TODO:
+    1. [ ] add unit tests
+    1. [ ] think through this really deeply and make sure it's correct. I'm not sure it's right, and
+       it could easily have some "off by one" type problems in the logic and indexing!
+    """
+    # return '\n'.join(s[i:i+n] for i in range(0, len(s), n))
+
+    remaining_chars = len(s)
+    i_start = 0
+
+    while remaining_chars > n:
+        # Find the nearest underscore to the nth character
+        split_index = s.find('_', i_start + n//2, i_start + n + n//2)
+
+        if split_index == -1:
+            # If there is no underscore in the range, split at the nth character
+            split_index = n - 1
+
+        split_index += 1  # go to the right of the underscore we just found
+        # Split the string
+        s = s[:split_index] + '\n' + s[split_index:]
+
+        remaining_chars = len(s) - split_index
+        i_start = split_index
+
+    return s
+
+
+def plot_data(results_df):
+    """
+    Plot the data in the given dataframe.
+    - This code was copied from:
+      "eRCaGuy_hello_world/python/pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
+    """
+
+    # create a bar chart
+    fig = plt.figure(figsize=(12, 7))  # default is `(6.4, 4.8)` inches
+    plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
+    plt.title('Time vs iteration method (*Lower* is better)', fontsize=14)
+    plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
+    plt.ylabel('Time (sec)', fontsize=12)
+
+    # Prepare to add text labels to each bar
+    results_df["text_x"] = results_df.index # use the indices as the x-positions
+    results_df["text_y"] = results_df["Time_sec"] + 0.05*results_df["Time_sec"].max()
+    results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].min()
+    results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\n" +
+                                results_df["time_multiplier"].round(1).astype(str) + "x")
+
+    # Use a list comprehension to actually call `plot.text()` to add a label for each row in the
+    # dataframe
+    [
+        plt.text(
+            text_x,
+            text_y,
+            text_label,
+            horizontalalignment='center',
+            verticalalignment='center'
+        ) for text_x, text_y, text_label
+        in zip(
+            results_df["text_x"],
+            results_df["text_y"],
+            results_df["text_label"]
+        )
+    ]
+
+    print(f"results_df =\n{results_df}")
+
+    ymin, ymax = plt.ylim()
+    plt.ylim(ymin, ymax*1.1)  # add 10% to the top of the y-axis
+    # increase the whitespace under the figure to leave space for long, wrapping labels
+    fig.subplots_adjust(bottom=0.2)
 
 
 def calculate_new_column_b_value(b_value):
@@ -136,6 +214,7 @@ def main():
     # Create an array (numpy list of lists) of fake data
     MIN_VAL = -1000
     MAX_VAL = 1000
+    # NUM_ROWS = 1_000_000
     NUM_ROWS = 100_000
     NUM_COLS = 4
     data = np.random.randint(MIN_VAL, MAX_VAL, size=(NUM_ROWS, NUM_COLS))
@@ -506,11 +585,32 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # =================================== END OF TECHNIQUES ========================================
+    # Collect and prepare data for plotting
+    # ==============================================================================================
     assert_all_stats_are_equal(val_stats)
+    print()
 
+    # delete this key/value pair since it is not needed for plotting
+    del dt_sec["adding_shifted_data"]
+
+    results_dict = {
+        "Method": list(dt_sec.keys()),
+        "Time_sec": list(dt_sec.values()),
+    }
+    results_df = pd.DataFrame(results_dict) # columns are "Method" and "Time_sec"
+    results_df = results_df.sort_values(by="Time_sec", axis='rows', ascending=False)
+    # Be sure to reset the indices after sorting, or else the indices will be sorted out of their
+    # original order now too!
+    # - Note: this defaults to `drop=False`, which means the old indices will be kept in a new column
+    #   called "index" now. If you want to drop the old indices instead of putting them into a new
+    #   column, pass argument `drop=True`.
+    results_df = results_df.reset_index()
+    results_df["Method_short_names"] = results_df["Method"].apply(
+        lambda s: add_newlines_every_n_chars(s, 12))
+
+    #########
     # Now plot the results in a bar chart
-    # - See: "eRCaGuy_hello_world/python/pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
-    # plot_data(results_df) ##### TODO: add plotting code per the example in the file above; increase the number of samples to get longer calculation times
+    plot_data(results_df) ##### TODO: add plotting code per the example in the file above; increase the number of samples to get longer calculation times
 
     plt.show()  # show all figures
 
