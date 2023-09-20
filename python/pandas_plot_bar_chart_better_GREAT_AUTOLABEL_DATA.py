@@ -68,7 +68,7 @@ plt.ylabel('Time (sec)', fontsize=12)
 
 # Prepare to add text labels to each bar
 results_df["text_x"] = results_df.index # use the indices as the x-positions
-results_df["text_y"] = results_df["Time_sec"] + 5
+results_df["text_y"] = results_df["Time_sec"] + 0.05*results_df["Time_sec"].max()
 results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].min()
 results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\n" +
                             results_df["time_multiplier"].round(1).astype(str) + "x")
