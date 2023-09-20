@@ -75,7 +75,7 @@ def mkdir(directory):
 
 def add_newlines_every_n_chars(s, n):
     """
-    Copied from my own code in "pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
+    ORIGINALLY COPIED from my own code in "pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
 
     Add a newline character to a string at the nearest underscore to the nth character. This is
     useful for making long labels fit on a plot.
@@ -92,14 +92,23 @@ def add_newlines_every_n_chars(s, n):
     i_start = 0
 
     while remaining_chars > n:
+        # debugging
+        # print(f"remaining_chars = {remaining_chars}")
+        # print(f"i_start = {i_start}")
+
         # Find the nearest underscore to the nth character
         split_index = s.find('_', i_start + n//2, i_start + n + n//2)
 
         if split_index == -1:
             # If there is no underscore in the range, split at the nth character
-            split_index = n - 1
+            split_index = i_start + n
+            if split_index >= len(s):
+                break
 
         split_index += 1  # go to the right of the underscore we just found
+        if split_index >= len(s):
+            break
+
         # Split the string
         s = s[:split_index] + '\n' + s[split_index:]
 
@@ -117,9 +126,9 @@ def plot_data(results_df):
     """
 
     # create a bar chart
-    fig = plt.figure(figsize=(12, 7))  # default is `(6.4, 4.8)` inches
+    fig = plt.figure(figsize=(15, 8))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title('Time vs iteration method (*Lower* is better)', fontsize=14)
+    plt.title('Time vs Pandas iteration method (*Lower* is better)', fontsize=14)
     plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
     plt.ylabel('Time (sec)', fontsize=12)
 
@@ -152,7 +161,7 @@ def plot_data(results_df):
     ymin, ymax = plt.ylim()
     plt.ylim(ymin, ymax*1.1)  # add 10% to the top of the y-axis
     # increase the whitespace under the figure to leave space for long, wrapping labels
-    fig.subplots_adjust(bottom=0.2)
+    fig.subplots_adjust(bottom=0.25)
 
 
 def calculate_new_column_b_value(b_value):
@@ -233,7 +242,7 @@ def main():
     print("\n=== Technique 1: raw Python `for` loop ===")
     # ==============================================================================================
 
-    name = "raw_for_loop"
+    name = "1_raw_for_loop"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -268,7 +277,7 @@ def main():
     print("\n=== Technique 2 [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===")
     # ==============================================================================================
 
-    name = "iterrows_in_for_loop"
+    name = "2_iterrows_in_for_loop"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -330,7 +339,7 @@ def main():
     # https://stackoverflow.com/a/59413206/4561887
     # ==============================================================================================
 
-    name = "itertuples_in_for_loop"
+    name = "3_itertuples_in_for_loop"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -362,7 +371,7 @@ def main():
     print("\n=== Technique 4 [FASTEST]: vectorization, w/`apply()` for one corner-case ===")
     # ==============================================================================================
 
-    name = "vectorization__with_apply_for_corner_case"
+    name = "4_vectorization__with_apply_for_corner_case"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -407,7 +416,7 @@ def main():
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html
     # ==============================================================================================
 
-    name = "apply_function_with_lambda"
+    name = "5_apply_function_with_lambda"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -443,7 +452,7 @@ def main():
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = "list_comprehension_w_zip_and_direct_variable_assignment"
+    name = "6_list_comprehension_w_zip_and_direct_variable_assignment"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -487,7 +496,7 @@ def main():
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = "list_comprehension_w_zip_and_row_tuple"
+    name = "7_list_comprehension_w_zip_and_row_tuple"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -539,7 +548,7 @@ def main():
     #   > columns together is the most straightforward workaround to this.
     # ==============================================================================================
 
-    name = "list_comprehension_w__to_numpy__and_direct_variable_assignment"
+    name = "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -608,9 +617,8 @@ def main():
     results_df["Method_short_names"] = results_df["Method"].apply(
         lambda s: add_newlines_every_n_chars(s, 12))
 
-    #########
     # Now plot the results in a bar chart
-    plot_data(results_df) ##### TODO: add plotting code per the example in the file above; increase the number of samples to get longer calculation times
+    plot_data(results_df)
 
     plt.show()  # show all figures
 
@@ -625,6 +633,168 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-    Run it and see the output in "eRCaGuy_hello_world/fake_data/figures"
+eRCaGuy_hello_world$ python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py
+dataframe =
+         A    B    C    D
+0      367 -789 -836 -731
+1     -328 -188   79 -967
+2     -782  706   73   34
+3      513  503 -128 -312
+4     -985  671 -324 -398
+...    ...  ...  ...  ...
+99995 -329  -34 -590 -202
+99996  329  706  116 -462
+99997 -827  686  649  -71
+99998   41  -36  573  961
+99999   96 -728 -393  -95
+
+[100000 rows x 4 columns]
+
+=== Technique 1: raw Python `for` loop ===
+len(val) = 100000
+dt_sec[1_raw_for_loop] = 1.662095 sec
+val_stats[1_raw_for_loop]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== Technique 2 [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===
+len(val) = 100000
+dt_sec[2_iterrows_in_for_loop] = 2.606092 sec
+val_stats[2_iterrows_in_for_loop]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== For all of the next examples, we must first prepare the dataframe by adding
+columns with previous and next values: A_(i-2), A_(i-1), and A_(i+1). ===
+dt_sec[adding_shifted_data] = 0.002413 sec
+
+=== Technique 3: named `itertuples()` in a Python `for` loop ===
+len(val) = 100000
+dt_sec[3_itertuples_in_for_loop] = 0.069353 sec
+val_stats[3_itertuples_in_for_loop]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== Technique 4 [FASTEST]: vectorization, w/`apply()` for one corner-case ===
+len(val) = 100000
+dt_sec[4_vectorization__with_apply_for_corner_case] = 0.016455 sec
+val_stats[4_vectorization__with_apply_for_corner_case]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== Technique 5: using the `apply()` function with a lambda ===
+len(val) = 100000
+dt_sec[5_apply_function_with_lambda] = 0.853706 sec
+val_stats[5_apply_function_with_lambda]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== Technique 6 [EASIEST/BEST]: using a list comprehension with `zip()` and direct variable assignment ===
+len(val) = 100000
+dt_sec[6_list_comprehension_w_zip_and_direct_variable_assignment] = 0.044907 sec
+val_stats[6_list_comprehension_w_zip_and_direct_variable_assignment]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== Technique 7: using a list comprehension with `zip()` and `row` tuple ===
+len(val) = 100000
+dt_sec[7_list_comprehension_w_zip_and_row_tuple] = 0.046022 sec
+val_stats[7_list_comprehension_w_zip_and_row_tuple]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+=== Technique 8: using a list comprehension with `.to_numpy()` and direct variable assignment ===
+len(val) = 100000
+dt_sec[8_list_comprehension_w__to_numpy__and_direct_variable_assignment] = 0.096362 sec
+val_stats[8_list_comprehension_w__to_numpy__and_direct_variable_assignment]:
+------
+count    99997.000000
+mean      3003.536036
+std       5560.236883
+min     -14507.000000
+25%       -791.000000
+50%       2980.000000
+75%       6790.000000
+max      20696.000000
+Name: val, dtype: float64
+
+Checking stats for technique "1_raw_for_loop"
+Checking stats for technique "2_iterrows_in_for_loop"
+Checking stats for technique "3_itertuples_in_for_loop"
+Checking stats for technique "4_vectorization__with_apply_for_corner_case"
+Checking stats for technique "5_apply_function_with_lambda"
+Checking stats for technique "6_list_comprehension_w_zip_and_direct_variable_assignment"
+Checking stats for technique "7_list_comprehension_w_zip_and_row_tuple"
+Checking stats for technique "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
+Tests passed: the results of all techniques are equal!
+
+results_df =
+   index                                             Method  Time_sec                                 Method_short_names  text_x    text_y  time_multiplier         text_label
+0      1                             2_iterrows_in_for_loop  2.606092                           2_iterrows_\nin_for_loop       0  2.736397       158.377998  2.606 sec\n158.4x
+1      0                                     1_raw_for_loop  1.662095                                   1_raw_for_\nloop       1  1.792399       101.009189  1.662 sec\n101.0x
+2      4                       5_apply_function_with_lambda  0.853706                   5_apply_\nfunction_\nwith_lambda       2  0.984010        51.881597   0.854 sec\n51.9x
+3      7  8_list_comprehension_w__to_numpy__and_direct_v...  0.096362  8_list_\ncomprehension_\nw__to_\nnumpy_\n_and_...       3  0.226666         5.856124    0.096 sec\n5.9x
+4      2                           3_itertuples_in_for_loop  0.069353                         3_itertuples_\nin_for_loop       4  0.199658         4.214736    0.069 sec\n4.2x
+5      6           7_list_comprehension_w_zip_and_row_tuple  0.046022   7_list_\ncomprehension_\nw_zip_\nand_row_\ntuple       5  0.176327         2.796873    0.046 sec\n2.8x
+6      5  6_list_comprehension_w_zip_and_direct_variable...  0.044907  6_list_\ncomprehension_\nw_zip_\nand_direct_\n...       6  0.175211         2.729073    0.045 sec\n2.7x
+7      3        4_vectorization__with_apply_for_corner_case  0.016455  4_vectorization_\n_with_\napply_\nfor_corner_\...       7  0.146759         1.000000    0.016 sec\n1.0x
+
+[it also opens up a bar chart plot]
 
 """
