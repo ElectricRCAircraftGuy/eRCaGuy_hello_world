@@ -46,31 +46,35 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 def add_newlines_every_n_chars(s, n):
-    """Add a newline character to a string at the nearest underscore to the nth character. This is
+    """
+    Add a newline character to a string at the nearest underscore to the nth character. This is
     useful for making long labels fit on a plot.
     - Aided by GitHub CoPilot
 
-    TODO: add unit tests
+    TODO:
+    1. [ ] add unit tests
+    1. [ ] think through this really deeply and make sure it's correct. I'm not sure it's right, and
+       it could easily have some "off by one" type problems in the logic and indexing!
     """
     # return '\n'.join(s[i:i+n] for i in range(0, len(s), n))
 
     remaining_chars = len(s)
-    i = 0
+    i_start = 0
 
     while remaining_chars > n:
         # Find the nearest underscore to the nth character
-        split_index = s.find('_', i + n//2, i + n + n//2)
+        split_index = s.find('_', i_start + n//2, i_start + n + n//2)
 
         if split_index == -1:
             # If there is no underscore in the range, split at the nth character
             split_index = n - 1
 
-        split_index += 1
+        split_index += 1  # go to the right of the underscore we just found
         # Split the string
         s = s[:split_index] + '\n' + s[split_index:]
 
-        remaining_chars -= split_index
-        i += split_index
+        remaining_chars = len(s) - split_index
+        i_start = split_index
 
     return s
 
@@ -90,7 +94,7 @@ results_df = results_df.sort_values(by="Time_sec", axis='rows', ascending=False)
 results_df = results_df.reset_index()
 
 results_df["Method_short_names"] = results_df["Method"].apply(
-    lambda s: add_newlines_every_n_chars(s, 15))
+    lambda s: add_newlines_every_n_chars(s, 12))
 
 # create a bar chart
 fig = plt.figure(figsize=(10, 7))  # default is `(6.4, 4.8)` inches
@@ -134,6 +138,8 @@ print(f"results_df =\n{results_df}")
 
 ymin, ymax = plt.ylim()
 plt.ylim(ymin, ymax*1.1)  # add 10% to the top of the y-axis
+# increase the whitespace under the figure to leave space for long, wrapping labels
+fig.subplots_adjust(bottom=0.2)
 
 plt.show()
 
