@@ -42,7 +42,11 @@ import pandas as pd
 
 # GS: it turns out this is NOT the best way to store bar chart data! See a better way to do it in
 # "pandas_plot_bar_chart_better.py".
+# - This is, however, a good way to store line chart data, since it allows storing a list of values
+#   for each column (method type).
 results_dict = {
+    # columns are method types
+    # rows are lists of times for each method type
     "iterrows": [104.96],
     "named_itertuples": [1.26],
     "nameless_itertuples": [0.94],
