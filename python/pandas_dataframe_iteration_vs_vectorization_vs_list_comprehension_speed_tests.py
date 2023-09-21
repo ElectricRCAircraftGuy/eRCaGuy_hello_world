@@ -118,7 +118,7 @@ def add_newlines_every_n_chars(s, n):
     return s
 
 
-def plot_data(results_df):
+def plot_data(results_df, num_data_rows):
     """
     Plot the data in the given dataframe.
     - This code was copied from:
@@ -128,7 +128,8 @@ def plot_data(results_df):
     # create a bar chart
     fig = plt.figure(figsize=(15, 8))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title('Time vs Pandas iteration method (*Lower* is better)', fontsize=14)
+    plt.title(f'Time vs Pandas iteration method over {num_data_rows} rows (*Lower* time is better)',
+              fontsize=14)
     plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
     plt.ylabel('Time (sec)', fontsize=12)
 
@@ -618,7 +619,7 @@ def main():
         lambda s: add_newlines_every_n_chars(s, 12))
 
     # Now plot the results in a bar chart
-    plot_data(results_df)
+    plot_data(results_df, NUM_ROWS)
 
     plt.show()  # show all figures
 
