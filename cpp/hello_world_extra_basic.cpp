@@ -21,6 +21,9 @@ sudo apt update && sudo apt install ccache
 
 # 1. In C++
 time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 hello_world_extra_basic.cpp -o bin/a && bin/a
+
+# OR (just call this file as an exectuable directly)
+time ./hello_world_extra_basic.cpp
 ```
 
 References:
