@@ -164,9 +164,9 @@ def plot_data(results_df, num_data_rows):
     """
 
     # create a bar chart
-    fig = plt.figure(figsize=(15, 8))  # default is `(6.4, 4.8)` inches
+    fig = plt.figure(figsize=(19, 13))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title(f'Time vs Pandas iteration method over {num_data_rows} rows (*Lower* time is better)',
+    plt.title(f'Time vs Pandas iteration method over {num_data_rows:,} rows (*Lower* time is better)',
               fontsize=14)
     plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
     plt.ylabel('Time (sec)', fontsize=12)
@@ -199,8 +199,9 @@ def plot_data(results_df, num_data_rows):
 
     ymin, ymax = plt.ylim()
     plt.ylim(ymin, ymax*1.1)  # add 10% to the top of the y-axis
-    # increase the whitespace under the figure to leave space for long, wrapping labels
-    fig.subplots_adjust(bottom=0.25)
+    # increase the whitespace under the figure to leave space for long, wrapping labels; decrease
+    # the whitespace on all other sides
+    fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.15)
 
 
 def calculate_new_column_b_value(b_value):
@@ -262,6 +263,8 @@ def main():
     # Create an array (numpy list of lists) of fake data
     MIN_VAL = -1000
     MAX_VAL = 1000
+    # NUM_ROWS = 10_000_000
+    # NUM_ROWS = 2_000_000
     # NUM_ROWS = 1_000_000
     # NUM_ROWS = 100_000
     NUM_ROWS = 10_000
@@ -281,10 +284,10 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: raw Python `for` loop ===")
+    print(f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing ===")
     # ==============================================================================================
 
-    name = f"{technique_num}_raw_for_loop"
+    name = f"{technique_num}_raw_for_loop_using_regular_df_indexing"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -301,6 +304,86 @@ def main():
             df["B"][i],
             df["C"][i],
             df["D"][i],
+        )
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # ==============================================================================================
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.loc[]` " +
+           "label-based indexing ===")
+    # ==============================================================================================
+
+    name = f"{technique_num}_raw_for_loop_using_df.loc[]_indexing"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    val = [np.NAN]*len(df)
+    for i in range(len(df)):
+        if i < 2 or i > len(df)-2:
+            continue
+
+        val[i] = calculate_val(
+            df.loc[i-2, "A"],
+            df.loc[i-1, "A"],
+            df.loc[i,   "A"],
+            df.loc[i+1, "A"],
+            df.loc[i,   "B"],
+            df.loc[i,   "C"],
+            df.loc[i,   "D"],
+        )
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # ==============================================================================================
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.iloc[]` " +
+           "index-based indexing ===")
+    # ==============================================================================================
+
+    name = f"{technique_num}_raw_for_loop_using_df.iloc[]_indexing"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    # column indices
+    i_A = 0
+    i_B = 1
+    i_C = 2
+    i_D = 3
+
+    val = [np.NAN]*len(df)
+    for i in range(len(df)):
+        if i < 2 or i > len(df)-2:
+            continue
+
+        val[i] = calculate_val(
+            df.iloc[i-2, i_A],
+            df.iloc[i-1, i_A],
+            df.iloc[i,   i_A],
+            df.iloc[i+1, i_A],
+            df.iloc[i,   i_B],
+            df.iloc[i,   i_C],
+            df.iloc[i,   i_D],
         )
 
     df["val"] = val  # put this column back into the dataframe
@@ -413,16 +496,17 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [FASTEST]: vectorization, w/`apply()` for one corner-case ===")
+    print(f"\n=== Technique {technique_num}: vectorization, w/`apply()` for " +
+           "if statement corner-case ===")
     # ==============================================================================================
 
-    name = f"{technique_num}_vectorization__with_apply_for_corner_case"
+    name = f"{technique_num}_vectorization__with_apply_for_if_statement_corner_case"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
     # In this particular example, since we have an embedded `if-else` statement for the `B` column,
-    # we can't use pure vectorization. So, first we'll calculate a new `B` column using `apply()`,
-    # then we'll use vectorization for the rest.
+    # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using
+    # **`apply()`**, then we'll use vectorization for the rest.
     df["B_new"] = df["B"].apply(calculate_new_column_b_value)
     # OR (same thing, but with a lambda function instead)
     # df["B_new"] = df["B"].apply(lambda x: (6 * x) if x > 0 else (-6 * x))
@@ -431,6 +515,114 @@ def main():
     # the column series variables in equations directly, without manually iterating over them.
     # Pandas DataFrames will handle the underlying iteration automatically for you. You just focus
     # on the math.
+    df["val"] = (
+        2 * df["A_i_minus_2"]
+        + 3 * df["A_i_minus_1"]
+        + 4 * df["A"]
+        + 5 * df["A_i_plus_1"]
+        + df["B_new"]
+        + 7 * df["C"]
+        - 8 * df["D"]
+    )
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # ==============================================================================================
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: vectorization, w/list comprehension for " +
+           "if statement corner-case ===")
+    # ==============================================================================================
+
+    name = f"{technique_num}_vectorization__with_list_comprehension_for_if_statment_corner_case"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    # In this particular example, since we have an embedded `if-else` statement for the `B` column,
+    # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using **list
+    # comprehension**, then we'll use vectorization for the rest.
+    df["B_new"] = [
+        calculate_new_column_b_value(b_value) for b_value in df["B"]
+    ]
+
+    # Now we can use vectorization for the rest. "Vectorization" in this case means to simply use
+    # the column series variables in equations directly, without manually iterating over them.
+    # Pandas DataFrames will handle the underlying iteration automatically for you. You just focus
+    # on the math.
+    df["val"] = (
+        2 * df["A_i_minus_2"]
+        + 3 * df["A_i_minus_1"]
+        + 4 * df["A"]
+        + 5 * df["A_i_plus_1"]
+        + df["B_new"]
+        + 7 * df["C"]
+        - 8 * df["D"]
+    )
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # ==============================================================================================
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: pure vectorization: w/`df.loc[]` " +
+           "boolean array indexing for if statement corner-case ===")
+    # ==============================================================================================
+
+    name = f"{technique_num}_pure_vectorization__with_df.loc[]_boolean_array_indexing_for_if_statment_corner_case"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    # If statement to evaluate:
+    #
+    #     if B > 0:
+    #         B_new = 6 * B
+    #     else:
+    #         B_new = -6 * B
+    #
+    # In this particular example, since we have an embedded `if-else` statement for the `B` column,
+    # we can use some boolean array indexing through `df.loc[]` for some pure vectorization magic.
+    #
+    # Explanation:
+    #
+    # Long:
+    # The format is: `df.loc[rows, columns]`, except in this case, the rows are specified by a
+    # "boolean array" (AKA: a boolean expression, list of booleans, or "boolean mask"), specifying
+    # all rows where `B` is
+    # > 0. Then, only in that `B` column for those rows, set the value accordingly. After we do this
+    # for where `B` is > 0, we do the same thing for where `B` is <= 0, except with the other
+    # equation.
+    #
+    # Short:
+    # For all rows where the boolean expression applies, set the column value accordingly.
+    #
+    # GitHub CoPilot first showed me this `.loc[]` technique.
+    # See also the official documentation:
+    # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
+    #
+    # 1st: handle the > 0 case
+    df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
+    # 2nd: handle the <= 0 case
+    # df["B_new"] = df.loc[df["B"] <= 0, "B"] * -6
+
+    # Now use normal vectorization for the rest.
     df["val"] = (
         2 * df["A_i_minus_2"]
         + 3 * df["A_i_minus_1"]
@@ -493,8 +685,8 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension with `zip()` and direct " +
-          "variable assignment passed to func ===")
+    print(f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension " +
+           "with `zip()` and direct variable assignment passed to func ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
