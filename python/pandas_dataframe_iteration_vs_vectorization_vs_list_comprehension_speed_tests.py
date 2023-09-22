@@ -493,18 +493,21 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [EASIEST/BEST]: using a list comprehension with `zip()` and direct " +
-          "variable assignment ===")
+    print(f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension with `zip()` and direct " +
+          "variable assignment passed to func ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment"
+    name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment_passed_to_func"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
     df["val"] = [
-        # Note: this *could* be a lambda here instead of a function call. I'm using a function call.
+        # Note: you *could* do the calculations directly here instead of using a function call, so
+        # long as you don't have indented code blocks such as sub-routines or multi-line if
+        # statements.
+        # I'm using a function call.
         calculate_val(
             A_i_minus_2,
             A_i_minus_1,
@@ -539,12 +542,57 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: using a list comprehension with `zip()` and `row` tuple ===")
+    print(f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension " +
+           "with `zip()` and direct variable assignment calculated in place ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = f"{technique_num}_list_comprehension_w_zip_and_row_tuple"
+    name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment_calculated_in_place"
+    df = df_original.copy()  # make a copy of the original dataframe to work with
+    time_start_sec = time.monotonic()
+
+    df["val"] = [
+        2 * A_i_minus_2
+        + 3 * A_i_minus_1
+        + 4 * A
+        + 5 * A_i_plus_1
+        + (6 * B) if B > 0 else (-6 * B)  # Python ternary operator
+        + 7 * C
+        - 8 * D
+        for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+        in zip(
+            df["A_i_minus_2"],
+            df["A_i_minus_1"],
+            df["A"],
+            df["A_i_plus_1"],
+            df["B"],
+            df["C"],
+            df["D"]
+        )
+    ]
+
+    df["val"] = val  # put this column back into the dataframe
+    time_end_sec = time.monotonic()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    val_stats[name] = df["val"].describe()  # summary statistics
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+
+    # ==============================================================================================
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: using a list comprehension with `zip()` and `row` " +
+          "tuple passed to func ===")
+    # For more styles and ways to use list comprehensions, see:
+    # https://stackoverflow.com/a/55557758/4561887
+    # ==============================================================================================
+
+    name = f"{technique_num}_list_comprehension_w_zip_and_row_tuple_passed_to_func"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -584,7 +632,7 @@ def main():
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num}: using a list comprehension with `.to_numpy()` " +
-          "and direct variable assignment ===")
+          "and direct variable assignment passed to func ===")
     # Notes:
     # 1. This could be done with a `row` tuple, as just above, too, but I won't show that minor
     # variation.
@@ -597,7 +645,7 @@ def main():
     #   > columns together is the most straightforward workaround to this.
     # ==============================================================================================
 
-    name = f"{technique_num}_list_comprehension_w__to_numpy__and_direct_variable_assignment"
+    name = f"{technique_num}_list_comprehension_w__to_numpy__and_direct_variable_assignment_passed_to_func"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
