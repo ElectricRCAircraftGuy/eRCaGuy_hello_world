@@ -175,11 +175,11 @@ def plot_data(results_df, num_data_rows):
     results_df["text_x"] = results_df.index # use the indices as the x-positions
     results_df["text_y"] = results_df["Time_sec"] + 0.05*results_df["Time_sec"].max()
     results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].min()
-    results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\n" +
-                                results_df["time_multiplier"].round(1).astype(str) + "x")
+    results_df["text_label"] = (results_df["Time_sec"].map("{:.3f} sec\n".format) +
+                                results_df["time_multiplier"].map("{:.1f}x".format))
 
-    # Use a list comprehension to actually call `plot.text()` to **add a plot label** for each row
-    # in the dataframe
+    # Use a list comprehension to actually call `plot.text()` to **automatically add a plot label**
+    # for each row in the dataframe
     [
         plt.text(
             text_x,
