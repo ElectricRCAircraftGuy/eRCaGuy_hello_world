@@ -48,13 +48,14 @@ import numpy as np
 import os
 import pandas as pd
 from pandas.testing import assert_series_equal
+import re
 import time
 
 # See: "eRCaGuy_hello_world/python/import_helper.py"
 FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
 SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
 
-# Text formatting.
+# For text formatting and colorization in the terminal.
 # - See my ANSI format library here:
 #   https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/ansi_text_format_lib.sh
 ANSI_START = "\033["    # start of an ANSI formatting sequence
@@ -73,56 +74,93 @@ def mkdir(directory):
         os.makedirs(directory)
 
 
+DEBUG_ON = False  # set to False to disable debug prints
+
+def debug_print(*args, **kwargs):
+    if DEBUG_ON:
+        print("DEBUG: ", *args, **kwargs)
+
+
 def add_newlines_every_n_chars(s, n):
     """
-    ORIGINALLY COPIED from my own code in "pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
+    ********** NOTE **********
+    ORIGINALLY COPIED from my own code in "pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py",
+    but this here is now the most-up-to-date version of it.
+    **************************
 
-    Add a newline character to a string at the nearest underscore to the nth character. This is
-    useful for making long labels fit on a plot.
+    Add a newline character to a string at the nearest underscore (`_`), space (` `), or dash (`-`)
+    to the nth character. This is useful for making long labels fit on a plot.
+
     - Aided by GitHub CoPilot
 
     TODO:
-    1. [ ] add unit tests
-    1. [ ] think through this really deeply and make sure it's correct. I'm not sure it's right, and
+    1. [ ] add unit tests. Example test cases/strings:
+        name = "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
+        name = "8_list comprehension_w__to_numpy--and_direct-variable assignment"
+        name = "8listcomprehensionwtonumpyanddirectvariableassignment"
+    1. [x] think through this really deeply and make sure it's correct. I'm not sure it's right, and
        it could easily have some "off by one" type problems in the logic and indexing!
+       DONE!: the logic is correct; tested by carefully studying the debugging prints!
     """
     # return '\n'.join(s[i:i+n] for i in range(0, len(s), n))
+
+    regex_pattern = r"[ _-]"
 
     remaining_chars = len(s)
     i_start = 0
 
     while remaining_chars > n:
-        # debugging
-        # print(f"remaining_chars = {remaining_chars}")
-        # print(f"i_start = {i_start}")
-
-        # Find the nearest underscore to the nth character
-        split_index = s.find('_', i_start + n//2, i_start + n + n//2)
-
-        if split_index == -1:
-            # If there is no underscore in the range, split at the nth character
-            split_index = i_start + n
-            if split_index >= len(s):
-                break
-
-        split_index += 1  # go to the right of the underscore we just found
+        # If there is no underscore in the range, split at the nth character from the start, so make
+        # this the default
+        split_index = i_start + n
         if split_index >= len(s):
             break
+
+        debug_print(f"len(s) = {len(s)}; n = {n}; n//2 = {n//2}")
+        debug_print(f"bytes object (s.encode()) = {s.encode()}")
+        debug_print(f"remaining_chars = {remaining_chars}")
+        debug_print(f"i_start = {i_start}")
+        debug_print(f"split_index = {split_index}")
+
+        # Find the char of interest which is nearest to the nth character
+        # See: https://docs.python.org/3/library/re.html#re.search
+        match = re.search(regex_pattern, s[i_start + n//2:i_start + n + n//2])
+        if match:
+            debug_print(f"match.start() (offset by (i_start + n//2) = "
+                      + f"{i_start + n//2}) = {match.start()}")
+
+            # If there is a match, split one char to the right of the match, just after the matching
+            # char we found
+            split_index = i_start + n//2 + match.start() + 1
+            debug_print(f"split_index = i_start + n//2 + match.start() + 1 = "
+                      + f"{i_start} + {n//2} + {match.start()} + 1 = {split_index}")
+            if split_index >= len(s):
+                break
 
         # Split the string
         s = s[:split_index] + '\n' + s[split_index:]
 
-        remaining_chars = len(s) - split_index
-        i_start = split_index
+        remaining_chars = len(s) - split_index - 1  # subtract the 1 we added above
+        i_start = split_index + 1  # + 1 to go to the right of the newline char we just inserted
+
+        debug_print(f"len(s) = {len(s)}; n = {n}; n//2 = {n//2}")
+        debug_print(f"bytes object (s.encode()) = {s.encode()}")
+        debug_print(f"remaining_chars = {remaining_chars}")
+        debug_print(f"i_start = {i_start}")
+        debug_print()
 
     return s
 
 
 def plot_data(results_df, num_data_rows):
     """
-    Plot the data in the given dataframe.
+    Plot **and automatically label** the data in the given dataframe.
+
+    ********** NOTE **********
     - This code was copied from:
-      "eRCaGuy_hello_world/python/pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py"
+      "eRCaGuy_hello_world/python/pandas_plot_bar_chart_better_GREAT_AUTOLABEL_DATA.py", but
+      this here is now the most-up-to-date version of it.
+    **************************
     """
 
     # create a bar chart
@@ -140,8 +178,8 @@ def plot_data(results_df, num_data_rows):
     results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\n" +
                                 results_df["time_multiplier"].round(1).astype(str) + "x")
 
-    # Use a list comprehension to actually call `plot.text()` to add a label for each row in the
-    # dataframe
+    # Use a list comprehension to actually call `plot.text()` to **add a plot label** for each row
+    # in the dataframe
     [
         plt.text(
             text_x,
@@ -224,8 +262,9 @@ def main():
     # Create an array (numpy list of lists) of fake data
     MIN_VAL = -1000
     MAX_VAL = 1000
-    NUM_ROWS = 1_000_000
+    # NUM_ROWS = 1_000_000
     # NUM_ROWS = 100_000
+    NUM_ROWS = 10_000
     NUM_COLS = 4
     data = np.random.randint(MIN_VAL, MAX_VAL, size=(NUM_ROWS, NUM_COLS))
 
