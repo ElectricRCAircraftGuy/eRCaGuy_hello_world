@@ -47,6 +47,11 @@ import pandas as pd
 
 def add_newlines_every_n_chars(s, n):
     """
+    ********** NOTE **********
+    The most up-to-date version of this function is now in
+    "eRCaGuy_hello_world/python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py"
+    **************************
+
     Add a newline character to a string at the nearest underscore to the nth character. This is
     useful for making long labels fit on a plot.
     - Aided by GitHub CoPilot
@@ -119,6 +124,10 @@ results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].
 results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\n" +
                             results_df["time_multiplier"].round(1).astype(str) + "x")
 
+# ********** NOTE **********
+# The most up-to-date version of this auto-labelling code is now in
+# "eRCaGuy_hello_world/python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py"
+# **************************
 # Use a list comprehension to actually call `plot.text()` to add a label for each row in the
 # dataframe
 [
