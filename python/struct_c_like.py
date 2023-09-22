@@ -32,7 +32,9 @@ References:
 1. Myself.
 1. GitHub CoPilot.
 1. This question: C-like structures in Python: https://stackoverflow.com/q/35988/4561887
-    1. My answer to it:
+    1. *****+ My answer with this code here!: https://stackoverflow.com/a/77161026/4561887 - The
+       simplest C-struct-like, dot-accessed (`my_struct.my_var`), container in Python is an empty
+       class
 
 """
 
