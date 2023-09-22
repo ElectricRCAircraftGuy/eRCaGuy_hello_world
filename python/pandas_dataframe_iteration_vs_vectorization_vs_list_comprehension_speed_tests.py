@@ -222,7 +222,7 @@ def calculate_val(
           + 3 * A_(i-1)
           + 4 * A_i
           + 5 * A_(i+1)
-          + 6 * B_i
+          + (6 * B_i) if B > 0 else (-6 * B_i))
           + 7 * C_i
           - 8 * D_i
     """
@@ -277,12 +277,14 @@ def main():
 
     dt_sec = {}  # dictionary of time deltas in seconds
     val_stats = {}   # dictionary of summary statistics
+    technique_num = 0
 
     # ==============================================================================================
-    print("\n=== Technique 1: raw Python `for` loop ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: raw Python `for` loop ===")
     # ==============================================================================================
 
-    name = "1_raw_for_loop"
+    name = f"{technique_num}_raw_for_loop"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -314,10 +316,11 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 2 [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num} [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===")
     # ==============================================================================================
 
-    name = "2_iterrows_in_for_loop"
+    name = f"{technique_num}_iterrows_in_for_loop"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -374,12 +377,13 @@ def main():
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
 
     # ==============================================================================================
-    print("\n=== Technique 3: named `itertuples()` in a Python `for` loop ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: named `itertuples()` in a Python `for` loop ===")
     # See here for this and other `itertuples()`-based techniques:
     # https://stackoverflow.com/a/59413206/4561887
     # ==============================================================================================
 
-    name = "3_itertuples_in_for_loop"
+    name = f"{technique_num}_itertuples_in_for_loop"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -408,10 +412,11 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 4 [FASTEST]: vectorization, w/`apply()` for one corner-case ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num} [FASTEST]: vectorization, w/`apply()` for one corner-case ===")
     # ==============================================================================================
 
-    name = "4_vectorization__with_apply_for_corner_case"
+    name = f"{technique_num}_vectorization__with_apply_for_corner_case"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -449,14 +454,15 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 5: using the `apply()` function with a lambda ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: using the `apply()` function with a lambda ===")
     # See:
     # 1. How to use `apply()` with multiple columns in a given row!:
     # https://stackoverflow.com/a/30566899/4561887
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html
     # ==============================================================================================
 
-    name = "5_apply_function_with_lambda"
+    name = f"{technique_num}_apply_function_with_lambda"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -486,13 +492,14 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 6 [EASIEST/BEST]: using a list comprehension with `zip()` and direct " +
+    technique_num += 1
+    print(f"\n=== Technique {technique_num} [EASIEST/BEST]: using a list comprehension with `zip()` and direct " +
           "variable assignment ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = "6_list_comprehension_w_zip_and_direct_variable_assignment"
+    name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -531,12 +538,13 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 7: using a list comprehension with `zip()` and `row` tuple ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: using a list comprehension with `zip()` and `row` tuple ===")
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
 
-    name = "7_list_comprehension_w_zip_and_row_tuple"
+    name = f"{technique_num}_list_comprehension_w_zip_and_row_tuple"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
@@ -574,8 +582,9 @@ def main():
     print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
 
     # ==============================================================================================
-    print("\n=== Technique 8: using a list comprehension with `.to_numpy()` and direct " +
-          "variable assignment ===")
+    technique_num += 1
+    print(f"\n=== Technique {technique_num}: using a list comprehension with `.to_numpy()` " +
+          "and direct variable assignment ===")
     # Notes:
     # 1. This could be done with a `row` tuple, as just above, too, but I won't show that minor
     # variation.
@@ -588,7 +597,7 @@ def main():
     #   > columns together is the most straightforward workaround to this.
     # ==============================================================================================
 
-    name = "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
+    name = f"{technique_num}_list_comprehension_w__to_numpy__and_direct_variable_assignment"
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
 
