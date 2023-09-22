@@ -246,14 +246,18 @@ def assert_all_results_are_equal(df_dict):
     """
     print()
     # Get the first technique's val series as the "golden" one to compare against
-    series_first = df_dict[list(df_dict.keys())[0]]["val"]
+    df_first = df_dict[list(df_dict.keys())[0]]
+    series_first = df_first["val"]
     for name, df in df_dict.items():
         print(f"Checking stats for technique \"{name}\"")
-        print(df)  # debugging
-        print(f"\ndf.dtypes =\n{df.dtypes}\n\n")  # debugging
-        # assert_series_equal(df["val"], series_first) ######
+
+        debug_print(df)
+        debug_print(f"\ndf.dtypes =\n{df.dtypes}\n\n")
+
+        assert_series_equal(df["val"], series_first)
 
     print(f"{FGR}Tests passed: the results of all techniques are equal!{F}\n")
+    print(f"df_first =\n{df_first}\n\n")
     print(f"Summary statistics:\n{series_first.describe()}")
 
 
@@ -620,9 +624,13 @@ def main():
     # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
     #
     # 1st: handle the > 0 case
-    # df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
-    # 2nd: handle the <= 0 case
-    df["B_new"] = df.loc[df["B"] <= 0, "B"] * -63 ########33
+    df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
+    # 2nd: handle the <= 0 case, merging the results into the previously-created "B_new" column
+    # - NB: this doesn't work; it overwrites and replaces the whole "B_new" column instead:
+    #
+    #       df["B_new"] = df.loc[df["B"] <= 0, "B"] * 60
+    #
+    df.loc[df["B"] <= 0, "B_new"] = df.loc[df["B"] <= 0, "B"] * 60
 
     # Now use normal vectorization for the rest.
     df["val"] = (
