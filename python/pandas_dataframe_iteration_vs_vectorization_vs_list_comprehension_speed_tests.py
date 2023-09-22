@@ -175,8 +175,8 @@ def plot_data(results_df, num_data_rows):
     results_df["text_x"] = results_df.index # use the indices as the x-positions
     results_df["text_y"] = results_df["Time_sec"] + 0.05*results_df["Time_sec"].max()
     results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].min()
-    results_df["text_label"] = (results_df["Time_sec"].map("{:.3f} sec\n".format) +
-                                results_df["time_multiplier"].map("{:.1f}x".format))
+    results_df["text_label"] = (results_df["Time_sec"].map("{:.4f} sec\n".format) +
+                                results_df["time_multiplier"].map("{:.2f}x".format))
 
     # Use a list comprehension to actually call `plot.text()` to **automatically add a plot label**
     # for each row in the dataframe
@@ -239,18 +239,19 @@ def calculate_val(
     return val
 
 
-def assert_all_stats_are_equal(stats_dict):
+def assert_all_vals_are_equal(val_dict):
     """
-    Assert that all summary statistics are equal across all techniques.
+    Assert that all val series objects from each calculation technique are the same.
     """
     print()
-    # Get the first technique's stats as the "golden" stats to compare against
-    stats_series_first = stats_dict[list(stats_dict.keys())[0]]
-    for name, stats_series in stats_dict.items():
+    # Get the first technique's val series as the "golden" one to compare against
+    series_first = val_dict[list(val_dict.keys())[0]]
+    for name, val in val_dict.items():
         print(f"Checking stats for technique \"{name}\"")
-        assert_series_equal(stats_series, stats_series_first)
+        assert_series_equal(val, series_first)
 
-    print(f"{FGR}Tests passed: the results of all techniques are equal!{F}")
+    print(f"{FGR}Tests passed: the results of all techniques are equal!{F}\n")
+    print(f"Summary statistics:\n{series_first.describe()}")
 
 
 def main():
@@ -279,7 +280,7 @@ def main():
     # inside `calculate_val()`
 
     dt_sec = {}  # dictionary of time deltas in seconds
-    val_stats = {}   # dictionary of summary statistics
+    val_dict = {}   # dictionary mapping string names to val Pandas Series objects
     technique_num = 0
 
     # ==============================================================================================
@@ -313,10 +314,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -350,10 +351,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -393,10 +394,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -429,10 +430,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     print("\n=== For all of the next examples, we must first prepare the dataframe by adding\n" +
@@ -489,10 +490,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -532,10 +533,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -575,10 +576,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -618,9 +619,9 @@ def main():
     # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
     #
     # 1st: handle the > 0 case
-    df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
+    # df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
     # 2nd: handle the <= 0 case
-    # df["B_new"] = df.loc[df["B"] <= 0, "B"] * -6
+    df["B_new"] = df.loc[df["B"] <= 0, "B"] * -63
 
     # Now use normal vectorization for the rest.
     df["val"] = (
@@ -633,17 +634,17 @@ def main():
         - 8 * df["D"]
     )
 
-    df["val"] = val  # put this column back into the dataframe
+    # df["val"] = val  # put this column back into the dataframe #################### BUG! ####################
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -678,10 +679,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -727,10 +728,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -771,10 +772,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -816,10 +817,10 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # ==============================================================================================
     technique_num += 1
@@ -877,15 +878,15 @@ def main():
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
     dt_sec[name] = time_end_sec - time_start_sec
-    val_stats[name] = df["val"].describe()  # summary statistics
+    val_dict[name] = df["val"]
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'val_stats[{name}]:\n------\n{val_stats[name]}')
+    print(f'val_dict[{name}]:\n------\n{val_dict[name]}')
 
     # =================================== END OF TECHNIQUES ========================================
     # Collect and prepare data for plotting
     # ==============================================================================================
-    assert_all_stats_are_equal(val_stats)
+    assert_all_vals_are_equal(val_dict)
     print()
 
     # delete this key/value pair since it is not needed for plotting
@@ -942,7 +943,7 @@ dataframe =
 === Technique 1: raw Python `for` loop ===
 len(val) = 100000
 dt_sec[1_raw_for_loop] = 1.662095 sec
-val_stats[1_raw_for_loop]:
+val_dict[1_raw_for_loop]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -957,7 +958,7 @@ Name: val, dtype: float64
 === Technique 2 [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===
 len(val) = 100000
 dt_sec[2_iterrows_in_for_loop] = 2.606092 sec
-val_stats[2_iterrows_in_for_loop]:
+val_dict[2_iterrows_in_for_loop]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -976,7 +977,7 @@ dt_sec[adding_shifted_data] = 0.002413 sec
 === Technique 3: named `itertuples()` in a Python `for` loop ===
 len(val) = 100000
 dt_sec[3_itertuples_in_for_loop] = 0.069353 sec
-val_stats[3_itertuples_in_for_loop]:
+val_dict[3_itertuples_in_for_loop]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -991,7 +992,7 @@ Name: val, dtype: float64
 === Technique 4 [FASTEST]: vectorization, w/`apply()` for one corner-case ===
 len(val) = 100000
 dt_sec[4_vectorization__with_apply_for_corner_case] = 0.016455 sec
-val_stats[4_vectorization__with_apply_for_corner_case]:
+val_dict[4_vectorization__with_apply_for_corner_case]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -1006,7 +1007,7 @@ Name: val, dtype: float64
 === Technique 5: using the `apply()` function with a lambda ===
 len(val) = 100000
 dt_sec[5_apply_function_with_lambda] = 0.853706 sec
-val_stats[5_apply_function_with_lambda]:
+val_dict[5_apply_function_with_lambda]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -1021,7 +1022,7 @@ Name: val, dtype: float64
 === Technique 6 [EASIEST/BEST]: using a list comprehension with `zip()` and direct variable assignment ===
 len(val) = 100000
 dt_sec[6_list_comprehension_w_zip_and_direct_variable_assignment] = 0.044907 sec
-val_stats[6_list_comprehension_w_zip_and_direct_variable_assignment]:
+val_dict[6_list_comprehension_w_zip_and_direct_variable_assignment]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -1036,7 +1037,7 @@ Name: val, dtype: float64
 === Technique 7: using a list comprehension with `zip()` and `row` tuple ===
 len(val) = 100000
 dt_sec[7_list_comprehension_w_zip_and_row_tuple] = 0.046022 sec
-val_stats[7_list_comprehension_w_zip_and_row_tuple]:
+val_dict[7_list_comprehension_w_zip_and_row_tuple]:
 ------
 count    99997.000000
 mean      3003.536036
@@ -1051,7 +1052,7 @@ Name: val, dtype: float64
 === Technique 8: using a list comprehension with `.to_numpy()` and direct variable assignment ===
 len(val) = 100000
 dt_sec[8_list_comprehension_w__to_numpy__and_direct_variable_assignment] = 0.096362 sec
-val_stats[8_list_comprehension_w__to_numpy__and_direct_variable_assignment]:
+val_dict[8_list_comprehension_w__to_numpy__and_direct_variable_assignment]:
 ------
 count    99997.000000
 mean      3003.536036
