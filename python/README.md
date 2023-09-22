@@ -23,6 +23,19 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. To learn about **private variables** which begin with a single underscore `_`, **internal Python variables** which begin with two underscores `__`, **class variables** which are shared among all instances of a class, **instance variables**, which are generally prefixed with `self.` in a class, and `__slots__`, which are a special way to store **instance variables** in a list inside your object instead of in a dict inside your object, see: [slots_practice/slots_practice.py](slots_practice/slots_practice.py).
 
 
+# Plotting and browser-based GUIs in Python
+
+TODO: LEARN THIS!:
+
+I'd like to learn how to do plotting in a GUI in a browser. Here are some tools to look at:
+
+Two 3rd-party libraries to do most of the work:
+1. **Plotly:** https://plotly.com/python/ -  manages everything graphs-related.
+    1. Here's the page that talks about the specifics of graphing using Pandas `DataFrame`s: https://plotly.com/python/plot-data-from-csv/
+        1. See also near the bottom of the page where it says, "What About Dash?"
+1. **Dash:** https://dash.plotly.com/ - manages everything GUI-related. 
+
+
 # Pylint linter and static code analyzer for Python
 
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/PyCQA/pylint)
