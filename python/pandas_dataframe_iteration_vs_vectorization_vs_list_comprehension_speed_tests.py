@@ -526,7 +526,6 @@ def main():
         - 8 * df["D"]
     )
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -569,7 +568,6 @@ def main():
         - 8 * df["D"]
     )
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -634,7 +632,6 @@ def main():
         - 8 * df["D"]
     )
 
-    # df["val"] = val  # put this column back into the dataframe #################### BUG! ####################
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -672,7 +669,6 @@ def main():
         axis='columns' # same as `axis=1`: "apply function to each row", rather than to each column
     )
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -721,7 +717,6 @@ def main():
         )
     ]
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -765,7 +760,6 @@ def main():
         )
     ]
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -810,7 +804,6 @@ def main():
         )
     ]
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
@@ -871,7 +864,6 @@ def main():
                        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
     ]
 
-    df["val"] = val  # put this column back into the dataframe
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
