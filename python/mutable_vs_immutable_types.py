@@ -318,10 +318,15 @@ SAMPLE OUTPUT:
     True
 
     How to update immutable vs mutable variables in a function:
+
     7
     8
+
     [7, 8, 9]
     [7, 8, 9, 1]
 
+    10
+    11
+    10
 
 """
