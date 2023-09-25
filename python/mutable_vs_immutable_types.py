@@ -140,13 +140,13 @@ if my_int3 == my_int2 == my_int1:
     print("int is mutable")
 else:
     # side effects did not occur (modifying one variable did not modify another)
-    print("int is immutable")
+    print("int is immutable")  # this is the result
 
 my_list3 = my_list2 = my_list1 = [7, 8, 9]
 my_list3.append(1)
 if my_list3 == my_list2 == my_list1:
     # side effects occurred (modifying one variable modified another)
-    print("list is mutable")
+    print("list is mutable")  # this is the result
 else:
     # side effects did not occur (modifying one variable did not modify another)
     print("list is immutable")
