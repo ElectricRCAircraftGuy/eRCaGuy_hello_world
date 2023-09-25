@@ -165,6 +165,42 @@ print(my_int3 == my_int1)      # True
 print()
 
 
+# To force a **mutable** type to be copied instead of passed by reference, you
+# must call the `.copy()` method on it.
+
+# Copy **by reference**, so all variables point to the same underlying object.
+my_dict3 = my_dict2 = my_dict1 = {"key": "value"}
+# Could also be written as:
+my_dict1 = {"key": "value"}
+my_dict2 = my_dict1
+my_dict3 = my_dict2
+# Therefore, each of these is True because the underlying object is the same
+# blob of memory.
+print(my_dict3 is my_dict2)    # True
+print(my_dict2 is my_dict1)    # True
+print(my_dict3 is my_dict1)    # True
+# And each of these is True because all variables have the same value.
+print(my_dict3 == my_dict2)    # True
+print(my_dict2 == my_dict1)    # True
+print(my_dict3 == my_dict1)    # True
+print()
+
+# Force-copy **by value**, so each variable has its own underlying object.
+# The `.copy()` method makes an entirely new copy of the underlying object.
+my_dict1 = {"key": "value"}
+my_dict2 = my_dict1.copy()
+my_dict3 = my_dict2.copy()
+# Therefore, each of these is False because the underlying objects differ.
+print(my_dict3 is my_dict2)    # False
+print(my_dict2 is my_dict1)    # False
+print(my_dict3 is my_dict1)    # False
+# But, each of these is True because all variables have the same value.
+print(my_dict3 == my_dict2)    # True
+print(my_dict2 == my_dict1)    # True
+print(my_dict3 == my_dict1)    # True
+print()
+
+
 
 # pylint: disable-next=pointless-string-statement
 """
@@ -219,6 +255,20 @@ SAMPLE OUTPUT:
     True
     True
     True
+    True
+    True
+    True
+
+    True
+    True
+    True
+    True
+    True
+    True
+
+    False
+    False
+    False
     True
     True
     True
