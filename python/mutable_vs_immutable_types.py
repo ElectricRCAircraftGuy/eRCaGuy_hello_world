@@ -7,7 +7,9 @@ https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 GS
 Sept. 2023
 
-Test which types are mutable and which are immutable.
+Test which types are **mutable** (have side effects, and are passed **by
+reference**) vs which are **immutable** (do NOT have side effects, and are
+passed **by value**).
 
 Status: Done and works!
 
