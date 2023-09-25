@@ -42,7 +42,7 @@ def modify_variable(var):
     Modifies the variable passed to it so that we can see later if the change to
     this variable can be seen outside the function.
     """
-    print(f"var before modification = {var}")
+    print(f"var before modification: {var}")
 
     if type(var) is bool:
         print("var is a bool")
@@ -66,43 +66,40 @@ def modify_variable(var):
         print("var is a tuple")
         var = (1, 2, 3)  # reassign it to a new tuple
 
-    print(f"var after modification = {var}\n")
+    print(f"var after modification:  {var}\n")
 
 
-def is_mutable(value_new, value_old):
+def is_mutable(variable, original_value_literal):
     """
     Returns whether the variable is "mutable" or "immutable".
 
-    This is identified simply by checking if `value_new` is the same as
-    `value_old`. If it is, then it is immutable, since the update above
-    was *not* seen outside the `modify_variable` function. If the two values
-    are different, then it *is* mutable.
-    """
-    print(f"value_new = {value_new}")  # debugging
-    print(f"value_old = {value_old}")  # debugging
+    This is identified simply by checking if `variable` is the same as
+    `original_value_literal`. If it is, then it is immutable, since the update
+    above was *not* seen outside the `modify_variable` function. If the two
+    values are different, then it *is* mutable.
 
-    if value_new == value_old:
+    Note that the `variable` input can be the variable, but the
+    `original_value_literal` must be the original value copied again into the
+    call-site of this function. Otherwise, mutable types will be erroneously
+    identified as immutable since the "original" variable will just be another
+    reference to the same underlying data as the variable.
+    """
+    # print(f"variable = {variable}")  # debugging
+    # print(f"original_value_literal = {original_value_literal}")  # debugging
+
+    if variable == original_value_literal:
         return "immutable"
     else:
         return "mutable"
 
 
-#############
-INITIAL_VALUE_BOOL = True
-INITIAL_VALUE_FLOAT = 1.0
-INITIAL_VALUE_INT = 7
-INITIAL_VALUE_STR = "some words"
-INITIAL_VALUE_LIST = [7, 8, 9]
-INITIAL_VALUE_DICT = {"key1": "value1", "key2": "value2"}
-INITIAL_VALUE_TUPLE = (7, 8, 9)
-
-my_bool = INITIAL_VALUE_BOOL
-my_float = INITIAL_VALUE_FLOAT
-my_int = INITIAL_VALUE_INT
-my_str = INITIAL_VALUE_STR
-my_list = INITIAL_VALUE_LIST
-my_dict = INITIAL_VALUE_DICT
-my_tuple = INITIAL_VALUE_TUPLE
+my_bool = True
+my_float = 1.0
+my_int = 7
+my_str = "some words"
+my_list = [7, 8, 9]
+my_dict = {"key1": "value1", "key2": "value2"}
+my_tuple = (7, 8, 9)
 
 modify_variable(my_bool)
 modify_variable(my_float)
@@ -112,33 +109,94 @@ modify_variable(my_list)
 modify_variable(my_dict)
 modify_variable(my_tuple)
 
-print("is_mutable(my_bool, INITIAL_VALUE_BOOL)      --> ",
-       is_mutable(my_bool, INITIAL_VALUE_BOOL), "\n")
-print("is_mutable(my_float, INITIAL_VALUE_FLOAT)    --> ",
-       is_mutable(my_float, INITIAL_VALUE_FLOAT), "\n")
-print("is_mutable(my_int, INITIAL_VALUE_INT)        --> ",
-       is_mutable(my_int, INITIAL_VALUE_INT), "\n")
-print("is_mutable(my_str, INITIAL_VALUE_STR)        --> ",
-       is_mutable(my_str, INITIAL_VALUE_STR), "\n")
-print("is_mutable(my_list, INITIAL_VALUE_LIST)      --> ",
-       is_mutable(my_list, INITIAL_VALUE_LIST), "\n")
-print("is_mutable(my_dict, INITIAL_VALUE_DICT)      --> ",
-       is_mutable(my_dict, INITIAL_VALUE_DICT), "\n")
-print("is_mutable(my_tuple, INITIAL_VALUE_TUPLE)    --> ",
-       is_mutable(my_tuple, INITIAL_VALUE_TUPLE), "\n")
+print("is_mutable(my_bool, True)                                    --> ",
+       is_mutable(my_bool, True))
+print("is_mutable(my_float, 1.0)                                    --> ",
+       is_mutable(my_float, 1.0))
+print("is_mutable(my_int, 7)                                        --> ",
+       is_mutable(my_int, 7))
+print('is_mutable(my_str, "some words")                             --> ',
+       is_mutable(my_str, "some words"))
+print("is_mutable(my_list, [7, 8, 9])                               --> ",
+       is_mutable(my_list, [7, 8, 9]))
+print('is_mutable(my_dict, {"key1": "value1", "key2": "value2"})    --> ',
+       is_mutable(my_dict, {"key1": "value1", "key2": "value2"}))
+print("is_mutable(my_tuple, (7, 8, 9))                              --> ",
+       is_mutable(my_tuple, (7, 8, 9)))
+print()
+
+# ==============================================================================
+# - For **mutable** types, setting two variables to the same value gives each
+#   variable a **unique underlying object** in memory, since they must have
+#   separate memory to be independently mutated.
+# - But for **immutable** types, setting two variables to the same value gives
+#   each variable the **same underlying object,** since they cannot be mutated.
+# ==============================================================================
+
+# MUTABLE TYPES
+# **Mutable type:** each variable has an **independent underlying object**
+my_dict1 = {"key": "value"}
+my_dict2 = {"key": "value"}
+my_dict3 = {"key": "value"}
+# Therefore, each of these is False because the underlying objects differ.
+print(my_dict3 is my_dict2)    # False
+print(my_dict2 is my_dict1)    # False
+print(my_dict3 is my_dict1)    # False
+# But, each of these is True because all variables have the same value.
+print(my_dict3 == my_dict2)    # True
+print(my_dict2 == my_dict1)    # True
+print(my_dict3 == my_dict1)    # True
+print()
+
+# IMMUTABLE TYPES
+## **Immutable type:** each variable has the **same underlying object**
+my_int1 = 7
+my_int2 = 7
+my_int3 = 7
+# Therefore, each of these is True because the underlying objects are the same.
+print(my_int3 is my_int2)      # True
+print(my_int2 is my_int1)      # True
+print(my_int3 is my_int1)      # True
+# And, each of these is also True because all variables have the same value.
+print(my_int3 == my_int2)      # True
+print(my_int2 == my_int1)      # True
+print(my_int3 == my_int1)      # True
+print()
 
 
-########3
+
+# # For mutable types, changing one of these variables changes all of them. But
+# # for immutable types, it does not (more on this below).
+# my_dict3 = my_dict2 = my_dict1 = {"key": "value"}   # by reference (has side
+#                                                     #   effects)
+# my_int3 = my_int2 = my_int1 = 7                     # by copy (no side effects)
+
+# # Each of these is True because all variables have the same value.
+# print(my_dict3 == my_dict2)    # True
+# print(my_dict2 == my_dict1)    # True
+# print(my_dict3 == my_dict1)    # True
+# # Each of these is True because all variables point to the same underlying
+# # object, since a dict is **mutable** and thus passed **by reference.**
+# # Therefore, the underlying object being pointed to by each of these variables
+# # **is** the same underlying object!
+# print(my_dict3 is my_dict2)    # True
+# print(my_dict2 is my_dict1)    # True
+# print(my_dict3 is my_dict1)    # True
+# print()
+
+# # Each of these is True because all variables have the same value.
+# print(my_int3 == my_int2)      # True
+# print(my_int2 == my_int1)      # True
+# print(my_int3 == my_int1)      # True
+# # Each of these is False because all variables point to different underlying
+# # object, since the underlying object (int) is **immutable** and thus passed
+# # **by copy.**
+# print(my_int3 is my_int2)      # False
+# print(my_int2 is my_int1)      # False
+# print(my_int3 is my_int1)      # False
+# print()
 
 
-########## also show triple assignment:
-# no side effects
-# a = b = c = 1  # by copy
-# a = 7  # b and c are NOT updated too
-#
-# side effects
-# mydict3 = mydict2 = mydict1 = {"key": "value"}  # by reference
-# mydict3["new_key"] = "new_value"  # mydict2 and mydict1 are both updated too!
 
 # pylint: disable-next=pointless-string-statement
 """
