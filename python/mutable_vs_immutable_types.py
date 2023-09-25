@@ -126,6 +126,30 @@ print("is_mutable(my_tuple, (7, 8, 9))                              --> ",
        is_mutable(my_tuple, (7, 8, 9)))
 print()
 
+# Here's another way to test if a type is mutable:
+# 1. Set 3 variables to the same value.
+# 2. Modify one of them.
+# 3. If the other two are also modified, then the type is mutable.
+
+my_int3 = my_int2 = my_int1 = 7
+my_int3 += 1
+if my_int3 == my_int2 == my_int1:
+    # side effects occurred (modifying one variable modified another)
+    print("int is mutable")
+else:
+    # side effects did not occur (modifying one variable did not modify another)
+    print("int is immutable")
+
+my_list3 = my_list2 = my_list1 = [7, 8, 9]
+my_list3.append(1)
+if my_list3 == my_list2 == my_list1:
+    # side effects occurred (modifying one variable modified another)
+    print("list is mutable")
+else:
+    # side effects did not occur (modifying one variable did not modify another)
+    print("list is immutable")
+print()
+
 # ==============================================================================
 # - For **mutable** types, setting two variables to the same value gives each
 #   variable a **unique underlying object** in memory, since they must have
@@ -286,6 +310,9 @@ SAMPLE OUTPUT:
     is_mutable(my_list, [7, 8, 9])                               -->  mutable
     is_mutable(my_dict, {"key1": "value1", "key2": "value2"})    -->  mutable
     is_mutable(my_tuple, (7, 8, 9))                              -->  immutable
+
+    int is immutable
+    list is mutable
 
     MUTABLE TYPES
     False
