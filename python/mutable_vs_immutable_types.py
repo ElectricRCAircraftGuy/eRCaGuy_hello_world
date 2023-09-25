@@ -201,6 +201,32 @@ print(my_dict3 == my_dict1)    # True
 print()
 
 
+# ==============================================================================
+print("How to update immutable vs mutable variables in a function:")
+# ==============================================================================
+
+def modify_immutable_type(var_immutable):
+    var_immutable += 1  # increment
+    return var_immutable
+
+my_int = 7
+print(my_int)  # 7
+# For immutable types, you must reassign the variable to the function's return
+my_int = modify_immutable_type(my_int)
+print(my_int)  # 8
+
+
+def modify_mutable_type(var_mutable):
+    var_mutable.append(1)  # append to a list
+
+my_list = [7, 8, 9]
+print(my_list)  # [7, 8, 9]
+# For mutable types, you do not need to reassign the variable to the function's
+# return
+modify_mutable_type(my_list)
+print(my_list)  # [7, 8, 9, 1]
+
+
 
 # pylint: disable-next=pointless-string-statement
 """
@@ -272,5 +298,12 @@ SAMPLE OUTPUT:
     True
     True
     True
+
+    How to update immutable vs mutable variables in a function:
+    7
+    8
+    [7, 8, 9]
+    [7, 8, 9, 1]
+
 
 """
