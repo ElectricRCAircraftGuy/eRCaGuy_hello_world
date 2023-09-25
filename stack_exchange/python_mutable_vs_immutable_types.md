@@ -5,9 +5,41 @@ GS
 https://stackoverflow.com/q/8056130/4561887
 -->
 
-[_Mutable_](https://www.wordreference.com/definition/mutable) in plain English means _changeable._ Think: "mutation".
 
-[_Immutable_](https://www.wordreference.com/definition/immutable) means _unchangeable_.
+## Mutable vs immutable types in Python: quick summary
+
+1. [_Mutable_](https://www.wordreference.com/definition/mutable) in plain English means _changeable._ Think: "mutation".
+1. [_Immutable_](https://www.wordreference.com/definition/immutable) means _unchangeable_.
+1. Python has no concept of constants. _Immutable_ vs _mutable_ does *not* mean _constant_ vs _not constant_, respectively. Rather, it means _shared memory (a single underlying object in memory via dynamic memory allocation)_ vs _not shared memory (multiple underlying objects in memory via dynamic memory allocation)_, respectively. 
+    1. This, as a consequence, also means _pass by reference_ (mutable) vs _pass by value_ (immutable), since objects which maintain their own unique underlying objects in memory pass those mutable memory chunks by reference so that they can be mutated. 
+1. Everything in Python is an object. Even numbers, integers, float, etc. are objects. All variables are objects.
+1. The mutable vs immutable objects types in Python are listed below.
+1. _Mutable_ types are passed _by reference_, and cause _side effects_.
+    1. If you do `my_dict3 = my_dict2 = my_dict1 = {}`, then change `my_dict3`, it *does* also change `my_dict2` *and* `my_dict1`. This is a _side effect._ It is because each variable points to *the same* underlying object.
+    1. If you do this, each mutable variable points to *the same* underlying object in memory, since the value is passed from one variable to the next _by reference_:
+        ```py
+        my_dict1 = {"key": "value"}
+        my_dict2 = my_dict1
+        my_dict3 = my_dict2
+        ```
+    1. Therefore, the following are *all* `True`:
+        ```py
+        # Each of these is True because the underlying object is the same
+        # blob of memory.
+        print(my_dict3 is my_dict2)    # True
+        print(my_dict2 is my_dict1)    # True
+        print(my_dict3 is my_dict1)    # True
+        # And each of these is True because all variables have the same value.
+        print(my_dict3 == my_dict2)    # True
+        print(my_dict2 == my_dict1)    # True
+        print(my_dict3 == my_dict1)    # True
+        ```
+1. _Immutable_ types are passed _by copy_, and do _not_ cause _side effects_.
+    1. If you do `my_int3 = my_int2 = my_int1 = 1`, then change `my_int3`, it does *not* change `my_int2` or `my_int1`, because each variable points to *its own* underlying object. It has no _side effects._
+1. Python is not an easy programming language. It has tons of nuances like this. It's just popular, different, and very high level.
+
+
+###### func example; multi-assign example
 
 
 ## 1. Mutable vs immutable objects in Python
@@ -91,7 +123,7 @@ my_dict["some_key"] = "some_value"  # mutate the dict object by adding a
 The details of how that "immutable" vs "mutable" characteristic is carried out aren't really important to the Python programmer like they would be to a low-level embedded systems C and C++ programmer like myself. Rather, it's sort of "hand-wavy". The Python programmer is supposed to just blindly accept it and move on. Some high-level C++ programmers are this way too. It's a mindset thing.
 
 
-## 3. Passing to functions: passing by copy vs pass by reference, and _side effects_
+## 3. References: passing by copy vs pass by reference, and _side effects_
 
 What a good Python programmer *does* need to know, however, is whether or not their particular variable type will be passed _by reference_ or _by copy_ when passed to a function. This is a very important distinction, as passing _by reference_ causes _side effects_, which means that changes to the variable inside the function will be reflected outside the function. This is a very important concept in Python, and to me is the main reason why the distinction between mutable and immutable types is important. I don't really care how they work under the hood otherwise.
 
@@ -178,3 +210,22 @@ Output:
 ```
 
 ```
+
+
+## 4. `is` vs `==`
+
+>>> {"key1":"val1"} == {"key1":"val1"}
+True
+>>> {"key1":"val1"} is {"key1":"val1"}
+False
+>>> d1 = {"key1":"val1"}
+>>> d2 = d1
+>>> d1 == d2
+True
+>>> d2 is d1
+True
+>>> d3 = {"key1":"val1"}
+>>> d3 is d2
+False
+>>> d3 == d2
+True
