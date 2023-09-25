@@ -9,7 +9,7 @@ Sept. 2023
 
 Test which types are mutable and which are immutable.
 
-Status: (status)
+Status: Done and works!
 
 keywords: (keywords)
 
@@ -31,7 +31,8 @@ python3 mutable_and_immutable_types.py
 References:
 1. This question and the answer I'm about to add there:
    https://stackoverflow.com/q/8056130/4561887
-1. GitHub Copilot (very minor assistance in this case)
+1. GitHub Copilot (minor assistance in this case)
+1.
 
 
 """
@@ -40,7 +41,7 @@ References:
 def modify_variable(var):
     """
     Modifies the variable passed to it so that we can see later if the change to
-    this variable can be seen outside the function.
+    this variable can be seen outside the function (as a "side effect").
     """
     print(f"var before modification: {var}")
 
@@ -82,7 +83,7 @@ def is_mutable(variable, original_value_literal):
     `original_value_literal` must be the original value copied again into the
     call-site of this function. Otherwise, mutable types will be erroneously
     identified as immutable since the "original" variable will just be another
-    reference to the same underlying data as the variable.
+    reference to the same underlying data (object) as the variable.
     """
     # print(f"variable = {variable}")  # debugging
     # print(f"original_value_literal = {original_value_literal}")  # debugging
@@ -133,7 +134,7 @@ print()
 #   each variable the **same underlying object,** since they cannot be mutated.
 # ==============================================================================
 
-# MUTABLE TYPES
+print("MUTABLE TYPES")
 # **Mutable type:** each variable has an **independent underlying object**
 my_dict1 = {"key": "value"}
 my_dict2 = {"key": "value"}
@@ -148,7 +149,7 @@ print(my_dict2 == my_dict1)    # True
 print(my_dict3 == my_dict1)    # True
 print()
 
-# IMMUTABLE TYPES
+print("IMMUTABLE TYPES")
 ## **Immutable type:** each variable has the **same underlying object**
 my_int1 = 7
 my_int2 = 7
@@ -165,44 +166,61 @@ print()
 
 
 
-# # For mutable types, changing one of these variables changes all of them. But
-# # for immutable types, it does not (more on this below).
-# my_dict3 = my_dict2 = my_dict1 = {"key": "value"}   # by reference (has side
-#                                                     #   effects)
-# my_int3 = my_int2 = my_int1 = 7                     # by copy (no side effects)
-
-# # Each of these is True because all variables have the same value.
-# print(my_dict3 == my_dict2)    # True
-# print(my_dict2 == my_dict1)    # True
-# print(my_dict3 == my_dict1)    # True
-# # Each of these is True because all variables point to the same underlying
-# # object, since a dict is **mutable** and thus passed **by reference.**
-# # Therefore, the underlying object being pointed to by each of these variables
-# # **is** the same underlying object!
-# print(my_dict3 is my_dict2)    # True
-# print(my_dict2 is my_dict1)    # True
-# print(my_dict3 is my_dict1)    # True
-# print()
-
-# # Each of these is True because all variables have the same value.
-# print(my_int3 == my_int2)      # True
-# print(my_int2 == my_int1)      # True
-# print(my_int3 == my_int1)      # True
-# # Each of these is False because all variables point to different underlying
-# # object, since the underlying object (int) is **immutable** and thus passed
-# # **by copy.**
-# print(my_int3 is my_int2)      # False
-# print(my_int2 is my_int1)      # False
-# print(my_int3 is my_int1)      # False
-# print()
-
-
-
 # pylint: disable-next=pointless-string-statement
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/python$ ./mutable_and_immutable_types.py
-    Hello world!
+    eRCaGuy_hello_world$ python/mutable_vs_immutable_types.py
+    var before modification: True
+    var is a bool
+    var after modification:  False
+
+    var before modification: 1.0
+    var is a float
+    var after modification:  2.0
+
+    var before modification: 7
+    var is an int
+    var after modification:  8
+
+    var before modification: some words
+    var is a str (string)
+    var after modification:  some words; some more words
+
+    var before modification: [7, 8, 9]
+    var is a list
+    var after modification:  [7, 8, 9, 1]
+
+    var before modification: {'key1': 'value1', 'key2': 'value2'}
+    var is a dict
+    var after modification:  {'key1': 'value1', 'key2': 'value2', 'new_key': 'new_value'}
+
+    var before modification: (7, 8, 9)
+    var is a tuple
+    var after modification:  (1, 2, 3)
+
+    is_mutable(my_bool, True)                                    -->  immutable
+    is_mutable(my_float, 1.0)                                    -->  immutable
+    is_mutable(my_int, 7)                                        -->  immutable
+    is_mutable(my_str, "some words")                             -->  immutable
+    is_mutable(my_list, [7, 8, 9])                               -->  mutable
+    is_mutable(my_dict, {"key1": "value1", "key2": "value2"})    -->  mutable
+    is_mutable(my_tuple, (7, 8, 9))                              -->  immutable
+
+    MUTABLE TYPES
+    False
+    False
+    False
+    True
+    True
+    True
+
+    IMMUTABLE TYPES
+    True
+    True
+    True
+    True
+    True
+    True
 
 """
