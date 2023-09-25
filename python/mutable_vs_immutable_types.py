@@ -128,6 +128,9 @@ print("is_mutable(my_tuple, INITIAL_VALUE_TUPLE)    --> ",
        is_mutable(my_tuple, INITIAL_VALUE_TUPLE), "\n")
 
 
+########3
+
+
 ########## also show triple assignment:
 # no side effects
 # a = b = c = 1  # by copy
