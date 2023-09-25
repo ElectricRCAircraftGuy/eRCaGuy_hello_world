@@ -202,7 +202,7 @@ print()
 
 
 # ==============================================================================
-print("How to update immutable vs mutable variables in a function:")
+print("How to update immutable vs mutable variables in a function:\n")
 # ==============================================================================
 
 def modify_immutable_type(var_immutable):
@@ -214,6 +214,7 @@ print(my_int)  # 7
 # For immutable types, you must reassign the variable to the function's return
 my_int = modify_immutable_type(my_int)
 print(my_int)  # 8
+print()
 
 
 def modify_mutable_type(var_mutable):
@@ -225,6 +226,23 @@ print(my_list)  # [7, 8, 9]
 # return
 modify_mutable_type(my_list)
 print(my_list)  # [7, 8, 9, 1]
+print()
+
+
+def modify_immutable_type_hack(var_list):
+    var_list[0] += 1  # increment
+
+my_int = 10
+my_int_list = [my_int]
+print(my_int_list[0])  # 10
+# Force an immutable type to act mutable by passing it inside a list, which is a
+# mutable type, into a function. This way, the "side effect" of the change to
+# the list being visible outside the function is still seen. This is because the
+# list gets passed **by reference** instead of **by value.**
+modify_immutable_type_hack(my_int_list)
+print(my_int_list[0])  # 11
+print(my_int)          # 10
+print()
 
 
 
