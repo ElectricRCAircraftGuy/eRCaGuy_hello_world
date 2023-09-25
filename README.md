@@ -53,6 +53,7 @@ www.ElectricRCAircraftGuy.com
             1. linker scripts (Russian only--use Google Translate) - https://learnxinyminutes.com/docs/linker/
             1. vim - https://learnxinyminutes.com/docs/vim/
 1. https://www.learncpp.com/
+1. LOOKS VERY USEFUL: https://makefiletutorial.com/
 
 
 ## Some other pages
