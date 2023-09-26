@@ -140,13 +140,13 @@ if my_int3 == my_int2 == my_int1:
     print("int is mutable")
 else:
     # side effects did not occur (modifying one variable did not modify another)
-    print("int is immutable")  # this is the result
+    print("int is immutable")  # <== this is the result
 
 my_list3 = my_list2 = my_list1 = [7, 8, 9]
 my_list3.append(1)
 if my_list3 == my_list2 == my_list1:
     # side effects occurred (modifying one variable modified another)
-    print("list is mutable")  # this is the result
+    print("list is mutable")   # <== this is the result
 else:
     # side effects did not occur (modifying one variable did not modify another)
     print("list is immutable")
@@ -185,6 +185,21 @@ print(my_int3 is my_int2)      # True
 print(my_int2 is my_int1)      # True
 print(my_int3 is my_int1)      # True
 # And, each of these is also True because all variables have the same value.
+print(my_int3 == my_int2)      # True
+print(my_int2 == my_int1)      # True
+print(my_int3 == my_int1)      # True
+print()
+#
+# Try the test again, this time like this
+print("integer types again")
+my_int1 = 7
+my_int2 = my_int1
+my_int3 = my_int2
+# Same as above: same underlying object, so each of these is True
+print(my_int3 is my_int2)      # True
+print(my_int2 is my_int1)      # True
+print(my_int3 is my_int1)      # True
+# Same as above: same value, so each of these is True
 print(my_int3 == my_int2)      # True
 print(my_int2 == my_int1)      # True
 print(my_int3 == my_int1)      # True
@@ -325,6 +340,14 @@ SAMPLE OUTPUT:
     True
 
     IMMUTABLE TYPES
+    True
+    True
+    True
+    True
+    True
+    True
+
+    integer types again
     True
     True
     True
