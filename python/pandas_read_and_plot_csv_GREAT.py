@@ -63,13 +63,21 @@ def read_csv_file(filename):
     filepath = f"{SCRIPT_DIRECTORY}/../fake_data/{filename}"
     print(f"Reading file: \"{filepath}\"")
 
-    dataframe = pd.read_csv(
-        filepath,
-        sep=r"[,\t]+", # allow any number of either commas or tabs as the separator
-        header=0,  # the first non-blank row is the header
-        engine="python",
-        skip_blank_lines=True,
-    )
+    # dataframe = pd.read_csv(
+    #     filepath,
+    #     sep=r"[,\t]+", # allow any number of either commas or tabs as the separator
+    #     header=0,  # the first non-blank row is the header
+    #     # NB: using the "python" engine instead of the default "c" engine is much slower, but allows
+    #     # us to have a regex `sep` separator value above, instead of just specifying a single
+    #     # character. When logging files, just use a plain, single comma (`,`) as the separator in
+    #     # order to avoid this problem.
+    #     engine="python",
+    #     skip_blank_lines=True,
+    # )
+    #
+    # Alternatively, just do this for a plain and simple CSV file. This uses the default `c` parsing
+    # engine instead of the `python` engine, and is much faster.
+    dataframe = pd.read_csv(filepath)
 
     # for debugging
     print(f"Dataframe: = \n{dataframe}")
