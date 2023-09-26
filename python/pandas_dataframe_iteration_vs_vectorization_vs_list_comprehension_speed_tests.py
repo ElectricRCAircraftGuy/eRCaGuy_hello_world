@@ -69,6 +69,17 @@ FBL = f"{ANSI_START}{ANSI_FG_BLU}{ANSI_END}"     # blue text
 FBB = f"{ANSI_START}{ANSI_FG_BR_BLU}{ANSI_END}"  # bright blue text
 F = ANSI_OFF
 
+###############
+# class GlobalVars:
+#     """
+#     A C-struct-like class to hold global variables.
+#     See my answer: https://stackoverflow.com/a/77161026/4561887
+#     """
+#     pass
+
+# global_vars = GlobalVars()
+
+
 def mkdir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -261,6 +272,16 @@ def assert_all_results_are_equal(df_dict):
     print(f"Summary statistics:\n{series_first.describe()}")
 
 
+#################
+def run_and_time_technique(code_to_run):
+    """
+    Run and time a DataFrame iteration technique.
+    """
+
+
+    code_to_run()
+
+
 def main():
     """
     The main function of this program.
@@ -294,10 +315,14 @@ def main():
     technique_num += 1
     print(f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing ===")
     # ==============================================================================================
-
     name = f"{technique_num}_raw_for_loop_using_regular_df_indexing"
+    run_and_time_technique(name)
+
+
     df = df_original.copy()  # make a copy of the original dataframe to work with
     time_start_sec = time.monotonic()
+
+
 
     val = [np.NAN]*len(df)
     for i in range(len(df)):
@@ -315,6 +340,9 @@ def main():
         )
 
     df["val"] = val  # put this column back into the dataframe
+
+
+
     time_end_sec = time.monotonic()
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
