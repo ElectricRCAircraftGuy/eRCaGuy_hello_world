@@ -12,6 +12,11 @@ reference**) vs which are **immutable** (do NOT have side effects, and are
 passed **by value**).
 
 Status: Done and works!
+TODO:
+1. [ ] Add `id()` checks to show that the underlying object is the same or not.
+    See:
+    1. https://docs.python.org/3/reference/expressions.html#is-not
+    1. https://docs.python.org/3/library/functions.html#id
 
 keywords: (keywords)
 
