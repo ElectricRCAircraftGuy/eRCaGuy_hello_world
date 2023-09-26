@@ -36,9 +36,14 @@ python3 mutable_and_immutable_types.py
 ```
 
 References:
-1. This question and the answer I'm about to add there:
+1. ***** This question and the answer I'm about to add there:
    https://stackoverflow.com/q/8056130/4561887
+    1. *****+++ My answer which references and uses this code below:
+       https://stackoverflow.com/a/77177223/4561887
 1. GitHub Copilot (minor assistance in this case)
+    1. I got started on the topic, however, with this chat with GitHub
+       Copilot here:
+       "eRCaGuy_hello_world/python/mutable_vs_immutable_types_initial_GitHub_Copilot_chat.md"
 1.
 
 
