@@ -48,7 +48,8 @@ def utc_timestamp_to_unix_sec(utc_yyyy_mm_dd_str, utc_time_of_day_sec):
 
     Args:
     utc_yyyy_mm_dd_str (str): UTC date in the format "YYYY.MM.DD"
-    utc_time_of_day_sec (float): UTC time of day in seconds since start of day (midnight UTC).
+    utc_time_of_day_sec (float): UTC time of day in seconds since start of day (midnight in UTC+0
+    time).
 
     Returns:
     float: Unix time in seconds since 1 Jan 1970.
