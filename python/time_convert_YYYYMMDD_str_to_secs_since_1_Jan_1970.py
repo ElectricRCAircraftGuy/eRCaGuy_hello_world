@@ -19,14 +19,14 @@ installation instructions to install the latest version from GitHub.
 For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
 https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
-pylint eRCaGuy_hello_world/c/time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.py
+pylint time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.py
 ```
 
 Run command:
 ```bash
-./eRCaGuy_hello_world/c/time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.py
+./time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.py
 # OR
-python3 eRCaGuy_hello_world/c/time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.py
+python3 time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.py
 ```
 
 References:
