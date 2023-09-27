@@ -11,16 +11,18 @@ Sept. 2023
 Convert a "YYYY.MM.DD" string to seconds since 1 Jan 1970, in C.
 
 In Python it looks like this:
+See: "eRCaGuy_hello_world/python/time_convert_utc_timestamps_to_unix_sec.py":
 ```py
 import datetime
-date = datetime.datetime.strptime("2023.09.23", "%Y.%m.%d")
-date_sec = date.timestamp()
-print(f"date (UTC) = {date}\ndate_sec = {date_sec}")
+date_local_time = datetime.datetime.strptime("2023.09.23", "%Y.%m.%d")
+date_utc_time = date_local_time.replace(tzinfo=datetime.timezone.utc)
+date_utc_sec = date_utc_time.timestamp()
+print(f"date_utc_time = {date_utc_time}\ndate_utc_sec = {date_utc_sec}")
 ```
 Output:
 ```
-date = 2023-09-23 00:00:00
-date_sec = 1695452400.0
+date_utc_time = 2023-09-23 00:00:00+00:00
+date_utc_sec = 1695427200.0
 ```
 
 STATUS: Done and works!
@@ -57,6 +59,9 @@ References:
 
 */
 
+#define _DEFAULT_SOURCE  // For `tm.tm_gmtoff` (seconds East of UTC) in `struct tm` in C.
+                         // See: 1. https://man7.org/linux/man-pages/man7/feature_test_macros.7.html
+                         //      2. https://man7.org/linux/man-pages/man3/tm.3type.html
 #define _XOPEN_SOURCE  // For `strptime()`; this MUST be before all includes below; see example
                        // here: https://man7.org/linux/man-pages/man3/strptime.3.html
 
@@ -80,6 +85,10 @@ int main()
 
     // Parse the date string according to the format string
     // See: https://man7.org/linux/man-pages/man3/strptime.3.html
+    //
+    // See: "eRCaGuy_hello_world/python/time_convert_utc_timestamps_to_unix_sec.py":
+    // Note: since the date_str does not contain any time zone info, `strptime()` assumes local
+    // time, and applies the current local time offset to the year.month.day time string provided.
     char* return_val = strptime(DATE_STR, FORMAT_STR, &time_struct);
     if (return_val == NULL)
     {
@@ -97,6 +106,52 @@ int main()
 
     // debugging; will be 123 for the year 2023, since 1900 + 123 = 2023
     // printf("time_struct.tm_year = %i\n", time_struct.tm_year);
+    // printf("time_struct.tm_gmtoff seconds East of UTC = %li\n", time_struct.tm_gmtoff);
+
+    // See contents of this struct: https://man7.org/linux/man-pages/man3/tm.3type.html
+    printf("time_struct contains:\n"
+           "  sec   = %i\n"   // Seconds (0-60)
+           "  min   = %i\n"   // Minutes (0-59)
+           "  hour  = %i\n"   // Hours (0-23)
+           "  mday  = %i\n"   // Day of the month (1-31)
+           "  mon   = %i\n"   // Month (0-11)
+           "  year  = %i\n"   // Year - 1900
+           "  wday  = %i\n"   // Day of the week (0-6, Sunday = 0)
+           "  yday  = %i\n"   // Day in the year (0-365, 1 Jan = 0)
+           "  isdst = %i\n"   // Daylight saving time
+           "  tm_gmtoff = %li\n" // Seconds East of UTC
+           "  tm_zone   = %s\n"  // Timezone abbreviation
+           "\n",
+           time_struct.tm_sec, time_struct.tm_min, time_struct.tm_hour,
+           time_struct.tm_mday, time_struct.tm_mon, time_struct.tm_year,
+           time_struct.tm_wday, time_struct.tm_yday, time_struct.tm_isdst,
+           time_struct.tm_gmtoff, time_struct.tm_zone);
+
+    // 1.5. Figure out the timezone offset from UTC in seconds, by getting a current timestamp
+
+    // TODO: add error handling later
+    time_t time_now_sec = time(NULL);
+    struct tm* time_now_struct = localtime(&time_now_sec);
+
+    printf("time_now_struct (not re-entrant) contains:\n"
+           "  sec   = %i\n"       // Seconds (0-60)
+           "  min   = %i\n"       // Minutes (0-59)
+           "  hour  = %i\n"       // Hours (0-23)
+           "  mday  = %i\n"       // Day of the month (1-31)
+           "  mon   = %i\n"       // Month (0-11)
+           "  year  = %i\n"       // Year - 1900
+           "  wday  = %i\n"       // Day of the week (0-6, Sunday = 0)
+           "  yday  = %i\n"       // Day in the year (0-365, 1 Jan = 0)
+           "  isdst = %i\n"       // Daylight saving time
+           "  tm_gmtoff = %li\n"  // Seconds East of UTC
+           "  tm_zone   = %s\n"   // Timezone abbreviation
+           "\n",
+           time_now_struct->tm_sec, time_now_struct->tm_min, time_now_struct->tm_hour,
+           time_now_struct->tm_mday, time_now_struct->tm_mon, time_now_struct->tm_year,
+           time_now_struct->tm_wday, time_now_struct->tm_yday, time_now_struct->tm_isdst,
+           time_now_struct->tm_gmtoff, time_now_struct->tm_zone);
+
+    long int local_time_zone_offset_sec = time_now_struct->tm_gmtoff;
 
     // 2. Convert the struct tm object to a `time_t` number of seconds since 1 Jan 1970
 
@@ -107,6 +162,11 @@ int main()
             errno, strerror(errno));
         return EXIT_FAILURE;
     }
+
+    // 2.5. Add the timezone offset back to the timestamp to convert from local time back to UTC
+    // time
+
+    timestamp_sec += local_time_zone_offset_sec;
 
     // 3. Print the date and timestamp
 
@@ -130,8 +190,35 @@ In C:
 
     eRCaGuy_hello_world$ c/time_convert_YYYYMMDD_str_to_secs_since_1_Jan_1970.c
     Whole date string parsed correctly.
+    time_struct contains:
+    sec   = 0
+    min   = 0
+    hour  = 0
+    mday  = 23
+    mon   = 8
+    year  = 123
+    wday  = 6
+    yday  = 265
+    isdst = 0
+    tm_gmtoff = 0
+    tm_zone   = (null)
+
+    time_now_struct (not re-entrant) contains:
+    sec   = 12
+    min   = 17
+    hour  = 0
+    mday  = 27
+    mon   = 8
+    year  = 123
+    wday  = 3
+    yday  = 269
+    isdst = 0
+    tm_gmtoff = -25200
+    tm_zone   = MST
+
     date (UTC) = 2023-09-23 00:00:00
-    date_sec = 1695452400
+    date_sec = 1695427200
+
 
 OR, in C++:
 

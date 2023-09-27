@@ -105,7 +105,7 @@ def test_utc_timestamp_to_unix_sec():
     assert utc_timestamp_to_unix_sec("2023.09.23", 0) == 1695427200
     assert utc_timestamp_to_unix_sec("2023.09.23", 4123) == (1695427200 + 4123)
 
-    print("\033[32mAll unit tests passed!\033[0m")
+    print("\033[32mAll unit tests passed!\033[0m") # print in green
 
 
 def run_unit_tests():
@@ -121,7 +121,9 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world$ python/time_convert_utc_timestamps_to_unix_sec
+    eRCaGuy_hello_world$ python/time_convert_utc_timestamps_to_unix_sec.py
+    All unit tests passed!
+
 
 
 """
