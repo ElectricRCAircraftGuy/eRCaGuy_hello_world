@@ -79,7 +79,13 @@ def utc_timestamp_to_unix_sec(utc_yyyy_mm_dd_str, utc_time_of_day_sec):
     """
 
     # Note: since the date_str does not contain any time zone info, `strptime()` assumes local time,
-    # and applies the current local time offset to the year.month.day time string provided.
+    # and applies the current local time offset (of your running computer) to the "year.month.day"
+    # time string provided.
+    # - To prove this is the case (which I have done), change your computer's local time zone to
+    #   something else, check `date` at the terminal to ensure it applied, and then run this script
+    #   again. Turn on debugging. You will see that for each unique time zone, the value of
+    #   `date_local_time.timestamp()` (in seconds) *does* change, even for a given fixed
+    #   `utc_yyyy_mm_dd_str` input string, but `date_utc_time.timestamp()` does *not* change.
     date_local_time = datetime.datetime.strptime(utc_yyyy_mm_dd_str, "%Y.%m.%d")
     # Use the `replace()` function to convert the local time to UTC time by setting the time zone to
     # UTC, thereby removing our local time zone offset from what `strptime()` just applied.
@@ -95,7 +101,8 @@ def utc_timestamp_to_unix_sec(utc_yyyy_mm_dd_str, utc_time_of_day_sec):
 
     # debugging
     # print(f"date_local_time = {date_local_time}; date_utc_time = {date_utc_time}; " +
-    #       f"*local sec** = {date_local_time.timestamp()}; date_utc_sec = {date_utc_sec}")
+    #       f"**local sec** = {date_local_time.timestamp()}; date_utc_sec = {date_utc_sec}; " +
+    #       f"unix_sec = {unix_sec}")
 
     return unix_sec
 
