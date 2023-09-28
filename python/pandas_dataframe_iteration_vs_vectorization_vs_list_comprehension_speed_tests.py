@@ -160,7 +160,7 @@ def add_newlines_every_n_chars(s, n):
     return s
 
 
-def plot_data(results_df, num_data_rows):
+def plot_data(results_df, num_data_rows, num_data_cols):
     """
     Plot **and automatically label** the data in the given dataframe.
 
@@ -174,7 +174,8 @@ def plot_data(results_df, num_data_rows):
     # create a bar chart
     fig = plt.figure(figsize=(19, 13))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title(f'Computation time vs Pandas iteration technique over {num_data_rows:,} rows\n' +
+    plt.title(f'Computation time vs Pandas iteration technique over {num_data_rows:,} rows ' +
+              f'x {num_data_cols} columns\n' +
               f'in a DataFrame (*Lower* is better; {len(results_df)} techniques tested).',
               fontsize=14)
     plt.xlabel('Iteration technique', labelpad=15, fontsize=12) # use labelpad to lower the label
@@ -309,7 +310,7 @@ def main():
     MIN_VAL = -1000
     MAX_VAL = 1000
     # NUM_ROWS = 10_000_000
-    # NUM_ROWS = 2_000_000  # default for final tests
+    NUM_ROWS = 2_000_000  # default for final tests
     # NUM_ROWS = 1_000_000
     # NUM_ROWS = 100_000
     NUM_ROWS = 10_000  # default for rapid development & initial tests
@@ -810,7 +811,7 @@ def main():
         lambda s: add_newlines_every_n_chars(s, 12))
 
     # Now plot the results in a bar chart
-    plot_data(results_df, NUM_ROWS)
+    plot_data(results_df, NUM_ROWS, NUM_COLS)
 
     plt.show()  # show all figures
 
