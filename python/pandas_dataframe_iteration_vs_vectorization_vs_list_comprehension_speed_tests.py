@@ -174,10 +174,10 @@ def plot_data(results_df, num_data_rows):
     # create a bar chart
     fig = plt.figure(figsize=(19, 13))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title(f'Computation time vs Pandas iteration method over {num_data_rows:,} rows\n' +
-              f'in a DataFrame (*Lower* is better)',
+    plt.title(f'Computation time vs Pandas iteration technique over {num_data_rows:,} rows\n' +
+              f'in a DataFrame (*Lower* is better; {len(results_df)} techniques tested).',
               fontsize=14)
-    plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
+    plt.xlabel('Iteration technique', labelpad=15, fontsize=12) # use labelpad to lower the label
     plt.ylabel('Computation time (sec)', fontsize=12)
 
     # Prepare to add text labels to each bar
@@ -309,10 +309,10 @@ def main():
     MIN_VAL = -1000
     MAX_VAL = 1000
     # NUM_ROWS = 10_000_000
-    # NUM_ROWS = 2_000_000
+    # NUM_ROWS = 2_000_000  # default for final tests
     # NUM_ROWS = 1_000_000
     # NUM_ROWS = 100_000
-    NUM_ROWS = 10_000
+    NUM_ROWS = 10_000  # default for rapid development & initial tests
     NUM_COLS = 4
     data = np.random.randint(MIN_VAL, MAX_VAL, size=(NUM_ROWS, NUM_COLS))
 
