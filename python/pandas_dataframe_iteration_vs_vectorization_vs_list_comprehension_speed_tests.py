@@ -271,18 +271,18 @@ def assert_all_results_are_equal(df_dict):
     print(f"Summary statistics:\n{series_first.describe()}")
 
 
-def run_and_time_this_technique(name, code_to_run_and_time, df_original, dt_sec, df_dict):
+def run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict):
     """
     Run and time a DataFrame iteration technique.
 
     Args:
-    - code_to_run_and_time: a function to run and time; this must be a closure which has access to
+    - technique_to_run_and_time: a function to run and time; this must be a closure which has access to
         the variables in `main()'s scope.
     """
     df = df_original.copy()  # make a copy of the original dataframe to work with
 
     time_start_sec = time.monotonic()
-    code_to_run_and_time(df)
+    technique_to_run_and_time(df)
     time_end_sec = time.monotonic()
 
     val = df["val"]
@@ -332,8 +332,8 @@ def main():
     print(f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing ===")
     # ==============================================================================================
     name = f"{technique_num}_raw_for_loop_using_regular_df_indexing"
+    def technique_to_run_and_time(df):
 
-    def code_to_run_and_time(df):
         val = [np.NAN]*len(df)
         for i in range(len(df)):
             if i < 2 or i > len(df)-2:
@@ -350,130 +350,100 @@ def main():
             )
         df["val"] = val  # put this column back into the dataframe
 
-    run_and_time_this_technique(name, code_to_run_and_time, df_original, dt_sec, df_dict)
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.loc[]` " +
            "label-based indexing ===")
     # ==============================================================================================
-
     name = f"{technique_num}_raw_for_loop_using_df.loc[]_indexing"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    val = [np.NAN]*len(df)
-    for i in range(len(df)):
-        if i < 2 or i > len(df)-2:
-            continue
+        val = [np.NAN]*len(df)
+        for i in range(len(df)):
+            if i < 2 or i > len(df)-2:
+                continue
 
-        val[i] = calculate_val(
-            df.loc[i-2, "A"],
-            df.loc[i-1, "A"],
-            df.loc[i,   "A"],
-            df.loc[i+1, "A"],
-            df.loc[i,   "B"],
-            df.loc[i,   "C"],
-            df.loc[i,   "D"],
-        )
+            val[i] = calculate_val(
+                df.loc[i-2, "A"],
+                df.loc[i-1, "A"],
+                df.loc[i,   "A"],
+                df.loc[i+1, "A"],
+                df.loc[i,   "B"],
+                df.loc[i,   "C"],
+                df.loc[i,   "D"],
+            )
 
-    df["val"] = val  # put this column back into the dataframe
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
+        df["val"] = val  # put this column back into the dataframe
 
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.iloc[]` " +
            "index-based indexing ===")
     # ==============================================================================================
-
     name = f"{technique_num}_raw_for_loop_using_df.iloc[]_indexing"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    # column indices
-    i_A = 0
-    i_B = 1
-    i_C = 2
-    i_D = 3
+        # column indices
+        i_A = 0
+        i_B = 1
+        i_C = 2
+        i_D = 3
 
-    val = [np.NAN]*len(df)
-    for i in range(len(df)):
-        if i < 2 or i > len(df)-2:
-            continue
+        val = [np.NAN]*len(df)
+        for i in range(len(df)):
+            if i < 2 or i > len(df)-2:
+                continue
 
-        val[i] = calculate_val(
-            df.iloc[i-2, i_A],
-            df.iloc[i-1, i_A],
-            df.iloc[i,   i_A],
-            df.iloc[i+1, i_A],
-            df.iloc[i,   i_B],
-            df.iloc[i,   i_C],
-            df.iloc[i,   i_D],
-        )
+            val[i] = calculate_val(
+                df.iloc[i-2, i_A],
+                df.iloc[i-1, i_A],
+                df.iloc[i,   i_A],
+                df.iloc[i+1, i_A],
+                df.iloc[i,   i_B],
+                df.iloc[i,   i_C],
+                df.iloc[i,   i_D],
+            )
 
-    df["val"] = val  # put this column back into the dataframe
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
+        df["val"] = val  # put this column back into the dataframe
 
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num} [BAD-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===")
     # ==============================================================================================
-
     name = f"{technique_num}_iterrows_in_for_loop"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    val = [np.NAN]*len(df)
-    for index, row in df.iterrows():
-        if index < 2 or index > len(df)-2:
-            continue
+        val = [np.NAN]*len(df)
+        for index, row in df.iterrows():
+            if index < 2 or index > len(df)-2:
+                continue
 
-        val[index] = calculate_val(
-            df["A"][index-2],
-            df["A"][index-1],
-            row["A"],
-            df["A"][index+1],
-            row["B"],
-            row["C"],
-            row["D"],
-        )
+            val[index] = calculate_val(
+                df["A"][index-2],
+                df["A"][index-1],
+                row["A"],
+                df["A"][index+1],
+                row["B"],
+                row["C"],
+                row["D"],
+            )
 
-    df["val"] = val  # put this column back into the dataframe
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
+        df["val"] = val  # put this column back into the dataframe
 
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     print("\n=== For all of the next examples, we must first prepare the dataframe by adding\n" +
           "columns with previous and next values: A_(i-2), A_(i-1), and A_(i+1). ===")
     # ==============================================================================================
-
     name = "adding_shifted_data"
+
     time_start_sec = time.monotonic()
 
     df_original["A_i_minus_2"] = df_original["A"].shift(2)  # val at index i-2
@@ -499,186 +469,143 @@ def main():
     # See here for this and other `itertuples()`-based techniques:
     # https://stackoverflow.com/a/59413206/4561887
     # ==============================================================================================
-
     name = f"{technique_num}_itertuples_in_for_loop"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    val = [np.NAN]*len(df)
-    for row in df.itertuples():
-        val[row.Index] = calculate_val(
-            row.A_i_minus_2,
-            row.A_i_minus_1,
-            row.A,
-            row.A_i_plus_1,
-            row.B,
-            row.C,
-            row.D,
-        )
+        val = [np.NAN]*len(df)
+        for row in df.itertuples():
+            val[row.Index] = calculate_val(
+                row.A_i_minus_2,
+                row.A_i_minus_1,
+                row.A,
+                row.A_i_plus_1,
+                row.B,
+                row.C,
+                row.D,
+            )
 
-    df["val"] = val  # put this column back into the dataframe
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
+        df["val"] = val  # put this column back into the dataframe
 
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num}: vectorization, w/`apply()` for " +
            "if statement corner-case ===")
     # ==============================================================================================
-
     name = f"{technique_num}_vectorization__with_apply_for_if_statement_corner_case"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    # In this particular example, since we have an embedded `if-else` statement for the `B` column,
-    # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using
-    # **`apply()`**, then we'll use vectorization for the rest.
-    df["B_new"] = df["B"].apply(calculate_new_column_b_value)
-    # OR (same thing, but with a lambda function instead)
-    # df["B_new"] = df["B"].apply(lambda x: (6 * x) if x > 0 else (60 * x))
+        # In this particular example, since we have an embedded `if-else` statement for the `B` column,
+        # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using
+        # **`apply()`**, then we'll use vectorization for the rest.
+        df["B_new"] = df["B"].apply(calculate_new_column_b_value)
+        # OR (same thing, but with a lambda function instead)
+        # df["B_new"] = df["B"].apply(lambda x: (6 * x) if x > 0 else (60 * x))
 
-    # Now we can use vectorization for the rest. "Vectorization" in this case means to simply use
-    # the column series variables in equations directly, without manually iterating over them.
-    # Pandas DataFrames will handle the underlying iteration automatically for you. You just focus
-    # on the math.
-    df["val"] = (
-        2 * df["A_i_minus_2"]
-        + 3 * df["A_i_minus_1"]
-        + 4 * df["A"]
-        + 5 * df["A_i_plus_1"]
-        + df["B_new"]
-        + 7 * df["C"]
-        - 8 * df["D"]
-    )
+        # Now we can use vectorization for the rest. "Vectorization" in this case means to simply use
+        # the column series variables in equations directly, without manually iterating over them.
+        # Pandas DataFrames will handle the underlying iteration automatically for you. You just focus
+        # on the math.
+        df["val"] = (
+            2 * df["A_i_minus_2"]
+            + 3 * df["A_i_minus_1"]
+            + 4 * df["A"]
+            + 5 * df["A_i_plus_1"]
+            + df["B_new"]
+            + 7 * df["C"]
+            - 8 * df["D"]
+        )
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num}: vectorization, w/list comprehension for " +
            "if statement corner-case ===")
     # ==============================================================================================
-
     name = f"{technique_num}_vectorization__with_list_comprehension_for_if_statment_corner_case"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    # In this particular example, since we have an embedded `if-else` statement for the `B` column,
-    # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using **list
-    # comprehension**, then we'll use vectorization for the rest.
-    df["B_new"] = [
-        calculate_new_column_b_value(b_value) for b_value in df["B"]
-    ]
+        # In this particular example, since we have an embedded `if-else` statement for the `B` column,
+        # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using **list
+        # comprehension**, then we'll use vectorization for the rest.
+        df["B_new"] = [
+            calculate_new_column_b_value(b_value) for b_value in df["B"]
+        ]
 
-    # Now we can use vectorization for the rest. "Vectorization" in this case means to simply use
-    # the column series variables in equations directly, without manually iterating over them.
-    # Pandas DataFrames will handle the underlying iteration automatically for you. You just focus
-    # on the math.
-    df["val"] = (
-        2 * df["A_i_minus_2"]
-        + 3 * df["A_i_minus_1"]
-        + 4 * df["A"]
-        + 5 * df["A_i_plus_1"]
-        + df["B_new"]
-        + 7 * df["C"]
-        - 8 * df["D"]
-    )
+        # Now we can use vectorization for the rest. "Vectorization" in this case means to simply use
+        # the column series variables in equations directly, without manually iterating over them.
+        # Pandas DataFrames will handle the underlying iteration automatically for you. You just focus
+        # on the math.
+        df["val"] = (
+            2 * df["A_i_minus_2"]
+            + 3 * df["A_i_minus_1"]
+            + 4 * df["A"]
+            + 5 * df["A_i_plus_1"]
+            + df["B_new"]
+            + 7 * df["C"]
+            - 8 * df["D"]
+        )
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
     print(f"\n=== Technique {technique_num}: pure vectorization: w/`df.loc[]` " +
            "boolean array indexing for if statement corner-case ===")
     # ==============================================================================================
-
     name = f"{technique_num}_pure_vectorization__with_df.loc[]_boolean_array_indexing_for_if_statment_corner_case"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    # If statement to evaluate:
-    #
-    #     if B > 0:
-    #         B_new = 6 * B
-    #     else:
-    #         B_new = 60 * B
-    #
-    # In this particular example, since we have an embedded `if-else` statement for the `B` column,
-    # we can use some boolean array indexing through `df.loc[]` for some pure vectorization magic.
-    #
-    # Explanation:
-    #
-    # Long:
-    # The format is: `df.loc[rows, columns]`, except in this case, the rows are specified by a
-    # "boolean array" (AKA: a boolean expression, list of booleans, or "boolean mask"), specifying
-    # all rows where `B` is
-    # > 0. Then, only in that `B` column for those rows, set the value accordingly. After we do this
-    # for where `B` is > 0, we do the same thing for where `B` is <= 0, except with the other
-    # equation.
-    #
-    # Short:
-    # For all rows where the boolean expression applies, set the column value accordingly.
-    #
-    # GitHub CoPilot first showed me this `.loc[]` technique.
-    # See also the official documentation:
-    # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
-    #
-    # 1st: handle the > 0 case
-    df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
-    # 2nd: handle the <= 0 case, merging the results into the previously-created "B_new" column
-    # - NB: this doesn't work; it overwrites and replaces the whole "B_new" column instead:
-    #
-    #       df["B_new"] = df.loc[df["B"] <= 0, "B"] * 60
-    #
-    df.loc[df["B"] <= 0, "B_new"] = df.loc[df["B"] <= 0, "B"] * 60
+        # If statement to evaluate:
+        #
+        #     if B > 0:
+        #         B_new = 6 * B
+        #     else:
+        #         B_new = 60 * B
+        #
+        # In this particular example, since we have an embedded `if-else` statement for the `B` column,
+        # we can use some boolean array indexing through `df.loc[]` for some pure vectorization magic.
+        #
+        # Explanation:
+        #
+        # Long:
+        # The format is: `df.loc[rows, columns]`, except in this case, the rows are specified by a
+        # "boolean array" (AKA: a boolean expression, list of booleans, or "boolean mask"), specifying
+        # all rows where `B` is
+        # > 0. Then, only in that `B` column for those rows, set the value accordingly. After we do this
+        # for where `B` is > 0, we do the same thing for where `B` is <= 0, except with the other
+        # equation.
+        #
+        # Short:
+        # For all rows where the boolean expression applies, set the column value accordingly.
+        #
+        # GitHub CoPilot first showed me this `.loc[]` technique.
+        # See also the official documentation:
+        # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.loc.html
+        #
+        # 1st: handle the > 0 case
+        df["B_new"] = df.loc[df["B"] > 0, "B"] * 6
+        # 2nd: handle the <= 0 case, merging the results into the previously-created "B_new" column
+        # - NB: this doesn't work; it overwrites and replaces the whole "B_new" column instead:
+        #
+        #       df["B_new"] = df.loc[df["B"] <= 0, "B"] * 60
+        #
+        df.loc[df["B"] <= 0, "B_new"] = df.loc[df["B"] <= 0, "B"] * 60
 
-    # Now use normal vectorization for the rest.
-    df["val"] = (
-        2 * df["A_i_minus_2"]
-        + 3 * df["A_i_minus_1"]
-        + 4 * df["A"]
-        + 5 * df["A_i_plus_1"]
-        + df["B_new"]
-        + 7 * df["C"]
-        - 8 * df["D"]
-    )
+        # Now use normal vectorization for the rest.
+        df["val"] = (
+            2 * df["A_i_minus_2"]
+            + 3 * df["A_i_minus_1"]
+            + 4 * df["A"]
+            + 5 * df["A_i_plus_1"]
+            + df["B_new"]
+            + 7 * df["C"]
+            - 8 * df["D"]
+        )
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
@@ -688,34 +615,23 @@ def main():
     # https://stackoverflow.com/a/30566899/4561887
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html
     # ==============================================================================================
-
     name = f"{technique_num}_apply_function_with_lambda"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    df["val"] = df.apply(
-        lambda row: calculate_val(
-            row["A_i_minus_2"],
-            row["A_i_minus_1"],
-            row["A"],
-            row["A_i_plus_1"],
-            row["B"],
-            row["C"],
-            row["D"]
-        ),
-        axis='columns' # same as `axis=1`: "apply function to each row", rather than to each column
-    )
+        df["val"] = df.apply(
+            lambda row: calculate_val(
+                row["A_i_minus_2"],
+                row["A_i_minus_1"],
+                row["A"],
+                row["A_i_plus_1"],
+                row["B"],
+                row["C"],
+                row["D"]
+            ),
+            axis='columns' # same as `axis=1`: "apply function to each row", rather than to each column
+        )
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
@@ -724,46 +640,35 @@ def main():
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
-
     name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment_passed_to_func"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    df["val"] = [
-        # Note: you *could* do the calculations directly here instead of using a function call, so
-        # long as you don't have indented code blocks such as sub-routines or multi-line if
-        # statements.
-        # I'm using a function call.
-        calculate_val(
-            A_i_minus_2,
-            A_i_minus_1,
-            A,
-            A_i_plus_1,
-            B,
-            C,
-            D
-        ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
-        in zip(
-            df["A_i_minus_2"],
-            df["A_i_minus_1"],
-            df["A"],
-            df["A_i_plus_1"],
-            df["B"],
-            df["C"],
-            df["D"]
-        )
-    ]
+        df["val"] = [
+            # Note: you *could* do the calculations directly here instead of using a function call, so
+            # long as you don't have indented code blocks such as sub-routines or multi-line if
+            # statements.
+            # I'm using a function call.
+            calculate_val(
+                A_i_minus_2,
+                A_i_minus_1,
+                A,
+                A_i_plus_1,
+                B,
+                C,
+                D
+            ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+            in zip(
+                df["A_i_minus_2"],
+                df["A_i_minus_1"],
+                df["A"],
+                df["A_i_plus_1"],
+                df["B"],
+                df["C"],
+                df["D"]
+            )
+        ]
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
@@ -772,42 +677,31 @@ def main():
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
-
     name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment_calculated_in_place"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    df["val"] = [
-        2 * A_i_minus_2
-        + 3 * A_i_minus_1
-        + 4 * A
-        + 5 * A_i_plus_1
-        # Python ternary operator; don't forget parentheses around the entire ternary expression!
-        + ((6 * B) if B > 0 else (60 * B))
-        + 7 * C
-        - 8 * D
-        for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
-        in zip(
-            df["A_i_minus_2"],
-            df["A_i_minus_1"],
-            df["A"],
-            df["A_i_plus_1"],
-            df["B"],
-            df["C"],
-            df["D"]
-        )
-    ]
+        df["val"] = [
+            2 * A_i_minus_2
+            + 3 * A_i_minus_1
+            + 4 * A
+            + 5 * A_i_plus_1
+            # Python ternary operator; don't forget parentheses around the entire ternary expression!
+            + ((6 * B) if B > 0 else (60 * B))
+            + 7 * C
+            - 8 * D
+            for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+            in zip(
+                df["A_i_minus_2"],
+                df["A_i_minus_1"],
+                df["A"],
+                df["A_i_plus_1"],
+                df["B"],
+                df["C"],
+                df["D"]
+            )
+        ]
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
@@ -816,42 +710,31 @@ def main():
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
-
     name = f"{technique_num}_list_comprehension_w_zip_and_row_tuple_passed_to_func"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    df["val"] = [
-        calculate_val(
-            row[0],
-            row[1],
-            row[2],
-            row[3],
-            row[4],
-            row[5],
-            row[6],
-        ) for row
-        in zip(
-            df["A_i_minus_2"],
-            df["A_i_minus_1"],
-            df["A"],
-            df["A_i_plus_1"],
-            df["B"],
-            df["C"],
-            df["D"]
-        )
-    ]
+        df["val"] = [
+            calculate_val(
+                row[0],
+                row[1],
+                row[2],
+                row[3],
+                row[4],
+                row[5],
+                row[6],
+            ) for row
+            in zip(
+                df["A_i_minus_2"],
+                df["A_i_minus_1"],
+                df["A"],
+                df["A_i_plus_1"],
+                df["B"],
+                df["C"],
+                df["D"]
+            )
+        ]
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
@@ -868,50 +751,39 @@ def main():
     #   > the entire array to string, which may not be what you want. Fortunately, zipping your
     #   > columns together is the most straightforward workaround to this.
     # ==============================================================================================
-
     name = f"{technique_num}_list_comprehension_w__to_numpy__and_direct_variable_assignment_passed_to_func"
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+    def technique_to_run_and_time(df):
 
-    df["val"] = [
-        # Note: this *could* be a lambda here instead of a function call. I'm using a function call.
-        calculate_val(
-            A_i_minus_2,
-            A_i_minus_1,
-            A,
-            A_i_plus_1,
-            B,
-            C,
-            D
-        ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
-        # Note: this `[[...]]` syntax is called "double-bracket indexing" and is used to select a
-        # subset of columns from the dataframe, kind of like boolean indexing. The inner `[]`
-        # brackets create a list from the column names within them, and the outer `[]` brackets
-        # accept this list to index into the dataframe and select just this list of columns.
-        # - One of the **list comprehension** examples in this answer here uses `.to_numpy()` like
-        #   this: https://stackoverflow.com/a/55557758/4561887
-        in df[[
-            "A_i_minus_2",
-            "A_i_minus_1",
-            "A",
-            "A_i_plus_1",
-            "B",
-            "C",
-            "D"
-        ]].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
-                       # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
-    ]
+        df["val"] = [
+            # Note: this *could* be a lambda here instead of a function call. I'm using a function call.
+            calculate_val(
+                A_i_minus_2,
+                A_i_minus_1,
+                A,
+                A_i_plus_1,
+                B,
+                C,
+                D
+            ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+            # Note: this `[[...]]` syntax is called "double-bracket indexing" and is used to select a
+            # subset of columns from the dataframe, kind of like boolean indexing. The inner `[]`
+            # brackets create a list from the column names within them, and the outer `[]` brackets
+            # accept this list to index into the dataframe and select just this list of columns.
+            # - One of the **list comprehension** examples in this answer here uses `.to_numpy()` like
+            #   this: https://stackoverflow.com/a/55557758/4561887
+            in df[[
+                "A_i_minus_2",
+                "A_i_minus_1",
+                "A",
+                "A_i_plus_1",
+                "B",
+                "C",
+                "D"
+            ]].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
+                        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
+        ]
 
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # =================================== END OF TECHNIQUES ========================================
     # Collect and prepare data for plotting
