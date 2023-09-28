@@ -33,6 +33,34 @@ References:
 1. GitHub Copilot. It wrote most of this code for me, including the definition of a "closure" above.
 1.
 
+CHAT WITH GITHUB COPILOT:
+-------------------------
+ElectricRCAircraftGuy:
+What is a closure in Python?
+
+GitHub Copilot:
+
+In Python, a closure is a function object that has access to variables in its enclosing lexical scope, even when the function is called outside of that scope.
+
+A closure is created when a nested function references a value from its enclosing scope. The nested function "closes over" the value, creating a closure that retains access to the value even after the enclosing function has returned.
+
+Here's an example to illustrate this:
+```py
+def outer_function():
+    x = 1
+
+    def inner_function():
+        print(x)
+
+    return inner_function
+
+my_func = outer_function()
+my_func()  # Output: 1
+```
+
+In this example, `inner_function()` is a closure because it references the variable `x` from its enclosing scope (`outer_function()`). When `outer_function()` is called, it returns `inner_function()`, which is then assigned to `my_func`. When `my_func()` is called, it prints the value of `x`, which is defined in `outer_function()`. This works because `inner_function()` is a closure and retains access to the variables in `outer_function()`s scope, even though it is called outside of that scope.
+-------------------------
+
 """
 
 
