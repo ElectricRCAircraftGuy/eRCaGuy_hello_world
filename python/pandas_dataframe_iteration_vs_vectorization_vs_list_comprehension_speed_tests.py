@@ -11,7 +11,7 @@ Use the Pandas library to manipulate a DataFrame using iteration vs vectorizatio
 comprehension, and compare the speed tests results.
 
 The question I'm trying to answer is:
-What are the various ways to do iteration-like things over a Pandas dataframe with*out* actually
+What are the various ways to do iteration-like things over a Pandas DataFrame with*out* actually
 doing Python iteration, which is slow, and how do they compare in speed?
 
 Status: Done and works!
@@ -234,7 +234,7 @@ def calculate_val(
           + 3 * A_(i-1)
           + 4 * A_i
           + 5 * A_(i+1)
-          + ((6 * B_i) if B > 0 else (60 * B_i))
+          + ((6 * B_i) if B > 0 else (60 * B_i))  # don't forget parenthesis around the whole line!
           + 7 * C_i
           - 8 * D_i
     """
@@ -273,13 +273,30 @@ def assert_all_results_are_equal(df_dict):
 
 
 #################
-def run_and_time_technique(code_to_run):
+def run_and_time_this_technique(name, code_to_run_and_time, df_original, dt_sec, df_dict):
     """
     Run and time a DataFrame iteration technique.
+
+    Args:
+    - code_to_run_and_time: a function to run and time; this must be a closure which has access to
+        the variables in `main()'s scope.
     """
+    df = df_original.copy()  # make a copy of the original dataframe to work with
 
+    time_start_sec = time.monotonic()
+    code_to_run_and_time(df)
+    time_end_sec = time.monotonic()
 
-    code_to_run()
+    print(f"len(val) = {len(val)}") # debugging
+    # print(f"val[:10] = {val[:10]}") # debugging
+    # print(f"val[-10:] = {val[-10:]}") # debugging
+
+    dt_sec[name] = time_end_sec - time_start_sec
+    # Note: no need to `.copy()` this again, since we created `df` from a copy above already
+    df_dict[name] = df
+
+    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
+    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
 
 
 def main():
@@ -316,43 +333,25 @@ def main():
     print(f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing ===")
     # ==============================================================================================
     name = f"{technique_num}_raw_for_loop_using_regular_df_indexing"
-    run_and_time_technique(name)
 
+    def code_to_run_and_time(df):
+        val = [np.NAN]*len(df)
+        for i in range(len(df)):
+            if i < 2 or i > len(df)-2:
+                continue
 
-    df = df_original.copy()  # make a copy of the original dataframe to work with
-    time_start_sec = time.monotonic()
+            val[i] = calculate_val(
+                df["A"][i-2],
+                df["A"][i-1],
+                df["A"][i],
+                df["A"][i+1],
+                df["B"][i],
+                df["C"][i],
+                df["D"][i],
+            )
+        df["val"] = val  # put this column back into the dataframe
 
-
-
-    val = [np.NAN]*len(df)
-    for i in range(len(df)):
-        if i < 2 or i > len(df)-2:
-            continue
-
-        val[i] = calculate_val(
-            df["A"][i-2],
-            df["A"][i-1],
-            df["A"][i],
-            df["A"][i+1],
-            df["B"][i],
-            df["C"][i],
-            df["D"][i],
-        )
-
-    df["val"] = val  # put this column back into the dataframe
-
-
-
-    time_end_sec = time.monotonic()
-    print(f"len(val) = {len(val)}") # debugging
-    # print(f"val[:10] = {val[:10]}") # debugging
-    # print(f"val[-10:] = {val[-10:]}") # debugging
-
-    dt_sec[name] = time_end_sec - time_start_sec
-    df_dict[name] = df
-
-    print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    run_and_time_this_technique(name, code_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
