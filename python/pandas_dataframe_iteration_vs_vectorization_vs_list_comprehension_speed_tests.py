@@ -69,16 +69,6 @@ FBL = f"{ANSI_START}{ANSI_FG_BLU}{ANSI_END}"     # blue text
 FBB = f"{ANSI_START}{ANSI_FG_BR_BLU}{ANSI_END}"  # bright blue text
 F = ANSI_OFF
 
-###############
-# class GlobalVars:
-#     """
-#     A C-struct-like class to hold global variables.
-#     See my answer: https://stackoverflow.com/a/77161026/4561887
-#     """
-#     pass
-
-# global_vars = GlobalVars()
-
 
 def mkdir(directory):
     if not os.path.exists(directory):
@@ -272,7 +262,6 @@ def assert_all_results_are_equal(df_dict):
     print(f"Summary statistics:\n{series_first.describe()}")
 
 
-#################
 def run_and_time_this_technique(name, code_to_run_and_time, df_original, dt_sec, df_dict):
     """
     Run and time a DataFrame iteration technique.
@@ -287,6 +276,7 @@ def run_and_time_this_technique(name, code_to_run_and_time, df_original, dt_sec,
     code_to_run_and_time(df)
     time_end_sec = time.monotonic()
 
+    val = df["val"]
     print(f"len(val) = {len(val)}") # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
     # print(f"val[-10:] = {val[-10:]}") # debugging
