@@ -313,7 +313,7 @@ def main():
     NUM_ROWS = 2_000_000  # default for final tests
     # NUM_ROWS = 1_000_000
     # NUM_ROWS = 100_000
-    NUM_ROWS = 10_000  # default for rapid development & initial tests
+    # NUM_ROWS = 10_000  # default for rapid development & initial tests
     NUM_COLS = 4
     data = np.random.randint(MIN_VAL, MAX_VAL, size=(NUM_ROWS, NUM_COLS))
 
@@ -826,195 +826,345 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-eRCaGuy_hello_world$ python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py
+eRCaGuy_hello_world$ time python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py
 dataframe =
-         A    B    C    D
-0      367 -789 -836 -731
-1     -328 -188   79 -967
-2     -782  706   73   34
-3      513  503 -128 -312
-4     -985  671 -324 -398
-...    ...  ...  ...  ...
-99995 -329  -34 -590 -202
-99996  329  706  116 -462
-99997 -827  686  649  -71
-99998   41  -36  573  961
-99999   96 -728 -393  -95
+           A    B    C    D
+0       -365  842  284 -942
+1        532  416 -102  888
+2        397  321 -296 -616
+3       -215  879  557  895
+4        857  701 -157  480
+...      ...  ...  ...  ...
+1999995 -101 -233 -377 -939
+1999996 -989  380  917  145
+1999997 -879  333 -372 -970
+1999998  738  982 -743  312
+1999999 -306 -103  459  745
 
-[100000 rows x 4 columns]
+[2000000 rows x 4 columns]
 
-=== Technique 1: raw Python `for` loop ===
-len(val) = 100000
-dt_sec[1_raw_for_loop] = 1.662095 sec
-df_dict[1_raw_for_loop]:
+=== Technique 1: raw Python `for` loop using regular df indexing ===
+len(val) = 2000000
+dt_sec[1_raw_for_loop_using_regular_df_indexing] = 33.603625 sec
+df_dict[1_raw_for_loop_using_regular_df_indexing]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+           A    B    C    D      val
+0       -365  842  284 -942      NaN
+1        532  416 -102  888      NaN
+2        397  321 -296 -616   6161.0
+3       -215  879  557  895   7693.0
+4        857  701 -157  480   5864.0
+...      ...  ...  ...  ...      ...
+1999995 -101 -233 -377 -939 -12195.0
+1999996 -989  380  917  145    243.0
+1999997 -879  333 -372 -970   4159.0
+1999998  738  982 -743  312  -4998.0
+1999999 -306 -103  459  745      NaN
 
-=== Technique 2 [WORST-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===
-len(val) = 100000
-dt_sec[2_iterrows_in_for_loop] = 2.606092 sec
-df_dict[2_iterrows_in_for_loop]:
+[2000000 rows x 5 columns]
+
+=== Technique 2: raw Python `for` loop using `df.loc[]` label-based indexing ===
+len(val) = 2000000
+dt_sec[2_raw_for_loop_using_df.loc[]_indexing] = 54.561268 sec
+df_dict[2_raw_for_loop_using_df.loc[]_indexing]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+           A    B    C    D      val
+0       -365  842  284 -942      NaN
+1        532  416 -102  888      NaN
+2        397  321 -296 -616   6161.0
+3       -215  879  557  895   7693.0
+4        857  701 -157  480   5864.0
+...      ...  ...  ...  ...      ...
+1999995 -101 -233 -377 -939 -12195.0
+1999996 -989  380  917  145    243.0
+1999997 -879  333 -372 -970   4159.0
+1999998  738  982 -743  312  -4998.0
+1999999 -306 -103  459  745      NaN
+
+[2000000 rows x 5 columns]
+
+=== Technique 3: raw Python `for` loop using `df.iloc[]` index-based indexing ===
+len(val) = 2000000
+dt_sec[3_raw_for_loop_using_df.iloc[]_indexing] = 135.124845 sec
+df_dict[3_raw_for_loop_using_df.iloc[]_indexing]:
+------
+           A    B    C    D      val
+0       -365  842  284 -942      NaN
+1        532  416 -102  888      NaN
+2        397  321 -296 -616   6161.0
+3       -215  879  557  895   7693.0
+4        857  701 -157  480   5864.0
+...      ...  ...  ...  ...      ...
+1999995 -101 -233 -377 -939 -12195.0
+1999996 -989  380  917  145    243.0
+1999997 -879  333 -372 -970   4159.0
+1999998  738  982 -743  312  -4998.0
+1999999 -306 -103  459  745      NaN
+
+[2000000 rows x 5 columns]
+
+=== Technique 4 [BAD-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===
+len(val) = 2000000
+dt_sec[4_iterrows_in_for_loop] = 57.582548 sec
+df_dict[4_iterrows_in_for_loop]:
+------
+           A    B    C    D      val
+0       -365  842  284 -942      NaN
+1        532  416 -102  888      NaN
+2        397  321 -296 -616   6161.0
+3       -215  879  557  895   7693.0
+4        857  701 -157  480   5864.0
+...      ...  ...  ...  ...      ...
+1999995 -101 -233 -377 -939 -12195.0
+1999996 -989  380  917  145    243.0
+1999997 -879  333 -372 -970   4159.0
+1999998  738  982 -743  312  -4998.0
+1999999 -306 -103  459  745      NaN
+
+[2000000 rows x 5 columns]
 
 === For all of the next examples, we must first prepare the dataframe by adding
 columns with previous and next values: A_(i-2), A_(i-1), and A_(i+1). ===
-dt_sec[adding_shifted_data] = 0.002413 sec
+dt_sec[adding_shifted_data] = 0.044961 sec
 
-=== Technique 3: named `itertuples()` in a Python `for` loop ===
-len(val) = 100000
-dt_sec[3_itertuples_in_for_loop] = 0.069353 sec
-df_dict[3_itertuples_in_for_loop]:
+=== Technique 5: named `itertuples()` in a Python `for` loop ===
+len(val) = 2000000
+dt_sec[5_itertuples_in_for_loop] = 1.519371 sec
+df_dict[5_itertuples_in_for_loop]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
 
-=== Technique 4 [FASTEST]: vectorization, w/`apply()` for one corner-case ===
-len(val) = 100000
-dt_sec[4_vectorization__with_apply_for_corner_case] = 0.016455 sec
-df_dict[4_vectorization__with_apply_for_corner_case]:
+[2000000 rows x 8 columns]
+
+=== Technique 6: vectorization, w/`apply()` for if statement corner-case ===
+len(val) = 2000000
+dt_sec[6_vectorization__with_apply_for_if_statement_corner_case] = 0.251125 sec
+df_dict[6_vectorization__with_apply_for_if_statement_corner_case]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1    B_new      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   1926.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   5274.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   4206.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -13980.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0   2280.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   1998.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0   5892.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
 
-=== Technique 5: using the `apply()` function with a lambda ===
-len(val) = 100000
-dt_sec[5_apply_function_with_lambda] = 0.853706 sec
-df_dict[5_apply_function_with_lambda]:
+[2000000 rows x 9 columns]
+
+=== Technique 7: vectorization, w/list comprehension for if statement corner-case ===
+len(val) = 2000000
+dt_sec[7_vectorization__with_list_comprehension_for_if_statment_corner_case] = 0.305493 sec
+df_dict[7_vectorization__with_list_comprehension_for_if_statment_corner_case]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1    B_new      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   1926.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   5274.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   4206.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -13980.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0   2280.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   1998.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0   5892.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
 
-=== Technique 6 [EASIEST/BEST]: using a list comprehension with `zip()` and direct variable assignment ===
-len(val) = 100000
-dt_sec[6_list_comprehension_w_zip_and_direct_variable_assignment] = 0.044907 sec
-df_dict[6_list_comprehension_w_zip_and_direct_variable_assignment]:
+[2000000 rows x 9 columns]
+
+=== Technique 8: pure vectorization: w/`df.loc[]` boolean array indexing for if statement corner-case ===
+len(val) = 2000000
+dt_sec[8_pure_vectorization__with_df.loc[]_boolean_array_indexing_for_if_statment_corner_case] = 0.099171 sec
+df_dict[8_pure_vectorization__with_df.loc[]_boolean_array_indexing_for_if_statment_corner_case]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1    B_new      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   1926.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   5274.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   4206.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -13980.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0   2280.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   1998.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0   5892.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN      NaN
 
-=== Technique 7: using a list comprehension with `zip()` and `row` tuple ===
-len(val) = 100000
-dt_sec[7_list_comprehension_w_zip_and_row_tuple] = 0.046022 sec
-df_dict[7_list_comprehension_w_zip_and_row_tuple]:
+[2000000 rows x 9 columns]
+
+=== Technique 9: using the `apply()` function with a lambda ===
+len(val) = 2000000
+dt_sec[9_apply_function_with_lambda] = 18.518937 sec
+df_dict[9_apply_function_with_lambda]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
 
-=== Technique 8: using a list comprehension with `.to_numpy()` and direct variable assignment ===
-len(val) = 100000
-dt_sec[8_list_comprehension_w__to_numpy__and_direct_variable_assignment] = 0.096362 sec
-df_dict[8_list_comprehension_w__to_numpy__and_direct_variable_assignment]:
+[2000000 rows x 8 columns]
+
+=== Technique 10 [EASIEST/VERY GOOD]: using a list comprehension with `zip()` and direct variable assignment passed to func ===
+len(val) = 2000000
+dt_sec[10_list_comprehension_w_zip_and_direct_variable_assignment_passed_to_func] = 0.999363 sec
+df_dict[10_list_comprehension_w_zip_and_direct_variable_assignment_passed_to_func]:
 ------
-count    99997.000000
-mean      3003.536036
-std       5560.236883
-min     -14507.000000
-25%       -791.000000
-50%       2980.000000
-75%       6790.000000
-max      20696.000000
-Name: val, dtype: float64
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
 
-Checking stats for technique "1_raw_for_loop"
-Checking stats for technique "2_iterrows_in_for_loop"
-Checking stats for technique "3_itertuples_in_for_loop"
-Checking stats for technique "4_vectorization__with_apply_for_corner_case"
-Checking stats for technique "5_apply_function_with_lambda"
-Checking stats for technique "6_list_comprehension_w_zip_and_direct_variable_assignment"
-Checking stats for technique "7_list_comprehension_w_zip_and_row_tuple"
-Checking stats for technique "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
+[2000000 rows x 8 columns]
+
+=== Technique 11 [EASIEST/VERY GOOD]: using a list comprehension with `zip()` and direct variable assignment calculated in place ===
+len(val) = 2000000
+dt_sec[11_list_comprehension_w_zip_and_direct_variable_assignment_calculated_in_place] = 0.853953 sec
+df_dict[11_list_comprehension_w_zip_and_direct_variable_assignment_calculated_in_place]:
+------
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+
+[2000000 rows x 8 columns]
+
+=== Technique 12: using a list comprehension with `zip()` and `row` tuple passed to func ===
+len(val) = 2000000
+dt_sec[12_list_comprehension_w_zip_and_row_tuple_passed_to_func] = 1.019849 sec
+df_dict[12_list_comprehension_w_zip_and_row_tuple_passed_to_func]:
+------
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+
+[2000000 rows x 8 columns]
+
+=== Technique 13: using a list comprehension with `.to_numpy()` and direct variable assignment passed to func ===
+len(val) = 2000000
+dt_sec[13_list_comprehension_w__to_numpy__and_direct_variable_assignment_passed_to_func] = 2.342621 sec
+df_dict[13_list_comprehension_w__to_numpy__and_direct_variable_assignment_passed_to_func]:
+------
+             A      B      C      D  A_i_minus_2  A_i_minus_1  A_i_plus_1      val
+0          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+1          NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+2        397.0  321.0 -296.0 -616.0       -365.0        532.0      -215.0   6161.0
+3       -215.0  879.0  557.0  895.0        532.0        397.0       857.0   7693.0
+4        857.0  701.0 -157.0  480.0        397.0       -215.0       604.0   5864.0
+...        ...    ...    ...    ...          ...          ...         ...      ...
+1999995 -101.0 -233.0 -377.0 -939.0        112.0        679.0      -989.0 -12195.0
+1999996 -989.0  380.0  917.0  145.0        679.0       -101.0      -879.0    243.0
+1999997 -879.0  333.0 -372.0 -970.0       -101.0       -989.0       738.0   4159.0
+1999998  738.0  982.0 -743.0  312.0       -989.0       -879.0      -306.0  -4998.0
+1999999    NaN    NaN    NaN    NaN          NaN          NaN         NaN      NaN
+
+[2000000 rows x 8 columns]
+
+Checking stats for technique "1_raw_for_loop_using_regular_df_indexing"
+Checking stats for technique "2_raw_for_loop_using_df.loc[]_indexing"
+Checking stats for technique "3_raw_for_loop_using_df.iloc[]_indexing"
+Checking stats for technique "4_iterrows_in_for_loop"
+Checking stats for technique "5_itertuples_in_for_loop"
+Checking stats for technique "6_vectorization__with_apply_for_if_statement_corner_case"
+Checking stats for technique "7_vectorization__with_list_comprehension_for_if_statment_corner_case"
+Checking stats for technique "8_pure_vectorization__with_df.loc[]_boolean_array_indexing_for_if_statment_corner_case"
+Checking stats for technique "9_apply_function_with_lambda"
+Checking stats for technique "10_list_comprehension_w_zip_and_direct_variable_assignment_passed_to_func"
+Checking stats for technique "11_list_comprehension_w_zip_and_direct_variable_assignment_calculated_in_place"
+Checking stats for technique "12_list_comprehension_w_zip_and_row_tuple_passed_to_func"
+Checking stats for technique "13_list_comprehension_w__to_numpy__and_direct_variable_assignment_passed_to_func"
 Tests passed: the results of all techniques are equal!
 
+df_first =
+           A    B    C    D      val
+0       -365  842  284 -942      NaN
+1        532  416 -102  888      NaN
+2        397  321 -296 -616   6161.0
+3       -215  879  557  895   7693.0
+4        857  701 -157  480   5864.0
+...      ...  ...  ...  ...      ...
+1999995 -101 -233 -377 -939 -12195.0
+1999996 -989  380  917  145    243.0
+1999997 -879  333 -372 -970   4159.0
+1999998  738  982 -743  312  -4998.0
+1999999 -306 -103  459  745      NaN
+
+[2000000 rows x 5 columns]
+
+
+Summary statistics:
+count    1.999997e+06
+mean    -1.354112e+04
+std      2.190405e+04
+min     -8.288600e+04
+25%     -3.007800e+04
+50%     -6.301000e+03
+75%      3.505000e+03
+max      3.122600e+04
+Name: val, dtype: float64
+
 results_df =
-   index                                             Method  Time_sec                                 Method_short_names  text_x    text_y  time_multiplier         text_label
-0      1                             2_iterrows_in_for_loop  2.606092                           2_iterrows_\nin_for_loop       0  2.736397       158.377998  2.606 sec\n158.4x
-1      0                                     1_raw_for_loop  1.662095                                   1_raw_for_\nloop       1  1.792399       101.009189  1.662 sec\n101.0x
-2      4                       5_apply_function_with_lambda  0.853706                   5_apply_\nfunction_\nwith_lambda       2  0.984010        51.881597   0.854 sec\n51.9x
-3      7  8_list_comprehension_w__to_numpy__and_direct_v...  0.096362  8_list_\ncomprehension_\nw__to_\nnumpy_\n_and_...       3  0.226666         5.856124    0.096 sec\n5.9x
-4      2                           3_itertuples_in_for_loop  0.069353                         3_itertuples_\nin_for_loop       4  0.199658         4.214736    0.069 sec\n4.2x
-5      6           7_list_comprehension_w_zip_and_row_tuple  0.046022   7_list_\ncomprehension_\nw_zip_\nand_row_\ntuple       5  0.176327         2.796873    0.046 sec\n2.8x
-6      5  6_list_comprehension_w_zip_and_direct_variable...  0.044907  6_list_\ncomprehension_\nw_zip_\nand_direct_\n...       6  0.175211         2.729073    0.045 sec\n2.7x
-7      3        4_vectorization__with_apply_for_corner_case  0.016455  4_vectorization_\n_with_\napply_\nfor_corner_\...       7  0.146759         1.000000    0.016 sec\n1.0x
-
-[it also opens up a bar chart plot]
-
-
-=========================
-longer data with 1,000,000 rows
-=========================
-...
-Checking stats for technique "1_raw_for_loop"
-Checking stats for technique "2_iterrows_in_for_loop"
-Checking stats for technique "3_itertuples_in_for_loop"
-Checking stats for technique "4_vectorization__with_apply_for_corner_case"
-Checking stats for technique "5_apply_function_with_lambda"
-Checking stats for technique "6_list_comprehension_w_zip_and_direct_variable_assignment"
-Checking stats for technique "7_list_comprehension_w_zip_and_row_tuple"
-Checking stats for technique "8_list_comprehension_w__to_numpy__and_direct_variable_assignment"
-Tests passed: the results of all techniques are equal!
-
-results_df =
-   index                                             Method   Time_sec                                 Method_short_names  text_x     text_y  time_multiplier          text_label
-0      1                             2_iterrows_in_for_loop  27.612887                           2_iterrows_\nin_for_loop       0  28.993531       170.093183  27.613 sec\n170.1x
-1      0                                     1_raw_for_loop  16.524901                                   1_raw_for_\nloop       1  17.905545       101.792073  16.525 sec\n101.8x
-2      4                       5_apply_function_with_lambda   9.163090                   5_apply_\nfunction_\nwith_lambda       2  10.543734        56.443904    9.163 sec\n56.4x
-3      7  8_list_comprehension_w__to_numpy__and_direct_v...   1.048867  8_list_\ncomprehension_\nw__to_\nnumpy_\n_and_...       3   2.429511         6.460938     1.049 sec\n6.5x
-4      2                           3_itertuples_in_for_loop   0.680029                         3_itertuples_\nin_for_loop       4   2.060673         4.188924      0.68 sec\n4.2x
-5      5  6_list_comprehension_w_zip_and_direct_variable...   0.501746  6_list_\ncomprehension_\nw_zip_\nand_direct_\n...       5   1.882390         3.090712     0.502 sec\n3.1x
-6      6           7_list_comprehension_w_zip_and_row_tuple   0.495199   7_list_\ncomprehension_\nw_zip_\nand_row_\ntuple       6   1.875843         3.050384     0.495 sec\n3.1x
-7      3        4_vectorization__with_apply_for_corner_case   0.162340  4_vectorization_\n_with_\napply_\nfor_corner_\...       7   1.542984         1.000000     0.162 sec\n1.0x
+    index                                             Method    Time_sec                                 Method_short_names  text_x      text_y  time_multiplier              text_label
+0       2            3_raw_for_loop_using_df.iloc[]_indexing  135.124845      3_raw_for_\nloop_using_\ndf.iloc[]_\nindexing       0  141.881087      1362.541659  135.1248 sec\n1362.54x
+1       3                             4_iterrows_in_for_loop   57.582548                           4_iterrows_\nin_for_loop       1   64.338791       580.638010    57.5825 sec\n580.64x
+2       1             2_raw_for_loop_using_df.loc[]_indexing   54.561268       2_raw_for_\nloop_using_\ndf.loc[]_\nindexing       2   61.317511       550.172703    54.5613 sec\n550.17x
+3       0           1_raw_for_loop_using_regular_df_indexing   33.603625     1_raw_for_\nloop_using_\nregular_\ndf_indexing       3   40.359867       338.844711    33.6036 sec\n338.84x
+4       8                       9_apply_function_with_lambda   18.518937                   9_apply_\nfunction_\nwith_lambda       4   25.275179       186.737113    18.5189 sec\n186.74x
+5      12  13_list_comprehension_w__to_numpy__and_direct_...    2.342621  13_list_\ncomprehension_\nw__to_numpy_\n_and_d...       5    9.098863        23.621996      2.3426 sec\n23.62x
+6       4                           5_itertuples_in_for_loop    1.519371                         5_itertuples_\nin_for_loop       6    8.275613        15.320689      1.5194 sec\n15.32x
+7      11  12_list_comprehension_w_zip_and_row_tuple_pass...    1.019849  12_list_\ncomprehension_\nw_zip_and_\nrow_tupl...       7    7.776091        10.283723      1.0198 sec\n10.28x
+8       9  10_list_comprehension_w_zip_and_direct_variabl...    0.999363  10_list_\ncomprehension_\nw_zip_and_\ndirect_\...       8    7.755605        10.077149      0.9994 sec\n10.08x
+9      10  11_list_comprehension_w_zip_and_direct_variabl...    0.853953  11_list_\ncomprehension_\nw_zip_and_\ndirect_\...       9    7.610195         8.610896       0.8540 sec\n8.61x
+10      6  7_vectorization__with_list_comprehension_for_i...    0.305493  7_vectorization_\n_with_list_\ncomprehension_\...      10    7.061735         3.080463       0.3055 sec\n3.08x
+11      5  6_vectorization__with_apply_for_if_statement_c...    0.251125  6_vectorization_\n_with_apply_\nfor_if_\nstate...      11    7.007367         2.532234       0.2511 sec\n2.53x
+12      7  8_pure_vectorization__with_df.loc[]_boolean_ar...    0.099171  8_pure_\nvectorization_\n_with_df.loc[]_\nbool...      12    6.855413         1.000000       0.0992 sec\n1.00x
 
 
 """
