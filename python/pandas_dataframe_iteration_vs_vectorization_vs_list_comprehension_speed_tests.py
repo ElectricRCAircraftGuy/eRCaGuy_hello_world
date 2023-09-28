@@ -54,6 +54,8 @@ import time
 # See: "eRCaGuy_hello_world/python/import_helper.py"
 FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
 SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
+FILENAME = os.path.basename(FULL_PATH_TO_SCRIPT)
+FILENAME_NO_EXTENSION = os.path.splitext(FILENAME)[0]
 
 # For text formatting and colorization in the terminal.
 # - See my ANSI format library here:
@@ -80,6 +82,11 @@ DEBUG_ON = False  # set to False to disable debug prints
 def debug_print(*args, **kwargs):
     if DEBUG_ON:
         print("DEBUG: ", *args, **kwargs)
+
+
+def save_figure(filename):
+    plt.savefig(f'{SCRIPT_DIRECTORY}/{filename}.svg')
+    plt.savefig(f'{SCRIPT_DIRECTORY}/{filename}.png')
 
 
 def add_newlines_every_n_chars(s, n):
@@ -167,10 +174,11 @@ def plot_data(results_df, num_data_rows):
     # create a bar chart
     fig = plt.figure(figsize=(19, 13))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title(f'Time vs Pandas iteration method over {num_data_rows:,} rows (*Lower* time is better)',
+    plt.title(f'Computation time vs Pandas iteration method over {num_data_rows:,} rows\n' +
+              f'in a DataFrame (*Lower* is better)',
               fontsize=14)
     plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
-    plt.ylabel('Time (sec)', fontsize=12)
+    plt.ylabel('Computation time (sec)', fontsize=12)
 
     # Prepare to add text labels to each bar
     results_df["text_x"] = results_df.index # use the indices as the x-positions
@@ -203,6 +211,7 @@ def plot_data(results_df, num_data_rows):
     # increase the whitespace under the figure to leave space for long, wrapping labels; decrease
     # the whitespace on all other sides
     fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.15)
+    save_figure(FILENAME_NO_EXTENSION)
 
 
 def calculate_new_column_b_value(b_value):
