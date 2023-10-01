@@ -20,14 +20,14 @@ installation instructions to install the latest version from GitHub.
 For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
 https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
-pylint pandas_dataframe_interpolation_via_scipy_interpolate_Copilot.py
+pylint pandas_dataframe_interpolation_via_scipy_interpolate.py
 ```
 
 Run command:
 ```bash
-./pandas_dataframe_interpolation_via_scipy_interpolate_Copilot.py
+./pandas_dataframe_interpolation_via_scipy_interpolate.py
 # OR
-python3 pandas_dataframe_interpolation_via_scipy_interpolate_Copilot.py
+python3 pandas_dataframe_interpolation_via_scipy_interpolate.py
 ```
 
 References:
@@ -105,7 +105,7 @@ print(f"df_diff:\n{df_diff}\n")
 """
 SAMPLE OUTPUT:
 
-eRCaGuy_hello_world$ python/pandas_dataframe_interpolation_via_scipy_interpolate_Copilot.py
+eRCaGuy_hello_world$ python/pandas_dataframe_interpolation_via_scipy_interpolate.py
 /usr/lib/python3/dist-packages/scipy/__init__.py:146: UserWarning: A NumPy version >=1.17.3 and <1.25.0 is required for this version of SciPy (detected version 1.25.2
   warnings.warn(f"A NumPy version >={np_minversion} and <{np_maxversion}"
 df1:
