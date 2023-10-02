@@ -180,7 +180,8 @@ def interpolate_df_at_fixed_x_intervals(x1, y1, x2, y2, x_interval):
     x_max = max(x1.max(), x2.max())
 
     # Create a new set of x values at fixed intervals
-
+    # - The new x-values are produced as a floating point numpy `arange` array range of values.
+    #   See: https://numpy.org/doc/stable/reference/generated/numpy.arange.html
     x_new = np.arange(x_min, x_max + x_interval, x_interval)  # <========= HOW TO CREATE A NEW NUMPY
                                                               # FLOATING POINT RANGE ARRAY (array
                                                               # range)
