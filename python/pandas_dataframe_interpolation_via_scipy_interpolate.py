@@ -277,6 +277,48 @@ print(f"df2:\n{df2}\n")
 print(f"df_new_interpolated_at_fixed_x_intervals:\n{df_new_interpolated_at_fixed_x_intervals}\n")
 
 # =================================
+# Method 3B to insert NaNs instead of allowing extrapolation outside of the input x-bounds.
+print("==== [BEST, if you want NO extrapolation] Method 3B: same as Method 3, except don't allow\n"
+      "extrapolation ====\n")
+# =================================
+
+def interpolate_df_at_fixed_x_intervals_no_extrapolation(x1, y1, x2, y2, x_interval):
+    """
+    Interpolate dataframes at fixed x intervals.
+    """
+    x_min = min(x1.min(), x2.min())
+    x_max = max(x1.max(), x2.max())
+
+    x_new = np.arange(x_min, x_max + x_interval, x_interval)
+    x_new = pd.Series(x_new)
+
+    # To prevent extrapolation outside of the range of `x1` and `x2`, and to thereby force
+    # those values to be `NaN` instead, set `bounds_error=False`.
+    interpolation_func1 = interp1d(x1, y1, kind='linear', bounds_error=False)
+    interpolation_func2 = interp1d(x2, y2, kind='linear', bounds_error=False)
+    y1_new = interpolation_func1(x_new)
+    y2_new = interpolation_func2(x_new)
+    y_diff = y1_new - y2_new
+
+    df_interpolated = pd.DataFrame({
+        "x_new": x_new,      # the new set of x-values; arbitrarily use `x1`'s name
+        "y1_new": y1_new,    # the new, interpolated y1 values
+        "y2_new": y2_new,    # the new, interpolated y2 values
+        "y_diff": y_diff
+    })
+
+    return df_interpolated
+
+df_new_interpolated_at_fixed_x_intervals_no_extrapolation = \
+    interpolate_df_at_fixed_x_intervals_no_extrapolation(
+        df1['x1'], df1['y1'], df2['x2'], df2['y2'], x_interval=0.25)
+
+print(f"df1:\n{df1}\n")
+print(f"df2:\n{df2}\n")
+print(f"df_new_interpolated_at_fixed_x_intervals_no_extrapolation [NOTICE THE NAN values!]:\n"
+      f"{df_new_interpolated_at_fixed_x_intervals_no_extrapolation}\n")
+
+# =================================
 # [less-robust (and erroneous: CANNOT EXTRAPOLATE) alternative to using SciPy's `interp1d()`]
 print("==== [DO NOT USE! PRODUCES ERRONEOUS RESULTS WHEN EXTRAPOLATING OUTSIDE OF THE INPUT\n"
       "X VALUES; all y_diff values should be zeros, but are not here!] METHOD 4: using\n"
@@ -414,6 +456,43 @@ df_new_interpolated_at_fixed_x_intervals:
 14    4.50     9.0     9.0     0.0
 15    4.75     9.5     9.5     0.0
 16    5.00    10.0    10.0     0.0
+
+==== [BEST, if you want NO extrapolation] Method 3B: same as Method 3, except don't allow
+extrapolation ====
+
+df1:
+   x1  y1
+0   1   2
+1   2   4
+2   3   6
+3   4   8
+4   5  10
+
+df2:
+    x2  y2
+0  1.5   3
+1  2.5   5
+2  3.5   7
+
+df_new_interpolated_at_fixed_x_intervals_no_extrapolation [NOTICE THE NAN values!]:
+    x_new  y1_new  y2_new  y_diff
+0    1.00     2.0     NaN     NaN
+1    1.25     2.5     NaN     NaN
+2    1.50     3.0     3.0     0.0
+3    1.75     3.5     3.5     0.0
+4    2.00     4.0     4.0     0.0
+5    2.25     4.5     4.5     0.0
+6    2.50     5.0     5.0     0.0
+7    2.75     5.5     5.5     0.0
+8    3.00     6.0     6.0     0.0
+9    3.25     6.5     6.5     0.0
+10   3.50     7.0     7.0     0.0
+11   3.75     7.5     NaN     NaN
+12   4.00     8.0     NaN     NaN
+13   4.25     8.5     NaN     NaN
+14   4.50     9.0     NaN     NaN
+15   4.75     9.5     NaN     NaN
+16   5.00    10.0     NaN     NaN
 
 ==== [DO NOT USE! PRODUCES ERRONEOUS RESULTS WHEN EXTRAPOLATING OUTSIDE OF THE INPUT
 X VALUES; all y_diff values should be zeros, but are not here!] METHOD 4: using
