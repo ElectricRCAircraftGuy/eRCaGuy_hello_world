@@ -294,6 +294,7 @@ def interpolate_df_at_fixed_x_intervals_no_extrapolation(x1, y1, x2, y2, x_inter
 
     # To prevent extrapolation outside of the range of `x1` and `x2`, and to thereby force
     # those values to be `NaN` instead, set `bounds_error=False`.
+    # - ie: use `bounds_error=False` to force NaNs for out-of-bounds values.
     interpolation_func1 = interp1d(x1, y1, kind='linear', bounds_error=False)
     interpolation_func2 = interp1d(x2, y2, kind='linear', bounds_error=False)
     y1_new = interpolation_func1(x_new)
