@@ -36,6 +36,7 @@ _Rough list order: most useful first:_
 
 This is too big of a topic to cover here, so let me just put down a few reminders and notes to myself regarding some "gotchas".
 
+
 ## _Special keywords or values_ that Pandas will recognize and treat special when parsing a CSV file
 
 When calling `pd.read_csv()`, the parser will interpret your CSV file based on heuristics. Ex: `1.0` is a float, `1` is an int, `True` is a boolean, `NaN`, or `None` are `np.nan` NaN values, multiple commas in a row with nothing between them (or perhaps only whitespace), are also NaNs, `Noon` or any other non-keyword strings are just strings, etc. Here is what GitHub Copilot told me: 
@@ -65,6 +66,7 @@ GitHub Copilot:
 > - `Inf` and `-Inf`: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#na-values
 > - `True` and `False`: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#na-values
 > - Dates and times: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#datetime-handling
+
 
 ## You can*not* detect `NaN` values with `==` or `!=`! `np.nan == np.nan` is `False`!
 
@@ -111,6 +113,7 @@ Output:
 3  False   True
 ```
 
+
 ## Full list of `NaN` values in Pandas:
 
 And this source tells me the full list of strings in a CSV file that will be interpreted as `NaN` values: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#na-values :
@@ -139,3 +142,189 @@ Full list of `NaN` values in Pandas:
     - `'-nan'`
     - `'None'`
     - `''` - empty string, ex: signified by two commas in a row with nothing between them (`,,`), or a comma at the beginning of a line with nothing in front of it (`,`), or perhaps only whitespace in front of a comma [I have not tested the whitespace one, but I know the comma thing to be true]
+
+
+## When merging two or more `DataFrame`s, call `reset_index()` on each one first!
+
+WARNING!: if you merge two dataframes with the same length but different indices, they will merge by index, not by placement in the length (internal list) of the dataframe, and you'll end up with a bunch of dropped data and unexpected `NaN`s! 
+
+Ex: imagine you have `df1` and `df2`. Both are length `10`, but `df1` had previously dropped every other row when it was length `20`, so its indices count _by twos_ from `0` to `18`, whereas `df2` was just created and has a fresh index from `0` to `9`, counting by ones. Again, both are length `10`. If you merge them by doing `df1['A_new'] = df2['A']`, you'll get all `NaN`s in `df1` after index `8`, which is only **halfway to the end** of `df1`, since `df1`'s index counts by twos! The data for all index numbers in `df2` which don't match existing index numbers in `df1` (ie: all odd indices in `df2` in this case) will be _thrown away_, which means you're accidentally throwing away every other value from `df2`, when you intended to put *all* values from `df2['A']` into `df1`! And again, all indices after index `8` in `df1['A_new']` will be `NaN` since there are no indices after that point in `df2['A']` to copy from `df1['A']` into `df2['A_new']`! _Copies between data Series or DataFrames are **by absolute index** with a 1-to-1 match of index to index, not by relative location in the list._
+
+So, the solution is to **reset the indices of both dataframes before merging them,** like this:
+
+```py
+# Modify the index in-place, rather than creating a new dataframe, and drop (do NOT keep) 
+# the old index as a new column inside the dataframe.
+df1.reset_index(drop=True, inplace=True)
+df2.reset_index(drop=True, inplace=True)
+
+# Now that they are both of length 50 and have the same indices 0 to 49, merge them.
+# - In this case, simply copy the column 'A' from df1 into df2.
+df1['A_new'] = df2['A']
+```
+
+**Full demo:**
+
+```py
+import pandas as pd
+
+df1 = pd.DataFrame({'A': range(20)})
+df2 = pd.DataFrame({'A': range(10)})
+
+print(f"df1 original:\n{df1}\n")
+print(f"df2 original:\n{df2}\n")
+
+# Now drop all even rows from df1, so it is length 10, and has indices 
+# 0, 2, 4, 6, 8, 10, 12, 14, 16, 18
+# - for `::2`, see: https://docs.python.org/3/library/stdtypes.html#sequence-types-list-tuple-range
+#   `s[i:j:k]` means "slice of s from i to j with step k"
+df1 = df1.iloc[::2, :]
+# OR use boolean indexing to accomplish the same thing
+# mask = df1.index % 2 == 0
+# df1 = df1[mask]
+print(f"df1 after removing odd indices from df1:\n{df1}\n")
+
+# Now merge df2 into df1
+# - This will merge by index, not by placement in the length (internal list) of the dataframe.
+df1['A_new'] = df2['A']
+print(f"df1 after adding column `A_new` (notice all of the NaNs, and the dropped "
+      f"odd values!):\n{df1}\n")
+
+# Now fix the problem by resetting the index of df1 first. To be safe, it's not a bad idea to 
+# reset *both* indices first, even though technically df2's index is already fine here.
+df1.reset_index(drop=True, inplace=True)
+df2.reset_index(drop=True, inplace=True)
+
+print(f"df1 after calling `.reset_index()` (the index now counts by 1s 0 to 9 "
+      f"instead of by 2s 0 to 18):\n{df1}\n")
+print(f"df2 after calling `.reset_index()` (no change):\n{df2}\n")
+print("Notice that the indices of df1 and df2 now exactly match!")
+
+df1['A_new2'] = df2['A']
+
+print(f"df1 after adding column `A_new2` to `df1` (no lost data!--all of\n"
+      f"df2['A'] made it into df1['A_new2'] this time withOUT dropping values\n"
+      f"and inserting NaNs instead!):\n{df1}\n")
+print(f"df2 after adding column `A_new2` to `df1` (no change):\n{df2}\n")
+```
+
+Output:
+```
+df1 original:
+     A
+0    0
+1    1
+2    2
+3    3
+4    4
+5    5
+6    6
+7    7
+8    8
+9    9
+10  10
+11  11
+12  12
+13  13
+14  14
+15  15
+16  16
+17  17
+18  18
+19  19
+
+df2 original:
+   A
+0  0
+1  1
+2  2
+3  3
+4  4
+5  5
+6  6
+7  7
+8  8
+9  9
+
+df1 after removing odd indices from df1:
+     A
+0    0
+2    2
+4    4
+6    6
+8    8
+10  10
+12  12
+14  14
+16  16
+18  18
+
+df1 after adding column `A_new` (notice all of the NaNs, and the dropped odd values!):
+     A  A_new
+0    0    0.0
+2    2    2.0
+4    4    4.0
+6    6    6.0
+8    8    8.0
+10  10    NaN
+12  12    NaN
+14  14    NaN
+16  16    NaN
+18  18    NaN
+
+df1 after calling `.reset_index()` (the index now counts by 1s 0 to 9 instead of by 2s 0 to 18):
+    A  A_new
+0   0    0.0
+1   2    2.0
+2   4    4.0
+3   6    6.0
+4   8    8.0
+5  10    NaN
+6  12    NaN
+7  14    NaN
+8  16    NaN
+9  18    NaN
+
+df2 after calling `.reset_index()` (no change):
+   A
+0  0
+1  1
+2  2
+3  3
+4  4
+5  5
+6  6
+7  7
+8  8
+9  9
+
+Notice that the indices of df1 and df2 now exactly match!
+
+df1 after adding column `A_new2` to `df1` (no lost data!--all of
+df2['A'] made it into df1['A_new2'] this time withOUT dropping values
+and inserting NaNs instead!):
+    A  A_new  A_new2
+0   0    0.0       0
+1   2    2.0       1
+2   4    4.0       2
+3   6    6.0       3
+4   8    8.0       4
+5  10    NaN       5
+6  12    NaN       6
+7  14    NaN       7
+8  16    NaN       8
+9  18    NaN       9
+
+df2 after adding column `A_new2` to `df1` (no change):
+   A
+0  0
+1  1
+2  2
+3  3
+4  4
+5  5
+6  6
+7  7
+8  8
+9  9
+```
