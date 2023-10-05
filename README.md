@@ -58,6 +58,10 @@ www.ElectricRCAircraftGuy.com
 
 ## Some other pages
 1. [low_level.md: What does "low level" mean? Do you want that? It depends.](low_level.md)
+1. [c/README.md](c/README.md)
+1. [cpp/README.md](cpp/README.md)
+1. [python/README.md](python/README.md)
+    1. [python/pandas_README.md](python/pandas_README.md)
 
 
 # Table of Contents
