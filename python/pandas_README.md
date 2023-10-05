@@ -1,6 +1,26 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 
+# Table of Contents
+<details>
+<summary><b>(click to expand)</b></summary>
+<!-- MarkdownTOC autolink="true" autoanchor="true" style="ordered" -->
+
+1. [What is Pandas?](#what-is-pandas)
+1. [Learning resources](#learning-resources)
+1. [Pandas `DataFrame`s, "gotchas", & misc. notes](#pandas-dataframes-gotchas--misc-notes)
+    1. [Summary of my 4 or 5 main Python Pandas problems from Sept.-Oct. 2023](#summary-of-my-4-or-5-main-python-pandas-problems-from-sept-oct-2023)
+    1. [Misc. notes](#misc-notes)
+    1. [_Special keywords or values_ that Pandas will recognize and treat special when parsing a CSV file](#special-keywords-or-values-that-pandas-will-recognize-and-treat-special-when-parsing-a-csv-file)
+    1. [You can*not* detect `NaN` values with `==` or `!=`! `np.nan == np.nan` is `False`!](#you-cannot-detect-nan-values-with--or--npnan--npnan-is-false)
+    1. [Full list of `NaN` values in Pandas:](#full-list-of-nan-values-in-pandas)
+    1. [When merging two or more `DataFrame`s, call `reset_index()` on each one first!](#when-merging-two-or-more-dataframes-call-reset_index-on-each-one-first)
+
+<!-- /MarkdownTOC -->
+</details>
+
+
+<a id="what-is-pandas"></a>
 # What is Pandas?
 
 Me: 
@@ -18,6 +38,7 @@ From Wikipedia: https://en.wikipedia.org/wiki/Pandas_(software):
 >  The name is derived from the term "panel data", an econometrics term for data sets that include observations over multiple time periods for the same individuals.
 
 
+<a id="learning-resources"></a>
 # Learning resources
 
 _Rough list order: most useful first:_
@@ -32,11 +53,13 @@ _Rough list order: most useful first:_
 1. https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
 
 
+<a id="pandas-dataframes-gotchas--misc-notes"></a>
 # Pandas `DataFrame`s, "gotchas", & misc. notes
 
 This is too big of a topic to cover here, so let me just put down a few reminders and notes to myself regarding some "gotchas" and things.
 
 
+<a id="summary-of-my-4-or-5-main-python-pandas-problems-from-sept-oct-2023"></a>
 ## Summary of my 4 or 5 main Python Pandas problems from Sept.-Oct. 2023
 
 1. `None`, `nan`, no chars after a comma, etc, are interpreted as NaNs when reading a CSV file with `np.read_csv()`
@@ -45,12 +68,27 @@ This is too big of a topic to cover here, so let me just put down a few reminder
 4. `np.nan == np.nan` is `False`. Use `.dropna()` instead of Boolean indexing to drop NaNs.
 5. You must reset indices before merging DataFrames or else you'll have a ton of dropped data and NaNs in your destination dataframe since they are copied absolute index to absolute index, rather than by relative sequence. See my "Full DataFrame merging demo" below.
 
+Also:
+1. *Not* iterating over DataFrames is best: [How to iterate over rows in a DataFrame in Pandas](https://stackoverflow.com/a/55557758/4561887)
+    
+    I'll add my own answer to the question above soon.
 
+    See my work here: [pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py](pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py)_
+    
+    <a href="pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.svg">
+        <p align="left" width="100%">
+            <img width="75%" src="pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.svg"> 
+        </p>
+    </a>
+
+
+<a id="misc-notes"></a>
 ## Misc. notes
 
 The [haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) can be used to get curved arc distance between two longitude/latitude points.
 
 
+<a id="special-keywords-or-values-that-pandas-will-recognize-and-treat-special-when-parsing-a-csv-file"></a>
 ## _Special keywords or values_ that Pandas will recognize and treat special when parsing a CSV file
 
 When calling `pd.read_csv()`, the parser will interpret your CSV file based on heuristics. Ex: `1.0` is a float, `1` is an int, `True` is a boolean, `NaN`, or `None` are `np.nan` NaN values, multiple commas in a row with nothing between them (or perhaps only whitespace), are also NaNs, `Noon` or any other non-keyword strings are just strings, etc. Here is what GitHub Copilot told me: 
@@ -82,6 +120,7 @@ GitHub Copilot:
 > - Dates and times: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#datetime-handling
 
 
+<a id="you-cannot-detect-nan-values-with--or--npnan--npnan-is-false"></a>
 ## You can*not* detect `NaN` values with `==` or `!=`! `np.nan == np.nan` is `False`!
 
 I also learned here (https://pandas.pydata.org/pandas-docs/stable/user_guide/missing_data.html#missing-data) to watch out for this gotcha!: 
@@ -128,6 +167,7 @@ Output:
 ```
 
 
+<a id="full-list-of-nan-values-in-pandas"></a>
 ## Full list of `NaN` values in Pandas:
 
 And this source tells me the full list of strings in a CSV file that will be interpreted as `NaN` values: https://pandas.pydata.org/pandas-docs/stable/user_guide/io.html#na-values :
@@ -158,6 +198,7 @@ Full list of `NaN` values in Pandas:
     - `''` - empty string, ex: signified by two commas in a row with nothing between them (`,,`), or a comma at the beginning of a line with nothing in front of it (`,`), or perhaps only whitespace in front of a comma [I have not tested the whitespace one, but I know the comma thing to be true]
 
 
+<a id="when-merging-two-or-more-dataframes-call-reset_index-on-each-one-first"></a>
 ## When merging two or more `DataFrame`s, call `reset_index()` on each one first!
 
 WARNING!: if you merge two dataframes with the same length but different indices, they will merge by index, not by placement in the length (internal list) of the dataframe, and you'll end up with a bunch of dropped data and unexpected `NaN`s! 
