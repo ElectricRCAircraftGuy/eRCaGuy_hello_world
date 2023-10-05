@@ -32,9 +32,23 @@ _Rough list order: most useful first:_
 1. https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions
 
 
-# Pandas `DataFrame`s & misc. notes
+# Pandas `DataFrame`s, "gotchas", & misc. notes
 
-This is too big of a topic to cover here, so let me just put down a few reminders and notes to myself regarding some "gotchas".
+This is too big of a topic to cover here, so let me just put down a few reminders and notes to myself regarding some "gotchas" and things.
+
+
+## Summary of my 4 or 5 main Python Pandas problems from Sept.-Oct. 2023
+
+1. `None`, `nan`, no chars after a comma, etc, are interpreted as NaNs when reading a CSV file with `np.read_csv()`
+2. When importing a pandas-generated CSV file into LibreOffice Calc (or MS Excel), don't choose to "merge delimiters" or else it drops NaNs and misaligns columns since a bunch of commas in a row in a CSV file actually represents as a bunch of NaNs! (one after each comma). Therefore, when you "merge delimiters" you just removed all of those sequential NaNs in that row!
+3. Use `.copy()` to create deep copies of a Pandas data series or DataFrame, or Python list or dict, or other mutable object, when necessary. Since DataFrames are _mutable_ objects, if you try to just use the equals sign (`=`) to copy it will cause side effects where multiple variable labels are editing the same underlying data, so changing one variable changes the data in the other variable.
+4. `np.nan == np.nan` is `False`. Use `.dropna()` instead of Boolean indexing to drop NaNs.
+5. You must reset indices before merging DataFrames or else you'll have a ton of dropped data and NaNs in your destination dataframe since they are copied absolute index to absolute index, rather than by relative sequence. See my "Full DataFrame merging demo" below.
+
+
+## Misc. notes
+
+The [haversine formula](https://en.wikipedia.org/wiki/Haversine_formula) can be used to get curved arc distance between two longitude/latitude points.
 
 
 ## _Special keywords or values_ that Pandas will recognize and treat special when parsing a CSV file
@@ -163,7 +177,7 @@ df2.reset_index(drop=True, inplace=True)
 df1['A_new'] = df2['A']
 ```
 
-**Full demo:**
+**Full DataFrame merging demo:**
 
 ```py
 import pandas as pd
