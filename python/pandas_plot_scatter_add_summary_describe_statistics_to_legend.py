@@ -49,12 +49,14 @@ import numpy as np
 NUM_POINTS = 200
 ONE_PERIOD = 2*np.pi  # 2*pi radians = 360 degrees = 1 full period
 x = np.linspace(0, 2*ONE_PERIOD, NUM_POINTS)
+
 # the standard deviation, or "width", of the noise; see:
 # https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html
 CENTER = 0  # mean (center) of the normal distribution
 SCALE = 0.3  # standard deviation (scale) of the normal distribution
 NOISE_SIZE = NUM_POINTS  # number of points in the noise
 noise_array = np.random.normal(CENTER, SCALE, NUM_POINTS)
+
 y = np.sin(x) + noise_array
 
 # create a dataframe from the numpy arrays above
