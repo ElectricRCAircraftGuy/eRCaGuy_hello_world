@@ -35,8 +35,8 @@ python3 haversine_formula_distance_between_two_latitude_longitude_points.py
 
 References:
 1. GitHub Copilot
-1. https://en.wikipedia.org/wiki/Haversine_formula
-1. https://stackoverflow.com/a/29546836/4561887
+1. ***** https://en.wikipedia.org/wiki/Haversine_formula
+1. *****+ https://stackoverflow.com/a/29546836/4561887
 1.
 
 """
