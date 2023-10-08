@@ -11,7 +11,7 @@ Practice converting latitude and longitude to x and y coordinates using the pypr
 Convert: deg lat/lon to meters x/y, and vice versa.
 This time wrap it up in a singleton class so it can be used as a library.
 
-Status: wip
+Status: done_and_works!
 
 keywords: (keywords)
 
@@ -20,17 +20,19 @@ installation instructions to install the latest version from GitHub.
 For a list of all error codes, such as `C0301`, `C0116`, `W0105`, etc., see here:
 https://pylint.pycqa.org/en/latest/messages/messages_list.html
 ```bash
-pylint pyproj_latitude_and_longitude_to_x_y_coordinate_transformation.py
+pylint pyproj_latitude_and_longitude_to_x_y_coordinate_transformation_lib.py
 ```
 
 Run command:
 ```bash
-./pyproj_latitude_and_longitude_to_x_y_coordinate_transformation.py
+./pyproj_latitude_and_longitude_to_x_y_coordinate_transformation_lib.py
 # OR
-python3 pyproj_latitude_and_longitude_to_x_y_coordinate_transformation.py
+python3 pyproj_latitude_and_longitude_to_x_y_coordinate_transformation_lib.py
 ```
 
 References:
+1. "pyproj_latitude_and_longitude_to_x_y_coordinate_transformation.py"
+---
 1. Bing AI [must open in Microsoft Edge browser to view]: https://sl.bing.net/h9jlizHUFoG
     1. Prompt summary: "Convert latitude and longitude from degrees to meters, using Python."
 1. GitHub Copilot
@@ -50,45 +52,50 @@ References:
 import pyproj # cartographic **proj**ections and coordinate transformations library
 import unittest
 
-# Define CRSs (Coordinate Reference Systems) for the two coordinate systems we want to convert
-#
-# WGS84 (World Geodetic System 1984) lon/lat in degrees
-# See: https://epsg.io/4326
-crs_wgs84_latlon = pyproj.CRS.from_epsg(4326)
-# WGS84 (World Geodetic System 1984) x/y in meters
-# See: https://epsg.io/3857
-crs_wgs84_xy = pyproj.CRS.from_epsg(3857)
 
-# Create transformers to convert between WGS84 lon/lat (deg) and WGS84 x/y (m)
-# See:
-# https://pyproj4.github.io/pyproj/stable/api/transformer.html#pyproj.transformer.Transformer.from_crs
-transformer_latlon_to_xy = pyproj.Transformer.from_crs(crs_wgs84_latlon, crs_wgs84_xy)
-transformer_xy_to_latlon = pyproj.Transformer.from_crs(crs_wgs84_xy, crs_wgs84_latlon)
-
-
-def convert_lonlat_to_xy(lon_deg, lat_deg):
+class LatLonToXYConverter:
     """
-    Convert longitude and latitude coordinates in degrees to x and y in meters.
-    NB: the input order is lon, lat!--since lon corresponds to x and lat corresponds to y.
+    Singleton class to convert latitude and longitude coordinates in degrees to x and y coordinates
+    in meters, or vice versa.
     """
-    # NB: input order to this function is lat, lon.
-    x_m, y_m = transformer_latlon_to_xy.transform(lat_deg, lon_deg)
-    return x_m, y_m
+    def __init__(self) -> None:
+        # Define CRSs (Coordinate Reference Systems) for the two coordinate systems we want to
+        # convert
+        #
+        # WGS84 (World Geodetic System 1984) lon/lat in degrees
+        # See: https://epsg.io/4326
+        self.crs_wgs84_latlon = pyproj.CRS.from_epsg(4326)
+        # WGS84 (World Geodetic System 1984) x/y in meters
+        # See: https://epsg.io/3857
+        self.crs_wgs84_xy = pyproj.CRS.from_epsg(3857)
 
+        # Create transformers to convert between WGS84 lon/lat (deg) and WGS84 x/y (m)
+        # See:
+        # https://pyproj4.github.io/pyproj/stable/api/transformer.html#pyproj.transformer.Transformer.from_crs
+        self.transformer_latlon_to_xy = pyproj.Transformer.from_crs(
+            self.crs_wgs84_latlon, self.crs_wgs84_xy)
+        self.transformer_xy_to_latlon = pyproj.Transformer.from_crs(
+            self.crs_wgs84_xy, self.crs_wgs84_latlon)
 
-def convert_xy_to_lonlat(x_m, y_m):
-    """
-    Convert x and y coordinates in meters to longitude and latitude in degrees.
-    """
-    # NB: the output order is lat, lon!
-    lat_deg, lon_deg = transformer_xy_to_latlon.transform(x_m, y_m)
+    def convert_lonlat_to_xy(self, lon_deg, lat_deg):
+        """
+        Convert longitude and latitude coordinates in degrees to x and y in meters.
+        NB: the input order is lon, lat!--since lon corresponds to x and lat corresponds to y.
+        """
+        # NB: input order to this function is lat, lon.
+        x_m, y_m = self.transformer_latlon_to_xy.transform(lat_deg, lon_deg) # NB: lat, lon order
+        return x_m, y_m
 
-    # NB: the return order is swapped to lon, lat!--since lon corresponds to x and lat
-    # corresponds to y.
-    return lon_deg, lat_deg
+    def convert_xy_to_lonlat(self, x_m, y_m):
+        """
+        Convert x and y coordinates in meters to longitude and latitude in degrees.
+        """
+        # NB: the output order is lat, lon!
+        lat_deg, lon_deg = self.transformer_xy_to_latlon.transform(x_m, y_m)
 
-
-
+        # NB: the return order is swapped to lon, lat!--since lon corresponds to x and lat
+        # corresponds to y.
+        return lon_deg, lat_deg
 
 
 class TestCoordinateTransformations(unittest.TestCase):
@@ -102,8 +109,10 @@ class TestCoordinateTransformations(unittest.TestCase):
     X_EXPECTED_M = -12476816.10024655  # meters
     Y_EXPECTED_M = 3956074.7956480593  # meters
 
+    converter = LatLonToXYConverter()
+
     def test_convert_lonlat_to_xy(self):
-        x_m, y_m = convert_lonlat_to_xy(self.LON_DEG, self.LAT_DEG)
+        x_m, y_m = self.converter.convert_lonlat_to_xy(self.LON_DEG, self.LAT_DEG)
         # print(f"x_m, y_m = {x_m}, {y_m}") # debugging
         self.assertAlmostEqual(x_m, self.X_EXPECTED_M, places=10)
         self.assertAlmostEqual(y_m, self.Y_EXPECTED_M, places=10)
@@ -112,7 +121,7 @@ class TestCoordinateTransformations(unittest.TestCase):
         """
         Test the reverse of the conversion above.
         """
-        lon_deg, lat_deg = convert_xy_to_lonlat(self.X_EXPECTED_M, self.Y_EXPECTED_M)
+        lon_deg, lat_deg = self.converter.convert_xy_to_lonlat(self.X_EXPECTED_M, self.Y_EXPECTED_M)
         self.assertAlmostEqual(lon_deg, self.LON_DEG, places=10)
         self.assertAlmostEqual(lat_deg, self.LAT_DEG, places=10)
 
@@ -137,11 +146,12 @@ if __name__ == '__main__':
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world$ python/pyproj_latitude_and_longitude_to_x_y_coordinate_transformation.py
+    eRCaGuy_hello_world$ python/pyproj_latitude_and_longitude_to_x_y_coordinate_transformation_lib.py
     ..
     ----------------------------------------------------------------------
     Ran 2 tests in 0.000s
 
     OK
+
 
 """
