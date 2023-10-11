@@ -43,9 +43,9 @@ References:
 #include <stdint.h>
 #include <stdio.h>
 
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // For unit testing:
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 static uint32_t test_fail_cnt = 0; // increment counter each time a test fails
 
@@ -70,9 +70,9 @@ void test_eq(int num1, int num2, int line_num)
     }
 }
 
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // 1. Macros
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Great for C or C++, but some C++ developers hate them since they may have the multiple evaluation
 // problem where you pass in an expression as an input parameter and it gets evaluated multiple
 // times.
@@ -169,9 +169,9 @@ void test_eq(int num1, int num2, int line_num)
 )
 
 
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // 2. Statement Expressions
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // These solve the multiple evaluation problem of macros perfectly, but are not part of the C or
 // C++ standard. Instead, they are gcc and clang compiler extensions to C and C++. These are safer
 // to use than macros, but can still have a name pollution risk because variables created inside
@@ -211,9 +211,9 @@ void test_eq(int num1, int num2, int line_num)
 })
 
 
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // 3. C++ Templated Functions (AKA: Function Templates)
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Templates work in C++ only. They solve both problems above, and suffer neither from the multiple
 // evaluation problem of macros, nor from the name pollution/variable scope problem of statement
 // expressions. Since they work only in C++, I'm going to add type checking here too with a
@@ -297,9 +297,9 @@ T divide_roundnearest(T numer, T denom)
 #endif
 
 
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // main
-// -------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 int main()
 {
     printf("Testing Rounding Integer Division\n\n");
