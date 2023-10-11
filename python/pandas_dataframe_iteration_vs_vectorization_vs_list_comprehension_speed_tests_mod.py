@@ -26,6 +26,9 @@ statement checks in them.
 
 Status: Done and works!
 
+RESULT: it doesn't have much of an effect. It has only a minor improvement. See the plot:
+"python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests_mod.svg".
+
 keywords: (keywords)
 
 Check this script with `pylint` v2.0.0 or later. See "eRCaGuy_hello_world/python/README.md" for
