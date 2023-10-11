@@ -603,6 +603,10 @@ Now on to the rest of the techniques:
     ]
     ```
 
+Here are the results again:
+
+[![enter image description here][1]][1]
+
 
 ## More on `.iterrtuples()`
 
