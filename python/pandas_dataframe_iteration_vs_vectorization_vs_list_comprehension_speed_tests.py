@@ -645,9 +645,10 @@ def main():
     def technique_to_run_and_time(df):
 
         df["val"] = [
-            # Note: you *could* do the calculations directly here instead of using a function call, so
-            # long as you don't have indented code blocks such as sub-routines or multi-line if
-            # statements.
+            # Note: you *could* do the calculations directly here instead of using a
+            # function call, so long as you don't have indented code blocks such as
+            # sub-routines or multi-line if statements.
+            #
             # I'm using a function call.
             calculate_val(
                 A_i_minus_2,
@@ -756,7 +757,11 @@ def main():
     def technique_to_run_and_time(df):
 
         df["val"] = [
-            # Note: this *could* be a lambda here instead of a function call. I'm using a function call.
+            # Note: you *could* do the calculations directly here instead of using a
+            # function call, so long as you don't have indented code blocks such as
+            # sub-routines or multi-line if statements.
+            #
+            # I'm using a function call.
             calculate_val(
                 A_i_minus_2,
                 A_i_minus_1,
@@ -766,12 +771,18 @@ def main():
                 C,
                 D
             ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
-            # Note: this `[[...]]` syntax is called "double-bracket indexing" and is used to select a
-            # subset of columns from the dataframe, kind of like boolean indexing. The inner `[]`
-            # brackets create a list from the column names within them, and the outer `[]` brackets
-            # accept this list to index into the dataframe and select just this list of columns.
-            # - One of the **list comprehension** examples in this answer here uses `.to_numpy()` like
-            #   this: https://stackoverflow.com/a/55557758/4561887
+            # Note: this `[[...]]` double-bracket indexing is used to select a subset of columns
+            # from the dataframe. The inner `[]` brackets create a list from the column names within
+            # them, and the outer `[]` brackets accept this list to index into the dataframe and
+            # select just this list of columns, in that order.
+            # - See the official documentation on it here:
+            #   https://pandas.pydata.org/docs/user_guide/indexing.html#basics
+            #   - Search for the phrase "You can pass a list of columns to [] to select columns in
+            #     that order."
+            #   - I learned this from this comment here:
+            #     https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas/55557758#comment136020567_55557758
+            # - One of the **list comprehension** examples in this answer here uses `.to_numpy()`
+            #   like this: https://stackoverflow.com/a/55557758/4561887
             in df[[
                 "A_i_minus_2",
                 "A_i_minus_1",
