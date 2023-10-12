@@ -75,7 +75,8 @@ TODO:
 
 import numpy as np
 
-
+####### todo: normalize the quaternion to be a unit vector of length 1 before processing it!
+# OR, throw a warning or error if it comes in non-normalized
 def quaternion2euler(q):
     """
     Convert 4 quaternion values to 3 Euler angles in degrees in the ZYX order (according to GitHub
