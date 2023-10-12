@@ -14,7 +14,8 @@ Status: DONE AND WORKS! Unit tested. Tested in real code too.
 keywords: quaternions, euler angles, roll, pitch, yaw, 3-2-1 sequence, 3-2-1 rotation sequence,
 ZYX rotation sequence, yaw-pitch-roll, yaw-pitch-roll sequence, yaw-pitch-roll rotation sequence,
 flight dynamics, aerospace, aeronautics, aircraft, spacecraft, rockets, attitude, attitude,
-flight control systems
+flight control systems boolean indexing boolean array indexing a boolean expression
+list of booleans boolean mask
 
 Check this script with `pylint` v2.0.0 or later. See "eRCaGuy_hello_world/python/README.md" for
 installation instructions to install the latest version from GitHub.
@@ -226,6 +227,37 @@ def convert_plus_or_minus_180_to_0_to_360(degrees):
     degrees = degrees % 360
 
     return degrees
+
+
+# TODO: test this! Add unit tests for it.
+def fix_heading_error(error_deg):
+    """
+    error_deg is the difference between the desired heading and the actual heading, and valid inputs
+    to this function may be (erroneously) in the range of -360 to +360 deg, or even beyond that,
+    (-inf to +inf) deg. This function will correct the error to be in the range of (-180, 180] deg.
+
+    Returns the fixed error in the range of (-180, 180] degrees, which makes more sense, since
+    the max heading error would be pointing exactly the opposite direction of the desired heading,
+    and that is 180 degrees off.
+
+    NB: if you ever need to implement this on a Pandas dataframe and need to do it with pure
+    vectorization, it would look like this. This uses "boolean indexing", AKA "boolean array
+    indexing", a boolean expression, list of booleans, or "boolean mask". See the pure vectorization
+    approach in my answer here for another example of this:
+    https://stackoverflow.com/a/77270285/4561887
+
+    ```py
+    df["error_yaw_deg"] = df["error_yaw_deg"] % 360
+    df.loc[df["error_yaw_deg"] > 180, "error_yaw_deg"] -= 360
+    df.loc[df["error_yaw_deg"] <= -180, "error_yaw_deg"] += 360
+    ```
+    """
+    error_deg = error_deg % 360 # wrap the error around 360 degrees
+    if error_deg > 180: # if the error is too large, subtract 360
+        error_deg -= 360
+    elif error_deg <= -180: # if the error is too small, add 360
+        error_deg += 360
+    return error_deg
 
 
 def assert_is_close(func, q, euler_angles_expected):
