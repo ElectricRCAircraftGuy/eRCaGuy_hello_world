@@ -9,9 +9,12 @@ Oct. 2023
 
 Practice converting 4 quaternions to 3 Euler angles: roll, pitch, and yaw.
 
-Status: (status)
+Status: DONE AND WORKS! Unit tested. Tested in real code too.
 
-keywords: (keywords)
+keywords: quaternions, euler angles, roll, pitch, yaw, 3-2-1 sequence, 3-2-1 rotation sequence,
+ZYX rotation sequence, yaw-pitch-roll, yaw-pitch-roll sequence, yaw-pitch-roll rotation sequence,
+flight dynamics, aerospace, aeronautics, aircraft, spacecraft, rockets, attitude, attitude,
+flight control systems
 
 Check this script with `pylint` v2.0.0 or later. See "eRCaGuy_hello_world/python/README.md" for
 installation instructions to install the latest version from GitHub.
@@ -73,14 +76,102 @@ TODO:
 
 """
 
+
 import numpy as np
 
-####### todo: normalize the quaternion to be a unit vector of length 1 before processing it!
-# OR, throw a warning or error if it comes in non-normalized
+# <========================  Discussion with @Ebernardes; SciPy, and Sympy  ========================
+# BOTH of the `quaternion2euler()` functions below work, and produce the exact same results for my
+# test cases. However, **the Wikipedia version is the better one,** because it has had the pitch
+# equation modified by @Ebernardes to use `arctan2()` instead of `arcsin()` in order to be more
+# numerically stable. Ebernardes states to me: "Basically, arcsin, arccos are not as numerically
+# well-behaved as arctan2, which is why we used this version when I updated the transformation code
+# in https://scipy.org/." Ebernardes has helped write these functions in both SciPy and Sympy. See
+# his response to me (where I am @ERCaGuy) in the Wikipedia Talk page here:
+# https://en.wikipedia.org/wiki/Talk:Conversion_between_quaternions_and_Euler_angles#Changed_the_quaternion_to_Euler_angles_conversion_formula
+
 def quaternion2euler(q):
     """
+    OPTION 1: [USE THIS ONE] The Wikipedia version, with the pitch equation modified by @Ebernardes:
+    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Source_code_2
+
+    > this implementation assumes normalized quaternion converts to Euler angles in 3-2-1 sequence.
+
+    This means the order of the rotations is:
+    1. Z-axis rotation (yaw)
+    1. Y-axis rotation (pitch)
+    1. X-axis rotation (roll)
+
+    ---
+
+    Summary:
     Convert 4 quaternion values to 3 Euler angles in degrees in the ZYX order (according to GitHub
-    Copilot).
+    Copilot), AKA the 3-2-1 sequence, AKA the "yaw, pitch, roll" sequence.
+
+    Inputs:
+    q is a numpy array of shape (4,) representing a quaternion [a, b, c, d]; it can be a list,
+    tuple, or numpy array of single (scalar) values OR of Pandas Series objects OR of more numpy
+    arrays of values.
+
+    Returns:
+    A tuple of Euler angles (phi, theta, psi) in degrees
+    - phi   = roll,  +/- 180 deg, rotation around x-axis
+    - theta = pitch, +/-  90 deg, rotation around y-axis
+    - psi   = yaw,   +/- 180 deg, rotation around z-axis
+
+    References:
+    1. https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Source_code_2
+        1. Talk page discussion with @Ebernardes:
+           https://en.wikipedia.org/wiki/Talk:Conversion_between_quaternions_and_Euler_angles#Changed_the_quaternion_to_Euler_angles_conversion_formula
+    1. Bing Chat
+    1. Github Copilot
+    """
+
+    w, x, y, z = q  # convert list or tuple to 4 separate variables
+
+    # TODO: normalize the quaternion vector to be a unit vector of length 1 before processing it!
+    # OR, throw a warning or error if it comes in non-normalized. This equation expect a normalized
+    # quaternion vector.
+    # - TODO: BEST: just fix q to be normalized if it comes in non-normalized.
+    # - NB: if this code is ever expected to run in real-time, safety-critical-like or live control
+    #   code, do NOT assert in it! Gracefully handle errors instead!
+    assert np.isclose(np.sqrt(w**2 + x**2 + y**2 + z**2), 1), \
+        "q must be a normalized unit vector of length 1!"
+
+    # roll (x-axis rotation)
+    sinr_cosp = 2*(w*x + y*z)
+    cosr_cosp = 1 - 2*(x**2 + y**2)
+    roll = np.arctan2(sinr_cosp, cosr_cosp)
+
+    # pitch (y-axis rotation)
+    sinp = np.sqrt(1 + 2*(w*y - x*z))
+    cosp = np.sqrt(1 - 2*(w*y - x*z))
+    pitch = 2*np.arctan2(sinp, cosp) - np.pi / 2
+
+    # yaw (z-axis rotation)
+    siny_cosp = 2*(w*z + x*y)
+    cosy_cosp = 1 - 2*(y**2 + z**2)
+    yaw = np.arctan2(siny_cosp, cosy_cosp)
+
+    # convert radians to degrees
+    roll = np.degrees(roll)
+    pitch = np.degrees(pitch)
+    yaw = np.degrees(yaw)
+
+    return roll, pitch, yaw
+
+
+def quaternion2euler2(q):
+    """
+    OPTION 2 [not quite as good]: The original version from Bing Chat, which is the same as what the
+    Wikipedia version **used to** have. The Wikipedia version now has in improved (more numerically
+    stable) form for the pitch equation. See its notes above.
+
+    Bing Chat produced something very similar to this equation when I asked it to write a Python
+    function to convert from quaternions to Euler angles.
+
+    Summary:
+    Convert 4 quaternion values to 3 Euler angles in degrees in the ZYX order (according to GitHub
+    Copilot), AKA the 3-2-1 sequence, AKA the "yaw, pitch, roll" sequence.
 
     Inputs:
     q is a numpy array of shape (4,) representing a quaternion [a, b, c, d]; it can be a list,
@@ -95,10 +186,17 @@ def quaternion2euler(q):
 
     References:
     1. ***** Bing Chat
+    1. GitHub Copilot
     1. https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
     """
+
     # quaternion components
     w, x, y, z = q  # convert list or tuple to 4 separate variables
+
+    # - NB: if this code is ever expected to run in real-time, safety-critical-like or live control
+    #   code, do NOT assert in it! Gracefully handle errors instead!
+    assert np.isclose(np.sqrt(w**2 + x**2 + y**2 + z**2), 1), \
+        "q must be a normalized unit vector of length 1!"
 
     # roll
     phi = np.arctan2(2*(w*x + y*z), 1 - 2*(x**2 + y**2))
@@ -111,48 +209,7 @@ def quaternion2euler(q):
     theta = np.degrees(theta)
     psi = np.degrees(psi)
 
-    return (phi, theta, psi)
-
-
-def quaternion2euler2(q):
-    """
-    Try a version 2 of this function, taken *directly* from Wikipedia here:
-    https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Source_code_2
-
-    "this implementation assumes normalized quaternion converts to Euler angles in 3-2-1 sequence"
-    ...whatever that means.
-    """
-
-    w, x, y, z = q  # convert list or tuple to 4 separate variables
-
-    # roll (x-axis rotation)
-    sinr_cosp = 2*(w*x + y*z)
-    cosr_cosp = 1 - 2*(x**2 + y**2)
-    roll = np.arctan2(sinr_cosp, cosr_cosp)
-
-    # pitch (y-axis rotation)
-    sinp = np.sqrt(1 + 2*(w*y - x*z))
-    cosp = np.sqrt(1 - 2*(w*y - x*z))
-    pitch = 2*np.arctan2(sinp, cosp) - np.pi / 2
-
-    #######
-    theta = np.arcsin(2*(w*y - z*x))
-    # pitch2 = np.arctan2(2*(w*y + z*x), 1 - 2*(y**2 + x**2))
-
-    # print(f"theta = {theta}; pitch = {pitch}; pitch2 = {pitch2}")
-    assert np.isclose(theta, pitch)
-    # assert np.isclose(pitch, pitch2)
-
-    # yaw (z-axis rotation)
-    siny_cosp = 2*(w*z + x*y)
-    cosy_cosp = 1 - 2*(y**2 + z**2)
-    yaw = np.arctan2(siny_cosp, cosy_cosp)
-
-    roll = np.degrees(roll)
-    pitch = np.degrees(pitch)
-    yaw = np.degrees(yaw)
-
-    return roll, pitch, yaw
+    return phi, theta, psi
 
 
 def convert_plus_or_minus_180_to_0_to_360(degrees):
@@ -177,8 +234,8 @@ def assert_is_close(func, q, euler_angles_expected):
 
 
 def test_convert_plus_or_minus_180_to_0_to_360():
-    array_in = np.array([-180, -45, -10, 0, 10, 45, 180])
-    array_out_expected = np.array([180, 315, 350, 0, 10, 45, 180])
+    array_in = np.array([-180, -45, -90, -10, 0, 10, 45, 90, 180])
+    array_out_expected = np.array([180, 315, 270, 350, 0, 10, 45, 90, 180])
     array_out1 = convert_plus_or_minus_180_to_0_to_360(array_in)
     array_out2 = array_in % 360
 
@@ -192,8 +249,6 @@ def test_quaternion2euler(func_quaternion2euler):
     # GS Note: for the quaternion to be a unit (w, x, y, z) vector of length 1, it must be true that
     # it is normalized such that sqrt(w**2 + x**2 + y**2 + z**2) = 1.
     # - Ensure this is the case for your input quaternions.
-    #
-    # TODO: add a check for this in the `quaternion2euler()` function itself.
 
     q = (1, 0, 0, 0)
     euler_angles_expected = (0.0, 0.0, 0.0)
@@ -211,8 +266,8 @@ def test_quaternion2euler(func_quaternion2euler):
     euler_angles_expected = (0.0, 0.0, 180)
     assert_is_close(func_quaternion2euler, q, euler_angles_expected)
 
-    q = (0, 0.1, -0.592, 0.8)
-    euler_angles_expected = (-73.5835, -9.20689, -173.117577)
+    q = (0, 0.1, -0.591607978, 0.8)
+    euler_angles_expected = (-73.52157267757873, -9.206896221345911, -173.1156409518999)
     assert_is_close(func_quaternion2euler, q, euler_angles_expected)
 
     q = (0.5, 0.5, 0.5, 0.5)
@@ -257,11 +312,14 @@ if __name__ == '__main__':
     run_tests()
 
 
+
 # pylint: disable-next=pointless-string-statement
 """
 SAMPLE OUTPUT:
 
-    eRCaGuy_hello_world/python$ ./quaternions_to_euler_angles.py
-    Hello world!
+    eRCaGuy_hello_world$ python/quaternions_to_euler_angles.py
+    All test cases passed.
+    All test cases passed.
+    All test cases passed.
 
 """
