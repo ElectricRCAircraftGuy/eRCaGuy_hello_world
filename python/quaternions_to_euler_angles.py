@@ -53,6 +53,7 @@ References:
 1. [NEED TO STUDY & READ] https://stackoverflow.com/q/1031005/4561887 - Is there an algorithm for
    converting quaternion rotations to Euler angle rotations?
     1. These papers look useful: https://stackoverflow.com/a/2390399/4561887  <===
+    1. This looks useful too: https://stackoverflow.com/a/27496984/4561887 <===
 1. https://rotations.berkeley.edu/the-euler-angle-parameterization/
 1. ********** https://web.archive.org/web/20210410215436/http://bediyap.com/programming/convert-quaternion-to-euler-rotations/
     1. Mentioned in the Wikipedia talk page:

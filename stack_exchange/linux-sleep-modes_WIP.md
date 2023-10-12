@@ -64,6 +64,7 @@ Here is how to put it to sleep:
     sudo pm-suspend && gnome-screensaver-command -l  # freezes my laptop! Required hard reboot.
     sudo true && gnome-screensaver-command -l && sudo pm-suspend  # works! my answer: https://askubuntu.com/a/1474754/327339
 
+    # See my answer: https://unix.stackexchange.com/a/749867/114401
     journalctl -n 1000 -e | grep "PM: suspend"
 
 
