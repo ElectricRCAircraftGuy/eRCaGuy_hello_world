@@ -1,3 +1,6 @@
+///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit
+// For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
+
 /*
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
@@ -87,10 +90,12 @@ const char * endianness_get_name(endianness_t endianness)
             endianness_name = "UNKNOWN";
             break;
         case ENDIANNESS_LITTLE_ENDIAN:
-            endianness_name = "LITTLE_ENDIAN (least-significant byte first in memory)";
+            endianness_name = "LITTLE_ENDIAN (least-significant byte first "
+                "in memory)";
             break;
         case ENDIANNESS_BIG_ENDIAN:
-            endianness_name = "BIG_ENDIAN (most-significant byte first in memory)";
+            endianness_name = "BIG_ENDIAN (most-significant byte first "
+                "in memory)";
             break;
     }
 
