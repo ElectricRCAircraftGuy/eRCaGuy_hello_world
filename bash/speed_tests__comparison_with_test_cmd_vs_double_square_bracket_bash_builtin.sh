@@ -31,7 +31,8 @@
 #       . bash/speed_tests__comparison_with_test_cmd_vs_double_square_bracket_bash_builtin.sh
 
 # References:
-# 1. My answer: https://stackoverflow.com/a/77291070/4561887
+# 1. *****+ My answer here, with this code:
+#    https://stackoverflow.com/a/77291070/4561887
 # 1.
 
 
@@ -80,7 +81,8 @@ df = df.reset_index(drop=True)
 # plot the data
 fig = plt.figure()
 plt.bar(labels, data)
-plt.title(f"Speed Test: `[ ]` vs `[[ ]]` over {NUM_ITERATIONS:,} iterations")
+plt.title(f"Speed Test: `[ ]` vs `[[ ]]` over {NUM_ITERATIONS:,} iterations\n"
+          f"(*lower* is better)")
 plt.xlabel('Test Type', labelpad=8)  # use `labelpad` to lower the label
 plt.ylabel('Time (sec)')
 
@@ -133,6 +135,8 @@ NUM_ITERATIONS="2000000" # 2 million
 
 word1="true"
 word2="false"
+# word1="truetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetru"
+# word2="truetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetrufalse"
 
 # Get an absolute timestamp in floating point seconds.
 # From:
