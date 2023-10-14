@@ -13,7 +13,9 @@
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
 #
-# KEYWORDS:
+# KEYWORDS: python in bash program python called from bash heredoc plotting
+# in python bash; python program embedded in bash; python program in bash
+# python program in bash heredoc
 
 # Check this script with:
 #
@@ -33,35 +35,144 @@
 # 1.
 
 
-NUM_ITERATIONS="1000000" # 1 million
+# ==============================================================================
+# Python plotting program
+# - is a Bash heredoc
+# References:
+# 1. My `plot_data()` function here:
+#    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py
+# 1. See my answer here: https://stackoverflow.com/a/77270285/4561887
+# ==============================================================================
+python_plotting_program=$(cat <<'PROGRAM_END'
+
+# 3rd-party imports
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# standard imports
+import sys
+
+assert sys.argv[0] == "-c"
+# print(f"sys.argv = {sys.argv}")  # debugging
+
+# Get the command-line arguments
+num_iterations = int(sys.argv[1])
+single_bracket_sec = float(sys.argv[2])
+double_bracket_sec = float(sys.argv[3])
+
+# place into lists
+labels = ['`[ ]` `test` func', '`[[ ]]` Bash built-in']
+data = [single_bracket_sec, double_bracket_sec]
+
+# place into a Pandas dataframe for easy manipulation and plotting
+df = pd.DataFrame({'test_type': labels, 'time_sec': data})
+df = df.sort_values(by="time_sec", axis='rows', ascending=False)
+df = df.reset_index(drop=True)
+
+# plot the data
+fig = plt.figure()
+plt.bar(labels, data)
+plt.title(f"Speed Test: `[ ]` vs `[[ ]]` over {num_iterations:,} iterations")
+plt.xlabel('Test Type', labelpad=8)  # use `labelpad` to lower the label
+plt.ylabel('Time (sec)')
+
+# Prepare to add text labels to each bar
+df["text_x"] = df.index # use the indices as the x-positions
+df["text_y"] = df["time_sec"] + 0.06*df["time_sec"].max()
+df["time_multiplier"] = df["time_sec"] / df["time_sec"].min()
+df["text_label"] = (df["time_sec"].map("{:.4f} sec\n".format) +
+                    df["time_multiplier"].map("{:.2f}x".format))
+
+# Use a list comprehension to actually call `plt.text()` to **automatically add
+# a plot label** for each row in the dataframe
+[
+    plt.text(
+        text_x,
+        text_y,
+        text_label,
+        horizontalalignment='center',
+        verticalalignment='center'
+    ) for text_x, text_y, text_label
+    in zip(
+        df["text_x"],
+        df["text_y"],
+        df["text_label"]
+    )
+]
+
+# add 10% to the top of the y-axis to leave space for labels
+ymin, ymax = plt.ylim()
+plt.ylim(ymin, ymax*1.1)
+
+plt.show()
+
+PROGRAM_END
+)
+
+# ==============================================================================
+# Bash speed test program
+# ==============================================================================
+
+# NUM_ITERATIONS="1000000" # 1 million
+NUM_ITERATIONS="10000" # 10k
+
 word1="true"
 word2="false"
 
+# Get an absolute timestamp in floating point seconds.
+# From:
+# https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/timestamp_lib_WIP.sh
+seconds_float() {
+    time_sec="$(date +"%s.%N")"
+    echo "$time_sec"
+}
+
 single_bracket() {
-    echo -e "\nsingle_bracket() start..."
     for i in $(seq 1 "$NUM_ITERATIONS"); do
         if [ "$word1" = "$word2" ]; then
             echo "true"
         fi
     done
-    echo "single_bracket() done."
 }
 
 double_bracket() {
-    echo -e "\ndouble_bracket() start..."
     for i in $(seq 1 "$NUM_ITERATIONS"); do
         if [[ "$word1" == "$word2" ]]; then
             echo "true"
         fi
     done
-    echo "double_bracket() done."
+}
+
+run_and_time_function() {
+    # the 1st arg is the function to run
+    func_to_time="$1"
+
+    # NB: the "information" type prints will go to stderr so they don't
+    # interfere with the actual timing results printed to stdout.
+
+    echo -e "== $func_to_time time test start... ==" >&2  # to stderr
+    time_start="$(seconds_float)"
+
+    $func_to_time
+
+    time_end="$(seconds_float)"
+    elapsed_time="$(bc <<< "scale=20; $time_end - $time_start")"
+    echo "== $func_to_time time test end. ==" >&2  # to stderr
+    echo "$elapsed_time"  # to stdout
 }
 
 main() {
-    echo "Running speed tests."
-    time single_bracket
-    echo "====================="
-    time double_bracket
+    echo "Running speed tests over $NUM_ITERATIONS iterations."
+
+    single_bracket_time_sec="$(run_and_time_function "single_bracket")"
+    double_bracket_time_sec="$(run_and_time_function "double_bracket")"
+
+    echo "single_bracket_time_sec = $single_bracket_time_sec"
+    echo "double_bracket_time_sec = $double_bracket_time_sec"
+
+    # echo "Plotting the results in Python..."
+    python3 -c "$python_plotting_program" "$NUM_ITERATIONS" \
+        "$single_bracket_time_sec" "$double_bracket_time_sec"
 }
 
 # Determine if the script is being sourced or executed (run).
@@ -83,7 +194,9 @@ if [ "$__name__" = "__main__" ]; then
 fi
 
 
+# ==============================================================================
 # SAMPLE OUTPUT:
+# ==============================================================================
 #
 # 1) WHEN RUN
 #
