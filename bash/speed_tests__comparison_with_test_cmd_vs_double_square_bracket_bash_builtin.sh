@@ -50,15 +50,23 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # standard imports
+import os
 import sys
 
 assert sys.argv[0] == "-c"
 # print(f"sys.argv = {sys.argv}")  # debugging
 
 # Get the command-line arguments
-num_iterations = int(sys.argv[1])
-single_bracket_sec = float(sys.argv[2])
-double_bracket_sec = float(sys.argv[3])
+FULL_PATH_TO_SCRIPT = sys.argv[1]
+NUM_ITERATIONS = int(sys.argv[2])
+single_bracket_sec = float(sys.argv[3])
+double_bracket_sec = float(sys.argv[4])
+
+# Obtain paths to help save the plot later.
+# See my answer: https://stackoverflow.com/a/74800814/4561887
+SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
+FILENAME = str(os.path.basename(FULL_PATH_TO_SCRIPT))
+FILENAME_NO_EXTENSION = os.path.splitext(FILENAME)[0]
 
 # place into lists
 labels = ['`[ ]` `test` func', '`[[ ]]` Bash built-in']
@@ -72,7 +80,7 @@ df = df.reset_index(drop=True)
 # plot the data
 fig = plt.figure()
 plt.bar(labels, data)
-plt.title(f"Speed Test: `[ ]` vs `[[ ]]` over {num_iterations:,} iterations")
+plt.title(f"Speed Test: `[ ]` vs `[[ ]]` over {NUM_ITERATIONS:,} iterations")
 plt.xlabel('Test Type', labelpad=8)  # use `labelpad` to lower the label
 plt.ylabel('Time (sec)')
 
@@ -104,6 +112,9 @@ df["text_label"] = (df["time_sec"].map("{:.4f} sec\n".format) +
 ymin, ymax = plt.ylim()
 plt.ylim(ymin, ymax*1.1)
 
+plt.savefig(f"{SCRIPT_DIRECTORY}/{FILENAME_NO_EXTENSION}.svg")
+plt.savefig(f"{SCRIPT_DIRECTORY}/{FILENAME_NO_EXTENSION}.png")
+
 plt.show()
 
 PROGRAM_END
@@ -113,8 +124,12 @@ PROGRAM_END
 # Bash speed test program
 # ==============================================================================
 
+# See my answer: https://stackoverflow.com/a/60157372/4561887
+FULL_PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[-1]}")"
+
+NUM_ITERATIONS="2000000" # 2 million
 # NUM_ITERATIONS="1000000" # 1 million
-NUM_ITERATIONS="10000" # 10k
+# NUM_ITERATIONS="10000" # 10k
 
 word1="true"
 word2="false"
@@ -171,8 +186,11 @@ main() {
     echo "double_bracket_time_sec = $double_bracket_time_sec"
 
     # echo "Plotting the results in Python..."
-    python3 -c "$python_plotting_program" "$NUM_ITERATIONS" \
-        "$single_bracket_time_sec" "$double_bracket_time_sec"
+    python3 -c "$python_plotting_program" \
+        "$FULL_PATH_TO_SCRIPT" \
+        "$NUM_ITERATIONS" \
+        "$single_bracket_time_sec" \
+        "$double_bracket_time_sec"
 }
 
 # Determine if the script is being sourced or executed (run).
@@ -201,22 +219,13 @@ fi
 # 1) WHEN RUN
 #
 #       eRCaGuy_hello_world$ bash/speed_tests__comparison_with_test_cmd_vs_double_square_bracket_bash_builtin.sh
-#       Running speed tests.
-#
-#       single_bracket() start...
-#       single_bracket() done.
-#
-#       real	0m2.334s
-#       user	0m2.291s
-#       sys	0m0.055s
-#       =====================
-#
-#       double_bracket() start...
-#       double_bracket() done.
-#
-#       real	0m1.604s
-#       user	0m1.597s
-#       sys	0m0.020s
+#       Running speed tests over 2000000 iterations.
+#       == single_bracket time test start... ==
+#       == single_bracket time test end. ==
+#       == double_bracket time test start... ==
+#       == double_bracket time test end. ==
+#       single_bracket_time_sec = 5.990248014
+#       double_bracket_time_sec = 4.230342635
 #
 #
 #
