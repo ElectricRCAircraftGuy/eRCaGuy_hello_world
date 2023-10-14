@@ -11,6 +11,8 @@ Yes, but it requires using `git` from the command-line. If on Windows, you will 
 
 Below, I present three options to fork a wiki.
 
+_The following concepts apply to any of the major git-based hosting platforms, including GitHub and Atlassian BitBucket. My tests and screenshots are from GitHub. I imagine that the same concepts would also apply to GitLab, but I have not tested it._
+
 
 ## Background knowledge
 
@@ -40,8 +42,13 @@ Here is an example. We will reference this image:
     1. Direct link to the wiki: https://github.com/nicolargo/glances/wiki
     1. In the bottom-right of the wiki page, see the "Clone this wiki locally" section to view the _git_ HTTPS URL to it: 
         1. [![enter image description here][2]][2]
-        1. Git HTTPS: `https://github.com/nicolargo/glances.wiki.git`
-        1. Again, this Git URL is _not_ a webpage! It is for use only at the command-line with `git` commands. It is the git _remote_ server URL to this git repository.
+    1. **Git URLs:**
+        1. HTTPS: `https://github.com/nicolargo/glances.wiki.git`
+        1. SSH: `git@github.com:nicolargo/glances.wiki.git`  
+            1. **Important!** 
+                1. This URL is not shown in the image just above, but it does work and exist. All you do is take your main git repo URL, remove the `.git` extension, and replace it with `.wiki.git`. 
+                1. Prefer the HTTPS git URLs for read-only access to someone else's git repos, and prefer the SSH URLs for read/write access to _your own_ git repos.
+        1. Again, these Git URLs are _not_ webpages! They are for use only at the command-line with `git` commands. They are the git _remote_ server URLs to these git repositories, for use from the command-line.
 
 #### Git limitations
 
@@ -55,35 +62,98 @@ If you want all of those features, you need to put your wiki pages *into* the ma
 
 #### Let's define some terms
 
-1. Let's call `https://github.com/nicolargo/glances.git` the _main git repository._ 
-1. Let's call `https://github.com/nicolargo/glances.wiki.git` the _accompanying wiki git repository._
-1. If you move the contents of `https://github.com/nicolargo/glances.wiki.git` into `https://github.com/nicolargo/glances.git`, which you can do via git at the command-line by the way, let's call that concept _wiki pages in your main git repository_, or _markdown pages in your main git repository._
-1. If you delete `https://github.com/nicolargo/glances.wiki.git` and move it into its own stand-alone main GitHub repository, then you will now have the ability to fork it, create Issues, have pull requests, etc. Let's call that concept _a main git repository which is used as a wiki_.
+1. Let's call `https://github.com/nicolargo/glances.git` the _"main git repository"_. 
+1. Let's call `https://github.com/nicolargo/glances.wiki.git` the _"accompanying wiki git repository"_.
+1. If you move the contents of `https://github.com/nicolargo/glances.wiki.git` into `https://github.com/nicolargo/glances.git`, which you can do via git at the command-line by the way, let's call that concept _"wiki pages in your main git repository"_, or _"markdown pages in your main git repository"_.
+1. If you delete `https://github.com/nicolargo/glances.wiki.git` and move it into its own stand-alone main GitHub repository, then you will now have the ability to fork it, create Issues, have pull requests, etc. Let's call that concept a _"main git repository which is used as a wiki"_.
 
 In my answer below, I will cover forking 1, 2, and 4 above in 3 separate ways:
-1. How to fork the _main git repository_ and its _accompanying wiki git repository_.
-1. How to copy an _accompanying wiki git repository_ into a new _main git repository_.
-1. How to fork an _accompanying wiki git repository_ into the _accompanying wiki git repository_ of a new, empty _main git repository_.
+1. [most common] How to fork the _"main git repository"_ and its _"accompanying wiki git repository"_.
+1. How to copy an _"accompanying wiki git repository"_ into a new _"main git repository"_ to create a _"main git repository which is used as a wiki"_.
+1. How to fork an _"accompanying wiki git repository"_ into the _"accompanying wiki git repository"_ of a new, empty _"main git repository"_.
 
 Here we go:
 
 
-## Option 1: fork the _main git repository_ and its _accompanying wiki git repository_
+## Option 1 [most common]: fork the _"main git repository"_ and its _"accompanying wiki git repository"_
 
 Let's fork the `glances` repository and its accompanying wiki repository. 
 
 1. In a web browser, log into GitHub.
 1. Go here: https://github.com/nicolargo/glances
-1. 
-[![enter image description here][3]][3]
+1. Click the "Fork" button at the top: 
+    
+    [![enter image description here][3]][3]
+
+    On the page that opens, click "Create fork". 
+
+    My username is [ElectricRCAircraftGuy](https://github.com/ElectricRCAircraftGuy). 
+
+    I now have this fork of glances, with my username in the webpage URL: https://github.com/ElectricRCAircraftGuy/glances
+
+    If I click the green "Code" button --> "SSH" tab, I can see my git SSH URL: `git@github.com:ElectricRCAircraftGuy/glances.git`. My HTTPS URL is `https://github.com/ElectricRCAircraftGuy/glances.git`. 
+
+    In my terminal on my computer, I can clone the repo:
+    ```bash
+    # What I will run to clone my own repo with read/write permissions
+    git clone git@github.com:ElectricRCAircraftGuy/glances.git
+
+    # What others can run to clone my repo with read-only permissions
+    git clone https://github.com/ElectricRCAircraftGuy/glances.git
+    ```
+
+    [x] Forking the _"main git repository"_ is now done. But, forking the _"accompanying wiki git repository"_ is not done yet.
+
+1. Try to clone the _"accompanying wiki git repository"_ to prove it does _not_ exist yet. 
+
+    I know from experience that GitHub does not fork the wiki repository when you fork the main repository. I also know that the _"accompanying wiki git repository's"_ git URLs will be as follows. Simply remove `.git` from your _"main git repository's"_ git URLs, and add `.wiki.git` instead:
+
+    ```bash
+    # What I will run to clone my own accompanying wiki git repo with 
+    # read/write permissions
+    git clone git@github.com:ElectricRCAircraftGuy/glances.wiki.git
+
+    # What others can run to clone my accompanying wiki git repo with 
+    # read-only permissions
+    git clone https://github.com/ElectricRCAircraftGuy/glances.wiki.git
+    ```
+
+    So, if I run `git clone git@github.com:ElectricRCAircraftGuy/glances.wiki.git`, I'll get this error, as expected, since my forked repo does not have an _"accompanying wiki git repository"_ yet:
+
+    ```bash
+    $ git clone git@github.com:ElectricRCAircraftGuy/glances.wiki.git
+    Cloning into 'glances.wiki'...
+    ERROR: Repository not found.
+    fatal: Could not read from remote repository.
+
+    Please make sure you have the correct access rights
+    and the repository exists.
+    ```
+
+1. Click the "Wiki" link at the top of your new, forked repo. You'll see this:
+
+    [![enter image description here][4]][4]
+
+    Click the "Create the first page" button. In the web editor that opens, just click "Save page" in the bottom right:
+
+    [![enter image description here][5]][5]
+
+    I now see this, and the "Clone this wiki locally" section is now visible in the bottom-right:
+
+    [![enter image description here][6]][6]
 
 
-## Option 2: copy an _accompanying wiki git repository_ into a new _main git repository_
 
 
-## Option 3: fork an _accompanying wiki git repository_ into the _accompanying wiki git repository_ of a new, empty _main git repository_
+## Option 2: copy an _"accompanying wiki git repository"_ into a new _"main git repository"_ to create a _"main git repository which is used as a wiki"_
+
+
+## Option 3: fork an _"accompanying wiki git repository"_ into the _"accompanying wiki git repository"_ of a new, empty _"main git repository"_
 
 
   [1]: https://i.stack.imgur.com/M8GCs.png
   [2]: https://i.stack.imgur.com/wwdJE.png
   [3]: https://i.stack.imgur.com/d8SzH.png
+  [4]: https://i.stack.imgur.com/Rez1F.png
+  [5]: https://i.stack.imgur.com/ICnTh.png
+  [6]: https://i.stack.imgur.com/l87eW.png
