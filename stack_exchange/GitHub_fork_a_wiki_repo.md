@@ -268,10 +268,39 @@ This option is most useful if you want to have a professional wiki page with bra
 
 ## Option 3: fork an _"accompanying wiki git repository"_ into the _"accompanying wiki git repository"_ of any other _"main git repository"_
 
-This option is most useful if you just want to copy the _"accompanying wiki git repository"_ of one repo into the _"accompanying wiki git repository"_ of another repo.
+This option is most useful if you just want to copy the _"accompanying wiki git repository"_ of one repo into the _"accompanying wiki git repository"_ of another repo, while keeping the their corresponding _"main git repositories"_ separate and distinct.
 
-wip; writing this now
+1. For this demo, I'm creating a nearly-empty repo called `wiki_copy_demo`, here: https://github.com/ElectricRCAircraftGuy/wiki_copy_demo
+    This is basically just Option 1 again, but into a different GitHub repo instead of the forked one.
 
+1. Add at least one page to your destination Wiki--same as before in Option 1. Here's mine: https://github.com/ElectricRCAircraftGuy/wiki_copy_demo/wiki. 
+
+1. Now, let's copy the glances upstream _"accompanying wiki git repository"_ into the _"accompanying wiki git repository"_ of this new `wiki_copy_demo` repo:
+
+    ```bash
+    # Clone your new _"accompanying wiki git repository"_ locally, using the 
+    # SSH git URL
+    git clone git@github.com:ElectricRCAircraftGuy/wiki_copy_demo.wiki.git
+    # cd into it
+    cd wiki_copy_demo.wiki
+
+    # add the original _"accompanying wiki git repository"_ of the glances repo
+    # as an upstream to your new _"accompanying wiki git repository"_
+    git remote add upstream https://github.com/nicolargo/glances.wiki.git
+
+    # fetch the upstream _"accompanying wiki git repository"_ you just added
+    git fetch upstream
+
+    # hard reset onto it; WARNING WARNING: hard reset will wipe local changes
+    git reset --hard upstream/master
+
+    # force push it to your own _"accompanying wiki git repository"_; 
+    # WARNING WARNING: this permanently wipes changes in your remote 
+    # "origin" on github for this repo
+    git push -f
+    ```
+
+1. Done. The Glances wiki is copied into mine. See here: https://github.com/ElectricRCAircraftGuy/wiki_copy_demo/wiki
 
 
 
