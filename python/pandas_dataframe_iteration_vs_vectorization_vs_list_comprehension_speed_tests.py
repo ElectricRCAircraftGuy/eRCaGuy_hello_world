@@ -36,6 +36,7 @@ python3 pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_
 References:
 1. "pandas_read_and_plot_csv.py"
 1. How to iterate over rows in a DataFrame in Pandas
+    1. *****+ MY ANSWER WITH THIS CODE: https://stackoverflow.com/a/77270285/4561887
     1. https://stackoverflow.com/a/55557758/4561887
     1. https://stackoverflow.com/a/59413206/4561887
 1. My answer on Python timestamps: https://stackoverflow.com/a/73482099/4561887
