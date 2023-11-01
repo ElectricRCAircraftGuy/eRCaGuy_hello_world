@@ -73,13 +73,25 @@ int main()
     uint8_t byte[8];
 
     // assume the bytes are stored in big-endian order, for instance
+
+    // // Test 1
+    // byte[0] = 0x15;
+    // byte[1] = 0x15;
+    // byte[2] = 0x17;
+    // byte[3] = 0x18;
+    // byte[4] = 0x19;
+    // byte[5] = 0x20;
+    // byte[6] = 0x21;
+    // byte[7] = 0x12;
+
+    // Test 2
     byte[0] = 0x15;
-    byte[1] = 0x15;
-    byte[2] = 0x17;
-    byte[3] = 0x18;
-    byte[4] = 0x19;
-    byte[5] = 0x20;
-    byte[6] = 0x21;
+    byte[1] = 0x92;  // changed
+    byte[2] = 0x53;  // changed
+    byte[3] = 0x22;  // changed
+    byte[4] = 0xec;  // changed
+    byte[5] = 0x33;  // changed
+    byte[6] = 0x99;  // changed
     byte[7] = 0x12;
 
     // swap the bytes around to little-endian order
@@ -115,8 +127,8 @@ SAMPLE OUTPUT:
 In C:
 
     eRCaGuy_hello_world$ c/byte_array_reinterpret_cast_to_uint64_t.c
-    val (as uint64_t) = 1519145841575600402
-    val (in hex)      = 0x1515171819202112
+    val (as uint64_t) = 1554396230853040402
+    val (in hex)      = 0x15925322EC339912
 
     val (as uint64_t) = 12345
     val (in hex)      = 0x00003039
