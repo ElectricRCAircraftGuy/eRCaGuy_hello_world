@@ -33,7 +33,7 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 byte_array_reinterpret_cast_to_uint64
 ```
 
 References:
-1. *****+ See my answer on this here:
+1. *****+ See my answer on this here: https://stackoverflow.com/a/77406154/4561887
 1.
 
 */
