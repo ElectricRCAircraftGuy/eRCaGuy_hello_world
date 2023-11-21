@@ -4,6 +4,9 @@
 This file is part of eRCaGuy_hello_world:
 https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+GS
+Nov. 2023
+
 Learn to plot Bode plots (frequency response plots) of transfer functions in Python.
 ---
 See my Controls slides, Lecture_12, slides 11-12, here (private):
