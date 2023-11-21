@@ -7,7 +7,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 Nov. 2023
 
-This is the private ("opaque") file for "typedef_handle_h__test_const.c". See that file for more
+This is the private ("opaque") file for "opaque_pointer_demo_main.c". See that file for more
 info.
 
 References:
@@ -16,7 +16,7 @@ References:
 
 */
 
-#include "typedef_handle_h__test_const_module.h"
+#include "opaque_pointer_demo_module.h"
 
 #include <stdio.h>   // For `printf()`
 #include <stdlib.h>  // For malloc() and free()
@@ -92,17 +92,17 @@ void my_module_do_stuff1(const_my_module_h my_module)
     //
     // In C:
     // 
-    //      eRCaGuy_hello_world/c$ ./typedef_handle_h__test_const.c 
-    //      ./typedef_handle_h__test_const_module.c: In function ‘my_module_do_stuff1’:
-    //      ./typedef_handle_h__test_const_module.c:99:32: error: assignment of member ‘my_private_int1’ in read-only object
+    //      eRCaGuy_hello_world/c$ ./opaque_pointer_demo_main.c 
+    //      ./opaque_pointer_demo_module.c: In function ‘my_module_do_stuff1’:
+    //      ./opaque_pointer_demo_module.c:99:32: error: assignment of member ‘my_private_int1’ in read-only object
     //         99 |     my_module->my_private_int1 = 8;
     //            |                                ^
     //      
     // In C++:
     // 
-    //      eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 typedef_handle_h__test_const.c typedef_handle_h__test_const_module.c -o bin/a && bin/a
-    //      typedef_handle_h__test_const_module.c: In function ‘void my_module_do_stuff1(const_my_module_h)’:
-    //      typedef_handle_h__test_const_module.c:99:32: error: assignment of member ‘my_module_s::my_private_int1’ in read-only object
+    //      eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 opaque_pointer_demo_main.c opaque_pointer_demo_module.c -o bin/a && bin/a
+    //      opaque_pointer_demo_module.c: In function ‘void my_module_do_stuff1(const_my_module_h)’:
+    //      opaque_pointer_demo_module.c:99:32: error: assignment of member ‘my_module_s::my_private_int1’ in read-only object
     //         99 |     my_module->my_private_int1 = 8;
     //            |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
     //      

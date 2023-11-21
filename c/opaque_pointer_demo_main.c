@@ -1,4 +1,4 @@
-///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" "$(dirname "$0")/typedef_handle_h__test_const_module.c" -o /tmp/a -lm && /tmp/a "$@"; exit
+///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" "$(dirname "$0")/opaque_pointer_demo_module.c" -o /tmp/a -lm && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -25,7 +25,9 @@ To make the struct itself `const` instead, use
 
 
 keywords to easily grep or ripgrep in this repo for this program and what it teaches
-KEYWORDS: opaque ptr opaque pointer opaque struct
+KEYWORDS: opaque ptr opaque pointer opaque struct opaque_pointer_demo_main.c 
+opaque_pointer_demo_module.c opaque_pointer_demo_module.h 
+typedef handle_h 
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
@@ -36,12 +38,12 @@ To compile and run (assuming you've already `cd`ed into this dir):
 sudo apt update && sudo apt install ccache
 
 # 1. In C:
-./typedef_handle_h__test_const.c
+./opaque_pointer_demo_main.c
 # or:
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 typedef_handle_h__test_const.c typedef_handle_h__test_const_module.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 opaque_pointer_demo_main.c opaque_pointer_demo_module.c -o bin/a -lm && bin/a
 
 # 2. In C++
-g++ -Wall -Wextra -Werror -O3 -std=gnu++17 typedef_handle_h__test_const.c typedef_handle_h__test_const_module.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 opaque_pointer_demo_main.c opaque_pointer_demo_module.c -o bin/a && bin/a
 ```
 
 References:
@@ -51,7 +53,7 @@ References:
 */
 
 // local includes
-#include "typedef_handle_h__test_const_module.h"
+#include "opaque_pointer_demo_module.h"
 
 // 3rd party includes
 // NA
@@ -121,7 +123,7 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world$ c/typedef_handle_h__test_const.c 
+    eRCaGuy_hello_world$ c/opaque_pointer_demo_main.c 
     Hello World
     my_module_open() done
     my_module->my_private_int1 = 0
@@ -135,7 +137,7 @@ In C:
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 typedef_handle_h__test_const.c typedef_handle_h__test_const_module.c -o bin/a && bin/a
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 opaque_pointer_demo_main.c opaque_pointer_demo_module.c -o bin/a && bin/a
     Hello World
     my_module_open() done
     my_module->my_private_int1 = 0

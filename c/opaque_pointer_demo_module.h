@@ -7,7 +7,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 GS
 Nov. 2023
 
-This is the private ("opaque") file for "typedef_handle_h__test_const.c". See that file for more
+This is the private ("opaque") file for "opaque_pointer_demo_main.c". See that file for more
 info.
 
 References:
