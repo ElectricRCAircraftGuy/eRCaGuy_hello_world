@@ -27,9 +27,13 @@ But, there are two cases I can think of where you may need to include a `static`
 So, if you *really* need to call a `static` function in another file, here are some ways. 
 
 
-## Background knowledge: `extern` vs `static`
+## Background knowledge: 
 
-First off, some basic knowledge: the keywords `exern` and `static` are opposites to each other. `extern` means "this variable or function is defined in another file", and `static` means "this variable or function is only visible in this file".
+First off, some basic knowledge: 
+
+### 1. `extern` vs `static`
+
+The keywords `exern` and `static` are opposites to each other. `extern` means "this variable or function is defined in another file", and `static` means "this variable or function is only visible in this file".
 
 _Functions_ without `static` are `extern` by default, so you don't need to explicitly write `extern` in front of them. But, you can if you want to:
 ```c
@@ -51,5 +55,25 @@ extern uint32_t u32;  // this tells the compiler that `u32` is allocated and
                       // inside this file
 ```
 
+/////// add a static variable too
+
+### 2. `#include` vs forward declaration
 
 
+## Example error if you try to call a `static` function in another file
+
+
+
+## Techniques
+
+Possible solutions:
+- remove the `static` keyword from their .c file
+- [my preferred choice for enhancing a 3rd-party library] write a non-static wrapper function in the bottom of their .c file for access to static _functions_, and setter and getter functions for access to static _variables_
+- #include your .c file in the bottom of their .c file
+- [my preference for unit testing private `static` C code] #include their .c file in the top of your .c file
+- add a non-static function pointer to the bottom of their .c file
+
+Alternatives:
+- duplicate their code into your own function in your own file
+- submit a pull request to their library to make the function non-static
+- write a Bash or Python script which automatically removes the `static` keyword from their .c file at compile-time, thereby applying a compile-time patch
