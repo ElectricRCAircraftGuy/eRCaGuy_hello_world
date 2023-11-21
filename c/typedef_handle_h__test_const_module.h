@@ -20,24 +20,21 @@ References:
 // See my answer: https://stackoverflow.com/a/54488289/4561887
 
 // An opaque pointer (handle) to a C-style "object" of "class" type "my_module"
-// (struct my_module_s *, or my_module_h):
 typedef struct my_module_s *my_module_h;
 // Same as above, but an opaque pointer to a const struct instead, so you can't
 // modify the contents of the struct. 
 typedef const struct my_module_s *const_my_module_h;
 
 // Create a new "object" of "class" "my_module": A function that takes a
-// *pointer to* an "object" handle, `malloc`s memory for a new copy of the
+// **pointer to** an "object" handle, `malloc`s memory for a new copy of the
 // opaque  `struct my_module_s`, then points the user's input handle (via its
 // passed-in pointer) to this newly-created  "object" of "class" "my_module".
 void my_module_open(my_module_h * my_module_h_p);
 
-// A function that takes this "object" (via its handle) as an input only and
-// cannot modify it
+// A function that takes this "object" (via its handle) as a read-only object.
 void my_module_do_stuff1(const_my_module_h my_module);
 
-// A function that can modify the private content of this "object" (via its
-// handle) (but still cannot modify the  handle itself)
+// A function that takes this "object" (via its handle) as a read-write object.
 void my_module_do_stuff2(my_module_h my_module);
 
 // Destroy the passed-in "object" of "class" type "my_module": A function that

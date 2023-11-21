@@ -25,12 +25,12 @@ References:
 
 // Definition of the opaque struct "object" of C-style "class" "my_module".
 // - NB: Since this is an opaque struct (declared in the header but not defined
-//   until the source file), it has the  following 2 important properties:
+//   until the source file), it has the following 2 important properties:
 // 1) It permits data hiding, wherein you end up with the equivalent of a C++
-//    "class" with only *private* member  variables.
+//    "class" with only *private* member variables.
 // 2) Objects of this "class" can only be dynamically allocated. No static
 //    allocation is possible since any module including the header file does not
-//    know the contents of *nor the size of* (this is the critical part) this
+//    know the contents of **nor the size of** (this is the critical part) this
 //    "class" (ie: C struct).
 struct my_module_s
 {
@@ -43,7 +43,7 @@ struct my_module_s
 void my_module_open(my_module_h * my_module_h_p)
 {
     // Ensure the passed-in pointer is not NULL (since it is a core
-    // dump/segmentation fault to try to dereference  a NULL pointer)
+    // dump/segmentation fault to try to dereference a NULL pointer)
     if (!my_module_h_p)
     {
         // Print some error or store some error code here, and return it at the
@@ -72,7 +72,7 @@ void my_module_open(my_module_h * my_module_h_p)
     *my_module_h_p = my_module;
 
 done:
-    printf("my_module_open() done\n");
+    printf("my_module_open() done\n"); // for demo purposes only
 }
 
 void my_module_do_stuff1(const_my_module_h my_module)
@@ -110,7 +110,7 @@ void my_module_do_stuff1(const_my_module_h my_module)
     // my_module->my_private_int1 = 8; 
 
 done:
-    printf("my_module_do_stuff1() done\n");
+    printf("my_module_do_stuff1() done\n"); // for demo purposes only
 }
 
 void my_module_do_stuff2(my_module_h my_module)
@@ -128,7 +128,7 @@ void my_module_do_stuff2(my_module_h my_module)
     // Etc.
 
 done:
-    printf("my_module_do_stuff2() done\n");
+    printf("my_module_do_stuff2() done\n"); // for demo purposes only
 }
 
 void my_module_close(my_module_h my_module)
@@ -142,5 +142,5 @@ void my_module_close(my_module_h my_module)
     free(my_module);
 
 done:
-    printf("my_module_close() done\n");
+    printf("my_module_close() done\n"); // for demo purposes only
 }

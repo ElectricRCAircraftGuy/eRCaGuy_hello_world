@@ -82,7 +82,7 @@ int main()
     {
         // await connection of debugger, or automatic system power reset by
         // watchdog
-        printf("ERROR: my_module_open() failed!\n");
+        printf("ERROR: my_module_open() failed!\n");  // for demo purposes only
         // log_errors_and_enter_infinite_loop(); 
     }
 
@@ -94,6 +94,7 @@ int main()
         my_module_do_stuff1(my_module);
         my_module_do_stuff2(my_module);
 
+        // exit after 2 iterations, for demo purposes only
         counter++;
         if (counter >= 2)
         {
@@ -108,6 +109,7 @@ int main()
 
     // for microcontrollers or other low-level embedded systems, we can never
     // return, so enter infinite loop instead
+    //
     // while (true) {}; // await reset by watchdog
 
     return 0;
