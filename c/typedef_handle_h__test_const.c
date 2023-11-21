@@ -1,4 +1,4 @@
-///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" "typedef_handle_h__test_const_module.c" -o /tmp/a -lm && /tmp/a "$@"; exit
+///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" "$(dirname "$0")/typedef_handle_h__test_const_module.c" -o /tmp/a -lm && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -16,7 +16,13 @@ my_module);`, does that `const` make the pointer itself `const`, or the struct i
 I think it's the former, but when I wrote this answer (https://stackoverflow.com/a/54488289/4561887)
 I thought at the time it was the latter. Let's find out!
 
-STATUS: (status)
+STATUS: done and works! I've fixed it now! 
+
+CONCLUSION:
+`const my_module_h` makes the pointer itself `const`, NOT the struct it points to!
+To make the struct itself `const` instead, use 
+`typedef const struct my_module_s *const_my_module_h;`, as I have it now in the .h file.
+
 
 keywords to easily grep or ripgrep in this repo for this program and what it teaches
 KEYWORDS: opaque ptr opaque pointer opaque struct
@@ -113,13 +119,30 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 typedef_handle_h__test_const.c -o bin/a -lm && bin/a
-    Hello World.
+    eRCaGuy_hello_world$ c/typedef_handle_h__test_const.c 
+    Hello World
+    my_module_open() done
+    my_module->my_private_int1 = 0
+    my_module_do_stuff1() done
+    my_module_do_stuff2() done
+    my_module->my_private_int1 = 7
+    my_module_do_stuff1() done
+    my_module_do_stuff2() done
+    my_module_close() done
 
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 typedef_handle_h__test_const.c -o bin/a && bin/a
-    Hello World.
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 typedef_handle_h__test_const.c typedef_handle_h__test_const_module.c -o bin/a && bin/a
+    Hello World
+    my_module_open() done
+    my_module->my_private_int1 = 0
+    my_module_do_stuff1() done
+    my_module_do_stuff2() done
+    my_module->my_private_int1 = 7
+    my_module_do_stuff1() done
+    my_module_do_stuff2() done
+    my_module_close() done
+
 
 */

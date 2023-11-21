@@ -24,7 +24,7 @@ References:
 typedef struct my_module_s *my_module_h;
 // Same as above, but an opaque pointer to a const struct instead, so you can't
 // modify the contents of the struct. 
-////////
+typedef const struct my_module_s *const_my_module_h;
 
 // Create a new "object" of "class" "my_module": A function that takes a
 // *pointer to* an "object" handle, `malloc`s memory for a new copy of the
@@ -34,7 +34,7 @@ void my_module_open(my_module_h * my_module_h_p);
 
 // A function that takes this "object" (via its handle) as an input only and
 // cannot modify it
-void my_module_do_stuff1(const my_module_h my_module);
+void my_module_do_stuff1(const_my_module_h my_module);
 
 // A function that can modify the private content of this "object" (via its
 // handle) (but still cannot modify the  handle itself)

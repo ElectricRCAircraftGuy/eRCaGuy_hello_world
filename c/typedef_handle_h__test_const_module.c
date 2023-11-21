@@ -55,7 +55,7 @@ void my_module_open(my_module_h * my_module_h_p)
     // heap, thereby dynamically creating this C-style "object".
     my_module_h my_module; // Create a local object handle (pointer to a struct)
     // Dynamically allocate memory for the full contents of the struct "object"
-    my_module = malloc(sizeof(*my_module)); 
+    my_module = (my_module_h)malloc(sizeof(*my_module)); 
     if (!my_module) 
     {
         // Malloc failed due to out-of-memory. Print some error or store some
@@ -75,7 +75,7 @@ done:
     printf("my_module_open() done\n");
 }
 
-void my_module_do_stuff1(const my_module_h my_module)
+void my_module_do_stuff1(const_my_module_h my_module)
 {
     // Ensure my_module is not a NULL pointer.
     if (!my_module)
@@ -87,9 +87,27 @@ void my_module_do_stuff1(const my_module_h my_module)
     // `my_module->my_private_int1` here, or `my_module->my_private_float`, etc. 
     printf("my_module->my_private_int1 = %i\n", my_module->my_private_int1);
 
-    // Now try to modify the variable. This should result in a compile-time
-    // error.
-    my_module->my_private_int1 = 8; 
+    // Now try to modify the variable. This results in the following compile-time
+    // error since this function takes `const_my_module_h`:
+    //
+    // In C:
+    // 
+    //      eRCaGuy_hello_world/c$ ./typedef_handle_h__test_const.c 
+    //      ./typedef_handle_h__test_const_module.c: In function ‘my_module_do_stuff1’:
+    //      ./typedef_handle_h__test_const_module.c:99:32: error: assignment of member ‘my_private_int1’ in read-only object
+    //         99 |     my_module->my_private_int1 = 8;
+    //            |                                ^
+    //      
+    // In C++:
+    // 
+    //      eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 typedef_handle_h__test_const.c typedef_handle_h__test_const_module.c -o bin/a && bin/a
+    //      typedef_handle_h__test_const_module.c: In function ‘void my_module_do_stuff1(const_my_module_h)’:
+    //      typedef_handle_h__test_const_module.c:99:32: error: assignment of member ‘my_module_s::my_private_int1’ in read-only object
+    //         99 |     my_module->my_private_int1 = 8;
+    //            |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+    //      
+    //
+    // my_module->my_private_int1 = 8; 
 
 done:
     printf("my_module_do_stuff1() done\n");
