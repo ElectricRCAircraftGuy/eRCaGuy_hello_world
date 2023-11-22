@@ -11,8 +11,7 @@ Check if `const my_module_h` makes the pointer constant or the struct it points 
 
 Fix my answer here: https://stackoverflow.com/a/54488289/4561887. 
 
-If you have `typedef struct my_module_s *my_module_h;`, and then do `void doStuff2(const my_module_h
-my_module);`, does that `const` make the pointer itself `const`, or the struct it points to `const`?
+If you have `typedef struct my_module_s *my_module_h;`, and then do `void do_stuff1(const my_module_h my_module);`, does that `const` make the pointer itself `const`, or the struct it points to `const`?
 I think it's the former, but when I wrote this answer (https://stackoverflow.com/a/54488289/4561887)
 I thought at the time it was the latter. Let's find out!
 
@@ -20,8 +19,12 @@ STATUS: done and works! I've fixed it now!
 
 CONCLUSION:
 `const my_module_h` makes the pointer itself `const`, NOT the struct it points to!
-To make the struct itself `const` instead, use 
-`typedef const struct my_module_s *const_my_module_h;`, as I have it now in the .h file.
+- To make the struct itself `const` instead, use 
+`typedef const struct my_module_s *const_my_module_h;`, as I have it now in the
+.h file. 
+- OR, use `typedef struct my_module_s my_module_t;`, followed by 
+`void my_module_do_stuff1(const my_module_t* my_module);`, which I also have 
+now as a demo in the .h file.
 
 
 keywords to easily grep or ripgrep in this repo for this program and what it teaches
