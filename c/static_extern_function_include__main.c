@@ -42,29 +42,81 @@ References:
 
 */
 
-// #include "static_extern_function_include__module.h"
+// #include "static_extern_function_include__module_wrapper.h"
+// #include "static_extern_function_include__module_ptrs.h"
+#include "static_extern_function_include__module_wrapper.h"  // for _extensions.c wrappers
 
 #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
 
-void print_incrementing_number(); // forward function declaration
-extern uint32_t counter;          // forward variable declaration
+// #include "static_extern_function_include__module.h"
+// OR:
+// void print_incrementing_number(); // forward function declaration
+// extern uint32_t counter;          // forward variable declaration
 
-// int main(int argc, char *argv[])  // alternative prototype
+
+// int main()
+// {
+//     printf("Hello World.\n");
+
+//     print_incrementing_number();
+//     printf("  counter = %u\n", counter);
+//     print_incrementing_number();
+//     printf("  counter = %u\n", counter);
+//     print_incrementing_number();
+//     printf("  counter = %u\n", counter);
+
+//     return 0;
+// }
+
+
+// // Using the wrapper
+// int main()
+// {
+//     printf("Hello World.\n");
+
+//     print_incrementing_number_wrapper();
+//     printf("  counter = %u\n", get_counter());
+//     print_incrementing_number_wrapper();
+//     printf("  counter = %u\n", get_counter());
+//     print_incrementing_number_wrapper();
+//     printf("  counter = %u\n", get_counter());
+
+//     return 0;
+// }
+
+
+// // Using the pointers
+// int main()
+// {
+//     printf("Hello World.\n");
+
+//     print_incrementing_number_ptr();
+//     printf("  counter = %u\n", *counter_ptr);
+//     print_incrementing_number_ptr();
+//     printf("  counter = %u\n", *counter_ptr);
+//     print_incrementing_number_ptr();
+//     printf("  counter = %u\n", *counter_ptr);
+
+//     return 0;
+// }
+
+// Using the wrappers from the _extensions.c file
 int main()
 {
     printf("Hello World.\n");
 
-    print_incrementing_number();
-    printf("  counter = %u\n", counter);
-    print_incrementing_number();
-    printf("  counter = %u\n", counter);
-    print_incrementing_number();
-    printf("  counter = %u\n", counter);
+    print_incrementing_number_wrapper();
+    printf("  counter = %u\n", get_counter());
+    print_incrementing_number_wrapper();
+    printf("  counter = %u\n", get_counter());
+    print_incrementing_number_wrapper();
+    printf("  counter = %u\n", get_counter());
 
     return 0;
 }
+
 
 
 /*
@@ -72,11 +124,25 @@ SAMPLE OUTPUT:
 
 In C:
 
-
+    eRCaGuy_hello_world/c$ ./static_extern_function_include__main.c 
+    Hello World.
+    counter = 0
+      counter = 1
+    counter = 1
+      counter = 2
+    counter = 2
+      counter = 3
 
 
 OR, in C++:
 
-
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 static_extern_function_include__main.c static_extern_function_include__module.c -o bin/a && bin/a
+    Hello World.
+    counter = 0
+      counter = 1
+    counter = 1
+      counter = 2
+    counter = 2
+      counter = 3
 
 */

@@ -5,9 +5,17 @@ This file is "included" (used) by `static_extern_function_include__main.c`. Run 
 
 */
 
-#pragma once
+void print_incrementing_number_wrapper()
+{
+    print_incrementing_number();
+}
 
-#include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+void set_counter(uint32_t new_counter)
+{
+    counter = new_counter;
+}
 
-void print_incrementing_number(); // forward function declaration
-extern uint32_t counter;          // forward variable declaration
+uint32_t get_counter()
+{
+    return counter;
+}

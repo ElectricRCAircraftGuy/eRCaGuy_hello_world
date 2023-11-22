@@ -13,16 +13,16 @@ https://stackoverflow.com/q/35425790/4561887
 
 1. You shouldn't call a `static` function from another source file. `static` means "I'm not supposed to be used anywhere else." So, if you really need to use that function or variable from another source file, remove `static` from its declaration. 
     1. See the top of the "Details" section below.
-1. But if you really must (ex: for unit testing or modifying a 3rd-party library while making minimal changes to it), see the techniques in the section titled **"Techniques to forcefully include a `static` function or variable in another file"**, below.
+1. But if you really must (ex: for unit testing, or modifying a 3rd-party library while making minimal changes to it), see the techniques in the section titled **"Techniques to forcefully include a `static` function or variable in another file"**, below.
 
-This answer also answers the question: "When to use `extern` in C?"
+This answer also answers the question: "When to use `extern` in C or C++?"
 
 
 ## Details
 
-First of all, you shouldn't do this. If you have a function that is used in other source files, it should be _non_`static`, and declared inside a header file, and that header file should be included in the source file where you need it. This is the proper design pattern. You include the header file in each source file that uses the function. 
+First of all, you generally shouldn't use a `static` function or variable in another file. If you have a function that is used in other source files, it should be _non_`static`, and declared inside a header file, and that header file should be included in the source file where you need it. This is the proper design pattern. You then include the header file in each source file that uses the function. See the "`#include` vs forward declarations" section below for examples of this. 
 
-If you have a function that is only used in _one_ file, it should be declared `static` so that it is _not visible outside that file_, period. The `static` keyword gives a function or variable _internal linkage_, or "file scope" in layman's terms, which means that it is only visible inside the file it is declared in.
+If you have a function or variable that is only used in _one_ file, it should be declared `static` so that it is _not visible outside that file_, period. The `static` keyword gives a function or variable _internal linkage_, or "file scope" in layman's terms, which means that it is only visible inside the file it is declared in.
 
 These answers here say that as well:
 1. [@Anbu.Sankar](https://stackoverflow.com/a/35425964/4561887)
@@ -180,7 +180,7 @@ So, any of these will work:
 `main.c`:
 ```c
 // For both functions and variables
-#include "foo.h"      // most-often used
+#include "foo.h"      // most-often used / most-recommended
 
 // or, for functions:
 void foo();           // forward declaration with implicit `extern`
@@ -206,26 +206,34 @@ int main()
 
 ## Example error if you try to call a `static` function or variable from another file
 
-_Tested with `gcc --version` `gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0`._
+_Tested with `gcc --version` `gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0`._ To run these `gcc` build commands on Windows, use the MSYS2 terminal. See my full setup instructions here: [Installing & setting up MSYS2 from scratch, including adding all 7 profiles to Windows Terminal](https://stackoverflow.com/a/77407282/4561887).
 
 This is helpful to help you understand when you are having this problem in your own code:
 
-This is an **example build (linker, `ld`) error** if you try to forward declare a `static` function from another file:
+This is an **example build (linker, `ld`) error** if you try to forward declare or include a `static` function or variable from another file:
 
 ```
 undefined reference to `counter'
 undefined reference to `print_incrementing_number'
 ```
 
-The linking step is the last step of the build process, and where it tries to find and match function declarations to their compiled definitions in the compiled object `.o` files. If a function was built as `static`, it is not visible outside the file it was defined in, so the linker cannot find it, and you get this error.
+The linking step is the last step of the build process, and where it tries to find and match function declarations to their compiled definitions in the compiled object `.o` files. If a function or variable was built as `static`, it has "static linkage", which means that is not visible outside the file it was defined in, so the linker cannot find it, and you get this error. 
 
-**Full build error in C:** the linker (`ld` program) fails to find my `print_incrementing_number()` function because it is `static` and in another source file, so the linker excludes its definition and cannot find it at link time:
+The linker (`ld` program) fails to find my `print_incrementing_number()` function and `uint32_t counter` variable. If you want to try running the commands, this is at commit `11430a3cb3b298f26d3763e4a7224a7d610751c1` in my [eRCaGuy_hello_world](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world) repo.
+
+**Full build error in C:** 
+
 ```bash
-eRCaGuy_hello_world$ c/static_extern_function_include__main.c 
-/usr/bin/ld: /tmp/cckelXCL.o: in function `main':
-static_extern_function_include__main.c:(.text.startup+0x17): undefined reference to `print_incrementing_number'
-/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x1e): undefined reference to `print_incrementing_number'
-/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x25): undefined reference to `print_incrementing_number'
+eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 static_extern_function_include__main.c static_extern_function_include__module.c -o bin/a && bin/a
+/usr/bin/ld: /tmp/ccKPOHqx.o: warning: relocation against `counter' in read-only section `.text.startup'
+/usr/bin/ld: /tmp/ccKPOHqx.o: in function `main':
+static_extern_function_include__main.c:(.text.startup+0x1b): undefined reference to `print_incrementing_number'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x21): undefined reference to `counter'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x37): undefined reference to `print_incrementing_number'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x3d): undefined reference to `counter'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x53): undefined reference to `print_incrementing_number'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x59): undefined reference to `counter'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
 collect2: error: ld returned 1 exit status
 ```
 
@@ -233,10 +241,15 @@ collect2: error: ld returned 1 exit status
 
 ```bash
 eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 static_extern_function_include__main.c static_extern_function_include__module.c -o bin/a && bin/a
-/usr/bin/ld: /tmp/cc7tV6Pq.o: in function `main':
-static_extern_function_include__main.c:(.text.startup+0x15): undefined reference to `print_incrementing_number()'
-/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x1a): undefined reference to `print_incrementing_number()'
-/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x1f): undefined reference to `print_incrementing_number()'
+/usr/bin/ld: /tmp/ccAn3aKq.o: warning: relocation against `counter' in read-only section `.text.startup'
+/usr/bin/ld: /tmp/ccAn3aKq.o: in function `main':
+static_extern_function_include__main.c:(.text.startup+0x19): undefined reference to `print_incrementing_number()'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x1f): undefined reference to `counter'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x33): undefined reference to `print_incrementing_number()'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x39): undefined reference to `counter'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x4d): undefined reference to `print_incrementing_number()'
+/usr/bin/ld: static_extern_function_include__main.c:(.text.startup+0x53): undefined reference to `counter'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
 collect2: error: ld returned 1 exit status
 ```
 
@@ -248,12 +261,12 @@ Here is the source code that produces that error:
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
 
-// Aaaah! Static!
+static uint32_t counter = 0;
+
 static void print_incrementing_number()
 {
-    static uint32_t i = 0;
-    printf("i = %u\n", i);
-    i++;
+    printf("counter = %u\n", counter);
+    counter++;
 }
 
 void foo()
@@ -264,11 +277,12 @@ void foo()
 
 `static_extern_function_include__main.c`:
 ```c
-void print_incrementing_number(); // forward declaration
-
 #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
+
+void print_incrementing_number(); // forward function declaration
+extern uint32_t counter;          // forward variable declaration
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
@@ -276,8 +290,11 @@ int main()
     printf("Hello World.\n");
 
     print_incrementing_number();
+    printf("  counter = %u\n", counter);
     print_incrementing_number();
+    printf("  counter = %u\n", counter);
     print_incrementing_number();
+    printf("  counter = %u\n", counter);
 
     return 0;
 }
@@ -295,14 +312,306 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 static_extern_function_include__main.
 
 ## The fixes: techniques to forcefully include a `static` function or variable in another file
 
+
 ### 1. Possible solutions:
-1. remove the `static` keyword from their .c file
-1. [my preferred choice for enhancing a 3rd-party library] write a non-static wrapper function in the bottom of their .c file for access to static _functions_, and setter and getter functions for access to static _variables_
-1. #include your .c file in the bottom of their .c file
-1. [my preference for unit testing private `static` C code] #include their .c file in the top of your .c file
-1. add a non-static function pointer to the bottom of their .c file
+
+1. [Preferred choice if you intend the function and variable to be used elsewhere] **remove the `static` keyword** from the `.c` file:
+
+    Go to `static_extern_function_include__module.c` and remove the `static` keyword from the function and variable declarations, so you have this:
+    ```c
+    uint32_t counter = 0;
+
+    void print_incrementing_number()
+    {
+        printf("counter = %u\n", counter);
+        counter++;
+    }
+    ```
+
+    Now it builds and runs. Here is my command and output:
+    ```bash
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=gnu17 static_extern_function_include__main.c static_extern_function_include__module.c -o bin/a && bin/a
+    Hello World.
+    counter = 0
+      counter = 1
+    counter = 1
+      counter = 2
+    counter = 2
+      counter = 3
+    ```
+
+    The build commands for all other techniques below are exactly the same as just above unless stated otherwise.
+
+1. [My preferred choice for enhancing a 3rd-party library] **write a non-static wrapper function in the bottom of their `.c`** file for access to static _functions_, and setter and getter functions for access to their static _variables_:
+
+    At the bottom of their `.c` file, add your custom wrappers and setters/getters, like this:
+
+    `static_extern_function_include__module.c`:
+    ```c
+    // ------- their original code left as-is -------
+ 
+    static uint32_t counter = 0;
+
+    static void print_incrementing_number()
+    {
+        printf("counter = %u\n", counter);
+        counter++;
+    }
+
+    void foo()
+    {
+        print_incrementing_number();
+        // a bunch of other library code here
+    }
+
+    // ------- your custom wrappers and setters/getters -------
+
+    void print_incrementing_number_wrapper()
+    {
+        print_incrementing_number();
+    }
+
+    void set_counter(uint32_t new_counter)
+    {
+        counter = new_counter;
+    }
+
+    uint32_t get_counter()
+    {
+        return counter;
+    }
+    ```
+
+    In your `.c` file, you can now forward declare and use these custom wrappers and setters/getters. 
+    
+    Even better, make a wrapper `.h` file too: 
+
+    `static_extern_function_include__module_wrapper.h`:
+    ```c
+    #pragma once
+
+    #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+
+    void print_incrementing_number_wrapper();
+    void set_counter(uint32_t new_counter);
+    uint32_t get_counter();
+    ``` 
+
+    And in your `.c` file, include and use the wrapper header:
+
+    ```c
+    #include "static_extern_function_include__module_wrapper.h"
+    
+    #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
+    #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+    #include <stdio.h>   // For `printf()`
+
+    // Using the wrapper
+    int main()
+    {
+        printf("Hello World.\n");
+
+        print_incrementing_number_wrapper();
+        printf("  counter = %u\n", get_counter());
+        print_incrementing_number_wrapper();
+        printf("  counter = %u\n", get_counter());
+        print_incrementing_number_wrapper();
+        printf("  counter = %u\n", get_counter());
+
+        return 0;
+    }
+    ```
+
+1. **Add non-`static` pointers** to their functions and variables in the bottom of their `.c` file:
+
+    Instead of adding wrapper functions and setters/getters, you can use non-static pointer variables instead: 
+
+    `static_extern_function_include__module.c`:
+    ```c
+    // ------- their original code left as-is -------
+ 
+    static uint32_t counter = 0;
+
+    static void print_incrementing_number()
+    {
+        printf("counter = %u\n", counter);
+        counter++;
+    }
+
+    void foo()
+    {
+        print_incrementing_number();
+        // a bunch of other library code here
+    }
+
+    // ------- your custom, non-static pointer variables -------
+
+    typedef void (*void_void_func_ptr_t)(void);
+    
+    void_void_func_ptr_t print_incrementing_number_ptr = 
+        print_incrementing_number;
+
+    uint32_t *counter_ptr = &counter;
+    ```
+
+    Now, forward declare these `extern` pointer variables in your `.c` file, or make a header file like this:
+
+    `static_extern_function_include__module_ptrs.h`:
+    ```c
+    #pragma once
+
+    #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+
+    typedef void (*void_void_func_ptr_t)(void);
+
+    // forward pointer variable declarations
+    extern void_void_func_ptr_t print_incrementing_number_ptr;
+    extern uint32_t *counter_ptr;
+    ```
+
+    And in your `.c` file, include and use the pointer header:
+
+    ```c
+    #include "static_extern_function_include__module_ptrs.h"
+
+    #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
+    #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+    #include <stdio.h>   // For `printf()`
+
+    // Using the pointers
+    int main()
+    {
+        printf("Hello World.\n");
+
+        print_incrementing_number_ptr();
+        printf("  counter = %u\n", *counter_ptr);
+        print_incrementing_number_ptr();
+        printf("  counter = %u\n", *counter_ptr);
+        print_incrementing_number_ptr();
+        printf("  counter = %u\n", *counter_ptr);
+
+        return 0;
+    }
+    ```
+
+1. [Least intrusive / best to minimize changes to someone else's library files] **`#include` your custom `.h` or `.c` file in the bottom of their `.c` file**
+
+    If you want to keep the bottom of their `.c` file as clean as possible, then you can do that by adding a **single `#include` statement at the bottom of their `.c` file**, like this. Note that the extension doesn't really matter. You can use any extension you want. Here, I use `_extension.c` to indicate I am extending this module with my own customizations:
+
+    ```c
+    // ------- their original code left as-is -------
+    // ...
+
+    // ------- your custom include line at the very bottom -------
+    // Including a `.c` file is a bit unconventional, but it works just fine.
+    // You can think of the pre-processor as a type of code generator since
+    // it just copies and pastes stuff around.
+    #include "static_extern_function_include__module_extensions.c"
+    ```
+
+    Now, put the necessary wrappers or pointers from the examples above into this extension file included above. Here, I'll use the wrapper functions and setters/getters from the 2nd example above:
+
+    `static_extern_function_include__module_extensions.c`:
+    ```c
+    void print_incrementing_number_wrapper()
+    {
+        print_incrementing_number();
+    }
+
+    void set_counter(uint32_t new_counter)
+    {
+        counter = new_counter;
+    }
+
+    uint32_t get_counter()
+    {
+        return counter;
+    }
+    ```
+
+    Now in your `.c` file, just do what you did for the 2nd example above, and include and use the wrapper header again, like normal:
+
+    ```c
+    #include "static_extern_function_include__module_wrapper.h"
+    
+    #include <stdbool.h> // For `true` (`1`) and `false` (`0`) macros in C
+    #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
+    #include <stdio.h>   // For `printf()`
+
+    // Using the wrapper
+    int main()
+    {
+        printf("Hello World.\n");
+
+        print_incrementing_number_wrapper();
+        printf("  counter = %u\n", get_counter());
+        print_incrementing_number_wrapper();
+        printf("  counter = %u\n", get_counter());
+        print_incrementing_number_wrapper();
+        printf("  counter = %u\n", get_counter());
+
+        return 0;
+    }
+    ```
+
+    Note: as of later versions of FreeRTOS, this is now possible! They have even provided "hooks" to do this right inside their main library code! See here for example, in V10.6.1 in the bottom of `tasks.c`: https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/V10.6.1/tasks.c#L5514-L5534: 
+
+    ```c
+    /* Code below here allows additional code to be inserted into this source file,
+    * especially where access to file scope functions and data is needed (for example
+    * when performing module tests). */
+
+    #ifdef FREERTOS_MODULE_TEST
+        #include "tasks_test_access_functions.h"
+    #endif
+
+
+    #if ( configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H == 1 )
+
+        #include "freertos_tasks_c_additions.h"
+
+        #ifdef FREERTOS_TASKS_C_ADDITIONS_INIT
+            static void freertos_tasks_c_additions_init( void )
+            {
+                FREERTOS_TASKS_C_ADDITIONS_INIT();
+            }
+        #endif
+
+    #endif /* if ( configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H == 1 ) */
+    ```
+
+    I'll be using that now. Older versions of FreeRTOS did _not_ have this. 
+
+1. [My preference for unit testing private `static` C code] **`#include` the entire `.c` file of interest in the _top_ of your `.c` file:**
+
+    To unit test or get access to a ton of private `static` functions and variables from a `.c` file, just include the `.c` file near the _top_ of your `.c` file. 
+
+    The pre-processor will then copy/paste that entire included file into the top of your file. Imagine that has happened, and write your code from there. 
+
+    You can access all of the private `static` data in your `.c` file because it _is in_ your `.c` file now. 
+
+    I won't show an explicit example, for brevity, but you get the point. 
+
 
 ### 2. Alternatives:
-1. duplicate their code into your own function in your own file
-1. submit a pull request to their library to make the function non-static
-1. write a Bash or Python script which automatically removes the `static` keyword from their .c file at compile-time, thereby applying a compile-time patch
+
+Here are some other alternatives to consider:
+
+1. Duplicate the `static` code into your own function in your own file.
+
+    ie: just copy-paste it. I generally recommend against this, however, as maintaining duplicate code is a horrible waste of time, and it gets out-of-sync easy.
+
+    If the function is 3 lines and it's only 1 function, sure, do this. But if it's 4 lines or 2 functions, choose one of the other options above instead, to avoid duplicate code.
+
+1. Submit a pull request to their library to make the functions or variables of interest non-`static`.
+
+    While this is a great idea, just beware it can take weeks to months to years, or never, to get an upstream developer to accept your pull request. So, with that in mind, do this, yes, but meanwhile also just choose one of the options above to get your own work done meanwhile. 
+
+1. Write a Bash or Python script which automatically removes the `static` keyword from their `.c` file at compile-time, thereby applying a compile-time patch. 
+
+    This is actually a really effective solution, and sometimes the best. You can, for example:
+
+    1. manually make the necessary changes, then produce a `git diff` type `.patch` file which you apply at build-time, _or_ 
+    1. write a custom find-and-replace type script which does some simple changes for you, such as removing `static` from the variables and functions you need access to. 
+
+    If you choose the latter option, I recommend having your build system copy the file first and have your build script modify this untracked copy. This way your original file is not modified, and `git status` and `git diff` don't become "dirty" (having uncommitted changes) each time you build.

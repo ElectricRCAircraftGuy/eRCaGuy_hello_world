@@ -9,5 +9,6 @@ This file is "included" (used) by `static_extern_function_include__main.c`. Run 
 
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 
-void print_incrementing_number(); // forward function declaration
-extern uint32_t counter;          // forward variable declaration
+void print_incrementing_number_wrapper();
+void set_counter(uint32_t new_counter);
+uint32_t get_counter();
