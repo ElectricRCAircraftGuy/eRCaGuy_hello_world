@@ -38,6 +38,8 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 static_extern_function_include__main.
 
 References:
 1. https://stackoverflow.com/q/35425790/4561887
+    1. *****+ MY ANSWER with this code:
+       https://stackoverflow.com/a/77527374/4561887
 1.
 
 */
