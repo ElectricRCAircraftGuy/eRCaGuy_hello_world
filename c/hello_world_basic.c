@@ -16,6 +16,9 @@ To compile and run (assuming you've already `cd`ed into this dir):
 
 References:
 1. [my answer] `-std=c17` vs `-std=gnu17`: https://stackoverflow.com/a/71801111/4561887
+1. [my answer on `-save-temps=obj`]: Where do we use .i files and how do we generate them?:
+   https://stackoverflow.com/a/56482777/4561887 - ie: how to generate the .i intermediate,
+   pre-processed, "single translation unit" file.
 
 */
 
