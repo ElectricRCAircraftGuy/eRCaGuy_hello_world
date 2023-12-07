@@ -15,6 +15,8 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. My Q&A: [How to view a linear `git log` (exclude feature commits), showing only commits to `main` or merges to `main`](https://stackoverflow.com/a/76625396/4561887)
 1. My Q&A: [In a `git merge`-style workflow, show only the unique commits someone had in their PR (Pull Request) before merging](https://stackoverflow.com/a/77617437/4561887)
     > You might think of this as showing only the "right-hand parent" or "right-parent" commits, or as a type of `git log --second-parent` (which doesn't exist) command.
+1. My answer: [How can I push a local Git branch to a remote with a different name easily?](https://stackoverflow.com/a/70302053/4561887)
+1. My Q&A: [How to change the owner of a PR on GitHub / How to commandeer an open GitHub PR](https://stackoverflow.com/q/66539231/4561887)
 
 
 # Standard git workflow
