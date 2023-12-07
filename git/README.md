@@ -1,6 +1,22 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 
+# Useful Git References
+...including many answers I've written myself:
+
+1. My answer: [Various ways to create a branch in Git from another branch](https://stackoverflow.com/a/63418267/4561887)
+1. My answer: [All about checking out files or directories in git](https://stackoverflow.com/a/65258783/4561887)
+1. My answer: [How to cherry-pick a single commit, multiple commits, or a range of commits](https://stackoverflow.com/a/69472178/4561887)
+1. Official Git documentation: https://git-scm.com/docs/gitrevisions - mentions git commit 3 dot (`...`) vs 2 dot range syntax, `^commit` ("not" `commit`), `commit^` (the parent of `commit`), etc.
+1. [What are the differences between double-dot ".." and triple-dot "..." in Git diff commit ranges?](https://stackoverflow.com/a/7252067/4561887)
+1. My answer: [Who is "us" and who is "them" according to Git?](https://stackoverflow.com/a/63911630/4561887)
+1. My answer: [How to use `git diff` filters via `--diff-filter=`](https://stackoverflow.com/a/66649684/4561887)
+1. My answer: [How to use `git lfs` as a basic user: What is the difference between `git lfs fetch`, `git lfs fetch --all`, and `git lfs pull`?](https://stackoverflow.com/a/72610495/4561887)
+1. My Q&A: [How to view a linear `git log` (exclude feature commits), showing only commits to `main` or merges to `main`](https://stackoverflow.com/a/76625396/4561887)
+1. My Q&A: [In a `git merge`-style workflow, show only the unique commits someone had in their PR (Pull Request) before merging](https://stackoverflow.com/a/77617437/4561887)
+    > You might think of this as showing only the "right-hand parent" or "right-parent" commits, or as a type of `git log --second-parent` (which doesn't exist) command.
+
+
 # Standard git workflow
 
 ```bash
