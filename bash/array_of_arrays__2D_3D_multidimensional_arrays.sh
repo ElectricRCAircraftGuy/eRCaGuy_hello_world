@@ -8,9 +8,10 @@
 # Practice doing 2D, 3D, etc. multidimensional arrays in Bash. Bash doesn't support this natively,
 # and has no concept of "arrays of arrays", but that doesn't matter. As can be done in any language,
 # including C (see Example 3 in my answer here: https://stackoverflow.com/a/67814330/4561887), you
-# can just use a 1D array for an ND array. 
+# can just use a 1D array for an ND array and then manually index into it **as though** it was an
+# n-d array. 
 #
-# STATUS: wip
+# STATUS: Done and works!
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
 #
@@ -18,16 +19,16 @@
 
 # Check this script with:
 #
-##      shellcheck bash/hello_world_best.sh
+##      shellcheck bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
 #
 # Run command:
 #
-#       bash/hello_world_best.sh
+#       bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
 #
 # Source (import) command to get access to any functions herein:
 # [my answer] https://stackoverflow.com/a/62626515/4561887):
 #
-#       . bash/hello_world_best.sh
+#       . bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
 
 # References:
 # 1. Example 3 in my answer here: https://stackoverflow.com/a/67814330/4561887
@@ -70,7 +71,7 @@ array2d_get_num_cols() {
 }
 
 array2d_get_num_rows() {
-    array2d=("$@")
+    local array2d=("$@")
     num_elements="${#array2d[@]}"
     # echo "num_elements = $num_elements"  # debugging
     num_rows=$(( $num_elements / $(array2d_get_num_cols) ))
@@ -86,7 +87,7 @@ array3d_get_num_rows() {
 }
 
 array3d_get_num_pages() {
-    array3d=("$@")
+    local array3d=("$@")
     num_elements="${#array3d[@]}"
     num_rows="$(array3d_get_num_rows)"
     num_cols="$(array3d_get_num_cols)"
@@ -95,7 +96,7 @@ array3d_get_num_pages() {
 }
 
 array2d_print() {
-    array2d=("$@")
+    local array2d=("$@")
     num_rows="$(array2d_get_num_rows "${array2d[@]}")"
     num_cols="$(array2d_get_num_cols)"
 
@@ -109,7 +110,7 @@ array2d_print() {
 }
 
 array3d_print() {
-    array3d=("$@")
+    local array3d=("$@")
     num_rows="$(array3d_get_num_rows)"
     num_cols="$(array3d_get_num_cols)"
     num_pages="$(array3d_get_num_pages "${array3d[@]}")"
@@ -138,7 +139,7 @@ array2d_get_element() {
     col="$2"
     # slice off the first 2 args and store the rest as the array
     shift 2
-    array2d=("$@")
+    local array2d=("$@")
     
     num_cols="$(array2d_get_num_cols)"
     i=$(( $row*$num_cols + $col ))
@@ -156,7 +157,7 @@ array3d_get_element() {
     col="$3"
     # slice off the first 3 args and store the rest as the array
     shift 3
-    array3d=("$@")
+    local array3d=("$@")
     
     num_rows="$(array3d_get_num_rows)"
     num_cols="$(array3d_get_num_cols)"
@@ -164,41 +165,111 @@ array3d_get_element() {
     echo "${array3d[$i]}"
 }
 
-# =========================
-# Test code
-# =========================
+run_tests()
+{
+    echo ""
+    echo "Running tests:"
+    echo ""
 
-echo ""
+    echo "array2d has:"
+    echo "  ${#array2d[@]} elements"
+    echo "  $(array2d_get_num_rows "${array2d[@]}") rows"
+    echo "  $(array2d_get_num_cols) columns"
+    echo ""
+    echo "array2d_print:"
+    array2d_print "${array2d[@]}"
+    echo ""
+    echo "Element (row,col) (2,1): $(array2d_get_element 2 1 ${array2d[@]})"
+    echo ""
 
-echo "array2d has:"
-echo "  ${#array2d[@]} elements"
-echo "  $(array2d_get_num_rows "${array2d[@]}") rows"
-echo "  $(array2d_get_num_cols) columns"
-echo ""
-echo "array2d_print:"
-array2d_print "${array2d[@]}"
-echo ""
 
-echo "array3d has:"
-echo "  ${#array3d[@]} elements"
-echo "  $(array3d_get_num_rows) rows"
-echo "  $(array3d_get_num_cols) columns"
-echo "  $(array3d_get_num_pages "${array3d[@]}") pages"
-echo ""
-echo "array3d_print:"
-array3d_print "${array3d[@]}"
-echo ""
+    echo "array3d has:"
+    echo "  ${#array3d[@]} elements"
+    echo "  $(array3d_get_num_rows) rows"
+    echo "  $(array3d_get_num_cols) columns"
+    echo "  $(array3d_get_num_pages "${array3d[@]}") pages"
+    echo ""
+    echo "array3d_print:"
+    array3d_print "${array3d[@]}"
+    echo ""
+    echo "Element (page,row,col) (1,2,1): $(array3d_get_element 1 2 1 ${array3d[@]})"
+    echo ""
+}
 
+main() {
+    run_tests
+}
+
+# Determine if the script is being sourced or executed (run).
+# See:
+# 1. "eRCaGuy_hello_world/bash/if__name__==__main___check_if_sourced_or_executed_best.sh"
+# 1. My answer: https://stackoverflow.com/a/70662116/4561887
+if [ "${BASH_SOURCE[0]}" = "$0" ]; then
+    # This script is being run.
+    __name__="__main__"
+else
+    # This script is being sourced.
+    __name__="__source__"
+fi
+
+# Only run `main` if this script is being **run**, NOT sourced (imported).
+# - See my answer: https://stackoverflow.com/a/70662116/4561887
+if [ "$__name__" = "__main__" ]; then
+    main "$@"
+fi
 
 
 # SAMPLE OUTPUT:
 #
 # 1) WHEN RUN
 #
-#       eRCaGuy_hello_world$ bash/hello_world_best.sh
-#       Running main.
-#
+#       eRCaGuy_hello_world$ bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
+#       
+#       Running tests:
+#       
+#       array2d has:
+#         12 elements
+#         4 rows
+#         3 columns
+#       
+#       array2d_print:
+#       0,0 0,1 0,2 
+#       1,0 1,1 1,2 
+#       2,0 2,1 2,2 
+#       3,0 3,1 3,2 
+#       
+#       Element (row,col) (2,1): 2,1
+#       
+#       array3d has:
+#         36 elements
+#         4 rows
+#         3 columns
+#         3 pages
+#       
+#       array3d_print:
+#       Page 0:
+#       0,0,0 0,0,1 0,0,2 
+#       0,1,0 0,1,1 0,1,2 
+#       0,2,0 0,2,1 0,2,2 
+#       0,3,0 0,3,1 0,3,2 
+#       
+#       Page 1:
+#       1,0,0 1,0,1 1,0,2 
+#       1,1,0 1,1,1 1,1,2 
+#       1,2,0 1,2,1 1,2,2 
+#       1,3,0 1,3,1 1,3,2 
+#       
+#       Page 2:
+#       2,0,0 2,0,1 2,0,2 
+#       2,1,0 2,1,1 2,1,2 
+#       2,2,0 2,2,1 2,2,2 
+#       2,3,0 2,3,1 2,3,2 
+#       
+#       
+#       Element (page,row,col) (1,2,1): 1,2,1
+#       
+#       
 #
 # 2) WHEN SOURCED (no output, but it brings in all functions herein so you can use them!)
 #
-#       eRCaGuy_hello_world$ . bash/hello_world_best.sh
+#       eRCaGuy_hello_world$ . bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
