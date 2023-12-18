@@ -9,7 +9,7 @@
 # and has no concept of "arrays of arrays", but that doesn't matter. As can be done in any language,
 # including C (see Example 3 in my answer here: https://stackoverflow.com/a/67814330/4561887), you
 # can just use a 1D array for an ND array and then manually index into it **as though** it was an
-# n-d array. 
+# n-d array.
 #
 # STATUS: Done and works!
 
@@ -31,7 +31,7 @@
 #       . bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
 
 # References:
-# 1. *****+ MY ANSWER WITH THIS CODE: How to create 2D, 3D, etc. 
+# 1. *****+ MY ANSWER WITH THIS CODE: How to create 2D, 3D, etc.
 #    multidimensional arrays in Bash: https://stackoverflow.com/a/77677059/4561887
 # 1. Example 3 in my answer in C here: https://stackoverflow.com/a/67814330/4561887
 #    - I use a 1D array and index into it manually as though it were an n-d array.
@@ -64,7 +64,7 @@ array3d=(
     "1,1,0" "1,1,1" "1,1,2"
     "1,2,0" "1,2,1" "1,2,2"
     "1,3,0" "1,3,1" "1,3,2"
-    
+
     # page 2
     "2,0,0" "2,0,1" "2,0,2"
     "2,1,0" "2,1,1" "2,1,2"
@@ -120,7 +120,7 @@ array3d_print() {
     num_rows="$(array3d_get_num_rows)"
     num_cols="$(array3d_get_num_cols)"
     num_pages="$(array3d_get_num_pages "${array3d[@]}")"
-    
+
     for ((page=0; page<num_pages; page++)); do
         echo "Page $page:"
 
@@ -146,7 +146,7 @@ array2d_get_element() {
     # slice off the first 2 args and store the rest as the array
     shift 2
     local array2d=("$@")
-    
+
     num_cols="$(array2d_get_num_cols)"
     i=$(( $row*$num_cols + $col ))
     echo "${array2d[$i]}"
@@ -164,11 +164,49 @@ array3d_get_element() {
     # slice off the first 3 args and store the rest as the array
     shift 3
     local array3d=("$@")
-    
+
     num_rows="$(array3d_get_num_rows)"
     num_cols="$(array3d_get_num_cols)"
     i=$(( $page*$num_rows*$num_cols + $row*$num_cols + $col ))
     echo "${array3d[$i]}"
+}
+
+MY_2D_TABLE_NUM_COLS="3"
+my_2d_table=(
+    # color     make            MPG
+    # -----     -------         ----
+    "blue"      "Tesla"         "45"
+    "red"       "BMW"           "32"
+    "green"     "Volkswagen"    "28"
+    "yellow"    "Toyota"        "27"
+)
+
+# Some custom function you write to process a table of your custom data in Bash.
+# Call format:
+#   process_my_2d_table "${my_2d_table[@]}"
+process_my_2d_table() {
+    echo "Processing my_2d_table:"
+    local my_2d_table=("$@")
+
+    num_elements="${#my_2d_table[@]}"
+    num_rows="$(( $num_elements / $MY_2D_TABLE_NUM_COLS ))"
+    num_cols="$MY_2D_TABLE_NUM_COLS"
+
+    # Now process data on each row
+    for ((row=0; row<num_rows; row++)); do
+        i_color=$(( $row*$num_cols + 0 ))
+        i_make=$(( $row*$num_cols + 1 ))
+        i_mpg=$(( $row*$num_cols + 2 ))
+
+        color="${my_2d_table[$i_color]}"
+        make="${my_2d_table[$i_make]}"
+        mpg="${my_2d_table[$i_mpg]}"
+
+        # Now do whatever you want with these values!
+        # - You may need them in calculations or whatever.
+        # - For this demo, I'll just print them.
+        printf "%-15s %-20s %-10s\n" "color=$color," "make=$make," "mpg=$mpg"
+    done
 }
 
 run_tests()
@@ -188,7 +226,6 @@ run_tests()
     echo "Element (row,col) (2,1): $(array2d_get_element 2 1 ${array2d[@]})"
     echo ""
 
-
     echo "array3d has:"
     echo "  ${#array3d[@]} elements"
     echo "  $(array3d_get_num_rows) rows"
@@ -199,6 +236,9 @@ run_tests()
     array3d_print "${array3d[@]}"
     echo ""
     echo "Element (page,row,col) (1,2,1): $(array3d_get_element 1 2 1 ${array3d[@]})"
+    echo ""
+
+    process_my_2d_table "${my_2d_table[@]}"
     echo ""
 }
 
@@ -230,51 +270,56 @@ fi
 # 1) WHEN RUN
 #
 #       eRCaGuy_hello_world$ bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
-#       
+#
 #       Running tests:
-#       
+#
 #       array2d has:
 #         12 elements
 #         4 rows
 #         3 columns
-#       
+#
 #       array2d_print:
-#       0,0 0,1 0,2 
-#       1,0 1,1 1,2 
-#       2,0 2,1 2,2 
-#       3,0 3,1 3,2 
-#       
+#       0,0 0,1 0,2
+#       1,0 1,1 1,2
+#       2,0 2,1 2,2
+#       3,0 3,1 3,2
+#
 #       Element (row,col) (2,1): 2,1
-#       
+#
 #       array3d has:
 #         36 elements
 #         4 rows
 #         3 columns
 #         3 pages
-#       
+#
 #       array3d_print:
 #       Page 0:
-#       0,0,0 0,0,1 0,0,2 
-#       0,1,0 0,1,1 0,1,2 
-#       0,2,0 0,2,1 0,2,2 
-#       0,3,0 0,3,1 0,3,2 
-#       
+#       0,0,0 0,0,1 0,0,2
+#       0,1,0 0,1,1 0,1,2
+#       0,2,0 0,2,1 0,2,2
+#       0,3,0 0,3,1 0,3,2
+#
 #       Page 1:
-#       1,0,0 1,0,1 1,0,2 
-#       1,1,0 1,1,1 1,1,2 
-#       1,2,0 1,2,1 1,2,2 
-#       1,3,0 1,3,1 1,3,2 
-#       
+#       1,0,0 1,0,1 1,0,2
+#       1,1,0 1,1,1 1,1,2
+#       1,2,0 1,2,1 1,2,2
+#       1,3,0 1,3,1 1,3,2
+#
 #       Page 2:
-#       2,0,0 2,0,1 2,0,2 
-#       2,1,0 2,1,1 2,1,2 
-#       2,2,0 2,2,1 2,2,2 
-#       2,3,0 2,3,1 2,3,2 
-#       
-#       
+#       2,0,0 2,0,1 2,0,2
+#       2,1,0 2,1,1 2,1,2
+#       2,2,0 2,2,1 2,2,2
+#       2,3,0 2,3,1 2,3,2
+#
+#
 #       Element (page,row,col) (1,2,1): 1,2,1
-#       
-#       
+#
+#       Processing my_2d_table:
+#       color=blue,     make=Tesla,          mpg=45
+#       color=red,      make=BMW,            mpg=32
+#       color=green,    make=Volkswagen,     mpg=28
+#       color=yellow,   make=Toyota,         mpg=27
+#
 #
 # 2) WHEN SOURCED (no output, but it brings in all functions herein so you can use them!)
 #
