@@ -40,6 +40,7 @@
 # 2D array of 4 rows and 3 columns
 ARRAY2D_NUM_COLS="3"
 array2d=(
+    # row,col
     "0,0" "0,1" "0,2"
     "1,0" "1,1" "1,2"
     "2,0" "2,1" "2,2"
@@ -50,6 +51,8 @@ array2d=(
 ARRAY3D_NUM_COLS="3"
 ARRAY3D_NUM_ROWS="4"
 array3d=(
+    # page,row,col
+
     # page 0
     "0,0,0" "0,0,1" "0,0,2"
     "0,1,0" "0,1,1" "0,1,2"
