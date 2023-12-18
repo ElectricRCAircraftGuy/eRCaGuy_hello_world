@@ -31,7 +31,10 @@
 #       . bash/array_of_arrays__2D_3D_multidimensional_arrays.sh
 
 # References:
-# 1. Example 3 in my answer here: https://stackoverflow.com/a/67814330/4561887
+# 1. *****+ MY ANSWER WITH THIS CODE: How to create 2D, 3D, etc. 
+#    multidimensional arrays in Bash: https://stackoverflow.com/a/77677059/4561887
+# 1. Example 3 in my answer in C here: https://stackoverflow.com/a/67814330/4561887
+#    - I use a 1D array and index into it manually as though it were an n-d array.
 # 1.
 
 # 2D array of 4 rows and 3 columns
