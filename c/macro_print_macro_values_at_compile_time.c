@@ -54,7 +54,7 @@ References:
 #define MY_CODE_BLOCK           \
     do                          \
     {                           \
-        printf("Hi 1.\n");        \
+        printf("Hi 1.\n");      \
     } while (0)
 //
 // NB: the `#pragma message` output of the above macro is substantially different if I define it as
@@ -62,7 +62,7 @@ References:
 //
 #define MY_CODE_BLOCK2          \
     {                           \
-        printf("Hi 2.\n");        \
+        printf("Hi 2.\n");      \
     }
 
 // Helper macros to print the value of a macro at compile-time
