@@ -54,11 +54,16 @@ References:
 #define MY_CODE_BLOCK           \
     do                          \
     {                           \
-        printf("Hi.\n");        \
+        printf("Hi 1.\n");        \
     } while (0)
 //
 // NB: the `#pragma message` output of the above macro is substantially different if I define it as
 // `MY_CODE_BLOCK()` instead, and call it as such inside `main()`! Try it out and you'll see.
+//
+#define MY_CODE_BLOCK2          \
+    {                           \
+        printf("Hi 2.\n");        \
+    }
 
 // Helper macros to print the value of a macro at compile-time
 #define VALUE_TO_STRING(x) #x
@@ -71,12 +76,14 @@ References:
 #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_INT)
 #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_STR)
 #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK)
+#pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK2)
 
 
 // int main(int argc, char *argv[])  // alternative prototype
 int main()
 {
     MY_CODE_BLOCK;
+    MY_CODE_BLOCK2;
     printf("Hello World.\n\n");
 
     return 0;
@@ -88,61 +95,74 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ ./macro_print_macro_values_at_compile_time.c
-    ./macro_print_macro_values_at_compile_time.c:66:9: note: ‘#pragma message: NOT_DEFINED=`NOT_DEFINED`’
-       66 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(NOT_DEFINED)
-          |         ^~~~~~~
-    ./macro_print_macro_values_at_compile_time.c:67:9: note: ‘#pragma message: DEFINED_BUT_NO_VALUE=``’
-       67 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(DEFINED_BUT_NO_VALUE)
-          |         ^~~~~~~
-    ./macro_print_macro_values_at_compile_time.c:68:9: note: ‘#pragma message: MY_INT=`3`’
-       68 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_INT)
-          |         ^~~~~~~
-    ./macro_print_macro_values_at_compile_time.c:69:9: note: ‘#pragma message: MY_STR=`"ABC"`’
-       69 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_STR)
-          |         ^~~~~~~
-    ./macro_print_macro_values_at_compile_time.c:70:9: note: ‘#pragma message: MY_CODE_BLOCK=`do { printf("Hi.\n"); } while (0)`’
-       70 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK)
-          |         ^~~~~~~
-    Hi.
-    Hello World.
+eRCaGuy_hello_world/c$ ./macro_print_macro_values_at_compile_time.c
+./macro_print_macro_values_at_compile_time.c:74:9: note: ‘#pragma message: NOT_DEFINED=`NOT_DEFINED`’
+   74 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(NOT_DEFINED)
+      |         ^~~~~~~
+./macro_print_macro_values_at_compile_time.c:75:9: note: ‘#pragma message: DEFINED_BUT_NO_VALUE=``’
+   75 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(DEFINED_BUT_NO_VALUE)
+      |         ^~~~~~~
+./macro_print_macro_values_at_compile_time.c:76:9: note: ‘#pragma message: MY_INT=`3`’
+   76 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_INT)
+      |         ^~~~~~~
+./macro_print_macro_values_at_compile_time.c:77:9: note: ‘#pragma message: MY_STR=`"ABC"`’
+   77 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_STR)
+      |         ^~~~~~~
+./macro_print_macro_values_at_compile_time.c:78:9: note: ‘#pragma message: MY_CODE_BLOCK=`do { printf("Hi 1.\n"); } while (0)`’
+   78 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK)
+      |         ^~~~~~~
+./macro_print_macro_values_at_compile_time.c:79:9: note: ‘#pragma message: MY_CODE_BLOCK2=`{ printf("Hi 2.\n"); }`’
+   79 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK2)
+      |         ^~~~~~~
+Hi 1.
+Hi 2.
+Hello World.
+
 
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 macro_print_macro_values_at_compile_time.c -o bin/a && bin/a
-    macro_print_macro_values_at_compile_time.c:63:63: note: ‘#pragma message: NOT_DEFINED=`NOT_DEFINED`’
-       63 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
-          |                                                               ^~~
-    macro_print_macro_values_at_compile_time.c:66:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
-       66 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(NOT_DEFINED)
-          |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-    macro_print_macro_values_at_compile_time.c:63:63: note: ‘#pragma message: DEFINED_BUT_NO_VALUE=``’
-       63 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
-          |                                                               ^~~
-    macro_print_macro_values_at_compile_time.c:67:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
-       67 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(DEFINED_BUT_NO_VALUE)
-          |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-    macro_print_macro_values_at_compile_time.c:63:63: note: ‘#pragma message: MY_INT=`3`’
-       63 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
-          |                                                               ^~~
-    macro_print_macro_values_at_compile_time.c:68:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
-       68 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_INT)
-          |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-    macro_print_macro_values_at_compile_time.c:63:63: note: ‘#pragma message: MY_STR=`"ABC"`’
-       63 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
-          |                                                               ^~~
-    macro_print_macro_values_at_compile_time.c:69:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
-       69 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_STR)
-          |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-    macro_print_macro_values_at_compile_time.c:63:63: note: ‘#pragma message: MY_CODE_BLOCK=`do { printf("Hi.\n"); } while (0)`’
-       63 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
-          |                                                               ^~~
-    macro_print_macro_values_at_compile_time.c:70:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
-       70 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK)
-          |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Hi.
-    Hello World.
+eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 macro_print_macro_values_at_compile_time.c -o bin/a && bin/a
+macro_print_macro_values_at_compile_time.c:71:63: note: ‘#pragma message: NOT_DEFINED=`NOT_DEFINED`’
+   71 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
+      |                                                               ^~~
+macro_print_macro_values_at_compile_time.c:74:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
+   74 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(NOT_DEFINED)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+macro_print_macro_values_at_compile_time.c:71:63: note: ‘#pragma message: DEFINED_BUT_NO_VALUE=``’
+   71 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
+      |                                                               ^~~
+macro_print_macro_values_at_compile_time.c:75:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
+   75 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(DEFINED_BUT_NO_VALUE)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+macro_print_macro_values_at_compile_time.c:71:63: note: ‘#pragma message: MY_INT=`3`’
+   71 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
+      |                                                               ^~~
+macro_print_macro_values_at_compile_time.c:76:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
+   76 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_INT)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+macro_print_macro_values_at_compile_time.c:71:63: note: ‘#pragma message: MY_STR=`"ABC"`’
+   71 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
+      |                                                               ^~~
+macro_print_macro_values_at_compile_time.c:77:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
+   77 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_STR)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+macro_print_macro_values_at_compile_time.c:71:63: note: ‘#pragma message: MY_CODE_BLOCK=`do { printf("Hi 1.\n"); } while (0)`’
+   71 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
+      |                                                               ^~~
+macro_print_macro_values_at_compile_time.c:78:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
+   78 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+macro_print_macro_values_at_compile_time.c:71:63: note: ‘#pragma message: MY_CODE_BLOCK2=`{ printf("Hi 2.\n"); }`’
+   71 | #define PRINT_MACRO_AT_COMPILE_TIME(var) #var "=`" VALUE(var) "`"
+      |                                                               ^~~
+macro_print_macro_values_at_compile_time.c:79:17: note: in expansion of macro ‘PRINT_MACRO_AT_COMPILE_TIME’
+   79 | #pragma message PRINT_MACRO_AT_COMPILE_TIME(MY_CODE_BLOCK2)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hi 1.
+Hi 2.
+Hello World.
+
 
 
 */
