@@ -57,6 +57,7 @@ www.ElectricRCAircraftGuy.com
 
 
 ## Some other pages
+1. [NOTES_architecture_and_best_practices.md](NOTES_architecture_and_best_practices.md) - some of my notes on software architecture and best practices, including when using microcontrollers and FreeRTOS.
 1. [low_level.md: What does "low level" mean? Do you want that? It depends.](low_level.md)
 1. [c/README.md](c/README.md)
 1. [cpp/README.md](cpp/README.md)
