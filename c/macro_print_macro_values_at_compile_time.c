@@ -38,6 +38,7 @@ g++ -Wall -Wextra -Werror -O3 -std=gnu++17 macro_print_macro_values_at_compile_t
 References:
 1. How do I show the value of a #define at compile-time? -
    https://stackoverflow.com/a/10227059/4561887
+   1. *****+ MY ANSWER WITH THIS CODE: https://stackoverflow.com/a/77695006/4561887
 1.
 
 */
