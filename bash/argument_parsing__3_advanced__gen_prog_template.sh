@@ -196,7 +196,7 @@ parse_args() {
     # For advanced argument parsing help and demo, see:
     # https://stackoverflow.com/a/14203146/4561887
 
-    if [ $# -eq 0 ]; then
+    if [ "$#" -eq 0 ]; then
         echo "No arguments supplied"
         print_help
         exit $RETURN_CODE_ERROR
@@ -215,7 +215,7 @@ parse_args() {
 
     ALL_ARGS_ARRAY=("$@")  # See: https://stackoverflow.com/a/70572787/4561887
     POSITIONAL_ARGS_ARRAY=()
-    while [ $# -gt 0 ]; do
+    while [ "$#" -gt 0 ]; do
         arg="$1"
         # get first letter of `arg`; see: https://stackoverflow.com/a/10218528/4561887
         # This is a form of bash "array slicing", treating the string like an array of chars,
@@ -249,6 +249,7 @@ parse_args() {
             "-a"|"--arga")
                 echo_debug "arga passed in"
                 ARGA="$2"
+                echo_debug "ARGA = $ARGA"
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
@@ -256,6 +257,7 @@ parse_args() {
             "-b"|"--argb")
                 echo_debug "argb passed in"
                 ARGB="$2"
+                echo_debug "ARGB = $ARGB"
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
@@ -263,6 +265,7 @@ parse_args() {
             "-c"|"--argc")
                 echo_debug "argc passed in"
                 ARGC="$2"
+                echo_debug "ARGC = $ARGC"
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
