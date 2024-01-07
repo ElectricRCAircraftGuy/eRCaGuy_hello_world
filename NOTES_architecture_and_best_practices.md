@@ -26,7 +26,8 @@ These could also be part of a "style guide" or "coding standards" document.
 <a id="notes"></a>
 #### Notes:
 
-1. [SAFETY-CRITICAL] refers to safety-critical, deterministic, memory-constrained embedded system environments, such as microcontrollers embedded in robotic systems, cars, aircraft, medical devices, etc.
+1. [SAFETY-CRITICAL] refers to safety-critical, deterministic, memory-constrained embedded system environments, such as microcontrollers embedded in robotic systems, cars, aircraft, medical devices, etc. Where this marking is present, you must do this to be considered "safety critical" and safe code. 
+1. [BUG_WARNING] means that if you _don't_ do this, you will have a definite bug in your code.
 
 <a id="best-practices"></a>
 #### Best practices:
@@ -60,8 +61,17 @@ These could also be part of a "style guide" or "coding standards" document.
 1. [SAFETY-CRITICAL] Replace `printf()` to use a non-`malloc`ing safe implementation we write. Redirect `stdout` to our debugging framework over serial or to a file or whatever. 
 1. Use GCC's `__attribute__ ((format (printf, x, y)))` to enforce proper format string and arguments in all custom `printf()` or similar functions where there is a format string followed by variadic arguments.
 1. Use `vprintf()`, variadic args, etc., where needed.
-1. Use only `stdint.h` types: `intN_t` and `uintN_t` types, not `int`, `unsigned int`, `unsigned long`, etc. Always knowing the bit-width is more portable and safe. 
+1. Use only `stdint.h` types: `intN_t` and `uintN_t` types (such as `int8_t`, `uint8_t`, `int32_t`, `uint32_t`, etc.), _not_ `int`, `unsigned int`, `unsigned long`, etc. Always knowing the bit-width is more portable and safe. 
     1. https://cplusplus.com/reference/cstdint/
+    1. Note: `bool` and `char` are good to use in their respective roles, too, namely: for boolean true/false types, and for characters and strings (arrays of characters), respectively.
+1. Always use `bool` and `true`/`false` for boolean types, rather than `unsigned int`, `int`, etc. Avoid `1`/`0` to signify `true`/`false`. 
+    1. The `bool` and `true`/`false` types are self-documenting and make your intent clear.
+1. Prefer `size_t` as the type for any index variable which indexes into an array, since it is the portable type specified to always be big enough to index to any possible element in any array on any given system. 
+    1. https://cplusplus.com/reference/cstddef/size_t/
+
+        > It is a type able to represent the size of any object in bytes.
+
+    1. Possible exceptions are on very memory-constrained devices, such as 8-bit microcontrollers, where you might prefer to save stack (RAM) and flash usage by using the smallest type necessary, such as `uint8_t`, `uint16_t`, or `uint32_t`, instead.
 1. Upgrade the compiler every 2 to 3 years to keep it up-to-date. 
 1. Use `-std=gnu17` or later for C, and `-std=gnu++17` or later for C++. 
     1. Try to keep up to be using a standard 5 years old or newer.   
@@ -147,4 +157,20 @@ These could also be part of a "style guide" or "coding standards" document.
         1. https://stackoverflow.com/a/74024531/4561887
 
     1. See also: https://www.freertos.org/RTOS_Task_Notification_As_Counting_Semaphore.html
+
+1. When passing data between tasks (threads), use [FreeRTOS queues](https://www.freertos.org/Embedded-RTOS-Queues.html), rather than semaphores and shared variables. FreeRTOS queues are automatically thread-safe and efficient, and they avoid the unnecessary use of global variables for data sharing. 
+    1. See also the "event-based tasks and programming" bullet above. 
+    1. https://www.freertos.org/Embedded-RTOS-Queues.html
+1. [BUG_WARNING] FreeRTOS mutexes: watch out for cases where recursive mutexes should be used instead of regular mutexes.
+    1. When using FreeRTOS semaphores and mutexes, use the appropriate type. If a single task has code or an API that is structured in such a way that the same mutex gets taken twice in a row, then it must get released twice before actually releasing the mutex. In such a case, a _recursive_ mutex must be used! This is a common pattern seen when `mymodule_func1()` calls `mymodule_func2()`, for instance, and each of those takes the same mutex. See:
+    1. https://www.freertos.org/Real-time-embedded-RTOS-mutexes.html
+    1. https://www.freertos.org/RTOS-Recursive-Mutexes.html: 
+
+        > A mutex used recursively can be 'taken' repeatedly by the owner. The mutex doesn't become available again until the owner has called xSemaphoreGiveRecursive() for each successful xSemaphoreTakeRecursive() request. For example, if a task successfully 'takes' the same mutex 5 times then the mutex will not be available to any other task until it has also 'given' the mutex back exactly five times.
+        >
+        > This type of semaphore uses a priority inheritance mechanism so a task 'taking' a semaphore MUST ALWAYS 'give' the semaphore back once the semaphore it is no longer required.
+        > 
+        > Mutex type semaphores cannot be used from within interrupt service routines.
+
+1. [BUG_WARNING] Use the `...FromISR()` function calls within ISRs. Ex: [`xSemaphoreTakeFromISR()`](https://www.freertos.org/xSemaphoreTakeFromISR.html).
 
