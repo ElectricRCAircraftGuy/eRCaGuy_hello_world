@@ -173,4 +173,11 @@ These could also be part of a "style guide" or "coding standards" document.
         > Mutex type semaphores cannot be used from within interrupt service routines.
 
 1. [BUG_WARNING] Use the `...FromISR()` function calls within ISRs. Ex: [`xSemaphoreTakeFromISR()`](https://www.freertos.org/xSemaphoreTakeFromISR.html).
-
+1. [SAFETY-CRITICAL] Use software timers and callbacks, not short-lived (temporary) tasks that just time out, do something, and delete themselves. 
+    1. Do NOT create and delete short-lived tasks in place of using timers. Use software timers instead. Using tasks in place of [one-shot timers](https://www.freertos.org/One-shot-Vs-auto-reload-real-time-software-timers.html) is particularly egregious. Using tasks for periodic, repeated events in an infinite loop with `vTaskDelayUntil()` (best) or `vTaskDelay()`, however, is perfectly fine and an excellent usage of tasks. 
+    1. In short, any task with `vTaskDelete(NULL);` at the end of it, and no infinite loop in it, should be replaced with a one-shot software timer instead.
+    1. Timer documentation: see:
+        1. https://www.freertos.org/RTOS-software-timer.html
+        1. https://www.freertos.org/FreeRTOS-Software-Timer-API-Functions.html
+    1. Task creation `malloc`s (dynamically allocates memory), which is non-deterministic and can lead to memory fragmentation and run-time crashes. That's nuts. Instead, use timers for what timers are for!
+    1. Note: using `xTaskCreateStatic()` is far better than `xTaskCreate()`, because it does not dynamically allocate memory. But, it is still bad.
