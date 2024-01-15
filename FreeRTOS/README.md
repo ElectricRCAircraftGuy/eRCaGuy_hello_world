@@ -14,6 +14,7 @@ These replacements can be done either programmatically at the command line, or m
 
 1. Find and replace all instances of `xTaskCreate()` with `xTaskCreateStatic()`
     1. Example 1:
+
         Find:
         ```
         ^(.*)(xTaskCreate\()(.*),(.*),( )?(.*),(.*),(.*),(.*)(\));(.*)
@@ -40,6 +41,7 @@ These replacements can be done either programmatically at the command line, or m
     1. Example 2 (BETTER--USE THIS ONE):
 
         1. Step 1: replace all instances of `xTaskCreate()` with `xTaskCreateStatic()`
+        
             Find:
             ```
             ^(.*)(xTaskCreate\()(.*),(.*),( )*(.*),(.*),(.*),( )*(&)?(.*)(\));(.*)
@@ -50,6 +52,7 @@ These replacements can be done either programmatically at the command line, or m
             ```
 
         1. Step 2: replace all instances of `NULL = xTaskCreateStatic(` (which happened in Step 1 cases where the last parameter passed to `xTaskCreate()` was `NULL`) with just `xTaskCreateStatic(`
+
             Find: 
             ```
             ^(.*)(NULL = xTaskCreateStatic\()
