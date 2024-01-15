@@ -33,7 +33,7 @@
 
 # References:
 # 1. MY ANSWER WITH THIS CODE: //////
-# 1.
+# 1. My answer: math in Bash: https://stackoverflow.com/a/71567705/4561887
 
 kill_beep() {
     if [[ -n "$beep_pid" ]]; then
@@ -41,12 +41,46 @@ kill_beep() {
     fi
 }
 
-alarm_timer() {
-    seconds="$1"
-    text="$2"
+min() {
+    if (( "$1" <= "$2" )); then
+        echo "$1"
+    else
+        echo "$2"
+    fi
+}
 
-    echo "Sleeping for $seconds sec."
-    sleep "$seconds"
+# Set a timer to go off in a certain number of minutes, and then play a sound
+# and pop up a notification when the timer goes off.
+#
+# Example usage:
+#
+#       # set a 10 minute alarm to remind you to feed the cat
+#       alarm_timer 600 "Feed the cat!" 
+#       # OR (same thing)
+#       alarm_timer 600 Feed the cat!
+alarm_timer() {
+    total_whole_sec_to_sleep="$1"
+    # store all remaining args into a single string
+    text="${@:2}"
+
+    echo "Sleeping for $total_whole_sec_to_sleep sec."
+    SLEEP_INTERVAL_SEC=10
+    elapsed_seconds=0
+    while (( "$elapsed_seconds" < "$total_whole_sec_to_sleep" )); do
+        seconds_remaining="$(( total_whole_sec_to_sleep - elapsed_seconds ))"
+        sec_to_sleep_this_iteration="$(min "$SLEEP_INTERVAL_SEC" "$seconds_remaining")"
+        # echo "sec_to_sleep_this_iteration=$sec_to_sleep_this_iteration" # debugging
+        
+        sleep "$sec_to_sleep_this_iteration"
+        if [[ "$?" -ne 0 ]]; then
+            echo "ERROR: sleep command failed! Exiting."
+            echo "Proper usage: 'alarm_timer <total_whole_sec_to_sleep> <text>'"
+            return 1
+        fi
+
+        elapsed_seconds="$(( elapsed_seconds + sec_to_sleep_this_iteration ))"
+        echo -n "$elapsed_seconds..."
+    done
 
     echo "Sounding alarm!"
 
@@ -63,8 +97,9 @@ alarm_timer() {
         sleep 0.15
     done & beep_pid="$!"
 
-    echo ">>> Reminder: $text <<<"
-    echo "Press OK in the popup window to stop the alarm (or press Ctrl + C)."
+    echo -e "\n>>> Reminder: $text <<<\n"
+    echo "Press OK (or press Enter) in the popup window to stop the alarm,"
+    echo "or click back into this terminal and press Ctrl + C."
 
     # Open a popup window with the reminder title and text
     zenity --info --title "Reminder" --text "$text"
@@ -108,25 +143,31 @@ fi
 #
 # 1) WHEN RUN
 #
-#       eRCaGuy_hello_world$ bash/alarm_lib.sh 
+#       eRCaGuy_hello_world$ $ bash/alarm_lib.sh 
 #       Running main.
 #       Running unit tests.
 #       Sleeping for 1 sec.
-#       Sounding alarm!
+#       1...Sounding alarm!
+#       
 #       >>> Reminder: Feed the cat! <<<
-#       Press OK in the popup window to stop the alarm (or press Ctrl + C).
+#       
+#       Press OK (or press Enter) in the popup window to stop the alarm,
+#       or click back into this terminal and press Ctrl + C.
 #
 #
 # 2) WHEN SOURCED
 #
 #       eRCaGuy_hello_world$ . bash/alarm_lib.sh
-#       eRCaGuy_hello_world$ alarm_timer 1 "Check the mail"
+#       eRCaGuy_hello_world$ alarm_timer 1 Check the mail!
 #       Sleeping for 1 sec.
-#       Sounding alarm!
-#       [1] 123568
-#       >>> Reminder: Check the mail <<<
-#       Press OK in the popup window to stop the alarm (or press Ctrl + C).
-#       ^C
+#       1...Sounding alarm!
+#       [1] 129413
+#       
+#       >>> Reminder: Check the mail! <<<
+#       
+#       Press OK (or press Enter) in the popup window to stop the alarm,
+#       or click back into this terminal and press Ctrl + C.
 #       [1]+  Terminated              while true; do
 #           echo -en "\a"; sleep 0.15;
 #       done
+
