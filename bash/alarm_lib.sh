@@ -35,13 +35,13 @@
 # 1. MY ANSWER WITH THIS CODE: //////
 # 1. My answer: math in Bash: https://stackoverflow.com/a/71567705/4561887
 
-kill_beep() {
+alarm_kill_beep() {
     if [[ -n "$beep_pid" ]]; then
         kill "$beep_pid"
     fi
 }
 
-min() {
+alarm_min() {
     if (( "$1" <= "$2" )); then
         echo "$1"
     else
@@ -49,12 +49,16 @@ min() {
     fi
 }
 
-max() {
+alarm_max() {
     if (( "$1" >= "$2" )); then
         echo "$1"
     else
         echo "$2"
     fi
+}
+
+alarm_print_usage() {
+    echo "Proper usage: 'alarm_timer <total_whole_sec_to_sleep> <alarm_text>'"
 }
 
 # Set a timer to go off in a certain number of minutes, and then play a sound
@@ -69,20 +73,26 @@ max() {
 alarm_timer() {
     total_whole_sec_to_sleep="$1"
     # store all remaining args into a single string
-    text="${@:2}"
+    alarm_text="${@:2}"
+
+    if [[ -z "$total_whole_sec_to_sleep" ]]; then
+        echo "ERROR: total_whole_sec_to_sleep was not provided! Exiting."
+        alarm_print_usage
+        return 1
+    fi
 
     echo "Sleeping for $total_whole_sec_to_sleep sec."
     SLEEP_INTERVAL_SEC=10
     elapsed_seconds=0
     while (( "$elapsed_seconds" < "$total_whole_sec_to_sleep" )); do
         seconds_remaining="$(( total_whole_sec_to_sleep - elapsed_seconds ))"
-        sec_to_sleep_this_iteration="$(min "$SLEEP_INTERVAL_SEC" "$seconds_remaining")"
+        sec_to_sleep_this_iteration="$(alarm_min "$SLEEP_INTERVAL_SEC" "$seconds_remaining")"
         # echo "sec_to_sleep_this_iteration=$sec_to_sleep_this_iteration" # debugging
         
         sleep "$sec_to_sleep_this_iteration"
         if [[ "$?" -ne 0 ]]; then
             echo "ERROR: sleep command failed! Exiting."
-            echo "Proper usage: 'alarm_timer <total_whole_sec_to_sleep> <text>'"
+            alarm_print_usage
             return 1
         fi
 
@@ -96,7 +106,7 @@ alarm_timer() {
     beep_pid=""
     trap "
         echo -e '\n\nCaught Ctrl + C! Exiting...'; 
-        kill_beep;
+        alarm_kill_beep;
         " SIGINT
 
     # Run the beep command in the background, and save its PID in a variable
@@ -105,27 +115,27 @@ alarm_timer() {
         sleep 0.15
     done & beep_pid="$!"
 
-    echo -e "\n>>> Reminder: $text <<<\n"
+    echo -e "\n>>> Reminder: $alarm_text <<<\n"
     echo "Press OK (or press Enter) in the popup window to stop the alarm,"
     echo "or click back into this terminal and press Ctrl + C."
 
     # Open a popup window with the reminder title and text
-    zenity --info --title "Reminder" --text "$text"
+    zenity --info --title "Reminder" --text "$alarm_text"
 
     # Kill the beep command once the user has closed the popup window above
     kill "$beep_pid"
 }
 
-run_tests() {
+alarm_run_tests() {
     echo "Running unit tests."
 
     # Test 1
     alarm_timer 1 "Feed the cat!"
 }
 
-main() {
-    echo "Running main."
-    run_tests "$@"
+alarm_main() {
+    echo "Running alarm_main."
+    alarm_run_tests "$@"
 }
 
 # Determine if the script is being sourced or executed (run).
@@ -140,10 +150,10 @@ else
     __name__="__source__"
 fi
 
-# Only run `main` if this script is being **run**, NOT sourced (imported).
+# Only run `alarm_main` if this script is being **run**, NOT sourced (imported).
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$__name__" = "__main__" ]; then
-    main "$@"
+    alarm_main "$@"
 fi
 
 
@@ -152,7 +162,7 @@ fi
 # 1) WHEN RUN
 #
 #       eRCaGuy_hello_world$ $ bash/alarm_lib.sh 
-#       Running main.
+#       Running alarm_main.
 #       Running unit tests.
 #       Sleeping for 1 sec.
 #       1...Sounding alarm!
