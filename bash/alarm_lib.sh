@@ -5,12 +5,13 @@
 # GS
 # Jan. 2024
 # 
-# Create a timer/alarm. Ex:
+# Create a timer/alarm **library** I can easily call! Ex:
+# ```bash
+# . alarm_lib.sh  # source (import) it
+# alarm_timer 600 "Feed the cat!" # set a 10 minute alarm to remind you to feed the cat
+# ```
 # 
-# Sleep 600 seconds (10 minutes), then beep forever until you click "OK" in
-# the popup window
-#
-# STATUS: wip
+# STATUS: Done and works!
 
 # keywords to easily grep or ripgrep in this repo for this program and what it teaches
 #
@@ -34,25 +35,54 @@
 # 1. MY ANSWER WITH THIS CODE: //////
 # 1.
 
+kill_beep() {
+    if [[ -n "$beep_pid" ]]; then
+        kill "$beep_pid"
+    fi
+}
 
-sleep 1  # sleep 1 second; set this to the alarm duration that you want!
+alarm_timer() {
+    seconds="$1"
+    text="$2"
 
-# Run the beep command in the background, and save its PID in a variable
-while true; do
-    echo -en "\a"
-    sleep 0.15
-done & beep_pid="$!"
+    echo "Sleeping for $seconds sec."
+    sleep "$seconds"
 
-# Open a popup window with the reminder title and text
-zenity --info --title "Reminder" --text "Feed the cat!"
+    echo "Sounding alarm!"
 
-# Kill the beep command once the user has closed the popup window above
-kill "$beep_pid"
+    # trap Ctrl + C
+    beep_pid=""
+    trap "
+        echo -e '\n\nCaught Ctrl + C! Exiting...'; 
+        kill_beep;
+        " SIGINT
 
+    # Run the beep command in the background, and save its PID in a variable
+    while true; do
+        echo -en "\a"
+        sleep 0.15
+    done & beep_pid="$!"
+
+    echo ">>> Reminder: $text <<<"
+    echo "Press OK in the popup window to stop the alarm (or press Ctrl + C)."
+
+    # Open a popup window with the reminder title and text
+    zenity --info --title "Reminder" --text "$text"
+
+    # Kill the beep command once the user has closed the popup window above
+    kill "$beep_pid"
+}
+
+run_tests() {
+    echo "Running unit tests."
+
+    # Test 1
+    alarm_timer 1 "Feed the cat!"
+}
 
 main() {
     echo "Running main."
-    # Add your main function code here
+    run_tests "$@"
 }
 
 # Determine if the script is being sourced or executed (run).
@@ -74,11 +104,29 @@ if [ "$__name__" = "__main__" ]; then
 fi
 
 
-# SAMPLE RUN AND OUTPUT:
-# 
-#       eRCaGuy_hello_world$ bash/alarm.sh
-# 
-# [No output; a popup window appears with the title "Reminder" and the text
-# "Feed the cat!", and it beeps forever until you click "OK" in the popup
-# window]. 
-# 
+# SAMPLE OUTPUT:
+#
+# 1) WHEN RUN
+#
+#       eRCaGuy_hello_world$ bash/alarm_lib.sh 
+#       Running main.
+#       Running unit tests.
+#       Sleeping for 1 sec.
+#       Sounding alarm!
+#       >>> Reminder: Feed the cat! <<<
+#       Press OK in the popup window to stop the alarm (or press Ctrl + C).
+#
+#
+# 2) WHEN SOURCED
+#
+#       eRCaGuy_hello_world$ . bash/alarm_lib.sh
+#       eRCaGuy_hello_world$ alarm_timer 1 "Check the mail"
+#       Sleeping for 1 sec.
+#       Sounding alarm!
+#       [1] 123568
+#       >>> Reminder: Check the mail <<<
+#       Press OK in the popup window to stop the alarm (or press Ctrl + C).
+#       ^C
+#       [1]+  Terminated              while true; do
+#           echo -en "\a"; sleep 0.15;
+#       done
