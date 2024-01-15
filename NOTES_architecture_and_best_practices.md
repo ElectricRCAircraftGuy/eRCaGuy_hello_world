@@ -35,8 +35,16 @@ These could also be part of a "style guide" or "coding standards" document.
 1. Turn on `-Wall -Wextra -Werror` and fix all resulting build errors.
 1. Remove all `default` cases from all switch cases in the entire code base. 
     1. This is safer, as it will cause a **compile-time error** if all enum values are not covered in a switch statement, thereby ensuring that you keep enum definitions and switch statements in-sync.
-1. [SAFETY-CRITICAL] Remove all run-time instances of `malloc()` after initialization. 
-    1. `malloc()` is not safety-critical, non-deterministic, and can lead to memory fragmentation if `malloc`ing and `free`ing at run-time.
+1. [SAFETY-CRITICAL] Remove all post-initialization, run-time instances of `malloc()` after initialization. 
+    1. This includes `new` in C++, and any usage of any dynamically-growing data structures, such as `std::vector`, `std::map`, `std::unordered_map`, etc.
+    1. In FreeRTOS, this includes `pvPortMalloc()` and any function which automatically malloc, such as `xQueueCreate()`, `xSemaphoreCreateMutex()`, `xQueueCreate()`, etc. See here: https://www.freertos.org/Static_Vs_Dynamic_Memory_Allocation.html
+    1. Solution: 
+        1. Use dynamic memory allocation only during initialization. Check all of it for errors. If errors occur during system initialization, error out and prevent the system from running. Allow _no_ dynamic memory allocation after initialization.
+        1. _Or_, use only static memory allocation. 
+        1. Manually managed deterministic memory pools may also be used at run-time.
+        1. Delete the `new` operator in C++. 
+        1. Don't use any dynamically-growing C++ data structures, period. Write your own fixed-size data structures instead, or dynamic data structures which rely on your own custom static and deterministic memory pools.
+    1. Justification: `malloc()` is not safety-critical, non-deterministic, and can lead to memory fragmentation if `malloc`ing and `free`ing at run-time.
 1. Add the git commit hash to to every code build as part of the version number information. This leads to a truly unique version git hash even when the software version number is not otherwise changed. 
     1. Use my `git_get_short_hash` function here: [How do I get the hash for the current commit in Git?](https://stackoverflow.com/a/76856090/4561887).
 1. Implement CI/automatic builds. 
