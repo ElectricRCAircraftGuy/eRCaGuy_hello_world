@@ -49,6 +49,14 @@ min() {
     fi
 }
 
+max() {
+    if (( "$1" >= "$2" )); then
+        echo "$1"
+    else
+        echo "$2"
+    fi
+}
+
 # Set a timer to go off in a certain number of minutes, and then play a sound
 # and pop up a notification when the timer goes off.
 #
