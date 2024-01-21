@@ -1,0 +1,1 @@
+../c/struct_initialization2.c
