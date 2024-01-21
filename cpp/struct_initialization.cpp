@@ -160,6 +160,10 @@ int main()
 
     // Works! This seems to be the ONLY way to forcefully set all values in the struct to zero,
     // other than the following d11 way which is extremely explicit.
+    // Update: produces a warning in C++:
+    // 
+    //      eRCaGuy_hello_world/cpp/struct_initialization.cpp:164:11: error: ‘void* memset(void*, int, size_t)’ clearing an object of non-trivial type ‘struct data_t’; use assignment or value-initialization instead [-Werror=class-memaccess]
+    // 
     data_t d9;
     memset(&d9, 0, sizeof(d9));
     printf("d9.num1 = %i\nd9.num2 = %i\nd9.num3 = %i\nd9.num4 = %i\n\n",

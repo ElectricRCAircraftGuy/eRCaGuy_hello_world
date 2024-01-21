@@ -27,15 +27,15 @@ mkdir -p "${THIS_DIR}/${BIN_DIR}"
 #   Basically, it tells the temp objects to go to the same location as the -o setting!
 
 echo "======================"
-echo "Running first as C++17"
+echo "Running first as C++17 (with '-Wextra' and `-Werror` removed)"
 echo "======================"
 
-g++ -Wall -Werror -g3 -std=c++17 -save-temps=obj -o "${THIS_DIR}/${BIN_DIR}/${PROGRAM_NAME}" \
+g++ -Wall -g3 -std=c++17 -save-temps=obj -o "${THIS_DIR}/${BIN_DIR}/${PROGRAM_NAME}" \
 "${THIS_DIR}/${SOURCE_FILES}" && \
 "${THIS_DIR}/${BIN_DIR}/${PROGRAM_NAME}"
 
 echo "======================"
-echo "Now running as C11"
+echo "Now running as C11 (with '-Wextra' removed)"
 echo "======================"
 
 gcc -Wall -Werror -g3 -std=c11 -save-temps=obj -o "${THIS_DIR}/${BIN_DIR}/${PROGRAM_NAME}" \
