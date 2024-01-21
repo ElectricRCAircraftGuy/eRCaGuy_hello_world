@@ -27,6 +27,9 @@ These could also be part of a "style guide" or "coding standards" document.
 #### Notes:
 
 1. [SAFETY-CRITICAL] refers to safety-critical, deterministic, memory-constrained embedded system environments, such as microcontrollers embedded in robotic systems, cars, aircraft, medical devices, etc. Where this marking is present, you must do this to be considered "safety critical" and safe code. 
+    1. NB: doing the thing with this marking does not mean your code *is* definitely safety-critical. But, not doing the thing with this marking does mean your code is definitely *not* safety-critical. Otherwise stated:
+        1. Doing it doesn't make your code up to safety-critical standards. 
+        1. Not doing it makes your code *not* up to safety-critical standards.
 1. [BUG_WARNING] means that if you _don't_ do this, you will have a definite bug in your code.
 
 <a id="best-practices"></a>
@@ -119,6 +122,10 @@ These could also be part of a "style guide" or "coding standards" document.
     1. Even when performing significant filtering, you can still carry a circular buffer of data to process and only add and remove one element per sensor loop, thereby running the sensor loop at the exact same speed as the control loop. 
         1. Arduino has an excellent example of this, performing a windowed moving average FIR filter on sensor data here: https://docs.arduino.cc/built-in-examples/analog/Smoothing. Their ring buffer solution is highly efficient and a great model to follow. 
 1. Use event-based tasks and programming whenever possible, rather than "fixed-interval" timestamp-based programming. 
+    1. From https://www.freertos.org/implementing-a-FreeRTOS-task.html:
+
+        > normally it is best to create tasks that are event-driven so as not to starve lower priority tasks of processing time
+
     1. Ex: use `xQueueSend()` and `xQueueReceive()` to send and receive data between tasks, rather than using a fixed-interval timer to trigger a task to run, and then having that task poll for data. See: https://www.freertos.org/a00018.html. 
     1. Sensor data might be gathered at 100Hz, for instance, and then placed into a queue. 
     1. The control loop might then read from the queue, blocking on the queue until data arrives, rather than running at a fixed rate with `vTaskDelayUntil()`, or (worse) `vTaskDelay()`.
