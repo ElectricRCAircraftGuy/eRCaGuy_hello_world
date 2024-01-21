@@ -31,7 +31,7 @@
 #       . bash/alarm.sh
 
 # References:
-# 1. MY ANSWER WITH THIS CODE: //////
+# 1. MY ANSWER WITH THIS CODE: https://askubuntu.com/a/1500350/327339
 # 1.
 
 

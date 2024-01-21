@@ -32,8 +32,13 @@
 #       . bash/alarm.sh
 
 # References:
-# 1. MY ANSWER WITH THIS CODE: //////
+# 1. MY ANSWER WITH THIS CODE: https://askubuntu.com/a/1500350/327339
 # 1. My answer: math in Bash: https://stackoverflow.com/a/71567705/4561887
+# 1. Note: this library is also automatically sourced by my
+#    "eRCaGuy_dotfiles/home/.bash_aliases" file here: 
+#    https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/home/.bash_aliases
+#    - Search that file for the name of this file; ie: "alarm_lib.sh". 
+# 1. 
 
 alarm_kill_beep() {
     if [[ -n "$beep_pid" ]]; then
