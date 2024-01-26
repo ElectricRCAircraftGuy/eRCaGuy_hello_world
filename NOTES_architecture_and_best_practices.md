@@ -196,3 +196,7 @@ These could also be part of a "style guide" or "coding standards" document.
         1. https://www.freertos.org/FreeRTOS-Software-Timer-API-Functions.html
     1. Task creation `malloc`s (dynamically allocates memory), which is non-deterministic and can lead to memory fragmentation and run-time crashes. That's nuts. Instead, use timers for what timers are for!
     1. Note: using `xTaskCreateStatic()` is far better than `xTaskCreate()`, because it does not dynamically allocate memory. But, it is still bad.
+
+1. When allocating stack sizes, use `configMINIMAL_STACK_SIZE` as a multiplier, not an adder. Ex: use `configMINIMAL_STACK_SIZE*10`, for instance, not `configMINIMAL_STACK_SIZE + 500` or whatever. 
+    1. This allows easy scaling across the whole system. 
+    1. This way, stack sizes can be seen in relative sizes to each other. And, to increase the stack size proportionally for the whole system all at once, you just increase the value of `configMINIMAL_STACK_SIZE`, which is the base multiplier. 
