@@ -21,6 +21,112 @@ Here are my installation instructions for those terminals in Windows:
 ## All about searching (via `grep` or similar) in your git repositories
 
 
+## Quick summary
+
+Add this to the end of any of the search commands to search only in certain files and folders. Or, remove it from any command to search _all_ files and folders:
+```bash
+-- "path/to/my_file.c" "path/to/my_folder"
+```
+
+Example:
+```bash
+# Search only these files and folders in all local branches
+time git branch | awk '{print $NF}' \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {} \
+    -- "path/to/my_file.c" "path/to/my_folder"
+```
+
+#### Main commands from this answer
+```bash
+# ---------------------------------------------
+# 1. Search all local branches
+# ---------------------------------------------
+# Search only these files and folders in all local branches
+time git branch | awk '{print $NF}' \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {} \
+    -- "path/to/my_file.c" "path/to/my_folder"
+
+# ---------------------------------------------
+# 2. Search all remote branches of all remotes
+# ---------------------------------------------
+# Search only these files and folders in all remote branches
+time git branch -r | awk '{print $NF}' \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {} \
+    -- "path/to/my_file.c" "path/to/my_folder"
+
+# ---------------------------------------------
+# 3. Search all local **and** remote branches
+# ---------------------------------------------
+# Search only these files and folders in all local and remote branches
+time git branch -a | awk '{print $NF}' \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {} \
+    -- "path/to/my_file.c" "path/to/my_folder"
+
+# ---------------------------------------------
+# Search **all commits** in the entire repository
+# ---------------------------------------------
+# Search only these files and folders in all commits (reachable from any branch 
+# or tag) in the whole repository
+time git rev-list --all \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {} \
+    -- "path/to/my_file.c" "path/to/my_folder"
+
+# ---------------------------------------------
+# 1. Search in branch/commit HEAD, which is all checked-in and committed changes 
+#    in the current branch
+# ---------------------------------------------
+# Search only these files and folders
+git grep -n 'my regex search' -- "path/to/my_file.c" "path/to/my_folder"
+
+# ---------------------------------------------
+# 2. Search in a specified list of branches or commits
+# ---------------------------------------------
+# Search only these files and folders
+git grep -n 'my regex search' my_branch commit1 commit2 \
+    -- "path/to/my_file.c" "path/to/my_folder"
+
+# ---------------------------------------------
+# 3. Search in this range of commits
+# ---------------------------------------------
+
+# Search all commits over the range `commit_start` to `commit_end`, 
+# NOT including `commit_start`, but including `commit_end`
+time git rev-list commit_start..commit_end \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {}
+
+# Search all commits over the range `commit_start` to `commit_end`, 
+# including both `commit_start` and `commit_end`
+time git rev-list commit_start~..commit_end \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {}
+
+# Search only these files and folders in this range of commits
+time git rev-list commit_start~..commit_end \
+    | xargs -P "$(nproc)" -I {} git --no-pager grep -n 'my regex search' {} \
+    -- "path/to/my_file.c" "path/to/my_folder"
+
+# ----------------------------------------------------------
+# Search only these files and folders in the current file system
+# ----------------------------------------------------------
+
+# Fastest: ripgrep
+
+# regular expression search
+time rg 'my regex search' -- "path/to/my_file.c" "path/to/my_folder"
+# fixed string search
+time rg -F 'my fixed string' -- "path/to/my_file.c" "path/to/my_folder"
+
+# Slowest
+
+# regular expression search
+time grep -rn 'my regex search' -- "path/to/my_file.c" "path/to/my_folder"
+# fixed string search
+time grep -rnF 'my fixed string' -- "path/to/my_file.c" "path/to/my_folder"
+```
+
+
+## Details
+
+
 ## 1. Search the tips of all branches in a git repository
 
 This answers [the main question here](https://stackoverflow.com/q/15292391/4561887): 
