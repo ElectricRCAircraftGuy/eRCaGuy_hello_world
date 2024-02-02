@@ -73,6 +73,7 @@ ANSI_NORMAL_INTENSITY=";22" # neither bold nor faint
 # - See: https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
 ANSI_FG_BLK=";30"       # foreground color black
 ANSI_FG_RED=";31"       # foreground color red
+ANSI_FG_GRE=";32"       # foreground color green
 ANSI_FG_BLU=";34"       # foreground color blue
 ANSI_FG_BR_BLU=";94"    # foreground color bright blue
 ANSI_FG_BR_YLW=";93"    # foreground color bright yellow
