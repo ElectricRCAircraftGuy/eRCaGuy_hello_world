@@ -5,6 +5,7 @@ Jan. 2024
 1. https://stackoverflow.com/q/15292391/4561887
 2. https://stackoverflow.com/q/7151311/4561887
 3. [most views. so answer here!] https://stackoverflow.com/q/2928584/4561887 
+    ***** MY ANSWER WITH THIS CONTENT: https://stackoverflow.com/a/77917015/4561887
 -->
 
 This is the only answer here which performs _multi-process_ (like multi-threaded) search in order to dramatically speed up big `git grep` searches. I'll also cover a variety of tools and scenarios not covered in any other answer here. 
