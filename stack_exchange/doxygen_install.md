@@ -10,7 +10,7 @@ MY ANSWER: https://askubuntu.com/a/1502796/327339
 > How to install it on Ubuntu
 
 
-## Build and install the latest version of `doxygen`
+## Download and install the latest version of `doxygen`
 
 For _any_ version of Ubuntu: 
 
@@ -62,12 +62,12 @@ man doxysearch
 man doxywizard
 ```
 
-The other tools that came with your doxygen download above are available in the `doxygen-1.10.0/bin/` directory. Get access to them by adding that dir to your `PATH` environment variable. Add the following lines to the bottom of your `~/.bashrc` file:
+The other tools that came with your doxygen download above are available in the `doxygen-1.10.0/bin/` directory which you extracted from the `.tar.gz` file above. Get access to those executables by adding that dir to your `PATH` environment variable. To do that, add the following lines to the bottom of your `~/.bashrc` file:
 
 ```bash
 # Add doxygen to the PATH
 DIR="$HOME/Downloads/Install_Files/Doxygen/doxygen-1.10.0/bin"
-if [ -d "$DIR" ] ; then
+if [ -d "$DIR" ]; then
     PATH="$DIR:$PATH"
 fi
 ```
@@ -78,14 +78,25 @@ Now re-source your `~/.bashrc` file to apply the changes, and test the new execu
 # re-source your ~/.bashrc file
 . ~/.bashrc
 
+# Install the libxapian.so.30 shared object library, required by 
+# `doxysearch.cgi`
+# Note: If you are missing this library and you run `doxysearch.cgi`, you'll
+# see this error:
+# 
+#       doxysearch.cgi: error while loading shared libraries: libxapian.so.30: 
+#       cannot open shared object file: No such file or directory
+#
+sudo apt update
+sudo apt install libxapian30
+
 # Test the new doxygen executables from the `doxygen-1.10.0/bin/` dir
 doxygen --version  # should be the same as above
-
+doxyindexer --version
+doxysearch.cgi --version
+doxywizard --version  # opens a GUI popup window with version info.
 ```
 
-
-
-That's it. The command `which doxygen` shows that you now have access to the `doxygen` executable at the command line.
+To run the GUI-based doxygen configuration file editor, run `doxywizard` at the command line.
 
 
 ## Install GraphViz
@@ -109,13 +120,31 @@ Basic Doxygen usage:
 doxygen -g Doxyfile
 ```
 
-Now edit the `Doxyfile` to your liking, then run this to generate the documentation (note that `time` just times how long it takes, and is optional):
+Now edit the `Doxyfile` to your liking, either manually or in the GUI `doxywizard` tool by running `doxywizard`. 
+
+You can also use the `doxywizard` GUI to create and edit the `Doxyfile` configuration file. Just run `path/to/doxygen-1.10.0/bin/doxywizard` at the command line. See below for more info.
+
+Then, run `doxygen` to generate the documentation (note that `time` just times how long it takes, and is optional):
 ```bash
 time doxygen Doxyfile
 ```
 
-You can also use the `doxywizard` GUI to create and edit the `Doxyfile` configuration file. Just run `path/to/doxygen-1.10.0/bin/doxywizard` at the command line. See below for more info.
 
+## Doxyfile configuration
+
+For a lot more info. and recommended settings, see my notes in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo here: [Doxygen installation and setup](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/tree/master/Doxygen). 
+
+I also have these files there: 
+
+> 1. `Doxyfile_CUSTOMIZED` - my doxygen configuration file with my recommended settings after going through the "Setup and usage" section below.
+> 1. `Doxyfile_DEFAULT` - the default doxyfile created by running `doxygen -g Doxyfile`.
+> 1. `Doxyfile_run_doxygen.sh` - A script to:
+>     1. automatically generate Doxygen documentation for a C or C++ project
+>     1. store repo info. into a special readme at path `"$OUTPUT_DIRECTORY/doxygen_info_README.md"`, next to the doxygen output, and 
+>     1. open the `index.html` Doxygen output webpage in the Google Chrome web browser.
+
+
+<!--
 
 ## Other things contained inside the `doxygen-1.10.0/` dir you extracted
 
@@ -132,5 +161,4 @@ Installing `doxygen` at the command-line above
     doxysearch.cgi
     doxywizard
     ```
-
-
+-->
