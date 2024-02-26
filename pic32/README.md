@@ -53,4 +53,35 @@ See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE f
     ```
 
 
+# Example `.gitignore` file for your `myProject.X` MPLAB X project directory
+
+```bash
+# Ignore MPLAB X-generated and auto-edited files, like they recommend here:
+# https://microchipdeveloper.com/mplabx:version-control-working-with
+#
+# See also: https://microchipdeveloper.com/mplabx:work-outside-create-makefiles-info
+# 
+# > We recommend that you do not commit these nbproject/Makefile* files into revision control. 
+# > Instead use the IDE or prjMakefilesGenerator to reproduce them as needed. For more 
+# > information, see Working with Version Control Systems:
+# > https://microchipdeveloper.com/mplabx:version-control-working-with
+# 
+/.generated_files/
+/build/
+/dist/
+/nbproject/Makefile-*
+/nbproject/Package-*
+/nbproject/private/
+/private/
+
+# other dirs
+/debug/
+```
+
+
+# See also
+
+1. My answer: [Electronics Stack Exchange: How to renew your paid Microchip XC32 Compiler Pro license when it has expired or is about to expire](https://electronics.stackexchange.com/a/695772/26234)
+1. My answer: [How do I make my Microchip MPLAB X IDE project use the free version of the XC32 compiler?](https://electronics.stackexchange.com/a/696172/26234)
+1. [Microchip: How to obtain a license file](https://onlinedocs.microchip.com/oxy/GUID-7A7E8B19-1D3A-4880-88ED-ACA262E1EB09-en-US-1/GUID-4F00D32A-941E-4E46-8CA4-31B1FF3A334C.html)
 
