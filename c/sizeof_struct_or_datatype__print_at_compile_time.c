@@ -45,8 +45,11 @@ References:
    https://stackoverflow.com/q/2008398/4561887
 1. https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
 1. Usage of `_Pragma("string")`:
-    1. https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html
+    1. ***** https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html
     1. https://stackoverflow.com/a/45477830/4561887
+
+Todo:
+1. [ ] Add answers to the first two questions just above!
 
 
 */
@@ -56,34 +59,55 @@ References:
 #include <stdint.h>  // For `uint8_t`, `int8_t`, etc.
 #include <stdio.h>   // For `printf()`
 
-#define COMPILE_TIME_PRINT_SIZEOF_LOCAL_VAR(variable_or_data_type) \
+
+// See: https://stackoverflow.com/a/71899854/4561887
+#define CONCAT_(prefix, suffix) prefix##suffix
+/// Concatenate `prefix, suffix` into `prefixsuffix`
+#define CONCAT(prefix, suffix) CONCAT_(prefix, suffix)
+/// Make a unique variable name containing the line number at the end of the
+/// name. Ex: `uint64_t MAKE_UNIQUE_VARIABLE_NAME(counter) = 0;` would
+/// produce `uint64_t counter_7 = 0` if the call is on line 7!
+#define MAKE_UNIQUE_VARIABLE_NAME(prefix) CONCAT(prefix##_, __LINE__)
+
+#define COMPILE_TIME_PRINT_SIZEOF_(variable_or_data_type) \
+    { \
+        /* save the current GCC diagnostic state */ \
+        _Pragma("GCC diagnostic push") \
+        /* Activate -Wall and -Wextra warnings, and make them become */ \
+        /* errors, so that the enum and switch case below will throw */ \
+        /* a compile-time error with the `variable_or_data_type`'s */ \
+        /* size printed in it! */ \
+        _Pragma("GCC diagnostic error \"-Wall\"") \
+        _Pragma("GCC diagnostic error \"-Wextra\"") \
+        _Pragma("Gcc diagnostic ignored \"-Wunused-function\"") \
+        enum This_is_the_size_of_your_type_e \
+        { \
+            DUMMY_VAL = 0 \
+        }; \
+        enum This_is_the_size_of_your_type_e dummy = DUMMY_VAL; \
+        switch (dummy) \
+        { \
+            case DUMMY_VAL: \
+                break; \
+            case sizeof(variable_or_data_type): \
+                break; \
+        } \
+        /* restore the saved GCC diagnostic state */ \
+        _Pragma("GCC diagnostic pop") \
+    }
+
+typedef void (*void_void_func_t)();
+#define COMPILE_TIME_PRINT_SIZEOF(variable_or_data_type) \
     /* save the current GCC diagnostic state */ \
     _Pragma("GCC diagnostic push") \
-    /* Activate -Wall and -Wextra warnings, and make them become errors, */ \
-    /* so that the enum and switch case below will throw a compile-time */ \
-    /* error with the `variable_or_data_type`'s size printed in it! */ \
-    _Pragma("GCC diagnostic error \"-Wall\"") \
-    _Pragma("GCC diagnostic error \"-Wextra\"") \
-    typedef enum Dummy_e \
+    _Pragma("Gcc diagnostic ignored \"-Wunused-function\"") \
+    /* Make a unique function name for each usage of this macro */ \
+    void MAKE_UNIQUE_VARIABLE_NAME(compile_time_sizeof__line)() \
     { \
-        DUMMY_VAL = 0 \
-    } Dummy; \
-    Dummy dummy = DUMMY_VAL; \
-    switch (dummy) \
-    { \
-        case DUMMY_VAL: \
-            break; \
-        case sizeof(variable_or_data_type): \
-            break; \
+        COMPILE_TIME_PRINT_SIZEOF_(variable_or_data_type); \
     } \
     /* restore the saved GCC diagnostic state */ \
     _Pragma("GCC diagnostic pop")
-
-#define COMPILE_TIME_PRINT_SIZEOF_GLOBAL_VAR(variable_or_data_type) \
-    void dummy_func() \
-    { \
-        COMPILE_TIME_PRINT_SIZEOF_LOCAL_VAR(variable_or_data_type); \
-    }
 
 
 typedef struct My_struct_s
@@ -96,8 +120,8 @@ typedef struct My_struct_s
     double d; // 8 bytes
 } My_struct;  // 24 bytes total
 
-// COMPILE_TIME_PRINT_SIZEOF_GLOBAL_VAR(My_struct);
-COMPILE_TIME_PRINT_SIZEOF_GLOBAL_VAR(My_struct);
+COMPILE_TIME_PRINT_SIZEOF(My_struct);
+COMPILE_TIME_PRINT_SIZEOF(My_struct);
 
 // void dummy_func()
 // {
@@ -126,8 +150,9 @@ int main()
 
     My_struct my_structs[10];
 
-    // COMPILE_TIME_PRINT_SIZEOF_LOCAL_VAR(My_struct);
-    // COMPILE_TIME_PRINT_SIZEOF_LOCAL_VAR(my_structs);
+    COMPILE_TIME_PRINT_SIZEOF(My_struct);
+    COMPILE_TIME_PRINT_SIZEOF(My_struct);
+    COMPILE_TIME_PRINT_SIZEOF(my_structs);
 
     return 0;
 }
@@ -146,33 +171,5 @@ OR, in C++:
 
     eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 sizeof_struct_or_datatype__print_at_compile_timec.c -o bin/a && bin/a
     Hello World.
-
-*/
-
-/*
-I FOUND A GCC BUG!
-
-eRCaGuy_hello_world/c$ gcc sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a && bin/a
-sizeof_struct_or_datatype__print_at_compile_time.c: In function ‘dummy_func’:
-sizeof_struct_or_datatype__print_at_compile_time.c:69:9: internal compiler error: Segmentation fault
-   69 |         DUMMY_VAL = 0 \
-      |         ^~~~~~~~~
-sizeof_struct_or_datatype__print_at_compile_time.c:85:9: note: in expansion of macro ‘COMPILE_TIME_PRINT_SIZEOF_LOCAL_VAR’
-   85 |         COMPILE_TIME_PRINT_SIZEOF_LOCAL_VAR(variable_or_data_type); \
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-sizeof_struct_or_datatype__print_at_compile_time.c:100:1: note: in expansion of macro ‘COMPILE_TIME_PRINT_SIZEOF_GLOBAL_VAR’
-  100 | COMPILE_TIME_PRINT_SIZEOF_GLOBAL_VAR(My_struct);
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-0x7f2849a4251f ???
-	./signal/../sysdeps/unix/sysv/linux/x86_64/libc_sigaction.c:0
-0x7f2849a29d8f __libc_start_call_main
-	../sysdeps/nptl/libc_start_call_main.h:58
-0x7f2849a29e3f __libc_start_main_impl
-	../csu/libc-start.c:392
-Please submit a full bug report,
-with preprocessed source if appropriate.
-Please include the complete backtrace with any bug report.
-See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
-
 
 */
