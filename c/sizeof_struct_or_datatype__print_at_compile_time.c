@@ -72,7 +72,7 @@ Todo:
 /// produce `uint64_t counter_7 = 0` if the call is on line 7!
 #define MAKE_UNIQUE_VARIABLE_NAME(prefix) CONCAT(prefix##_, __LINE__)
 
-#define COMPILE_TIME_PRINT_SIZEOF_(variable_or_data_type) \
+#define COMPILE_TIME_PRINT_SIZEOF_LOCAL(variable_or_data_type) \
     { \
         /* save the current GCC diagnostic state */ \
         _Pragma("GCC diagnostic push") \
@@ -81,11 +81,10 @@ Todo:
         /* a compile-time error with the `variable_or_data_type`'s */ \
         /* size printed in it! */ \
         _Pragma("GCC diagnostic error \"-Wswitch\"") \
-        enum This_is_the_size_of_your_type_e \
+        enum MAKE_UNIQUE_VARIABLE_NAME(This_is_the_size_of_your_type_on__line) \
         { \
             DUMMY_VAL = 0 \
-        }; \
-        enum This_is_the_size_of_your_type_e dummy = DUMMY_VAL; \
+        } dummy = DUMMY_VAL; \
         switch (dummy) \
         { \
             case DUMMY_VAL: \
@@ -98,7 +97,7 @@ Todo:
     }
 
 typedef void (*void_void_func_t)();
-#define COMPILE_TIME_PRINT_SIZEOF(variable_or_data_type) \
+#define COMPILE_TIME_PRINT_SIZEOF_GLOBAL(variable_or_data_type) \
     /* save the current GCC diagnostic state */ \
     _Pragma("GCC diagnostic push") \
     /* Ignore the unused-function warning. */ \
@@ -106,7 +105,7 @@ typedef void (*void_void_func_t)();
     /* Make a unique function name for each usage of this macro */ \
     void MAKE_UNIQUE_VARIABLE_NAME(compile_time_sizeof__line)() \
     { \
-        COMPILE_TIME_PRINT_SIZEOF_(variable_or_data_type); \
+        COMPILE_TIME_PRINT_SIZEOF_LOCAL(variable_or_data_type); \
     } \
     /* restore the saved GCC diagnostic state */ \
     _Pragma("GCC diagnostic pop")
@@ -122,8 +121,8 @@ typedef struct My_struct_s
     double d; // 8 bytes
 } My_struct;  // 24 bytes total
 
-COMPILE_TIME_PRINT_SIZEOF(My_struct);
-COMPILE_TIME_PRINT_SIZEOF(My_struct);
+COMPILE_TIME_PRINT_SIZEOF_GLOBAL(My_struct);
+COMPILE_TIME_PRINT_SIZEOF_GLOBAL(My_struct);
 
 // void dummy_func()
 // {
@@ -152,9 +151,9 @@ int main()
 
     My_struct my_structs[10];
 
-    COMPILE_TIME_PRINT_SIZEOF(My_struct);
-    COMPILE_TIME_PRINT_SIZEOF(My_struct);
-    COMPILE_TIME_PRINT_SIZEOF(my_structs);
+    COMPILE_TIME_PRINT_SIZEOF_LOCAL(My_struct);
+    COMPILE_TIME_PRINT_SIZEOF_LOCAL(My_struct);
+    COMPILE_TIME_PRINT_SIZEOF_LOCAL(my_structs);
 
     return 0;
 }
