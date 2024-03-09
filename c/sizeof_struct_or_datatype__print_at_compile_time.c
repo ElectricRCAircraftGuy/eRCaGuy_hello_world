@@ -27,15 +27,15 @@ sudo apt update && sudo apt install ccache
 # The most basic form that needs to work:
 gcc sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a && bin/a
 
-./sizeof_struct_or_datatype__print_at_compile_timec.c
+./sizeof_struct_or_datatype__print_at_compile_time.c
 # or:
-gcc -Wall -Wextra -Werror -O3 -std=gnu17 sizeof_struct_or_datatype__print_at_compile_timec.c -o bin/a -lm && bin/a
+gcc -Wall -Wextra -Werror -O3 -std=gnu17 sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a -lm && bin/a
 
 # 2. In C++
 # The most basic form that needs to work:
 g++ sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a && bin/a
 
-g++ -Wall -Wextra -Werror -O3 -std=gnu++17 sizeof_struct_or_datatype__print_at_compile_timec.c -o bin/a && bin/a
+g++ -Wall -Wextra -Werror -O3 -std=gnu++17 sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a && bin/a
 ```
 
 References:
@@ -47,6 +47,9 @@ References:
 1. Usage of `_Pragma("string")`:
     1. ***** https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html
     1. https://stackoverflow.com/a/45477830/4561887
+1. Doing arithmetic on `__LINE__` in the C preprocessor:
+    1. https://stackoverflow.com/a/24551912/4561887
+    1. https://stackoverflow.com/a/24941973/4561887
 
 Todo:
 1. [ ] Add answers to the first two questions just above!
@@ -73,13 +76,11 @@ Todo:
     { \
         /* save the current GCC diagnostic state */ \
         _Pragma("GCC diagnostic push") \
-        /* Activate -Wall and -Wextra warnings, and make them become */ \
+        /* Activate `-Wswitch` switch case warnings, and make them become */ \
         /* errors, so that the enum and switch case below will throw */ \
         /* a compile-time error with the `variable_or_data_type`'s */ \
         /* size printed in it! */ \
-        _Pragma("GCC diagnostic error \"-Wall\"") \
-        _Pragma("GCC diagnostic error \"-Wextra\"") \
-        _Pragma("Gcc diagnostic ignored \"-Wunused-function\"") \
+        _Pragma("GCC diagnostic error \"-Wswitch\"") \
         enum This_is_the_size_of_your_type_e \
         { \
             DUMMY_VAL = 0 \
@@ -100,7 +101,8 @@ typedef void (*void_void_func_t)();
 #define COMPILE_TIME_PRINT_SIZEOF(variable_or_data_type) \
     /* save the current GCC diagnostic state */ \
     _Pragma("GCC diagnostic push") \
-    _Pragma("Gcc diagnostic ignored \"-Wunused-function\"") \
+    /* Ignore the unused-function warning. */ \
+    _Pragma("GCC diagnostic ignored \"-Wunused-function\"") \
     /* Make a unique function name for each usage of this macro */ \
     void MAKE_UNIQUE_VARIABLE_NAME(compile_time_sizeof__line)() \
     { \
@@ -163,13 +165,13 @@ SAMPLE OUTPUT:
 
 In C:
 
-    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sizeof_struct_or_datatype__print_at_compile_timec.c -o bin/a -lm && bin/a
+    eRCaGuy_hello_world/c$ gcc -Wall -Wextra -Werror -O3 -std=c17 sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a -lm && bin/a
     Hello World.
 
 
 OR, in C++:
 
-    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 sizeof_struct_or_datatype__print_at_compile_timec.c -o bin/a && bin/a
+    eRCaGuy_hello_world/c$ g++ -Wall -Wextra -Werror -O3 -std=c++17 sizeof_struct_or_datatype__print_at_compile_time.c -o bin/a && bin/a
     Hello World.
 
 */
