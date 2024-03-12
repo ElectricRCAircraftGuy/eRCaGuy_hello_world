@@ -69,17 +69,17 @@ struct My_struct2_s
     int i;    // 4 bytes
 };            // 8 bytes total
 
-COMPILE_TIME_PRINT_SIZEOF_GLOBAL(My_struct);
-COMPILE_TIME_PRINT_SIZEOF_GLOBAL(struct My_struct2_s);
+COMPILE_TIME_PRINT_SIZEOF_GLOBAL(My_struct);                // 24
+COMPILE_TIME_PRINT_SIZEOF_GLOBAL(struct My_struct2_s);      // 8
 
 int main()
 {
     printf("Testing 'sizeof_compile_time_lib.h'.\n\n");
 
     My_struct my_structs[10];
-    COMPILE_TIME_PRINT_SIZEOF_LOCAL(My_struct);
-    COMPILE_TIME_PRINT_SIZEOF_LOCAL(struct My_struct2_s);
-    COMPILE_TIME_PRINT_SIZEOF_LOCAL(my_structs);
+    COMPILE_TIME_PRINT_SIZEOF_LOCAL(My_struct);             // 24
+    COMPILE_TIME_PRINT_SIZEOF_LOCAL(struct My_struct2_s);   // 8
+    COMPILE_TIME_PRINT_SIZEOF_LOCAL(my_structs);            // 240
 
     return 0;
 }

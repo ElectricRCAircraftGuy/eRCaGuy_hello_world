@@ -13,10 +13,14 @@ keywords to easily grep or ripgrep in this repo for this program and what it tea
 KEYWORDS:
 
 References:
+1. "eRCaGuy_hello_world/c/macro_make_unique_variable_name_with_line_number.c":
+   for my `MAKE_UNIQUE_VARIABLE_NAME()` macro.
 1. How can I print the result of sizeof() at compile time in C? -
    https://stackoverflow.com/q/20979565/4561887
+    1. *****+ MY ANSWER: https://stackoverflow.com/a/78144837/4561887
 1. Is it possible to print out the size of a C++ class at compile-time? -
    https://stackoverflow.com/q/2008398/4561887
+    1. MY ANSWER: https://stackoverflow.com/a/78144806/4561887
 1. https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
 1. Usage of `_Pragma("string")`:
     1. ***** https://gcc.gnu.org/onlinedocs/cpp/Pragmas.html
@@ -28,7 +32,7 @@ References:
     https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#Common-Function-Attributes
 
 Todo:
-1. [ ] Add answers to the first two questions just above!
+1. [x] Add answers to the first two questions just above!
 
 */
 
