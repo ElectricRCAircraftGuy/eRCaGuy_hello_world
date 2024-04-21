@@ -85,3 +85,28 @@ See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE f
 1. My answer: [How do I make my Microchip MPLAB X IDE project use the free version of the XC32 compiler?](https://electronics.stackexchange.com/a/696172/26234)
 1. [Microchip: How to obtain a license file](https://onlinedocs.microchip.com/oxy/GUID-7A7E8B19-1D3A-4880-88ED-ACA262E1EB09-en-US-1/GUID-4F00D32A-941E-4E46-8CA4-31B1FF3A334C.html)
 
+
+# Debugging notes
+
+If the debugger fails to jump to the currently-executing line (PC, or "Program Counter") in your code when you pause (halt) the debugger, then try this:
+
+1. While debugging, delete all breakpoints. 
+1. Close the bootloader project and main project (assuming you were doing a unified build). 
+1. Close the IDE. 
+1. Run [`git rm_ignored_files`](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-rm_ignored_files.sh) to delete all `.gitignore`-ed files.
+1. Ensure `git status` is clean in the main project. Delete or clean up any files as needed to make it clean. 
+1. Run `prjMakefilesGenerator MyProject.X/` to regenerate the Makefiles.
+1. Check `git status` again and make sure it looks as expected. 
+1. Re-open the IDE. 
+1. Re-open the bootloader project and main project.
+1. Check `git status` and make sure there are no new changes. 
+1. Re-configure the unified build settings. In the project settings for the main project:
+    1. In the primary configuration setting, choose the ICE/debugger from the "Connected Hardware Tool" dropdown menu. 
+    1. Under "Loading", check the box for "Load symbols when programming or building for production (slows process)", and click the "Add Loadable Project..." button and add the bootloader project to the main code project. 
+    1. Under "XC32 (Global Options)" --> "xc32-ld" --> "Option categories" dropdown --> "Symbols & Macros" --> "Symbols" dropdown --> choose "Keep all" [for the debugging info].
+1. Check `git status` again and make sure all changes are as expected.
+1. Re-build the project.
+1. Click the "Debug Project" button to start debugging.
+1. Click the Pause (Halt) button to stop the debugger. After 4 or 5 seconds it should now stop on the line where it is executing, highlighting it in green! 
+    1. Each time you continue and then pause the debugger again, it should automatically jump to and highlight in green the currently-executing line!
+1. Done! The debugger is working again!
