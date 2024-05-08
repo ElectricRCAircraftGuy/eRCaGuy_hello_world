@@ -110,3 +110,81 @@ If the debugger fails to jump to the currently-executing line (PC, or "Program C
 1. Click the Pause (Halt) button to stop the debugger. After 4 or 5 seconds it should now stop on the line where it is executing, highlighting it in green! 
     1. Each time you continue and then pause the debugger again, it should automatically jump to and highlight in green the currently-executing line!
 1. Done! The debugger is working again!
+
+
+## Troubleshooting Q&A
+
+#### If your debugger loses connection, and you are repeatedly getting this "Connection Failed" error:
+
+> *****************************************************  
+> Reception on endpoint 1 failed (err = -10121)  
+> Connection Failed.  
+> If the problem persists, please disconnect and reconnect the REAL ICE to the USB cable. If this does not fix the problem verify that the proper MPLAB X USB drivers have been installed.  
+
+Then unplug and plug back in the large USB-B connector which plugs into the ICE programmer/debugger/emulator, from your computer. 
+
+If you are remote, and cannot do this, then you can buy one of these remotely-controllable USB hubs for $175: https://www.usbgear.com/cg-10pu3mgd.html. 
+
+
+[No-cost solution] Alternatively: 
+
+1. Download `UsbTreeView.exe` for free from here: https://usb-device-tree-viewer.en.lo4d.com/windows
+1. Right click it and run it as an admin. 
+1. Find the ICE programmer as "Microchip WinUSB Device" in the list. 
+1. Right-click the USB controller it is on (such as `Intel(R) USB 3.1 eXtensible Host Controller - 1.10 (Microsoft) - USB xHCI Compliant Host Controller`), and click "Restart Device", as shown here:
+
+    <p align="left" width="100%">
+        <a href="https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/assets/6842199/485b7edf-2202-49b9-8d51-968cf624cea9">
+            <img width="75%" src="https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/assets/6842199/485b7edf-2202-49b9-8d51-968cf624cea9"> 
+        </a>
+    </p>
+
+1. Watch the status bar at the very bottom of the USB Device Tree Viewer window to ensure it says it was successful.
+1. Back in the MPLAB X IDE (ex: v6.20) click the green circular arrows in the bottom-left window to "Refresh Debug Tool Status":
+
+    [![](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/assets/6842199/60f6b7e2-8625-4e7a-b26e-ef78cc3daf0e)](https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/assets/6842199/60f6b7e2-8625-4e7a-b26e-ef78cc3daf0e)
+
+1. In the "Output" window, you should now see a good debug tool status message, such as this shown below, instead of the error message shown above: 
+
+    ```
+    *****************************************************
+
+    Connecting to MPLAB REAL ICE...
+
+    Currently loaded firmware on REAL ICE
+    Firmware Suite Version.....01.56.10
+    Firmware type..............PIC32MZ
+
+    Target voltage detected
+    Target device PIC32MZ2048EFM144 found.
+    Device ID Revision = B2
+    DEVSN0 = 012345ab
+    DEVSN1 = abcdef01
+    ```
+
+1. If you see the above message, the debugger is working again! You can now click the "Debug Project" button to start debugging again!
+
+
+TODO: 
+
+1. [ ] Try restarting the USB controller from the command line using `devcon` from the Windows Driver Kit (WDK) or Windows Driver Framework (WDF) as well. 
+
+    Get `devcon.exe` as shown here: https://superuser.com/a/1099688/425838 --> see my comment under the answer. 
+
+    According to GitHub copilot, you can then run it from the Windows Command Prompt *as admin* like this:
+
+    ```bash
+    # Show the status and device ID of all devices
+    devcon status *
+
+    # Show the device ID of all devices
+    devcon find *
+
+    # Restart the device with the given device ID
+    devcon disable <DeviceID>
+    devcon enable <DeviceID>
+
+    # Example
+    devcon disable "USB\VID_04D8&PID_0053"
+    devcon enable "USB\VID_04D8&PID_0053"
+    ```
