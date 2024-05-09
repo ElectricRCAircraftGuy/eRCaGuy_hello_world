@@ -20,6 +20,9 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. [Tracing your FreeRTOS programs to identify what's going on during crashes](#tracing-your-freertos-programs-to-identify-whats-going-on-during-crashes)
     1. [Tools from FreeRTOS](#tools-from-freertos)
     1. [Manual trace data or "crash pages"](#manual-trace-data-or-crash-pages)
+1. [Run-time crashes in FreeRTOS](#run-time-crashes-in-freertos)
+    1. [Getting stuck inside the `vListInsert()` function in `FreeRTOS/Source/list.c`](#getting-stuck-inside-the-vlistinsert-function-in-freertossourcelistc)
+    1. [Immediately after calling `xSemaphoreCreateBinary()` or `xSemaphoreCreateBinaryStatic()`, you must call `xSemaphoreGive()` before calling `xSemaphoreTake()`](#immediately-after-calling-xsemaphorecreatebinary-or-xsemaphorecreatebinarystatic-you-must-call-xsemaphoregive-before-calling-xsemaphoretake)
 
 <!-- /MarkdownTOC -->
 </details>
@@ -242,3 +245,68 @@ void traceLog(
 ```
 
 That's the gist of it.
+
+
+<a id="run-time-crashes-in-freertos"></a>
+# Run-time crashes in FreeRTOS
+
+
+<a id="getting-stuck-inside-the-vlistinsert-function-in-freertossourcelistc"></a>
+## Getting stuck inside the `vListInsert()` function in `FreeRTOS/Source/list.c`
+
+If you find yourself with a debugger stuck in this code (as shown by `HERE` below): 
+
+File: `FreeRTOS/Source/list.c`, function: `vListInsert()`:
+
+```c
+        /* *** NOTE ***********************************************************
+        *  If you find your application is crashing here then likely causes are
+        *  listed below.  In addition see https://www.FreeRTOS.org/FAQHelp.html for
+        *  more tips, and ensure configASSERT() is defined!
+        *  https://www.FreeRTOS.org/a00110.html#configASSERT
+        *
+        *   1) Stack overflow -
+        *      see https://www.FreeRTOS.org/Stacks-and-stack-overflow-checking.html
+        *   2) Incorrect interrupt priority assignment, especially on Cortex-M
+        *      parts where numerically high priority values denote low actual
+        *      interrupt priorities, which can seem counter intuitive.  See
+        *      https://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html and the definition
+        *      of configMAX_SYSCALL_INTERRUPT_PRIORITY on
+        *      https://www.FreeRTOS.org/a00110.html
+        *   3) Calling an API function from within a critical section or when
+        *      the scheduler is suspended, or calling an API function that does
+        *      not end in "FromISR" from an interrupt.
+        *   4) Using a queue or semaphore before it has been initialised or
+        *      before the scheduler has been started (are interrupts firing
+        *      before vTaskStartScheduler() has been called?).
+        *   5) If the FreeRTOS port supports interrupt nesting then ensure that
+        *      the priority of the tick interrupt is at or below
+        *      configMAX_SYSCALL_INTERRUPT_PRIORITY.
+        **********************************************************************/
+
+        for( pxIterator = ( ListItem_t * ) &( pxList->xListEnd ); pxIterator->pxNext->xItemValue <= xValueOfInsertion; pxIterator = pxIterator->pxNext ) /*lint !e826 !e740 !e9087 The mini list structure is used as the list end to save RAM.  This is checked and valid. *//*lint !e440 The iterator moves to a different value, not xValueOfInsertion. */
+        {
+            /* There is nothing to do here, just iterating to the wanted  <========== HERE ========
+             * insertion position. */
+        }
+```
+
+...then read the comments above that for some possible reasons why. 
+
+In addition to the reasons above, another possible reason is that (since semaphores are based on queues, and queues are mentioned in bullet 4 in the comments above) you may have called something like `xSemaphoreCreateBinary()` or `xSemaphoreCreateBinaryStatic()` and then *not* immediately called `xSemaphoreGive()` on it before calling `xSemaphoreTake()` on it. 
+
+The official documentation on it (https://freertos.org/xSemaphoreCreateBinaryStatic.html) says: 
+
+> The semaphore is created in the 'empty' state, meaning the semaphore must first be given using the `xSemaphoreGive()` API function before it can subsequently be taken (obtained) using the `xSemaphoreTake()` function.
+
+See also my answer here: [FreeRTOS stuck in `vListInsert()`](https://stackoverflow.com/a/78452464/4561887).
+
+
+<a id="immediately-after-calling-xsemaphorecreatebinary-or-xsemaphorecreatebinarystatic-you-must-call-xsemaphoregive-before-calling-xsemaphoretake"></a>
+## Immediately after calling `xSemaphoreCreateBinary()` or `xSemaphoreCreateBinaryStatic()`, you must call `xSemaphoreGive()` before calling `xSemaphoreTake()`
+
+...or else you get stuck inside the `vListInsert()` function in `FreeRTOS/Source/list.c` as shown above.
+
+Pull request I opened for this: https://github.com/FreeRTOS/FreeRTOS-Kernel/pull/1051. 
+
+
