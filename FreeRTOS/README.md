@@ -250,6 +250,9 @@ That's the gist of it.
 <a id="run-time-crashes-in-freertos"></a>
 # Run-time crashes in FreeRTOS
 
+See also:
+1. [../pic32/README.md](../pic32/README.md)
+
 
 <a id="getting-stuck-inside-the-vlistinsert-function-in-freertossourcelistc"></a>
 ## Getting stuck inside the `vListInsert()` function in `FreeRTOS/Source/list.c`
