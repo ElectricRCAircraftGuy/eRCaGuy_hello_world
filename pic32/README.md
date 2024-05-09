@@ -88,9 +88,42 @@ See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE f
 
 # Debugging notes
 
-If the debugger fails to jump to the currently-executing line (PC, or "Program Counter") in your code when you pause (halt) the debugger, then try this:
+See also:
+1. [../FreeRTOS/README.md](../FreeRTOS/README.md)
 
-1. While debugging, delete all breakpoints. 
+If the debugger fails to jump to the currently-executing line (PC, or "Program Counter") in your code when you pause (halt) the debugger, then try the following. 
+
+See also the "Troubleshooting Q&A" section below for things to try. 
+
+1. Delete all breakpoints. 
+
+    To get to the "Breakpoints" tab/window, either:
+    1. Be in debug mode, or 
+    1. Click Window --> Debugging --> Breakpoints (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>5</kbd>)
+
+    Then, right-click in the "Breakpoints" Window --> and click "Delete All" to delete all breakpoints. 
+
+    ALL BREAKPOINTS MUST BE CLEARED BEFORE STARTING, OR ELSE AN INVALID BREAKPOINT LEFT OVER FROM A PREVIOUS DEBUG SESSION, ESPECIALLY WHEN POINTING TO **CODE WHICH NO LONGER EXISTS**, OR **MACROS WHICH ARE NO LONGER DEFINED OR TRUE**, CAN CAUSE STRANGE DEBUGGER ERRORS! 
+
+    Example debugger errors when a breakpoint is set to a macro which is no longer defined or which defines a compile-time code block which is no longer entered:
+
+    ```
+    Running
+    Reception on endpoint 3 failed (err = -121)
+    ```
+
+    Or:
+    ```
+    Halting...
+
+    MPLAB has gotten out of synch with the REAL ICE. Please unplug and reconnect the 
+    REAL ICE to the USB cable and try the operation again. 
+    ```
+
+1. Ensure you have the main project selected in the "Projects" window/tab at the top-left before you click the "Debug Project" button. 
+
+    If you have the bootloader project selected, then the debugger will not work properly, and you will inadvertently load and debug just the bootloader project instead of the unified build of the bootloader+main project. 
+
 1. Close the bootloader project and main project (assuming you were doing a unified build). 
 1. Close the IDE. 
 1. Run [`git rm_ignored_files`](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-rm_ignored_files.sh) to delete all `.gitignore`-ed files.
@@ -123,7 +156,7 @@ If the debugger fails to jump to the currently-executing line (PC, or "Program C
 
 Then unplug and plug back in the large USB-B connector which plugs into the ICE programmer/debugger/emulator, from your computer. 
 
-If you are remote, and cannot do this, then you can buy one of these remotely-controllable USB hubs for $175: https://www.usbgear.com/cg-10pu3mgd.html. 
+If you are remote, and cannot do this, then you can buy one of these remotely-controllable USB hubs for $175: [recommended!] https://www.usbgear.com/cg-10pu3mgd.html. 
 
 
 [No-cost solution] Alternatively: 
@@ -188,3 +221,10 @@ TODO:
     devcon disable "USB\VID_04D8&PID_0053"
     devcon enable "USB\VID_04D8&PID_0053"
     ```
+
+#### Why did I end up inside an infinite `for` loop inside `_general_exception_handler()`? 
+
+One cause of this is that you forgot to pass the size argument (argument 2) to [`snprintf()`](https://cplusplus.com/reference/cstdio/snprintf/). If this happens, then you may get a general exception at run-time!
+
+To fix this, simply add `-Wall -Wextra -Werror` to your build flags and instead you'll get a compile-time error!
+
