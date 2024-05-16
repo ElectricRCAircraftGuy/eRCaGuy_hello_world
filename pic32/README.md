@@ -1,6 +1,11 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 
+# See also
+
+1. My answer: [How to configure a `preBuildSteps.sh` Bash script that runs as part of the pre-build process in the MPLAB X IDE on both Windows and Linux](https://stackoverflow.com/a/78485243/4561887)
+
+
 # Microchip MPLAB X IDE notes, including license manager (`xclm`) issues
 
 See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE for PIC mcus et al configuration and setup info](https://docs.google.com/document/d/1fzDxL7aJk8aQDf5d6zT39GE9GySWb7lOfG7v8Dn93fI/edit).
@@ -88,8 +93,16 @@ See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE f
 
 # Debugging notes
 
-See also:
+
+## See also
 1. [../FreeRTOS/README.md](../FreeRTOS/README.md)
+
+
+## References
+1. https://developerhelp.microchip.com/xwiki/bin/view/software-tools/programmers-and-debuggers/archive/realice/ - MPLAB® REAL ICE™ In-Circuit Emulator (DV244005) [this programmer/debugger is no longer available]
+
+
+## Notes
 
 If the debugger fails to jump to the currently-executing line (PC, or "Program Counter") in your code when you pause (halt) the debugger, then try the following. 
 
