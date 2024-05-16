@@ -1,0 +1,25 @@
+# Example `.gitignore` file for your `myProject.X` MPLAB X project directory
+
+# Ignore MPLAB X-generated and auto-edited files, like they recommend here:
+# https://microchipdeveloper.com/mplabx:version-control-working-with
+#
+# See also: https://microchipdeveloper.com/mplabx:work-outside-create-makefiles-info
+# 
+# > We recommend that you do not commit these nbproject/Makefile* files into revision control. 
+# > Instead use the IDE or prjMakefilesGenerator to reproduce them as needed. For more 
+# > information, see Working with Version Control Systems:
+# > https://microchipdeveloper.com/mplabx:version-control-working-with
+# 
+/.generated_files/
+/build/
+/dist/
+/nbproject/Makefile-*
+/nbproject/Package-*
+/nbproject/private/
+/private/
+
+# other dirs
+/debug/
+
+# debugger log files
+/*.log*  
