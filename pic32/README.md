@@ -91,6 +91,30 @@ See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE f
 1. [Microchip: How to obtain a license file](https://onlinedocs.microchip.com/oxy/GUID-7A7E8B19-1D3A-4880-88ED-ACA262E1EB09-en-US-1/GUID-4F00D32A-941E-4E46-8CA4-31B1FF3A334C.html)
 
 
+# My ritualistic [superstitious] guaranteed clean build process in the MPLAB X IDE
+
+This is required each time you do a `git checkout` to a new branch where any project configuration settings (found in `MyProject.X/nbproject/configurations.xml`) have changed, for example. 
+
+If you do a `git checkout` and change branches where any project configuration files have changed, the IDE will not pick them up. It only reads new settings on project open, or when you change them in the IDE directly, _not_ when you change them from the command-line, nor when doing a `git checkout` or editing them via a file editor.
+
+1. Delete all breakpoints in the Breakpoints (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>5</kbd>) tab. 
+1. Close the project.
+1. Close the IDE.
+1. `git reset --hard`. WARNING: will cause permanent loss of any uncommitted changes in any tracked files!
+1. `git clean -fd`. WARNING: will cause permanent loss of any uncommitted changes in any untracked files!
+1. `git checkout my_branch_to_debug`
+1. `git clean -fd`. WARNING: will cause permanent loss of any uncommitted changes in any untracked files!
+1. [`git rm_ignored_files`](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/useful_scripts/git-rm_ignored_files.sh)
+    1. Then chose `Y`es to delete ignored files. 
+1. `prjMakefilesGenerator MyProject.X`
+1. Re-open the IDE.
+1. Re-open the project.
+1. Right-click the project --> "Set as Main Project".
+1. Click the "Clean and Build Project" button (is in a dropdown from the button called "Clean and Build for Debugging Project" unless you've added this button explicitly).
+
+Now, you are guaranteed to get a clean build so long as your `.gitignore` file is set up correctly (as described above) and ignores all build output.
+
+
 # Debugging notes
 
 
