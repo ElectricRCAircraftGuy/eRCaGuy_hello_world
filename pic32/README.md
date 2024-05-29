@@ -4,6 +4,7 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 # See also
 
 1. My answer: [How to configure a `preBuildSteps.sh` Bash script that runs as part of the pre-build process in the MPLAB X IDE on both Windows and Linux](https://stackoverflow.com/a/78485243/4561887)
+1. My notes on how to remotely power cycle USB devices, such as the [PICKit 5](https://www.microchip.com/en-us/development-tool/pg164150) debugger: https://github.com/ElectricRCAircraftGuy/eRCaGuy_Engineering/tree/main/USB_Managed_Hubs/CG-10PU3MGD_managed_USB_hub
 
 
 # Microchip MPLAB X IDE notes, including license manager (`xclm`) issues
