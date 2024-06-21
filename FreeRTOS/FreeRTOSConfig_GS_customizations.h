@@ -436,6 +436,7 @@
 //   then make `configISR_STACK_SIZE`, which is used for PIC32 microcontrollers inside
 //   "FreeRTOS-Kernel/portable/MPLAB/PIC32MZ/port.c", really small, like 50 words, because that will
 //   cause `configASSERT()` in `portCHECK_ISR_STACK()` in port.c to fail.
+#ifdef __DEBUG  // only do this in debug mode, meaning: when debugging with a debugger
 // #ifndef __LANGUAGE_ASSEMBLY  // is this needed?
 #include "freertos_debugging.h"  // for `vAssertCalled()`
 #define configASSERT(x)                                         \
@@ -444,6 +445,7 @@
         vAssertCalled(__FILE__, __LINE__, __func__);            \
     }
 // #endif
+#endif
 
 /******************************************************************************/
 /* FreeRTOS MPU specific definitions. *****************************************/
