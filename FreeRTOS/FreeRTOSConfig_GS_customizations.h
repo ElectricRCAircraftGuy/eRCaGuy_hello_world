@@ -1,3 +1,6 @@
+// This file is part of eRCaGuy_hello_world: 
+// https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
 // GS: copied from: 
 // https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/main/examples/template_configuration/FreeRTOSConfig.h
 // in June 2024, and then modified by me.
@@ -419,13 +422,28 @@
  * number of the failing assert (for example, "vAssertCalled( __FILE__, __LINE__
  * )" or it can simple disable interrupts and sit in a loop to halt all
  * execution on the failing line for viewing in a debugger. */
-#define configASSERT( x )         \
-    if( ( x ) == 0 )              \
-    {                             \
-        taskDISABLE_INTERRUPTS(); \
-        for( ; ; )                \
-        ;                         \
+// #define configASSERT( x )         \
+//     if( ( x ) == 0 )              \
+//     {                             \
+//         taskDISABLE_INTERRUPTS(); \
+//         for( ; ; )                \
+//         ;                         \
+//     }
+//
+// GS modifications:
+// See: https://www.freertos.org/a00110.html#configASSERT
+// - Note that the easiest way to test this is to define `configCHECK_FOR_STACK_OVERFLOW` as 3 and
+//   then make `configISR_STACK_SIZE`, which is used for PIC32 microcontrollers inside
+//   "FreeRTOS-Kernel/portable/MPLAB/PIC32MZ/port.c", really small, like 50 words, because that will
+//   cause `configASSERT()` in `portCHECK_ISR_STACK()` in port.c to fail.
+// #ifndef __LANGUAGE_ASSEMBLY  // is this needed?
+#include "freertos_debugging.h"  // for `vAssertCalled()`
+#define configASSERT(x)                                         \
+    if((x) == 0)                                                \
+    {                                                           \
+        vAssertCalled(__FILE__, __LINE__, __func__);            \
     }
+// #endif
 
 /******************************************************************************/
 /* FreeRTOS MPU specific definitions. *****************************************/

@@ -1,3 +1,6 @@
+// This file is part of eRCaGuy_hello_world: 
+// https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
+
 // GS: copied from: 
 // https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/main/examples/template_configuration/FreeRTOSConfig.h
 // in June 2024.
