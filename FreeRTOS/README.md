@@ -7,6 +7,14 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. ---
 1. FreeRTOS Kernel Developer Docs: https://www.freertos.org/features.html
 1. API Reference: https://www.freertos.org/a00106.html
+1. Official FreeRTOS source code: https://github.com/FreeRTOS
+    1. Official FreeRTOS kernel source code: https://github.com/FreeRTOS/FreeRTOS-Kernel
+        1. Example `FreeRTOSConfig.h` file: https://github.com/FreeRTOS/FreeRTOS-Kernel/blob/main/examples/template_configuration/FreeRTOSConfig.h
+        1. My modifications to the above file: [`FreeRTOSConfig_GS_customizations.h`](FreeRTOSConfig_GS_customizations.h)
+        1. Compare to see my modifications:
+            ```bash
+            meld FreeRTOSConfig.h FreeRTOSConfig_GS_customizations.h
+            ```
 
 
 # Table of Contents
