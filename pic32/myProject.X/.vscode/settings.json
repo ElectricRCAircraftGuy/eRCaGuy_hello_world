@@ -1,0 +1,29 @@
+{
+    "C_Cpp.default.defines": [
+        // "GS_TEST=1",
+        "profcs",
+        // "configUSE_TASK_FPU_SUPPORT=1",
+        "__cplusplus",
+        "__PIC32MZ__",
+        "__32MZ2048EFM144__",
+        "__LANGUAGE_ASSEMBLY__",
+        "__LANGUAGE_C__",
+        "__LANGUAGE_C_PLUS_PLUS",
+        // "BUILD_MC=1",
+    ],
+
+    "files.exclude": {
+        "Autopilot.X/build/": true,
+    },
+
+    "search.exclude": {
+        "Autopilot.X/build/": true,
+    },
+
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**",
+        "/opt/microchip/xc32/v1.42/pic32mx/include/**",
+        "/opt/microchip/xc32/v4.45/pic32mx/include/**",
+        "pic32mx/include",
+    ],
+}

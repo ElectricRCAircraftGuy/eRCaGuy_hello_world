@@ -6,6 +6,9 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 1. My answer: [How to configure a `preBuildSteps.sh` Bash script that runs as part of the pre-build process in the MPLAB X IDE on both Windows and Linux](https://stackoverflow.com/a/78485243/4561887)
 1. My notes on how to remotely power cycle USB devices, such as the [PICKit 5](https://www.microchip.com/en-us/development-tool/pg164150) debugger: https://github.com/ElectricRCAircraftGuy/eRCaGuy_Engineering/tree/main/USB_Managed_Hubs/CG-10PU3MGD_managed_USB_hub
     1. See the "PICKit 5 debugger notes" section here too!
+1. Device Configuration Registers: https://developerhelp.microchip.com/xwiki/bin/view/products/mcu-mpu/32bit-mcu/PIC32/configuration-registers/
+    1. For 32mz2048efm144: HTML: [root/opt/microchip/xc32/v4.45/docs/config_docs/32mz2048efm144.html](root/opt/microchip/xc32/v4.45/docs/config_docs/32mz2048efm144.html)
+    1. For 32mz2048efm144: PDF: [root/opt/microchip/xc32/v4.45/docs/config_docs/32mz2048efm144--Config-Bit Settings for PIC32MZ2048EFM144.pdf](<root/opt/microchip/xc32/v4.45/docs/config_docs/32mz2048efm144--Config-Bit Settings for PIC32MZ2048EFM144.pdf>)
 
 
 # Microchip MPLAB X IDE notes, including license manager (`xclm`) issues
