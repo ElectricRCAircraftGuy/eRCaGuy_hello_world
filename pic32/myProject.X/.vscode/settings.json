@@ -6,7 +6,7 @@
         "__cplusplus",
         "__PIC32MZ__",
         "__32MZ2048EFM144__",
-        "__LANGUAGE_ASSEMBLY__",
+        // "__LANGUAGE_ASSEMBLY__",
         "__LANGUAGE_C__",
         "__LANGUAGE_C_PLUS_PLUS",
         // "BUILD_MC=1",
