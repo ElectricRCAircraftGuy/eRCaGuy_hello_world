@@ -19,6 +19,15 @@ See:
 
 #include <stddef.h>  // size_t
 
+// Override the system's `strcasecmp()` and `strncasecmp()` functions if they don't exist.
+// See: https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html
+#if defined __has_include
+    #if !__has_include (<strings.h>)
+        #define strcasecmp my_strcasecmp
+        #define strncasecmp my_strncasecmp
+    #endif
+#endif
+
 // Case-insensitive string comparison between `str1` and `str2`:
 // - "Upon completion, strcasecmp() shall return an integer greater than, equal to, or less than 0,
 //   if the string pointed to by str1 is, ignoring case, greater than, equal to, or less than the
