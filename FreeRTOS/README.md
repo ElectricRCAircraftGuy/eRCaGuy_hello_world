@@ -15,6 +15,16 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
             ```bash
             meld FreeRTOSConfig.h FreeRTOSConfig_GS_customizations.h
             ```
+1. Official FreeRTOS Kernel Book: 
+    1. Main link: https://freertos.org/Documentation/02-Kernel/07-Books-and-manual/01-RTOS_book
+    1. Mastering the FreeRTOS Real Time Kernel - A Hands On Tutorial Guide
+        1. Main link: https://freertos.org/Documentation/02-Kernel/07-Books-and-manual/01-RTOS_book
+        1. On GitHub: 
+            1. https://github.com/FreeRTOS/FreeRTOS-Kernel-Book
+            1. Table of Contents: https://github.com/FreeRTOS/FreeRTOS-Kernel-Book/blob/main/toc.md
+        1. Downloadable PDF: https://github.com/FreeRTOS/FreeRTOS-Kernel-Book/releases/download/V1.1.0/Mastering-the-FreeRTOS-Real-Time-Kernel.v1.1.0.pdf
+            1. Companion Example Source Code: https://freertos.org/media/2024/source-code-for-book-examples.20240207.zip
+    1. The FreeRTOS Reference Manual: https://freertos.org/media/2018/FreeRTOS_Reference_Manual_V10.0.0.pdf
 
 
 # Table of Contents
