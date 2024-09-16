@@ -29,3 +29,7 @@ trash/
 # See my comment, and this answer:
 # https://stackoverflow.com/questions/16869024/what-is-pycache/48143622#comment134373559_48143622
 __pycache__/
+
+# Python Venv virtual environment
+# - See: https://code.visualstudio.com/docs/python/python-tutorial
+/.venv/
