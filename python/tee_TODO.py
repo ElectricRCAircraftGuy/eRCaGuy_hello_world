@@ -11,6 +11,9 @@ Sep. 2024
 
 Status: TODO
 
+UPDATE: SEE A FULL, WORKING VERSION OF MINE HERE:
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/tee.py
+
 
 PROMPT TO GITHUB COPILOT:
 python: tee all stdout output to a file
