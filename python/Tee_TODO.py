@@ -12,7 +12,7 @@ Sep. 2024
 Status: TODO
 
 UPDATE: SEE A FULL, WORKING VERSION OF MINE HERE:
-https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/tee.py
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/Tee.py
 
 
 PROMPT TO GITHUB COPILOT:
