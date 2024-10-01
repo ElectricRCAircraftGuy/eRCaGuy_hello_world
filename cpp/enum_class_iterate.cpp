@@ -41,6 +41,8 @@ References:
 #include <cstdio>   // For `printf()`
 // #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 
+// Option 1: adds no new values to the enum class, but rather, just adds 
+// aliased names:
 enum class MyErrorType 
 {
     SOMETHING_1 = 0,
@@ -56,11 +58,38 @@ enum class MyErrorType
     end = SOMETHING_5,
 };
 
+// Option 2 [MY PREFERENCE]: also add a new `count` value to the enum class. 
+//
+// I prefer this style for two reasons: 
+// 1. The `MyErrorType2::count` member is really useful to see how many valid
+//    members are in your enum class.
+// 2. The last portion of the enum class definition, starting with `count,` is
+//    always the exact same for all enum classes, so you can easily copy-paste
+//    this code and recognize it throughout your code base. In the example
+//    above, the `= SOMETHING_5` part of `end = SOMETHING_5` must be manually 
+//    updated for each enum class definition, which is a pain. 
+enum class MyErrorType2 
+{
+    SOMETHING_1 = 0,
+    SOMETHING_2,
+    SOMETHING_3,
+    SOMETHING_4,
+    SOMETHING_5,
+    
+    // Helpers
+    count,
+    begin = 0,
+    end = count - 1,
+};
+
+
 int main()
 {
-    printf("C++ enum class iteration demo.\n");
+    printf("C++ enum class iteration demo.\n\n");
 
-    // Iterate over the enum class
+    // Iterate over the enum classes
+
+    // Option 1
     for (MyErrorType myErrorType = MyErrorType::begin;
         myErrorType <= MyErrorType::end;
         myErrorType = static_cast<MyErrorType>(
@@ -85,6 +114,38 @@ int main()
                 break;
         }
     }
+
+    printf("\n");
+
+    // Option 2: same as above, except we must also include the `count` value
+    // as a switch case. 
+    for (MyErrorType2 myErrorType2 = MyErrorType2::begin;
+        myErrorType2 <= MyErrorType2::end;
+        myErrorType2 = static_cast<MyErrorType2>(
+            static_cast<size_t>(myErrorType2) + 1))
+    {
+        switch (myErrorType2)
+        {
+            case MyErrorType2::SOMETHING_1:
+                printf("MyErrorType2::SOMETHING_1\n");
+                break;
+            case MyErrorType2::SOMETHING_2:
+                printf("MyErrorType2::SOMETHING_2\n");
+                break;
+            case MyErrorType2::SOMETHING_3:
+                printf("MyErrorType2::SOMETHING_3\n");
+                break;
+            case MyErrorType2::SOMETHING_4:
+                printf("MyErrorType2::SOMETHING_4\n");
+                break;
+            case MyErrorType2::SOMETHING_5:
+                printf("MyErrorType2::SOMETHING_5\n");
+                break;
+            case MyErrorType2::count:
+                // Nothing to do
+                break;
+        }
+    }
 }
 
 
@@ -94,10 +155,17 @@ SAMPLE OUTPUT:
 
 eRCaGuy_hello_world/cpp$ ./enum_class_iterate.cpp 
 C++ enum class iteration demo.
+
 MyErrorType::SOMETHING_1
 MyErrorType::SOMETHING_2
 MyErrorType::SOMETHING_3
 MyErrorType::SOMETHING_4
 MyErrorType::SOMETHING_5
+
+MyErrorType2::SOMETHING_1
+MyErrorType2::SOMETHING_2
+MyErrorType2::SOMETHING_3
+MyErrorType2::SOMETHING_4
+MyErrorType2::SOMETHING_5
 
 */
