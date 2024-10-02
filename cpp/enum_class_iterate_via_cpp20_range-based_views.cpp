@@ -51,6 +51,8 @@ References:
 1. Algorithm: https://en.cppreference.com/w/cpp/algorithm/transform
 1. Utility: https://en.cppreference.com/w/cpp/utility/to_underlying
 1. https://en.cppreference.com/w/cpp/language/decltype
+1. Abbreviated Function Templates and Constrained Auto - 
+   https://devblogs.microsoft.com/cppblog/abbreviated-function-templates-and-constrained-auto/
 
 1. GitHub Copilot: 
 
@@ -78,7 +80,8 @@ References:
 
 // Option 1: adds no new values to the enum class, but rather, just adds 
 // aliased names:
-enum class MyErrorType 
+// - Note: everything works just fine for non-scoped `enum MyErrorType` too. 
+enum class MyErrorType  
 {
     SOMETHING_1 = 0,
     SOMETHING_2,
@@ -124,7 +127,18 @@ enum class MyErrorType2
 
 // Generate a C++20 "range" iterating from the enum value `first` to `last`,
 // inclusive, to be used in modern C++ range-based for loops.
-constexpr inline auto enum_range = [](auto first, auto last) 
+// - This is also using the C++20 feature of "abbreviated function templates",
+//   or "template argument deduction for functions", where `auto` can be used
+//   for all input parameter types and for the return type in place of making
+//   this a function template. 
+//   - Previous to C++20, this would have to be a function template or lambda
+//     function. See here: 
+//     https://devblogs.microsoft.com/cppblog/abbreviated-function-templates-and-constrained-auto/
+//     >  C++14 allowed you to make lambdas which can be called with arguments
+//     >  of any type by using the auto keyword...Now you can pass any types as
+//     >  the arguments. C++20’s abbreviated function templates allows you to
+//     >  apply this kind of syntax to function templates.
+constexpr inline auto enum_range(auto first, auto last) 
 {
     // Note that "ranges" exist only in C++20 or later
     auto enum_range = 
@@ -154,7 +168,18 @@ constexpr inline auto enum_range = [](auto first, auto last)
 
 // Generate a C++20 "range" iterating from the enum value `first` to `last`,
 // inclusive, to be used in modern C++ range-based for loops.
-constexpr inline auto enum_range = [](auto first, auto last) 
+// - This is also using the C++20 feature of "abbreviated function templates",
+//   or "template argument deduction for functions", where `auto` can be used
+//   for all input parameter types and for the return type in place of making
+//   this a function template. 
+//   - Previous to C++20, this would have to be a function template or lambda
+//     function. See here: 
+//     https://devblogs.microsoft.com/cppblog/abbreviated-function-templates-and-constrained-auto/
+//     >  C++14 allowed you to make lambdas which can be called with arguments
+//     >  of any type by using the auto keyword...Now you can pass any types as
+//     >  the arguments. C++20’s abbreviated function templates allows you to
+//     >  apply this kind of syntax to function templates.
+constexpr inline auto enum_range(auto first, auto last) 
 {
     // Note that "ranges" exist only in C++20 or later
     auto enum_range = 
@@ -212,7 +237,8 @@ int main()
 
 #if __cplusplus >= 202000L
     // Option 0: C++20 range-based views
-    for (const auto e : enum_range(MyErrorType::begin, MyErrorType::end))
+
+    for (const MyErrorType e : enum_range(MyErrorType::begin, MyErrorType::end))
     {
         switch (e)
         {
@@ -230,6 +256,34 @@ int main()
                 break;
             case MyErrorType::SOMETHING_5:
                 printf("MyErrorType::SOMETHING_5\n");
+                break;
+        }
+    }
+
+    printf("\n");
+
+    for (const MyErrorType2 e : 
+        enum_range(MyErrorType2::begin, MyErrorType2::end))
+    {
+        switch (e)
+        {
+            case MyErrorType2::SOMETHING_1:
+                printf("MyErrorType2::SOMETHING_1\n");
+                break;
+            case MyErrorType2::SOMETHING_2:
+                printf("MyErrorType2::SOMETHING_2\n");
+                break;
+            case MyErrorType2::SOMETHING_3:
+                printf("MyErrorType2::SOMETHING_3\n");
+                break;
+            case MyErrorType2::SOMETHING_4:
+                printf("MyErrorType2::SOMETHING_4\n");
+                break;
+            case MyErrorType2::SOMETHING_5:
+                printf("MyErrorType2::SOMETHING_5\n");
+                break;
+            case MyErrorType2::count:
+                // Nothing to do
                 break;
         }
     }
@@ -305,9 +359,9 @@ SAMPLE OUTPUT:
 
 eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=gnu++23 enum_class_iterate_via_cpp20_range-based_views.cpp -o bin/a && bin/a
 
-real	0m0.379s
-user	0m0.333s
-sys	0m0.045s
+real	0m0.405s
+user	0m0.354s
+sys	0m0.051s
 __cplusplus = 202100
 Compiled with a pre-release version of C++23.
 
@@ -318,6 +372,12 @@ MyErrorType::SOMETHING_2
 MyErrorType::SOMETHING_3
 MyErrorType::SOMETHING_4
 MyErrorType::SOMETHING_5
+
+MyErrorType2::SOMETHING_1
+MyErrorType2::SOMETHING_2
+MyErrorType2::SOMETHING_3
+MyErrorType2::SOMETHING_4
+MyErrorType2::SOMETHING_5
 
 MyErrorType::SOMETHING_1
 MyErrorType::SOMETHING_2
