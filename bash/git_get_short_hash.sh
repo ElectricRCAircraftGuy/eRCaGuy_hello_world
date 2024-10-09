@@ -46,6 +46,7 @@ git_get_status() {
     fi
 }
 
+# See also my answer with ths code: https://stackoverflow.com/a/76856090/4561887
 # Get a short commit hash, and see whether `git status` is clean or dirty.
 # Example outputs:
 # 1. Not in a git repo: `(not a git repo)`
