@@ -3,7 +3,7 @@
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 # GS
-# 6 July 2022
+# First written: 6 July 2022
 
 # Practice printing with various formatting using ANSI color and formatting codes.
 # Status: done and works!
@@ -22,7 +22,8 @@
 # 1. *****+ ANSI colors and color codes on Wikipedia
 #   1. https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
 #   1. https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
-
+# 1. *****+ https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/ansi_colors.py
+#
 
 # From "eRCaGuy_hello_world/c/printf_bold_and_colors.c":
 #
@@ -31,22 +32,32 @@
 # See a full table of colors here:
 # 1. https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
 # 1. https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
-ANSI_OFF="\e[m"         # the combination of ANSI_START + ANSI_END with no numeric codes in between
+# 
+# See also:
+# 1. *****+ https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/ansi_colors.py
+# 
+
 ANSI_START="\e["
 ANSI_END="m"
+# the combination of ANSI_START + ANSI_END with no numeric codes in between
+ANSI_OFF="${ANSI_START}${ANSI_END}"
+
 ANSI_BOLD=";1"
 ANSI_SLOW_BLINK=";5"
 ANSI_FAST_BLINK=";6"   # (not widely supported--does NOT work in a Linux Ubuntu bash shell)
-ANSI_FG_BLK=";30"       # foreground color black
-ANSI_BG_BLK=";40"       # background color black
-ANSI_FG_RED=";31"       # foreground color red
-ANSI_BG_RED=";41"       # background color red
+ANSI_FG_BLK=";30"      # foreground color black
+ANSI_BG_BLK=";40"      # background color black
+ANSI_FG_RED=";31"      # foreground color red
+ANSI_FG_BR_RED=";91"   # foreground color bright red
+ANSI_BG_RED=";41"      # background color red
+ANSI_FG_GRE=";32"      # foreground color green
+ANSI_BG_GRE=";42"      # background color green
 ANSI_FG_BLU=";34"      # foreground color blue
-ANSI_BG_BLU=";44"      # background color blue
 ANSI_FG_BR_BLU=";94"   # foreground color bright blue
+ANSI_BG_BLU=";44"      # background color blue
 ANSI_BG_BR_BLU=";104"  # background color bright blue
-ANSI_FG_BR_YLW=";93"    # foreground color bright yellow
-ANSI_BG_BR_YLW=";103"   # background color bright yellow
+ANSI_FG_BR_YLW=";93"   # foreground color bright yellow
+ANSI_BG_BR_YLW=";103"  # background color bright yellow
 
 # From "eRCaGuy_hello_world/c/printf_bold_and_colors.c":
 #
@@ -100,18 +111,57 @@ printf "%b%b\n" \
     "${ANSI_START}${ANSI_BOLD}${ANSI_FG_BR_YLW}${ANSI_SLOW_BLINK}${ANSI_END}Hello${ANSI_OFF} "\
     "${ANSI_START}${ANSI_BG_BR_YLW}${ANSI_SLOW_BLINK}${ANSI_FG_BLK}${ANSI_END}World${ANSI_OFF}."
 
+# Print all args in bright blue
+echo_blue() {
+    # GS note: per GitHub Copilot:
+    #
+    # > In bash, "$*" is a special variable that represents all the positional parameters
+    # > (arguments) passed to a script or function as a single string. The arguments are
+    # > concatenated into a single string, separated by the first character of the IFS (Internal
+    # > Field Separator) variable, which is usually a space.
+    #
+    # > For handling arguments individually, use "$@" instead, which treats each argument as a
+    # > separate quoted string.
+    # 
+    local text="$*"
+    echo -e "${ANSI_START}${ANSI_FG_BR_BLU}${ANSI_END}${text}${ANSI_OFF}"
+}
 
-# SAMPLE OUTPUT:
+echo_green() {
+    local text="$*"
+    echo -e "${ANSI_START}${ANSI_FG_GRE}${ANSI_END}${text}${ANSI_OFF}"
+}
+
+echo_yellow() {
+    local text="$*"
+    echo -e "${ANSI_START}${ANSI_FG_BR_YLW}${ANSI_END}${text}${ANSI_OFF}"
+}
+
+echo_red() {
+    local text="$*"
+    echo -e "${ANSI_START}${ANSI_FG_BR_RED}${ANSI_END}${text}${ANSI_OFF}"
+}
+
+echo ""  # newline
+echo_blue   "Hello World. This is bright blue."
+echo_green  "Hello World. This is green."
+echo_yellow "Hello World. This is bright yellow."
+echo_red    "Hello World. This is bright red."
+# Technically, no quotes are needed since all spaced args are just concatenated with a space between
+# them anyway.
+echo_red    Hello World. This is bright red. Yes, i n d e e d.
+
+# SAMPLE RUN AND OUTPUT:
 # NB: RUN THIS YOURSELF TO SEE THE ACTUAL COLORS, FORMATTING, AND BLINKING!
 #
-#       eRCaGuy_hello_world/bash$ ./ansi_color_codes.sh
+#       eRCaGuy_hello_world/bash$ ./ansi_color_codes.sh 
 #       bold "Hello":
 #       Hello World.
 #       Hello World.
-#
+#       
 #       bold foreground blue:
 #       Hello World.
-#
+#       
 #       Hello World.
 #       Hello World.
 #       Hello Hello
@@ -122,4 +172,10 @@ printf "%b%b\n" \
 #       Hello World.
 #       Hello World.
 #       Hello World.
-
+#       
+#       Hello World. This is bright blue.
+#       Hello World. This is green.
+#       Hello World. This is bright yellow.
+#       Hello World. This is bright red.
+#       Hello World. This is bright red. Yes, i n d e e d.
+#       
