@@ -37,6 +37,15 @@
 RETURN_CODE_SUCCESS=0
 RETURN_CODE_ERROR=1
 
+# See whether the git status is "clean" or "dirty".
+git_get_status() {
+    if [ -z "$(git status --porcelain)" ]; then
+        echo "clean"
+    else
+        echo "dirty"
+    fi
+}
+
 # Get a short commit hash, and see whether `git status` is clean or dirty.
 # Example outputs:
 # 1. Not in a git repo: `(not a git repo)`
@@ -53,13 +62,36 @@ git_get_short_hash() {
     fi
 
     # See my answer here: https://stackoverflow.com/a/76856090/4561887
-    test -z "$(git status --porcelain)" \
-        && echo "$(git rev-parse --short HEAD)" \
-        || echo "$(git rev-parse --short HEAD)-dirty"
+    
+    git_commit_hash="$(git rev-parse --short HEAD)"
+
+    if [ "$(git_get_status)" = "clean" ]; then
+        echo "${git_commit_hash}"
+    else
+        echo "${git_commit_hash}-dirty"
+    fi
+}
+
+print_status_if_dirty() {
+    if [ "$(git_get_status)" = "dirty" ]; then
+        echo ""
+        echo "WARNING: Your git status is dirty! You have uncommitted changes:"
+
+        echo ""
+        echo "=== git status ==="
+        git status
+
+        echo ""
+        echo "=== git diff ==="
+        git diff
+
+        echo ""
+    fi
 }
 
 main() {
     git_get_short_hash
+    print_status_if_dirty
 }
 
 # Determine if the script is being sourced or executed (run).
