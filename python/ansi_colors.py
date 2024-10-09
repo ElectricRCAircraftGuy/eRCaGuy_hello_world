@@ -10,6 +10,11 @@ Sept. 2024
 Add ANSI color codes to strings for terminal output.
 Status: WORKS!
 
+vvvvvvvvvvvvvvvvvvvvvvv
+SEE ALSO: 
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/ansi_colors.py
+^^^^^^^^^^^^^^^^^^^^^^^
+
 keywords: (keywords)
 
 Check this script with `pylint` v2.0.0 or later. See "eRCaGuy_hello_world/python/README.md" for
@@ -40,6 +45,7 @@ References:
    https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/ansi_colors.py
 1. ...Which borrowed from my file here: 
    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/python/pandas_dataframe_iteration_vs_vectorization_vs_list_comprehension_speed_tests.py
+1. *****+ https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/ansi_colors.py
 1. 
 
 """
