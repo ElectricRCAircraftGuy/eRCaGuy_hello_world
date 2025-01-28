@@ -62,8 +62,57 @@ print_array2() {
     done
 }
 
+# [MY FAVORITE VERSION]
+# Echo a regular bash array. 
+echo_array() {
+    local -n array_reference="$1"
+    name="$1"
+    echo "Array name: $name" 
+    for element in "${array_reference[@]}"; {
+        echo "  $element"
+    }
+}
+
+# Echo an array **by reference** instead of by value.
+# Example usage, where `my_array` is a bash array:
+#       my_array=(
+#           "one"
+#           "two"
+#           "three"
+#       )
+#       echo_array2 my_array
+echo_array2() {
+    # Declare a local **reference variable** (hence `-n`) named `array_ref`
+    # which is a reference to the first parameter passed in.
+    # - See: `man bash` and search for `declare [` and `local [` via regex searches
+    #   `declare \[` and `local \[`, respectively, for a description of the `-n` option, which
+    #   states: 
+    #   > -n     Give  each  name the nameref attribute, making it a name reference to another variable.
+    local -n array_ref="$1"
+
+    # Optionally, print the name too:
+    array_name="$1" 
+    echo "Printing array named '$array_name':"
+
+    for element in "${array_ref[@]}"; do
+        echo "  $element"
+    done
+}
+
 main() {
     echo "Running main."
+
+    my_array=(
+        "a"
+        "b"
+        "c"
+    )
+
+    echo_array2 my_array
+    echo ""
+
+    echo_array my_array
+    echo ""
 
     array1=()
     array1+=("one")
@@ -71,6 +120,10 @@ main() {
     array1+=("three")
 
     echo "array1:"
+
+    echo_array2 array1
+    echo ""
+
     print_array "${array1[@]}"
     echo ""
     print_array2 "array1"
@@ -123,46 +176,62 @@ fi
 #
 # 1) WHEN RUN (it prints "Running main.")
 #
-#       eRCaGuy_hello_world/bash$ ./array_print.sh
-#       Running main.
-#       array1:
-#           one
-#           two
-#           three
+#   eRCaGuy_hello_world$ bash/array_print.sh 
+#   Running main.
+#   Printing array named 'my_array':
+#     a
+#     b
+#     c
+#   
+#   Array name: my_array
+#     a
+#     b
+#     c
+#   
+#   array1:
+#   Printing array named 'array1':
+#     one
+#     two
+#     three
+#   
+#       one
+#       two
+#       three
+#   
+#       one
+#       two
+#       three
+#   
+#       one
+#       two
+#       three
+#   
+#       -n
+#       -e
+#       -E
+#   
+#       -n
+#       -e
+#       -E
+#   
+#       8
+#       9
+#       10
+#   
+#       8
+#       9
+#       10
+#   
+#       11
+#       12
+#       13
+#   
+#       11
+#       12
+#       13
+#   
+#   declare -a array4=([0]="11" [1]="12" [2]="13")
 #
-#           one
-#           two
-#           three
-#
-#           one
-#           two
-#           three
-#
-#           -n
-#           -e
-#           -E
-#
-#           -n
-#           -e
-#           -E
-#
-#           8
-#           9
-#           10
-#
-#           8
-#           9
-#           10
-#
-#           11
-#           12
-#           13
-#
-#           11
-#           12
-#           13
-#
-#       declare -a array4=([0]="11" [1]="12" [2]="13")
 #
 #
 #
