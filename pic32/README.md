@@ -13,6 +13,14 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     1. For 32mz2048efm144: PDF: [root/opt/microchip/xc32/v4.45/docs/config_docs/32mz2048efm144--Config-Bit Settings for PIC32MZ2048EFM144.pdf](<root/opt/microchip/xc32/v4.45/docs/config_docs/32mz2048efm144--Config-Bit Settings for PIC32MZ2048EFM144.pdf>)
 
 
+# Other pages
+
+1. **Creating your first project inside MPLAB X IDE:** see my instructions in the READMEs here: 
+    1. [summary, written *after* the document below] https://github.com/ElectricRCAircraftGuy/eRCaGuy_MPLABX/tree/main/PIC32MZ_Embedded_Connectivity_PIC32MZ2048EFM144/basic_uart
+    1. [more detailed version, but less well-understood by me, written before the doc above] https://github.com/ElectricRCAircraftGuy/eRCaGuy_MPLABX/tree/main/ChipKIT_Max32_PIC32MX795F512L/gs_pic32mx7_basic_uart
+1. [vscode_settings_includes_for_indexing_PIC32_projects.md](https://github.com/ElectricRCAircraftGuy/eRCaGuy_MPLABX/blob/main/vscode_settings_includes_for_indexing_PIC32_projects.md) - How to set up VSCode to index and search the Microchip XC32 compiler's include files.
+
+
 # Microchip MPLAB X IDE notes, including license manager (`xclm`) issues
 
 See also my personal (not shared) notes here: [Microchip (& Atmel) MPLAB X IDE for PIC mcus et al configuration and setup info](https://docs.google.com/document/d/1fzDxL7aJk8aQDf5d6zT39GE9GySWb7lOfG7v8Dn93fI/edit).
