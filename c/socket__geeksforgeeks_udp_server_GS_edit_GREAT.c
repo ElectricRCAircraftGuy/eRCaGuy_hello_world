@@ -271,7 +271,20 @@ int main()
     // you receive a message **from ANYONE!** This "received from" address is then used as the
     // "destination address" in `sendto()` below, which we use to **send back to**, or **reply to**,
     // the sender!
-    ssize_t num_bytes_received = recvfrom(socket_fd, receive_buf, sizeof(receive_buf), MSG_WAITALL,
+#ifdef __MSYS__
+    // If running on Windows, then the `flags` parameter must be 0, not
+    // `MSG_WAITALL`! 
+    // - On Linux, supported flags for `recvfrom()` include `MSG_PEEK`, 
+    //   `MSG_OOB`, and `MSG_WAITALL`. 
+    //   See: https://man7.org/linux/man-pages/man3/recvfrom.3p.html
+    // - On Windows, supported flags for `recvfrom()` include only `MSG_PEEK` 
+    //   and `MSG_OOB`. 
+    //   See: https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom
+    int recvfrom_flags = 0;            // For Windows
+#else
+    int recvfrom_flags = MSG_WAITALL;  // For Linux
+#endif
+    ssize_t num_bytes_received = recvfrom(socket_fd, receive_buf, sizeof(receive_buf), recvfrom_flags,
         (struct sockaddr *)&addr_client, &addr_len);
     if (num_bytes_received == -1)
     {
@@ -283,14 +296,14 @@ int main()
         printf("No bytes received. The sender has performed an orderly shutdown.\n");
     }
 
-    if (addr_len > sizeof(addr_client))
+    if ((size_t)addr_len > sizeof(addr_client))
     {
         printf("Error: the `addr_client` address buffer provided to the receive call was too "
                "small, and therefore the address written into it was truncated. Actual address "
                "size provided to the function was %zu bytes, but %u bytes were needed.\n",
                sizeof(addr_client), addr_len);
     }
-    else if (addr_len < sizeof(addr_client))
+    else if ((size_t)addr_len < sizeof(addr_client))
     {
         printf("Note: the `addr_client` address buffer provided to the receive call was bigger "
                "than necessary. Actual address size provided to the function was %zu bytes, "
