@@ -1,3 +1,6 @@
+///usr/bin/env ccache gcc -Wall -Wextra -Werror -O3 -std=gnu17 "$0" -o /tmp/a -lm && /tmp/a "$@"; exit
+// For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
+
 /*
 This file is part of eRCaGuy_hello_world:
 https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
@@ -333,6 +336,7 @@ int main()
     //
     sender_ip_addr = inet_ntoa(addr_client.sin_addr);
     strncpy(sender_ip_addr_str, sender_ip_addr, sizeof(sender_ip_addr_str));
+    sender_ip_addr_str[sizeof(sender_ip_addr_str) - 1] = '\0'; // ensure null-termination
 
     // Option 2/2 [RECOMMENDED]: POSIX `inet_ntop()`
     // - DOES have error handling capabilities
