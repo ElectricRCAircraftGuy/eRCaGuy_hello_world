@@ -9,6 +9,11 @@ Edit and learn the GeeksforGeeks UDP Server-Client code, from here:
 https://www.geeksforgeeks.org/udp-server-client-implementation-c/.
 This is the UDP **server** code.
 
+vvvvvvvvvvvvvvvvv
+SEE ALSO THIS CODE USED IN MY FULL REPO HERE:
+https://github.com/ElectricRCAircraftGuy/eRCaGuy_Linux_Windows_CMake_Sockets_MSYS2
+^^^^^^^^^^^^^^^^^
+
 STATUS: DONE AND WORKS! THIS IS A GREAT DEMO!
 
 TODO: make a super simple version of this that ignores ALL error checking, just to show how simple
