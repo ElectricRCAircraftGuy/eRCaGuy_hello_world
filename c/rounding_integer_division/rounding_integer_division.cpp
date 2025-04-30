@@ -138,7 +138,10 @@ void test_eq(int num1, int num2, int line_num)
 )
 
 /// @brief      A function-like macro to perform integer division of numer/denom, rounding the
-///             result TO THE NEAREST whole integer.
+///             result TO THE NEAREST whole integer. 
+///             It rounds AWAY FROM ZERO if exactly in the middle at 0.5. Ex:
+///                  5/2   = 2.50 -->  3
+///                 -5/2  = -2.50 --> -3
 /// @note       This works on *integers only* since it assumes integer truncation will take place
 ///             automatically during the division! It will NOT work properly on floating point
 ///             types! Valid types are int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
@@ -372,6 +375,9 @@ int main()
     TEST_EQ(DIVIDE_ROUNDNEAREST(5, 5), 1);   // 5/5   = 1.00 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST(5, 4), 1);   // 5/4   = 1.25 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(DIVIDE_ROUNDNEAREST(-6, 4), -2); // -6/4  = -1.50 --> -2
+    TEST_EQ(DIVIDE_ROUNDNEAREST(5, 2), 3);   // 5/2   = 2.50 --> 3
+    TEST_EQ(DIVIDE_ROUNDNEAREST(-5, 2), -3); // -5/2  = -2.50 --> -3
     TEST_EQ(DIVIDE_ROUNDNEAREST(7, 4), 2);   // 7/4   = 1.75 --> 2
     TEST_EQ(DIVIDE_ROUNDNEAREST(9, 10), 1);  // 9/10  = 0.90 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST(3, 4), 1);   // 3/4   = 0.75 --> 1
@@ -424,6 +430,9 @@ int main()
     TEST_EQ(DIVIDE_ROUNDNEAREST2(5, 5), 1);   // 5/5   = 1.00 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST2(5, 4), 1);   // 5/4   = 1.25 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST2(6, 4), 2);   // 6/4   = 1.50 --> 2
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(-6, 4), -2); // -6/4  = -1.50 --> -2
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(5, 2), 3);   // 5/2   = 2.50 --> 3
+    TEST_EQ(DIVIDE_ROUNDNEAREST2(-5, 2), -3); // -5/2  = -2.50 --> -3
     TEST_EQ(DIVIDE_ROUNDNEAREST2(7, 4), 2);   // 7/4   = 1.75 --> 2
     TEST_EQ(DIVIDE_ROUNDNEAREST2(9, 10), 1);  // 9/10  = 0.90 --> 1
     TEST_EQ(DIVIDE_ROUNDNEAREST2(3, 4), 1);   // 3/4   = 0.75 --> 1
@@ -474,6 +483,9 @@ int main()
     TEST_EQ(divide_roundnearest(5, 4), 1);   // 5/4   = 1.25 --> 1
     TEST_EQ(divide_roundnearest(6, 4), 2);   // 6/4   = 1.50 --> 2
     TEST_EQ(divide_roundnearest(7, 4), 2);   // 7/4   = 1.75 --> 2
+    TEST_EQ(divide_roundnearest(-6, 4), -2); // -6/4  = -1.50 --> -2
+    TEST_EQ(divide_roundnearest(5, 2), 3);   // 5/2   = 2.50 --> 3
+    TEST_EQ(divide_roundnearest(-5, 2), -3); // -5/2  = -2.50 --> -3
     TEST_EQ(divide_roundnearest(9, 10), 1);  // 9/10  = 0.90 --> 1
     TEST_EQ(divide_roundnearest(3, 4), 1);   // 3/4   = 0.75 --> 1
     TEST_EQ(divide_roundnearest(-3, 4), -1);  // -3/4  = -0.75 --> -1
