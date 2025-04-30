@@ -51,7 +51,7 @@ static uint32_t test_fail_cnt = 0; // increment counter each time a test fails
 
 /// @brief  Test if num1 and num2 are equal, automatically passing the line number to the
 ///         test function.
-#define TEST_EQ(num1, num2) test_eq(num1, num2, __LINE__)
+#define TEST_EQ(num1, num2) test_eq((num1), (num2), __LINE__)
 
 /// @brief  Unit test: test if num1 and num2 are equal, and print the line number and whether
 ///         the test passes or fails.
@@ -134,7 +134,8 @@ void test_eq(int num1, int num2, int line_num)
     /* acting slightly differently if denom is negative: */                             \
     ((numer) - ((denom) < 0 ? (denom) + 1 : (denom) - 1)) / (denom) :                   \
     /* numer AND denom are either *both positive* OR *both negative*, so do this: */    \
-    (numer) / (denom)
+    (numer) / (denom)                                                                   \
+)
 
 /// @brief      A function-like macro to perform integer division of numer/denom, rounding the
 ///             result TO THE NEAREST whole integer.
@@ -180,34 +181,34 @@ void test_eq(int num1, int num2, int line_num)
 
 /// @brief  *gcc statement expression* form of the above equivalent macro
 #define DIVIDE_ROUND_AWAY_FROM_ZERO2(numer, denom) DIVIDE_ROUNDUP2((numer), (denom))
-#define DIVIDE_ROUNDUP2(numer, denom)                                           \
-    ({                                                                          \
-        __typeof__(numer) numer_ = (numer);                                     \
-        __typeof__(denom) denom_ = (denom);                                     \
-        ((numer_) < 0) != ((denom_) < 0) ?                                      \
-            (numer_) / (denom_) :                                               \
-            ((numer_) + ((denom_) < 0 ? (denom_) + 1 : (denom_)-1)) / (denom_); \
-    })
+#define DIVIDE_ROUNDUP2(numer, denom)                                          \
+({                                                                             \
+    __typeof__(numer) numer_ = (numer);                                        \
+    __typeof__(denom) denom_ = (denom);                                        \
+    ((numer_) < 0) != ((denom_) < 0) ?                                         \
+        (numer_) / (denom_) :                                                  \
+        ((numer_) + ((denom_) < 0 ? (denom_) + 1 : (denom_)-1)) / (denom_);    \
+})
 
 /// @brief  *gcc statement expression* form of the above equivalent macro
 #define DIVIDE_ROUND_TOWARDS_ZERO2(numer, denom) DIVIDE_ROUNDDOWN2((numer), (denom))
-#define DIVIDE_ROUNDDOWN2(numer, denom)                                          \
-    ({                                                                           \
-        __typeof__(numer) numer_ = (numer);                                      \
-        __typeof__(denom) denom_ = (denom);                                      \
-        ((numer_) < 0) != ((denom_) < 0) ?                                       \
-            ((numer_) - ((denom_) < 0 ? (denom_) + 1 : (denom_)-1)) / (denom_) : \
-            (numer_) / (denom_);                                                 \
-    })
+#define DIVIDE_ROUNDDOWN2(numer, denom)                                        \
+({                                                                             \
+    __typeof__(numer) numer_ = (numer);                                        \
+    __typeof__(denom) denom_ = (denom);                                        \
+    ((numer_) < 0) != ((denom_) < 0) ?                                         \
+        ((numer_) - ((denom_) < 0 ? (denom_) + 1 : (denom_)-1)) / (denom_) :   \
+        (numer_) / (denom_);                                                   \
+})
 
 /// @brief  *gcc statement expression* form of the above equivalent macro
-#define DIVIDE_ROUNDNEAREST2(numer, denom)                                              \
-({                                                                                      \
-    __typeof__ (numer) numer_ = (numer);                                                \
-    __typeof__ (denom) denom_ = (denom);                                                \
-    ((numer_) < 0) != ((denom_) < 0) ?                                                  \
-    ((numer_) - ((denom_)/2)) / (denom_) :                                              \
-    ((numer_) + ((denom_)/2)) / (denom_);                                               \
+#define DIVIDE_ROUNDNEAREST2(numer, denom)                                     \
+({                                                                             \
+    __typeof__ (numer) numer_ = (numer);                                       \
+    __typeof__ (denom) denom_ = (denom);                                       \
+    ((numer_) < 0) != ((denom_) < 0) ?                                         \
+    ((numer_) - ((denom_)/2)) / (denom_) :                                     \
+    ((numer_) + ((denom_)/2)) / (denom_);                                      \
 })
 
 
