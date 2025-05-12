@@ -37,3 +37,16 @@ Let's get an epoll demo setup to see if it can build and run on both Linux and W
     ```
 
     "Client disconnected" does not happen until you press <kbd>Ctrl</kbd> + <kbd>C</kbd> in the client terminal, above. 
+
+
+# Windows result: 
+
+```bash
+/c/Users/gabriel/GS/dev/eRCaGuy_hello_world/cpp/sockets_epoll/main.cpp:17:10: fatal error: sys/epoll.h: No such file or directory
+   17 | #include <sys/epoll.h>
+      |          ^~~~~~~~~~~~~
+compilation terminated.
+```
+
+So, that answers that: `epoll` is _not_ available on Windows. :(
+
