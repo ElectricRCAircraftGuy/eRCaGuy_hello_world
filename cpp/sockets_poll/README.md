@@ -46,5 +46,21 @@ Let's get a poll demo setup to see if it can build and run on both Linux and Win
 
 # Windows result: 
 
+_Be sure to use the MSYS2 base terminal for all commands above._
 
+RESULT: It works! But there are some minor differences: 
+
+1. When running the server with `./build/Portable/poll_server.exe`, it will ask for an admin password. 
+
+1. `printf "%s" "hello" | nc 127.0.0.1 12345` won't work. Use this instead: 
+    ```bash
+    printf "%s" "hello" | ncat localhost 12345
+    ```
+    And you do _not_ have to press <kbd>Ctrl</kbd> + <kbd>C</kbd> in the client terminal to kill `ncat`. It closes automatically after sending the message. 
+
+Yaaaay! I can use `poll()` in C or C++ code on both Linux and Windows!
+
+Note: if I need higher performance sockets on Windows, consider using `libuv` instead, as the Grok AI tells me it is more efficient than the `poll()` wrapper implementation being used on Windows here. 
+
+See: https://docs.libuv.org/en/v1.x/poll.html
 
