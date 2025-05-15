@@ -18,6 +18,9 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
     
     ```bash
     ./build/Portable/mpmc_queue
+
+    # OR
+    make run
     ```
 
 1. Output

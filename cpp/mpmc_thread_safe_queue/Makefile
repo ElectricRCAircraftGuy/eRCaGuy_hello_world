@@ -7,7 +7,7 @@
 EXECUTABLE_NAME := "mpmc_queue"
 
 # Mark all targets as PHONY (not real files)
-.PHONY: all clean debug release portable test
+.PHONY: all clean debug release portable test run
 all: \
 	debug \
 	release \
@@ -31,3 +31,7 @@ portable: release
 # Run the unit tests
 test: release
 	ctest --test-dir build/Release/ --output-on-failure
+
+# Run the release executable
+run: release
+	./build/Release/$(EXECUTABLE_NAME)
