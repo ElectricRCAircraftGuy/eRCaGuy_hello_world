@@ -6,6 +6,8 @@ This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftG
 
 # Instructions
 
+_Tested and works in both Linux Ubuntu 22.04 and Windows 11._
+
 1. Follow the setup instructions here: "Linux Setup" or "Windows Setup": https://github.com/ElectricRCAircraftGuy/eRCaGuy_Linux_Windows_CMake_Sockets_MSYS2
 
 1. Build:
