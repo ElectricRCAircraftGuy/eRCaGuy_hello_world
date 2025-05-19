@@ -11,4 +11,11 @@ up threads to notify them there is data for them to read, via
 
 See: https://gabrielstaples.com/cpp-mutexes-and-locks/
 
+TODO: 
+- [ ] [May 2025] mpmc_thread_safe_queue library: 
+    - [ ] Modularize the library code out of
+          "eRCaGuy_hello_world/cpp/mpmc_thread_safe_queue/main.cpp" by putting it into
+          `mpmc_thread_safe_queue.hpp` and `mpmc_thread_safe_queue.cpp` files.
+    - [ ] Then, include "mpmc_thread_safe_queue.hpp" in this file. 
+
 */
