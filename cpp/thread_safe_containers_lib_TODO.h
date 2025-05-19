@@ -17,5 +17,7 @@ TODO:
           "eRCaGuy_hello_world/cpp/mpmc_thread_safe_queue/main.cpp" by putting it into
           `mpmc_thread_safe_queue.hpp` and `mpmc_thread_safe_queue.cpp` files.
     - [ ] Then, include "mpmc_thread_safe_queue.hpp" in this file. 
+    - [ ] Be sure it builds and runs correctly still in its main code.
+    - [ ] Remove "TODO" from the end of this filename. 
 
 */
