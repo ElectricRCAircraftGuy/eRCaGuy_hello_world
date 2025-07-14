@@ -41,6 +41,7 @@ References:
 
 */
 
+
 // Local includes/
 // NA
 
@@ -60,6 +61,9 @@ References:
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
 #include <cstdio>   // For `printf()`
 
+
+// Error code / invalid fd for file descriptor operations
+constexpr int FILE_DESCRIPTOR_INVALID = -1; 
 
 class StdoutCapture 
 {
@@ -85,7 +89,6 @@ public:
         dup2(fileno(temp_file_), STDOUT_FILENO);
         
         // Also redirect C++ cout to the same file
-        cout_bak_ = std::cout.rdbuf();
         std::cout.rdbuf(std::cout.rdbuf());  // This keeps cout synced with stdout
     }
 
@@ -120,11 +123,9 @@ public:
 
 private:
     // Original stdout file descriptor backup
-    int stdout_fd_backup_ = -1;
+    int stdout_fd_backup_ = FILE_DESCRIPTOR_INVALID;
     // Temporary file for capturing output
     FILE* temp_file_ = nullptr;
-    // Original cout buffer (not used in this approach, but kept for completeness)
-    std::streambuf* cout_bak_ = nullptr;
 };
 
 int main() 
