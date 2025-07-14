@@ -41,14 +41,25 @@ References:
 
 */
 
-// C++ (incl. C) includes
-#include <cstdint>  // For `uint8_t`, `int8_t`, etc.
-#include <cstdio>   // For `printf()`
+// Local includes/
+// NA
+
+// 3rd-party includes
+// NA
+
+// Linux/Unix includes
+#include <unistd.h>  // For `dup()`, `dup2()`, `close()`
+
+// C++ includes
+#include <fstream>
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 #include <sstream>
 #include <string>
-#include <fstream>
-#include <unistd.h>  // For `dup()`, `dup2()`, `close()`
+
+// C includes 
+#include <cstdint>  // For `uint8_t`, `int8_t`, etc.
+#include <cstdio>   // For `printf()`
+
 
 class StdoutCapture 
 {
@@ -127,8 +138,8 @@ int main()
     StdoutCapture capture;
     capture.start();
 
-    std::cout << "1. This will be captured." << std::endl;
-    printf("2. This will be captured.\n");
+    std::cout << "1. Captured." << std::endl;
+    printf("2. Captured.\n");
 
     std::string captured = capture.stop();
 
@@ -144,14 +155,13 @@ int main()
 /*
 SAMPLE OUTPUT:
 
-Does NOT work correctly yet!: 
 
 eRCaGuy_hello_world$ cpp/stdout_capture.cpp 
 1. This goes to console.
 2. This goes to console.
-2. This will be captured.
 Captured output:
-1. This will be captured.
+1. Captured.
+2. Captured.
 
 
 */
