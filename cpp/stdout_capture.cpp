@@ -35,6 +35,9 @@ References:
 1. Grok AI: 
     1. Private link: https://grok.com/chat/356d87ac-b4c4-4bae-b13f-ffef0c75b9d9
     1. Public link: https://grok.com/share/bGVnYWN5_da25d90e-acf0-41f7-a128-feeb18e514a2
+1. https://en.cppreference.com/w/cpp/io/cout.html
+1. https://en.cppreference.com/w/cpp/io/basic_ios/rdbuf.html
+1. https://en.cppreference.com/w/cpp/io/basic_ostream.htm
 
 */
 
@@ -44,39 +47,57 @@ References:
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 #include <sstream>
 #include <string>
+// #include <unistd.h>  // For `dup()`, `dup2()`, `close()`, `pipe()`
 
-std::string captureStdout() {
-    // Save original stdout buffer
-    static std::streambuf* oldCout = std::cout.rdbuf();
-    
-    // Create string stream to capture output
-    std::ostringstream capture;
-    
-    // Redirect stdout to our string stream
-    std::cout.rdbuf(capture.rdbuf());
-    
-    // Your code that writes to stdout goes here
-    // For example:
-    std::cout << "This will be captured" << std::endl;
-    
-    // Restore original stdout
-    std::cout.rdbuf(oldCout);
-    
-    // Return captured output
-    return capture.str();
-}
+class StdoutCapture 
+{
+public: 
+    // Start capturing stdout into a string stream.
+    // - This will redirect all `std::cout` output to the string stream instead of to the console.
+    void start() 
+    {
+        // Save original stdout buffer, and redirect stdout to our string stream
+        cout_bak_ = std::cout.rdbuf(capture_buf_.rdbuf());
+    }
 
-int main() {
+    // Stop capturing stdout and restore original stdout.
+    // - This will restore `std::cout` to its original state, so that future `std::cout` output goes to the console again.
+    // - Returns the captured output as a string.
+    std::string stop()
+    {
+        // Restore original stdout buffer
+        std::cout.rdbuf(cout_bak_);
+
+        return capture_buf_.str();
+    }
+
+private:
+    // Original stdout buffer
+    std::streambuf* cout_bak_ = nullptr;
+    // String stream to capture output
+    std::ostringstream capture_buf_;
+};
+
+int main() 
+{
     // Before capturing
-    std::cout << "This goes to console" << std::endl;
+    std::cout << "1. This goes to console." << std::endl;
+    printf("2. This goes to console.\n");
     
     // Capture output
-    std::string captured = captureStdout();
+
+    StdoutCapture capture;
+    capture.start();
+
+    std::cout << "1. This will be captured." << std::endl;
+    printf("2. This will be captured.\n");
+
+    std::string captured = capture.stop();
+
+    // Print captured output to console
+    printf("Captured output:\n%s", captured.c_str());
     
-    // After capturing
-    std::cout << "Back to console" << std::endl;
-    std::cout << "Captured: " << captured << std::endl;
-    
+
     return 0;
 }
 
@@ -85,10 +106,14 @@ int main() {
 /*
 SAMPLE OUTPUT:
 
+Does NOT work correctly yet!: 
+
 eRCaGuy_hello_world$ cpp/stdout_capture.cpp 
-This goes to console
-Back to console
-Captured: This will be captured
+1. This goes to console.
+2. This goes to console.
+2. This will be captured.
+Captured output:
+1. This will be captured.
 
 
 */
