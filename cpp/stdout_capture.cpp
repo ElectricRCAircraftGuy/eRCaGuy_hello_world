@@ -47,35 +47,73 @@ References:
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 #include <sstream>
 #include <string>
-// #include <unistd.h>  // For `dup()`, `dup2()`, `close()`, `pipe()`
+#include <fstream>
+#include <unistd.h>  // For `dup()`, `dup2()`, `close()`
 
 class StdoutCapture 
 {
 public: 
     // Start capturing stdout into a string stream.
-    // - This will redirect all `std::cout` output to the string stream instead of to the console.
+    // - This will redirect all `std::cout` AND `printf()` output to a temporary file.
     void start() 
     {
-        // Save original stdout buffer, and redirect stdout to our string stream
-        cout_bak_ = std::cout.rdbuf(capture_buf_.rdbuf());
+        // Flush any pending output
+        fflush(stdout);
+        
+        // Save original stdout file descriptor
+        stdout_fd_backup_ = dup(STDOUT_FILENO);
+        
+        // Create a temporary file
+        temp_file_ = tmpfile();
+        if (!temp_file_) {
+            perror("tmpfile");
+            return;
+        }
+        
+        // Redirect stdout to the temporary file
+        dup2(fileno(temp_file_), STDOUT_FILENO);
+        
+        // Also redirect C++ cout to the same file
+        cout_bak_ = std::cout.rdbuf();
+        std::cout.rdbuf(std::cout.rdbuf());  // This keeps cout synced with stdout
     }
 
     // Stop capturing stdout and restore original stdout.
-    // - This will restore `std::cout` to its original state, so that future `std::cout` output goes to the console again.
+    // - This will restore both `std::cout` and `printf()` to their original state.
     // - Returns the captured output as a string.
     std::string stop()
     {
-        // Restore original stdout buffer
-        std::cout.rdbuf(cout_bak_);
-
-        return capture_buf_.str();
+        // Flush any remaining output
+        fflush(stdout);
+        
+        // Restore original stdout file descriptor
+        dup2(stdout_fd_backup_, STDOUT_FILENO);
+        close(stdout_fd_backup_);
+        
+        // Read from the temporary file
+        std::string result;
+        if (temp_file_) {
+            rewind(temp_file_);
+            
+            char buffer[4096];
+            while (fgets(buffer, sizeof(buffer), temp_file_)) {
+                result += buffer;
+            }
+            
+            fclose(temp_file_);
+            temp_file_ = nullptr;
+        }
+        
+        return result;
     }
 
 private:
-    // Original stdout buffer
+    // Original stdout file descriptor backup
+    int stdout_fd_backup_ = -1;
+    // Temporary file for capturing output
+    FILE* temp_file_ = nullptr;
+    // Original cout buffer (not used in this approach, but kept for completeness)
     std::streambuf* cout_bak_ = nullptr;
-    // String stream to capture output
-    std::ostringstream capture_buf_;
 };
 
 int main() 
