@@ -85,7 +85,10 @@ int main() {
 /*
 SAMPLE OUTPUT:
 
-
+eRCaGuy_hello_world$ cpp/stdout_capture.cpp 
+This goes to console
+Back to console
+Captured: This will be captured
 
 
 */
