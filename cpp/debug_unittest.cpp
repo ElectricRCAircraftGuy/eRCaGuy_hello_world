@@ -1,4 +1,4 @@
-///usr/bin/env ccache g++ -Wall -Wextra -Werror -Wno-error=cpp -O3 -std=gnu++17 -pthread "$0" stdout_capture_lib.cpp -lgtest -lgtest_main -o /tmp/a && /tmp/a "$@"; exit
+///usr/bin/env ccache g++ -Wall -Wextra -Werror -Wno-error=cpp -O3 -std=gnu++17 -pthread "$0" stdout_capture_lib.cpp debug.cpp -lgtest -lgtest_main -o /tmp/a && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -24,7 +24,7 @@ To build and run:
     # Do NOT cd into the `cpp` dir here: 
     cd path/to/eRCaGuy_hello_world
     
-    ccache g++ -Wall -Wextra -Werror -Wno-error=cpp -O3 -std=gnu++17 -pthread cpp/debug_unittest.cpp cpp/stdout_capture_lib.cpp -lgtest -lgtest_main -o /tmp/a && /tmp/a
+    ccache g++ -Wall -Wextra -Werror -Wno-error=cpp -O3 -std=gnu++17 -pthread cpp/debug_unittest.cpp cpp/stdout_capture_lib.cpp cpp/debug.cpp -lgtest -lgtest_main -o /tmp/a && /tmp/a
     ```
     
 */
