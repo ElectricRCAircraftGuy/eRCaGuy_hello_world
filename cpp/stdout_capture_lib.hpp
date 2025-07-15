@@ -100,6 +100,7 @@ References:
 */
 
 
+#pragma once
 
 // Local includes/
 // NA
