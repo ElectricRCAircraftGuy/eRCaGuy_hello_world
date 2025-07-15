@@ -227,7 +227,7 @@ private:
     std::string read_buffer_;
 };
 
-int main() 
+int main()
 {
     // Before capturing
     std::cout << "1. This goes to console." << std::endl;
@@ -236,12 +236,12 @@ int main()
     // Capture output
 
     StdoutCapture capture;
-    capture.start();
+    capture.start();                            // start capturing stdout
 
     std::cout << "1. Captured." << std::endl;
     printf("2. Captured.\n");
 
-    std::string captured = capture.stop();
+    std::string captured = capture.stop();      // stop capturing stdout
 
     // Print captured output to console
     printf("Captured output:\n%s", captured.c_str());
