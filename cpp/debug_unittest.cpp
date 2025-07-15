@@ -19,6 +19,14 @@ To build and run:
     ./stdout_capture_lib_unittest.cpp
     ```
 
+    OR: 
+    ```bash
+    # Do NOT cd into the `cpp` dir here: 
+    cd path/to/eRCaGuy_hello_world
+    
+    ccache g++ -Wall -Wextra -Werror -Wno-error=cpp -O3 -std=gnu++17 -pthread cpp/debug_unittest.cpp cpp/stdout_capture_lib.cpp -lgtest -lgtest_main -o /tmp/a && /tmp/a
+    ```
+    
 */
 
 
@@ -45,45 +53,25 @@ To build and run:
 namespace 
 {
 
-// TEST(StdoutCaptureTest, BasicCapture)
-// {
-//     std::cout << "1. Before capture" << std::endl;
-//     printf("2. Before capture\n");
-
-//     StdoutCapture capture;
-//     capture.start();
-
-//     std::cout << "1. Captured." << std::endl;
-//     printf("2. Captured.\n");
-
-//     std::string captured = capture.stop();
-
-//     std::cout << "1. After capture." << std::endl;
-//     printf("2. After capture.\n");
-
-//     // Print captured output to console
-//     printf("Captured output:\n%s", captured.c_str());
-
-//     std::string expected_output = "1. Captured.\n2. Captured.\n";
-//     EXPECT_EQ(captured, expected_output) << "Captured output does not match expected output.";
-// }
-
 TEST(Debug, TodoPrints)
 {
     StdoutCapture capture;
+    std::string captured;
+    std::string expected;
     
     capture.start();
     TODO_PRINTF("Statement 1\n");
-    std::string captured = capture.stop();
-    printf("Captured output: %s", captured.c_str());    
-    
-    ////////
+    captured = capture.stop();
+    printf("Captured output: %s", captured.c_str());
+    expected = "TODO: debug_unittest.cpp:TestBody():63: Statement 1\n";
+    EXPECT_EQ(captured, expected);
 
+    capture.start();
     TODO_PRINTF("Statement 2: %s, %i, %u\n", "test", 42, 100u);
-
-    
-
-    EXPECT_TRUE(false);
+    captured = capture.stop();
+    printf("Captured output: %s", captured.c_str());
+    expected = "TODO: debug_unittest.cpp:TestBody():70: Statement 2: test, 42, 100\n";
+    EXPECT_EQ(captured, expected);
 }
 
 } // namespace
@@ -93,6 +81,20 @@ TEST(Debug, TodoPrints)
 Example run and output:
 
 
+eRCaGuy_hello_world/cpp$ ./debug_unittest.cpp 
+Running main() from /home/gabriel/Downloads/Install_Files/gtest/googletest-1.14.0/googletest/src/gtest_main.cc
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from Debug
+[ RUN      ] Debug.TodoPrints
+Captured output: TODO: debug_unittest.cpp:TestBody():62: Statement 1
+Captured output: TODO: debug_unittest.cpp:TestBody():69: Statement 2: test, 42, 100
+[       OK ] Debug.TodoPrints (0 ms)
+[----------] 1 test from Debug (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
 
 
 */
