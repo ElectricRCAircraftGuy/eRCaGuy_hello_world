@@ -36,19 +36,6 @@ time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 stdout_capture.cpp -o bin/a && b
 time ./stdout_capture.cpp
 ```
 
-References:
-1. Grok AI: 
-    1. Private link: https://grok.com/chat/356d87ac-b4c4-4bae-b13f-ffef0c75b9d9
-    1. Public link: https://grok.com/share/bGVnYWN5_da25d90e-acf0-41f7-a128-feeb18e514a2
-1. https://en.cppreference.com/w/cpp/io/cout.html
-1. https://en.cppreference.com/w/cpp/io/basic_ios/rdbuf.html
-1. https://en.cppreference.com/w/cpp/io/basic_ostream.htm
-
-1. https://man7.org/linux/man-pages/man2/dup.2.html
-1. https://linux.die.net/man/2/dup2
-1. https://man7.org/linux/man-pages/man3/fflush.3.html
-1. https://linux.die.net/man/2/close
-
 
 From GitHub Copilot; cleaned up by me:
 DETAILED EXPLANATION OF dup() and dup2():
@@ -94,6 +81,24 @@ Why this works:
 - The backup fd preserves the original terminal connection.
 - We can restore stdout by copying the backup back to fd 1 via `dup2(fileno(stdout_backup_),
   STDOUT_FILENO)`.
+
+
+
+References:
+1. Grok AI: 
+    1. Private link: https://grok.com/chat/356d87ac-b4c4-4bae-b13f-ffef0c75b9d9
+    1. Public link: https://grok.com/share/bGVnYWN5_da25d90e-acf0-41f7-a128-feeb18e514a2
+1. https://en.cppreference.com/w/cpp/io/cout.html
+1. https://en.cppreference.com/w/cpp/io/basic_ios/rdbuf.html
+1. https://en.cppreference.com/w/cpp/io/basic_ostream.htm
+
+1. https://man7.org/linux/man-pages/man2/dup.2.html
+1. https://linux.die.net/man/2/dup2
+1. https://man7.org/linux/man-pages/man3/fflush.3.html
+1. https://linux.die.net/man/2/close
+1. https://en.cppreference.com/w/c/io/fseek
+1. https://en.cppreference.com/w/c/io/ftell
+1. https://en.cppreference.com/w/c/io/fgetc
 
 */
 
@@ -179,22 +184,38 @@ public:
                                    // to it.
         
         // Read from the temporary file
-        std::string result;
         if (temp_file_) 
         {
             rewind(temp_file_);
             
-            char buffer[4096];
-            while (fgets(buffer, sizeof(buffer), temp_file_)) 
+            // Clear the read buffer for reuse
+            read_buffer_.clear();
+            
+            // Get file size for efficient allocation
+            // - Seek to 0 chars offset from the end of the file (`SEEK_END`)
+            fseek(temp_file_, 0, SEEK_END);
+            long file_size = ftell(temp_file_);
+            rewind(temp_file_);
+            
+            // Read all chars from the file into the read buffer
+            if (file_size > 0) 
             {
-                result += buffer;
+                // Reserve space for the entire file content
+                read_buffer_.reserve(static_cast<size_t>(file_size));
+                
+                // Read the entire file into the string buffer
+                char c;
+                while ((c = fgetc(temp_file_)) != EOF) 
+                {
+                    read_buffer_.push_back(c);
+                }
             }
             
             fclose(temp_file_);
             temp_file_ = nullptr;
         }
         
-        return result;
+        return read_buffer_;
     }
 
 private:
@@ -202,7 +223,7 @@ private:
     int stdout_fd_backup_ = FILE_DESCRIPTOR_INVALID;
     // Temporary file for capturing output
     FILE* temp_file_ = nullptr;
-    // Read buffer
+    // Read buffer - dynamically grows as needed, safer than fixed-size buffers
     std::string read_buffer_;
 };
 
