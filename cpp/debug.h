@@ -81,6 +81,15 @@ extern "C" {
 #define TODO_PRINTF(format_str, ...) \
     DEBUG_TODO(format_str, ##__VA_ARGS__)
 
+// Print a debug message with file, function, and line number
+#define DEBUG_PRINTF(format_str, ...) \
+    printf( \
+        "%s:%s():%d: " format_str, \
+        debug_basename(__FILE__), \
+        __FUNCTION__, \
+        __LINE__, \
+        ##__VA_ARGS__)
+
 // Obtain the base name of a file path.
 // - This function returns the last component of the path, which is typically the file name.
 // - It does not modify the input string, so it can safely be used with string literals

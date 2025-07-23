@@ -74,6 +74,27 @@ TEST(Debug, TodoPrints)
     EXPECT_EQ(captured, expected);
 }
 
+TEST(Debug, DebugPrints)
+{
+    StdoutCapture capture;
+    std::string captured;
+    std::string expected;
+    
+    capture.start();
+    DEBUG_PRINTF("Statement 1\n");
+    captured = capture.stop();
+    printf("Captured output: %s", captured.c_str());
+    expected = "debug_unittest.cpp:TestBody():84: Statement 1\n";
+    EXPECT_EQ(captured, expected);
+
+    capture.start();
+    DEBUG_PRINTF("Statement 2: %s, %i, %u\n", "test", 42, 100u);
+    captured = capture.stop();
+    printf("Captured output: %s", captured.c_str());
+    expected = "debug_unittest.cpp:TestBody():91: Statement 2: test, 42, 100\n";
+    EXPECT_EQ(captured, expected);
+}
+
 } // namespace
 
 
@@ -83,18 +104,23 @@ Example run and output:
 
 eRCaGuy_hello_world/cpp$ ./debug_unittest.cpp 
 Running main() from /home/gabriel/Downloads/Install_Files/gtest/googletest-1.14.0/googletest/src/gtest_main.cc
-[==========] Running 1 test from 1 test suite.
+[==========] Running 2 tests from 1 test suite.
 [----------] Global test environment set-up.
-[----------] 1 test from Debug
+[----------] 2 tests from Debug
 [ RUN      ] Debug.TodoPrints
-Captured output: TODO: debug_unittest.cpp:TestBody():62: Statement 1
-Captured output: TODO: debug_unittest.cpp:TestBody():69: Statement 2: test, 42, 100
+Captured output: TODO: debug_unittest.cpp:TestBody():63: Statement 1
+Captured output: TODO: debug_unittest.cpp:TestBody():70: Statement 2: test, 42, 100
 [       OK ] Debug.TodoPrints (0 ms)
-[----------] 1 test from Debug (0 ms total)
+[ RUN      ] Debug.DebugPrints
+Captured output: debug_unittest.cpp:TestBody():84: Statement 1
+Captured output: debug_unittest.cpp:TestBody():91: Statement 2: test, 42, 100
+[       OK ] Debug.DebugPrints (0 ms)
+[----------] 2 tests from Debug (0 ms total)
 
 [----------] Global test environment tear-down
-[==========] 1 test from 1 test suite ran. (0 ms total)
-[  PASSED  ] 1 test.
+[==========] 2 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 2 tests.
+
 
 
 */
