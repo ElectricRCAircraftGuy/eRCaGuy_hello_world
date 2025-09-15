@@ -13,6 +13,7 @@
 # See also: 
 # 1. "eRCaGuy_hello_world/bash/ansi_color_codes.sh": 
 #    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/ansi_color_codes.sh
+# 1. For Python, see my repo here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_PyColors
 
 COLOR_GRN="\e[;32m"  # ANSI color green
 COLOR_RED="\e[;91m"  # ANSI color bright red
