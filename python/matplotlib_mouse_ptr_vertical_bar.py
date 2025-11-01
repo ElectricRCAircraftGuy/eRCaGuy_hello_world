@@ -14,6 +14,8 @@ References:
     Prompt: 
     > can matplotlib be made so that a vertical bar is shown live on the plots as I move my mouse
       around?
+1. https://matplotlib.org/stable/gallery/event_handling/cursor_demo.html
+
 """
 
 import matplotlib.pyplot as plt
