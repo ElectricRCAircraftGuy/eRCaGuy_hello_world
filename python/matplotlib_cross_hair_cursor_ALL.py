@@ -84,14 +84,16 @@ def test_simple_cursor():
     fig, ax = plt.subplots()
     ax.set_title('Simple cursor')
     ax.plot(x, y, 'o')
-    cursor = Cursor(ax)
-    fig.canvas.mpl_connect('motion_notify_event', cursor.on_mouse_move)
+    simple_cursor = Cursor(ax)
+    fig.canvas.mpl_connect('motion_notify_event', simple_cursor.on_mouse_move)
 
     # Simulate a mouse move to (0.5, 0.5), needed for online docs
     t = ax.transData
     MouseEvent(
         "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
     )._process()
+    
+    return simple_cursor
 
 
 # %%
@@ -182,6 +184,8 @@ def test_blitted_cursor():
     MouseEvent(
         "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
     )._process()
+    
+    return blitted_cursor
 
 
 # %%
@@ -258,12 +262,15 @@ def test_snapping_cursor():
     MouseEvent(
         "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
     )._process()
+    
+    return snap_cursor
 
 
 def main():
-    test_simple_cursor()
-    test_blitted_cursor()
-    test_snapping_cursor()
+    # Keep references to cursor objects so they don't get garbage collected
+    cursor1 = test_simple_cursor()
+    cursor2 = test_blitted_cursor()
+    cursor3 = test_snapping_cursor()
     plt.show()
 
 
