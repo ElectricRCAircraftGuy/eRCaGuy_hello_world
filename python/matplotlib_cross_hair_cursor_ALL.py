@@ -51,7 +51,8 @@ class Cursor:
         self.ax = ax
         self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
         self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
-        # text location in axes coordinates
+        # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the 
+        # same plot location regardless of data limits, zooming, panning, scrolling, etc.
         self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
 
     def set_cross_hair_visible(self, visible):
@@ -61,7 +62,7 @@ class Cursor:
         self.text.set_visible(visible)
         return need_redraw
 
-    def on_mouse_move(self, event):
+    def on_mouse_move(self, event: MouseEvent):
         if not event.inaxes:
             need_redraw = self.set_cross_hair_visible(False)
             if need_redraw:
@@ -114,7 +115,8 @@ class BlittedCursor:
         self.background = None
         self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
         self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
-        # text location in axes coordinates
+        # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the 
+        # same plot location regardless of data limits, zooming, panning, scrolling, etc.
         self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
         self._creating_background = False
         ax.figure.canvas.mpl_connect('draw_event', self.on_draw)
@@ -140,7 +142,7 @@ class BlittedCursor:
         self.set_cross_hair_visible(True)
         self._creating_background = False
 
-    def on_mouse_move(self, event):
+    def on_mouse_move(self, event: MouseEvent):
         if self.background is None:
             self.create_new_background()
         if not event.inaxes:
@@ -204,7 +206,8 @@ class SnappingCursor:
         self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
         self.x, self.y = line.get_data()
         self._last_index = None
-        # text location in axes coords
+        # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the 
+        # same plot location regardless of data limits, zooming, panning, scrolling, etc.
         self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
 
     def set_cross_hair_visible(self, visible):
@@ -214,7 +217,7 @@ class SnappingCursor:
         self.text.set_visible(visible)
         return need_redraw
 
-    def on_mouse_move(self, event):
+    def on_mouse_move(self, event: MouseEvent):
         if not event.inaxes:
             self._last_index = None
             need_redraw = self.set_cross_hair_visible(False)
