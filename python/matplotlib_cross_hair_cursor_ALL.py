@@ -77,20 +77,22 @@ class Cursor:
             self.ax.figure.canvas.draw()
 
 
-x = np.arange(0, 1, 0.01)
-y = np.sin(2 * 2 * np.pi * x)
+def test_simple_cursor():
+    x = np.arange(0, 1, 0.01)
+    y = np.sin(2 * 2 * np.pi * x)
 
-fig, ax = plt.subplots()
-ax.set_title('Simple cursor')
-ax.plot(x, y, 'o')
-cursor = Cursor(ax)
-fig.canvas.mpl_connect('motion_notify_event', cursor.on_mouse_move)
+    fig, ax = plt.subplots()
+    ax.set_title('Simple cursor')
+    ax.plot(x, y, 'o')
+    cursor = Cursor(ax)
+    fig.canvas.mpl_connect('motion_notify_event', cursor.on_mouse_move)
 
-# Simulate a mouse move to (0.5, 0.5), needed for online docs
-t = ax.transData
-MouseEvent(
-    "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-)._process()
+    # Simulate a mouse move to (0.5, 0.5), needed for online docs
+    t = ax.transData
+    MouseEvent(
+        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
+    )._process()
+
 
 # %%
 # Faster redrawing using blitting
@@ -165,20 +167,22 @@ class BlittedCursor:
             self.ax.figure.canvas.blit(self.ax.bbox)
 
 
-x = np.arange(0, 1, 0.01)
-y = np.sin(2 * 2 * np.pi * x)
+def test_blitted_cursor():
+    x = np.arange(0, 1, 0.01)
+    y = np.sin(2 * 2 * np.pi * x)
 
-fig, ax = plt.subplots()
-ax.set_title('Blitted cursor')
-ax.plot(x, y, 'o')
-blitted_cursor = BlittedCursor(ax)
-fig.canvas.mpl_connect('motion_notify_event', blitted_cursor.on_mouse_move)
+    fig, ax = plt.subplots()
+    ax.set_title('Blitted cursor')
+    ax.plot(x, y, 'o')
+    blitted_cursor = BlittedCursor(ax)
+    fig.canvas.mpl_connect('motion_notify_event', blitted_cursor.on_mouse_move)
 
-# Simulate a mouse move to (0.5, 0.5), needed for online docs
-t = ax.transData
-MouseEvent(
-    "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-)._process()
+    # Simulate a mouse move to (0.5, 0.5), needed for online docs
+    t = ax.transData
+    MouseEvent(
+        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
+    )._process()
+
 
 # %%
 # Snapping to data points
@@ -239,19 +243,29 @@ class SnappingCursor:
             self.ax.figure.canvas.draw()
 
 
-x = np.arange(0, 1, 0.01)
-y = np.sin(2 * 2 * np.pi * x)
+def test_snapping_cursor():
+    x = np.arange(0, 1, 0.01)
+    y = np.sin(2 * 2 * np.pi * x)
 
-fig, ax = plt.subplots()
-ax.set_title('Snapping cursor')
-line, = ax.plot(x, y, 'o')
-snap_cursor = SnappingCursor(ax, line)
-fig.canvas.mpl_connect('motion_notify_event', snap_cursor.on_mouse_move)
+    fig, ax = plt.subplots()
+    ax.set_title('Snapping cursor')
+    line, = ax.plot(x, y, 'o')
+    snap_cursor = SnappingCursor(ax, line)
+    fig.canvas.mpl_connect('motion_notify_event', snap_cursor.on_mouse_move)
 
-# Simulate a mouse move to (0.5, 0.5), needed for online docs
-t = ax.transData
-MouseEvent(
-    "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-)._process()
+    # Simulate a mouse move to (0.5, 0.5), needed for online docs
+    t = ax.transData
+    MouseEvent(
+        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
+    )._process()
 
-plt.show()
+
+def main():
+    test_simple_cursor()
+    test_blitted_cursor()
+    test_snapping_cursor()
+    plt.show()
+
+
+if __name__ == "__main__":
+    main()
