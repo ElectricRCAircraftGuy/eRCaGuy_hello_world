@@ -561,7 +561,7 @@ def test_snapping_blitted_cursor_multiple_subplots():
     # Create the multi-subplot cursor
     axes = [ax1, ax2, ax3]
     lines = [line1, line2, line3]
-    multi_cursor = SnappingBlittedCursor(axes, lines)
+    multi_cursor = SnappingBlittedCursorMultipleSubplots(axes, lines)
     fig.canvas.mpl_connect('motion_notify_event', multi_cursor.on_mouse_move)
     
     # Add instructions
