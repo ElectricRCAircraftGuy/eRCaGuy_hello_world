@@ -339,6 +339,7 @@ class SnappingBlittedCursor:
             self.ax.figure.canvas.blit(self.ax.bbox)
 
 
+# [BEST!--USE THIS ONE!]
 class SnappingBlittedCursorMultipleSubplots:
     """
     A cross-hair cursor that snaps to data points AND uses blitting for faster redraw.
@@ -547,6 +548,7 @@ def test_snapping_blitted_cursor2():
     return snap_blit_cursor
 
 
+# [BEST]
 def test_snapping_blitted_cursor_multiple_subplots():
     """
     Test SnappingBlittedCursor with multiple subplots (3 rows x 1 column).
