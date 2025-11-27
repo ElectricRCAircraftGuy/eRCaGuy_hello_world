@@ -181,11 +181,8 @@ def test_blitted_cursor():
     blitted_cursor = BlittedCursor(ax)
     fig.canvas.mpl_connect('motion_notify_event', blitted_cursor.on_mouse_move)
 
-    # Simulate a mouse move to (0.5, 0.5), needed for online docs
-    t = ax.transData
-    MouseEvent(
-        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-    )._process()
+    # Note: Simulated mouse events don't work well with blitted cursors
+    # due to background creation timing. Move mouse over plot to see cursor.
 
     return blitted_cursor
 
@@ -525,11 +522,8 @@ def test_snapping_blitted_cursor():
     snap_blit_cursor = SnappingBlittedCursor(ax, line)
     fig.canvas.mpl_connect('motion_notify_event', snap_blit_cursor.on_mouse_move)
 
-    # Simulate a mouse move to (0.5, 0.5), needed for online docs
-    t = ax.transData
-    MouseEvent(
-        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-    )._process()
+    # Note: Simulated mouse events don't work well with blitted cursors
+    # due to background creation timing. Move mouse over plot to see cursor.
 
     return snap_blit_cursor
 
@@ -547,11 +541,8 @@ def test_snapping_blitted_cursor2():
     snap_blit_cursor = SnappingBlittedCursorMultipleSubplots(ax, line)
     fig.canvas.mpl_connect('motion_notify_event', snap_blit_cursor.on_mouse_move)
 
-    # Simulate a mouse move to (0.5, 0.5), needed for online docs
-    t = ax.transData
-    MouseEvent(
-        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-    )._process()
+    # Note: Simulated mouse events don't work well with blitted cursors
+    # due to background creation timing. Move mouse over plot to see cursor.
 
     return snap_blit_cursor
 
@@ -566,9 +557,9 @@ def test_snapping_blitted_cursor_multiple_subplots():
     """
     # Generate different datasets for each subplot
     x = np.arange(0, 2, 0.02)  # Common x-axis for all plots
-    y1 = np.sin(2 * np.pi * x)           # Sine wave
-    y2 = np.cos(3 * np.pi * x)           # Cosine wave with different frequency
-    y3 = x**2 - x                        # Quadratic function
+    y1 = np.sin(2 * np.pi * x)           # Sine wave (sin(2πx))
+    y2 = np.cos(3 * np.pi * x)           # Cosine wave with different frequency (cos(3πx))
+    y3 = x**2 - x                        # Quadratic function (x² - x)
 
     # Create figure with 3 subplots in 1 column
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
@@ -601,17 +592,15 @@ def test_snapping_blitted_cursor_multiple_subplots():
 
     # Add instructions
     fig.text(0.5, 0.02,
-             'Move mouse over any subplot to see synchronized cursors that snap to data points',
+             'Move mouse over any subplot to see synchronized cursors that snap to data points.',
              ha='center', fontsize=10, style='italic')
 
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.1)  # Make room for instructions
 
-    # Simulate a mouse move to (0.5, 0.5) on the first subplot
-    t = ax1.transData
-    MouseEvent(
-        "motion_notify_event", ax1.figure.canvas, *t.transform((0.5, 0.5))
-    )._process()
+    # [Removed] Simulate a mouse move to (0.5, 0.5) on the first subplot
+    # Note: Simulated mouse events don't work well with blitted cursors
+    # due to background creation timing. Move mouse over plot to see cursor.
 
     return multi_cursor
 
