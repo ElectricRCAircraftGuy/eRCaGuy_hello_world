@@ -397,7 +397,7 @@ class SnappingBlittedCursorMultipleSubplots:
             v_line = ax.axvline(color='k', lw=0.8, ls='--')
             # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
             # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-            text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
+            text = ax.text(0.82, 0.95, '', transform=ax.transAxes)
 
             self.horizontal_lines.append(h_line)
             self.vertical_lines.append(v_line)
@@ -473,24 +473,19 @@ class SnappingBlittedCursorMultipleSubplots:
             y_data = self.y_data[active_ax_index]
 
             # Check if x_data contains datetime objects and convert to numeric if needed
+            x_data_numeric = x_data
+            self.use_date_objects = False
             if len(x_data) > 0 and isinstance(x_data[0], (pd.Timestamp, datetime, np.datetime64)):
                 # x_data contains datetime objects - convert to matplotlib's numeric format
                 x_data_numeric = mdates.date2num(x_data)
-                index = min(np.searchsorted(x_data_numeric, x), len(x_data_numeric) - 1)
+                self.use_date_objects = True
 
-                # Find the closest data point by checking both index and index-1
-                index_minus1 = max(index - 1, 0)
-                x_dist1 = abs(x_data_numeric[index] - x)
-                x_dist2 = abs(x_data_numeric[index_minus1] - x)
-            else:
-                # x_data contains numeric values - use directly
-                index = min(np.searchsorted(x_data, x), len(x_data) - 1)
-
-                # Find the closest data point by checking both index and index-1
-                index_minus1 = max(index - 1, 0)
-                x_dist1 = abs(x_data[index] - x)
-                x_dist2 = abs(x_data[index_minus1] - x)
-
+            # Search for the nearest data point to the cursor on the x-axis to "snap" to it
+            # - Find the closest data point by checking both index and index-1
+            index = min(np.searchsorted(x_data_numeric, x), len(x_data_numeric) - 1)
+            index_minus1 = max(index - 1, 0)
+            x_dist1 = abs(x_data_numeric[index] - x)
+            x_dist2 = abs(x_data_numeric[index_minus1] - x)
             if x_dist1 <= x_dist2:
                 index = index
             else:
@@ -529,7 +524,7 @@ class SnappingBlittedCursorMultipleSubplots:
                 v_line.set_xdata([snapped_x])
 
                 # Format the text display - handle datetime vs numeric data
-                if isinstance(snapped_x, (pd.Timestamp, datetime, np.datetime64)):
+                if self.use_date_objects:
                     # For datetime objects, use a more readable format
                     if hasattr(snapped_x, 'strftime'):
                         x_text = snapped_x.strftime('%H:%M:%S')
@@ -537,9 +532,9 @@ class SnappingBlittedCursorMultipleSubplots:
                         x_text = str(snapped_x)
                 else:
                     # For numeric data, use standard formatting
-                    x_text = f'{snapped_x:1.2f}'
+                    x_text = f'{snapped_x:1.9f}'
 
-                text.set_text(f'x={x_text}, y={snapped_y:1.2f}')
+                text.set_text(f'x={x_text}, y={snapped_y:1.9f}')
 
             self.fig.canvas.restore_region(self.background)
 
