@@ -39,6 +39,7 @@ __ https://github.com/anntzer/mplcursors
 
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
 from typing import Union, List
 
@@ -422,10 +423,25 @@ class SnappingBlittedCursorMultipleSubplots:
             # discard calls triggered from within this function
             return
         self._creating_background = True
+
+        # # Store current axis limits before drawing
+        # stored_limits = []
+        # for ax in self.axes:
+        #     stored_limits.append({
+        #         'xlim': ax.get_xlim(),
+        #         'ylim': ax.get_ylim()
+        #     })
+
         self.set_cross_hair_visible(False)
         self.fig.canvas.draw()
         self.background = self.fig.canvas.copy_from_bbox(self.fig.bbox)
         self.set_cross_hair_visible(True)
+
+        # # Restore axis limits after drawing
+        # for ax, limits in zip(self.axes, stored_limits):
+        #     ax.set_xlim(limits['xlim'])
+        #     ax.set_ylim(limits['ylim'])
+
         self._creating_background = False
 
     def on_mouse_move(self, event: MouseEvent):
@@ -454,11 +470,28 @@ class SnappingBlittedCursorMultipleSubplots:
             x_data = self.x_data[active_ax_index]
             y_data = self.y_data[active_ax_index]
 
-            # Search for the nearest data point to the cursor on the x-axis to "snap" to it
-            index = min(np.searchsorted(x_data, x), len(x_data) - 1)
+            # Convert datetime data to matplotlib's internal numeric representation if needed
+            # This handles the case where x_data contains pandas Timestamps or datetime objects
+            try:
+                # Try to use x_data directly first (works for numeric data)
+                index = min(np.searchsorted(x_data, x), len(x_data) - 1)
+            except TypeError:
+                # If we get a TypeError, x_data likely contains datetime objects
+                # Convert to matplotlib's numeric format for comparison
+                x_data_numeric = mdates.date2num(x_data)
+                index = min(np.searchsorted(x_data_numeric, x), len(x_data_numeric) - 1)
+
+            # Find the closest data point by checking both index and index-1
             index_minus1 = max(index - 1, 0)
-            x_dist1 = abs(x_data[index] - x)
-            x_dist2 = abs(x_data[index_minus1] - x)
+            try:
+                x_dist1 = abs(x_data[index] - x)
+                x_dist2 = abs(x_data[index_minus1] - x)
+            except TypeError:
+                # Handle datetime comparison
+                x_data_numeric = mdates.date2num(x_data)
+                x_dist1 = abs(x_data_numeric[index] - x)
+                x_dist2 = abs(x_data_numeric[index_minus1] - x)
+
             if x_dist1 <= x_dist2:
                 index = index
             else:
@@ -495,7 +528,19 @@ class SnappingBlittedCursorMultipleSubplots:
                 # Update the line positions
                 h_line.set_ydata([snapped_y])
                 v_line.set_xdata([snapped_x])
-                text.set_text(f'x={snapped_x:1.2f}, y={snapped_y:1.2f}')
+
+                # Format the text display - handle datetime vs numeric data
+                try:
+                    # Try numeric formatting first
+                    x_text = f'{snapped_x:1.2f}'
+                except (ValueError, TypeError):
+                    # For datetime objects, use a more readable format
+                    if hasattr(snapped_x, 'strftime'):
+                        x_text = snapped_x.strftime('%H:%M:%S')
+                    else:
+                        x_text = str(snapped_x)
+
+                text.set_text(f'x={x_text}, y={snapped_y:1.2f}')
 
             self.fig.canvas.restore_region(self.background)
 
