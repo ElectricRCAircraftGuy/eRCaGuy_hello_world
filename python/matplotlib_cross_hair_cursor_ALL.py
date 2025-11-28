@@ -373,15 +373,28 @@ class SnappingBlittedCursorMultipleSubplots:
                     "When `axes` is a list, `lines` must also be a list of the same length.")
             self.axes = axes
             self.lines = lines
-            self.fig = axes[0].figure
         else:
             # Single axis case (backward compatibility): force into a list of len 1
             self.axes = [axes]
             self.lines = [lines]
-            self.fig = axes.figure
 
         self.num_subplots = len(self.axes)
-        self.background = None
+
+        # Group axes by figure and store separate backgrounds for each figure, since
+        # each figure has its own canvas and background, and each axis can belong to the same
+        # or a different figure.
+        self.figures = {}  # Dict[figure] -> {'axes': [axes], 'background': background}
+        for ax in self.axes:
+            if ax.figure not in self.figures:
+                self.figures[ax.figure] = {'axes': [], 'background': None}
+            self.figures[ax.figure]['axes'].append(ax)
+
+        print(f"DEBUG: len(self.figures) = {len(self.figures)}")
+
+        # Connect draw events to all figures
+        for fig in self.figures.keys():
+            fig.canvas.mpl_connect('draw_event', self.on_draw)
+
         self.horizontal_lines = []
         self.vertical_lines = []
         self.texts = []
@@ -389,7 +402,6 @@ class SnappingBlittedCursorMultipleSubplots:
         self.y_data = []
         self._last_indices = [None] * self.num_subplots
         self._creating_background = False
-        self.fig.canvas.mpl_connect('draw_event', self.on_draw)
 
         # Create cursor elements for each axis
         for i, (ax, line) in enumerate(zip(self.axes, self.lines)):
@@ -426,28 +438,20 @@ class SnappingBlittedCursorMultipleSubplots:
             return
         self._creating_background = True
 
-        # # Store current axis limits before drawing
-        # stored_limits = []
-        # for ax in self.axes:
-        #     stored_limits.append({
-        #         'xlim': ax.get_xlim(),
-        #         'ylim': ax.get_ylim()
-        #     })
-
         self.set_cross_hair_visible(False)
-        self.fig.canvas.draw()
-        self.background = self.fig.canvas.copy_from_bbox(self.fig.bbox)
+
+        # Create background for each figure separately
+        for fig, fig_data in self.figures.items():
+            fig.canvas.draw()
+            fig_data['background'] = fig.canvas.copy_from_bbox(fig.bbox)
+
         self.set_cross_hair_visible(True)
-
-        # # Restore axis limits after drawing
-        # for ax, limits in zip(self.axes, stored_limits):
-        #     ax.set_xlim(limits['xlim'])
-        #     ax.set_ylim(limits['ylim'])
-
         self._creating_background = False
 
     def on_mouse_move(self, event: MouseEvent):
-        if self.background is None:
+        # Check if any figure needs background creation
+        need_background = any(fig_data['background'] is None for fig_data in self.figures.values())
+        if need_background:
             self.create_new_background()
 
         # Check if mouse is in any of our axes
@@ -462,9 +466,14 @@ class SnappingBlittedCursorMultipleSubplots:
             self._last_indices = [None] * self.num_subplots
             need_redraw = self.set_cross_hair_visible(False)
             if need_redraw:
-                self.fig.canvas.restore_region(self.background)
-                self.fig.canvas.blit(self.fig.bbox)
+                # Restore and blit each figure separately
+                for fig, fig_data in self.figures.items():
+                    if fig_data['background'] is not None:
+                        fig.canvas.restore_region(fig_data['background'])
+                        fig.canvas.blit(fig.bbox)
         else:
+            # The mouse is in one of our axes
+
             self.set_cross_hair_visible(True)
             x, y = event.xdata, event.ydata
 
@@ -497,7 +506,6 @@ class SnappingBlittedCursorMultipleSubplots:
             # Update all last indices to the same index for synchronization
             self._last_indices = [index] * self.num_subplots
 
-
             # Get the snapped x position from the active axis
             snapped_x = x_data[index]
 
@@ -505,15 +513,6 @@ class SnappingBlittedCursorMultipleSubplots:
             for i, (h_line, v_line, text, x_data, y_data) in enumerate(
                 zip(self.horizontal_lines, self.vertical_lines, self.texts,
                     self.x_data, self.y_data)):
-
-                # # Find the corresponding y value for this snapped x in each axis/subplot
-                # if i == active_ax_index:
-                #     # For the active axis, use the exact snapped point
-                #     snapped_y = y_data[index]
-                # else:
-                #     # For other axes, find the closest x value
-                #     other_index = min(np.searchsorted(x_data, snapped_x), len(x_data) - 1)
-                #     snapped_y = y_data[other_index]
 
                 # So long as the subplots all share the same x-axis data, we can just use the same
                 # index
@@ -536,20 +535,21 @@ class SnappingBlittedCursorMultipleSubplots:
 
                 text.set_text(f'x={x_text}, y={snapped_y:1.9f}')
 
-            self.fig.canvas.restore_region(self.background)
+            # Restore background and draw artists for each figure separately
+            for fig, fig_data in self.figures.items():
+                if fig_data['background'] is not None:
+                    fig.canvas.restore_region(fig_data['background'])
 
-            # Draw all artists
-            for h_line, v_line, text in zip(self.horizontal_lines, self.vertical_lines, self.texts):
-                for ax in self.axes:  # search which ax this line belongs to
-                    if h_line.axes == ax:
-                        ax.draw_artist(h_line)
-                        ax.draw_artist(v_line)
-                        ax.draw_artist(text)
-                        break  # Found the matching axis, no need to continue searching
+                    # Draw artists for axes in this figure only
+                    for ax in fig_data['axes']:
+                        for i, (h_line, v_line, text) in enumerate(zip(self.horizontal_lines, self.vertical_lines, self.texts)):
+                            if h_line.axes == ax:
+                                ax.draw_artist(h_line)
+                                ax.draw_artist(v_line)
+                                ax.draw_artist(text)
 
-            # Blit each axes individually for better performance
-            for ax in self.axes:
-                self.fig.canvas.blit(ax.bbox)
+                    # Blit this figure
+                    fig.canvas.blit(fig.bbox)
 
 
 def test_snapping_blitted_cursor():
@@ -646,6 +646,133 @@ def test_snapping_blitted_cursor_multiple_subplots():
     return multi_cursor
 
 
+def test_snapping_blitted_cursor_multiple_subplots_and_figures():
+    """
+    Test synchronized cursors across multiple figures AND multiple subplots.
+
+    Creates:
+    - Figure 1: 3 subplots (velocity, acceleration, jerk) in 1 column
+    - Figure 2: 1 subplot (combined view)
+
+    All cursors are synchronized - moving mouse over any subplot in either figure
+    will show cursors on ALL subplots across BOTH figures at the same x-coordinate.
+    """
+    # Generate datasets (same x-axis for all plots for synchronization)
+    x = np.arange(0, 2, 0.02)  # Common x-axis for all plots
+
+    # Simulated data derivatives
+    # Velocity with noise
+    y_velocity = np.sin(2 * np.pi * x) + 0.1 * np.random.randn(len(x))
+    # Acceleration with noise
+    y_acceleration = np.cos(3 * np.pi * x) + 0.05 * np.random.randn(len(x))
+    # Jerk (derivative of acceleration)
+    y_jerk = np.diff(y_acceleration, prepend=y_acceleration[0])
+    # Combined signal
+    y_combined = y_velocity + 0.5 * y_acceleration
+
+    # ==============================================
+    # Figure 1: Multi-subplot figure (3 subplots)
+    # ==============================================
+    fig1, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
+    fig1.suptitle('Figure 1: Data Analysis - Velocity, Acceleration, Jerk', fontsize=14)
+
+    # Plot data on each subplot
+    line1, = ax1.plot(x, y_velocity, 'o-', markersize=2, linewidth=1,
+                      color='blue', label='Velocity (m/sec)')
+    line2, = ax2.plot(x, y_acceleration, 's-', markersize=2, linewidth=1,
+                      color='orange', label='Acceleration (m/sec²)')
+    line3, = ax3.plot(x, y_jerk, '^-', markersize=2, linewidth=1,
+                      color='green', label='Jerk (m/sec³)')
+
+    # Configure subplots
+    ax1.set_ylabel('Velocity (m/sec)')
+    ax1.legend(loc='upper right')
+    ax1.grid(True, alpha=0.3)
+    ax1.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+
+    ax2.set_ylabel('Acceleration (m/sec²)')
+    ax2.legend(loc='upper right')
+    ax2.grid(True, alpha=0.3)
+    ax2.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+
+    ax3.set_ylabel('Jerk (m/sec³)')
+    ax3.set_xlabel('Time (arbitrary units)')
+    ax3.legend(loc='upper right')
+    ax3.grid(True, alpha=0.3)
+    ax3.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+
+    # ==============================================
+    # Figure 2: Single subplot figure
+    # ==============================================
+    fig2, ax4 = plt.subplots(1, 1, figsize=(12, 4))
+    fig2.suptitle('Figure 2: Combined Data Signal', fontsize=14)
+
+    # Plot combined data
+    line4, = ax4.plot(x, y_combined, 'd-', markersize=2, linewidth=1.5,
+                      color='red', label='Combined Signal')
+
+    # Configure subplot
+    ax4.set_ylabel('Combined Signal')
+    ax4.set_xlabel('Time (arbitrary units)')
+    ax4.legend(loc='upper right')
+    ax4.grid(True, alpha=0.3)
+    ax4.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+
+    # ==============================================
+    # Create unified cursor system across both figures
+    # ==============================================
+
+    # Combine all axes and lines from both figures
+    all_axes = [ax1, ax2, ax3, ax4]
+    all_lines = [line1, line2, line3, line4]
+
+    # Create synchronized cursor across ALL subplots in BOTH figures
+    unified_cursor = SnappingBlittedCursorMultipleSubplots(all_axes, all_lines)
+
+    # Connect mouse events to both figures
+    fig1.canvas.mpl_connect('motion_notify_event', unified_cursor.on_mouse_move)
+    fig2.canvas.mpl_connect('motion_notify_event', unified_cursor.on_mouse_move)
+
+    # ==============================================
+    # Final layout and instructions
+    # ==============================================
+
+    # Adjust layouts
+    fig1.tight_layout()
+    fig1.subplots_adjust(bottom=0.08, top=0.92)  # Make room for suptitle and instructions
+
+    fig2.tight_layout()
+    fig2.subplots_adjust(bottom=0.15, top=0.85)   # Make room for suptitle and instructions
+
+    # Add instructions to both figures
+    fig1.text(0.5, 0.02,
+              'Move mouse over ANY subplot in EITHER figure to see synchronized cursors across '
+              'ALL plots',
+              ha='center', fontsize=10, style='italic', weight='bold')
+
+    fig2.text(0.5, 0.02,
+              'Cursors synchronized with Figure 1 - Move mouse here or on Figure 1',
+              ha='center', fontsize=10, style='italic', weight='bold')
+
+    # Position figures side by side (if using interactive backend)
+    try:
+        # Try to position windows side by side
+        mngr1 = fig1.canvas.manager
+        mngr2 = fig2.canvas.manager
+        mngr1.window.move(100, 100)    # Figure 1 on the left
+        mngr2.window.move(1300, 100)   # Figure 2 on the right
+    except:
+        # If window positioning fails, just continue
+        pass
+
+    print("Created two linked figures:")
+    print("- Figure 1: 3 subplots (velocity, acceleration, jerk)")
+    print("- Figure 2: 1 subplot (combined signal)")
+    print("Move mouse over any subplot to see synchronized cursors across ALL plots!")
+
+    return unified_cursor
+
+
 def main():
     # Keep references to cursor objects so they don't get garbage collected
     cursor1 = test_simple_cursor()
@@ -654,6 +781,7 @@ def main():
     cursor4 = test_snapping_blitted_cursor()
     cursor5 = test_snapping_blitted_cursor2()
     cursor6 = test_snapping_blitted_cursor_multiple_subplots()
+    cursor7 = test_snapping_blitted_cursor_multiple_subplots_and_figures()
     plt.show()
 
 
