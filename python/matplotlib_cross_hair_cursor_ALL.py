@@ -731,12 +731,19 @@ def test_snapping_blitted_cursor_multiple_subplots_and_figures():
     all_axes = [ax1, ax2, ax3, ax4]
     all_lines = [line1, line2, line3, line4]
 
+    # [Sometimes required] Store the current axis limits before creating the cursor
+    # - Since the x-limits are shared among all subplot axes, you only need to save and restore one
+    ax1_xlim = ax1.get_xlim()
+
     # Create synchronized cursor across ALL subplots in BOTH figures
     unified_cursor = SnappingBlittedCursorMultipleSubplots(all_axes, all_lines)
 
     # Connect mouse events to both figures
     fig1.canvas.mpl_connect('motion_notify_event', unified_cursor.on_mouse_move)
     fig2.canvas.mpl_connect('motion_notify_event', unified_cursor.on_mouse_move)
+
+    # [Sometimes required] Restore the original axis limits after cursor creation
+    ax1.set_xlim(ax1_xlim)
 
     # ==============================================
     # Final layout and instructions
