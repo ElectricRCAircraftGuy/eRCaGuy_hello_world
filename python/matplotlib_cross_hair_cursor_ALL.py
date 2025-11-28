@@ -354,7 +354,9 @@ class SnappingBlittedCursorMultipleSubplots:
     """
     def __init__(self,
                  axes: Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]],
-                 lines: Union[matplotlib.lines.Line2D, List[matplotlib.lines.Line2D]]):
+                 lines: Union[matplotlib.lines.Line2D, List[matplotlib.lines.Line2D]],
+                 text_loc: tuple = (0.82, 0.95),  # default text location in axes coords
+                 ):
         """
         Initialize the cursor.
 
@@ -409,7 +411,7 @@ class SnappingBlittedCursorMultipleSubplots:
             v_line = ax.axvline(color='k', lw=0.8, ls='--')
             # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
             # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-            text = ax.text(0.82, 0.95, '', transform=ax.transAxes)
+            text = ax.text(text_loc[0], text_loc[1], '', transform=ax.transAxes)
 
             self.horizontal_lines.append(h_line)
             self.vertical_lines.append(v_line)
@@ -526,7 +528,9 @@ class SnappingBlittedCursorMultipleSubplots:
                 if self.use_date_objects:
                     # For datetime objects, use a more readable format
                     if hasattr(snapped_x, 'strftime'):
-                        x_text = snapped_x.strftime('%H:%M:%S')
+                        # Use slicing to truncate the last 3 chars to show milliseconds instead of
+                        # microseconds
+                        x_text = snapped_x.strftime('%H:%M:%S.%f')[:-3]
                     else:
                         x_text = str(snapped_x)
                 else:
