@@ -707,6 +707,11 @@ def test_snapping_blitted_cursor_multiple_subplots_and_figures():
     fig2, ax4 = plt.subplots(1, 1, figsize=(12, 4))
     fig2.suptitle('Figure 2: Combined Data Signal', fontsize=14)
 
+    # Manually share x-axis with ax1 from Figure 1 to synchronize zooming/panning across both figures
+    # Note: sharex parameter in plt.subplots() doesn't work across different figures, so we must
+    # call sharex() after creation
+    ax4.sharex(ax1)
+
     # Plot combined data
     line4, = ax4.plot(x, y_combined, 'd-', markersize=2, linewidth=1.5,
                       color='red', label='Combined Signal')
