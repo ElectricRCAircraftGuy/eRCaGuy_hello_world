@@ -32,6 +32,7 @@ python3 dataclass_example.py
 References:
 1. My answer: https://stackoverflow.com/a/77161026/4561887
 1. Official Python documentation on dataclasses: https://docs.python.org/3/library/dataclasses.html
+1. eRCaGuy_hello_world/python/struct_c_like.py
 
 """
 

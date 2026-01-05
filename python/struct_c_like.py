@@ -8,6 +8,11 @@ GS
 22 Sept. 2023
 
 Make a super-simple C-like struct in Python.
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+UPDATE Jan. 2026: As of Python 3.7+, use `dataclasses` instead! See my
+other file `dataclass_example.py` for a better way to do this now.
+- See also my answer here: https://stackoverflow.com/a/77161026/4561887
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Status: Done and works! See `class MyData` and `class AnyData` below.
 
