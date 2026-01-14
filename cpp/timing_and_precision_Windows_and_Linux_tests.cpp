@@ -108,14 +108,27 @@ void test_and_print_clock_precision()
         timestamps_ns[i] = nanos<MeasurementClock>();
     }
 
-    // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
-    // See stack sizes: https://stackoverflow.com/a/64085509/4561887
-    static std::array<uint64_t, SAMPLE_SIZE - 1> deltas_ns;
-    for (size_t i = 0; i < deltas_ns.size(); i++)
+    // Calculate time deltas between successive timestamps
+    std::vector<uint64_t> deltas_ns;
+    deltas_ns.reserve(timestamps_ns.size() - 1);
+    size_t invalid_delta_count = 0; // increment each time an invalid delta of 0 is found
+    for (size_t i = 0; i < timestamps_ns.size() - 1; i++)
     {
-        deltas_ns[i] = timestamps_ns[i+1] - timestamps_ns[i];
-        // printf("%" PRIu64 "\n", deltas_ns[i]);  // debugging
+        uint64_t delta_ns = timestamps_ns[i+1] - timestamps_ns[i];
+        if (delta_ns == 0)
+        {
+            // Invalid deltas of 0 are expected on Windows because the clock precision is so poor
+            // (~16 ms) that many timestamps will be identical when taken in rapid succession.
+            invalid_delta_count++;
+            continue;
+        }
+
+        deltas_ns.push_back(delta_ns);
+        // printf("%" PRIu64 "\n", deltas_ns.back());  // debugging
     }
+
+    printf("invalid_delta_count = %zu (expected: 0 on Linux, lots on Windows)\n",
+        invalid_delta_count);
 
     // Calculate stats: mean, median, mode, and stddev of the time differences
 
@@ -132,7 +145,7 @@ void test_and_print_clock_precision()
 
     // 2. Calculate Median (requires sorting a copy)
 
-    static std::array<uint64_t, SAMPLE_SIZE - 1> sorted_deltas = deltas_ns;
+    std::vector<uint64_t> sorted_deltas = deltas_ns;
     std::sort(sorted_deltas.begin(), sorted_deltas.end());
 
     double median;
@@ -710,6 +723,8 @@ sys	0m0.385s
 
 /*
 EXAMPLE RUN ON WINDOWS:
+Run inside of MSYS2 ucrt64 terminal. See my setup instructions here:
+https://stackoverflow.com/a/77407282/4561887
 
 tbd
 
