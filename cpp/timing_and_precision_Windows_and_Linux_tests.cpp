@@ -454,24 +454,261 @@ eRCaGuy_hello_world$ time cpp/timing_and_precision_Windows_and_Linux_tests.cpp
 cpp/timing_and_precision_Windows_and_Linux_tests.cpp running...
 Operating System: Linux
 
+===================================================================================
+1. Timestamp precision tests
+===================================================================================
+
+Definition reminders:
+  See my answer here: https://stackoverflow.com/a/73482099/4561887.
+  - Resolution = the smallest time difference the units can represent. Ex: 1 ns.
+  - Precision  = the repeatability of the measurement. This is the smallest time
+    difference the clock can repeatedly measure, and is usually much larger than the
+    resolution. Ex: 20 ns.
+  - Accuracy   = how close a given clock measurement (whether an absolute timestamp,
+    or an interval measurement) is to the true time or value. This has to do with how
+    accurate your hardware clock's quartz crystal (or equivalent RC, ceramic, or PLL)
+    oscillator is, and how well it's calibrated. Ex: +/- 60 us when measuring a
+    1 minute time interval, for a clock which drifts 30 seconds per year.
+    (30 sec/year drift / 31557600 sec/year * 60 sec measured time interval =
+    0.000057039 sec = 57.039 us drift over that 60 seconds).
+
+This program estimates the PRECISION of each clock type below.
+
+Clock type comparisons:
+  std::chrono::high_resolution_clock == std::chrono::system_clock: true
+  std::chrono::high_resolution_clock == std::chrono::steady_clock: false
+  std::chrono::system_clock          == std::chrono::steady_clock: false
+
+std::chrono::system_clock.is_steady:           false
+std::chrono::steady_clock.is_steady:           true
+std::chrono::high_resolution_clock.is_steady:  false
+
+----------------------------------------------------------
+Testing std::chrono::system_clock precision:
+----------------------------------------------------------
+
 Analyzing 19999999 time delta samples...
 
-Mean:   28.463 ns
-Median: 24.000 ns
-Mode:   24 ns (appears 6536745 times, 32.684%)
-Stddev: 242.249 ns
+Estimation of your clock precision:
 
-Additional Statistics:
-Min:    19 ns
-Max:    264029 ns
-Range:  264010 ns
+Mean:        21.254 ns
+Median:      19.000 ns
+Mode:        19     ns (appears 7415654 times, 37.078%)  <== USE THIS; MOST RELIABLE ESTIMATE
+Stddev:     225.159 ns
 
-real	0m2.269s
-user	0m1.958s
-sys	0m0.302s
+Additional stats:
+Min:         13 ns
+Max:     249736 ns
+Range:   249723 ns
+
+----------------------------------------------------------
+Testing std::chrono::steady_clock precision:
+----------------------------------------------------------
+
+Analyzing 19999999 time delta samples...
+
+Estimation of your clock precision:
+
+Mean:        21.401 ns
+Median:      19.000 ns
+Mode:        19     ns (appears 7488461 times, 37.442%)  <== USE THIS; MOST RELIABLE ESTIMATE
+Stddev:      94.773 ns
+
+Additional stats:
+Min:         15 ns
+Max:     224804 ns
+Range:   224789 ns
+
+----------------------------------------------------------
+Testing std::chrono::high_resolution_clock precision:
+----------------------------------------------------------
+
+Analyzing 19999999 time delta samples...
+
+Estimation of your clock precision:
+
+Mean:        18.679 ns
+Median:      19.000 ns
+Mode:        19     ns (appears 7855362 times, 39.277%)  <== USE THIS; MOST RELIABLE ESTIMATE
+Stddev:      23.646 ns
+
+Additional stats:
+Min:         13 ns
+Max:     249736 ns
+Range:   249723 ns
+
+===================================================================================
+2. Sleep precision tests
+===================================================================================
+
+----------------------------------------------------------
+Sleep test: requested duration = 1 ns, iterations = 1
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:            55211.000 ns (  55.211 us)
+  Median:          55211.000 ns (  55.211 us)
+  Stddev:              0.000 ns
+  Min:             55211     ns (  55.211 us)
+  Max:             55211     ns (  55.211 us)
+  Range:               0     ns
+
+Error (mean - requested):
+  Absolute:        55210.000 ns (  55.210 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:      5521000.000 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 1 ns, iterations = 100
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:            51558.650 ns (  51.559 us)
+  Median:          52372.500 ns (  52.373 us)
+  Stddev:           7925.843 ns (   7.926 us)
+  Min:              5138     ns (   5.138 us)
+  Max:             61980     ns (  61.980 us)
+  Range:           56842     ns
+
+Error (mean - requested):
+  Absolute:        51557.650 ns (  51.558 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:      5155765.000 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 1000000 ns (1.000 ms), iterations = 50
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:          1060626.980 ns (   1.061 ms)
+  Median:        1060087.500 ns (   1.060 ms)
+  Stddev:           5347.188 ns (   5.347 us)
+  Min:           1040862     ns (   1.041 ms)
+  Max:           1079697     ns (   1.080 ms)
+  Range:           38835     ns
+
+Error (mean - requested):
+  Absolute:        60626.980 ns (  60.627 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            6.063 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 2000000 ns (2.000 ms), iterations = 50
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:          2070531.680 ns (   2.071 ms)
+  Median:        2063482.000 ns (   2.063 ms)
+  Stddev:          22918.334 ns (  22.918 us)
+  Min:           2025927     ns (   2.026 ms)
+  Max:           2188693     ns (   2.189 ms)
+  Range:          162766     ns
+
+Error (mean - requested):
+  Absolute:        70531.680 ns (  70.532 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            3.527 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 10000000 ns (10.000 ms), iterations = 10
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:         10087397.200 ns (  10.087 ms)
+  Median:       10066011.000 ns (  10.066 ms)
+  Stddev:          37349.955 ns (  37.350 us)
+  Min:          10062112     ns (  10.062 ms)
+  Max:          10181911     ns (  10.182 ms)
+  Range:          119799     ns
+
+Error (mean - requested):
+  Absolute:        87397.200 ns (  87.397 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            0.874 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 20000000 ns (20.000 ms), iterations = 10
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:         20101051.700 ns (  20.101 ms)
+  Median:       20101640.000 ns (  20.102 ms)
+  Stddev:          28222.627 ns (  28.223 us)
+  Min:          20061646     ns (  20.062 ms)
+  Max:          20166213     ns (  20.166 ms)
+  Range:          104567     ns
+
+Error (mean - requested):
+  Absolute:       101051.700 ns ( 101.052 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            0.505 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 50000000 ns (50.000 ms), iterations = 10
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:         50126353.700 ns (  50.126 ms)
+  Median:       50109866.000 ns (  50.110 ms)
+  Stddev:          54203.778 ns (  54.204 us)
+  Min:          50066144     ns (  50.066 ms)
+  Max:          50209016     ns (  50.209 ms)
+  Range:          142872     ns
+
+Error (mean - requested):
+  Absolute:       126353.700 ns ( 126.354 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            0.253 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 100000000 ns (100.000 ms), iterations = 10
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:        100084364.300 ns ( 100.084 ms)
+  Median:      100068178.000 ns ( 100.068 ms)
+  Stddev:          50602.555 ns (  50.603 us)
+  Min:         100034244     ns ( 100.034 ms)
+  Max:         100229060     ns ( 100.229 ms)
+  Range:          194816     ns
+
+Error (mean - requested):
+  Absolute:        84364.300 ns (  84.364 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            0.084 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 500000000 ns (500.000 ms), iterations = 1
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:        500091156.000 ns ( 500.091 ms)
+  Median:      500091156.000 ns ( 500.091 ms)
+  Stddev:              0.000 ns
+  Min:         500091156     ns ( 500.091 ms)
+  Max:         500091156     ns ( 500.091 ms)
+  Range:               0     ns
+
+Error (mean - requested):
+  Absolute:        91156.000 ns (  91.156 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            0.018 %
+
+----------------------------------------------------------
+Sleep test: requested duration = 1000000000 ns (1.000 s), iterations = 1
+----------------------------------------------------------
+
+Actual sleep duration statistics:
+  Mean:       1000204313.000 ns (   1.000 s)
+  Median:     1000204313.000 ns (   1.000 s)
+  Stddev:              0.000 ns
+  Min:        1000204313     ns (   1.000 s)
+  Max:        1000204313     ns (   1.000 s)
+  Range:               0     ns
+
+Error (mean - requested):
+  Absolute:       204313.000 ns ( 204.313 us)  <=== WHAT I CARE ABOUT THE MOST
+  Relative:            0.020 %
+
+real	0m7.647s
+user	0m3.794s
+sys	0m0.385s
+*/
 
 
 
+/*
 EXAMPLE RUN ON WINDOWS:
 
 tbd
