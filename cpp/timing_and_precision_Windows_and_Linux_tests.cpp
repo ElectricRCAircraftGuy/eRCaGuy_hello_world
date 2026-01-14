@@ -66,10 +66,11 @@ scheduler:
 
 // Get time stamp in nanoseconds.
 // - See my answer: https://stackoverflow.com/a/49066369/4561887
+template<typename Clock = std::chrono::high_resolution_clock>
 uint64_t nanos()
 {
     uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::high_resolution_clock::now().time_since_epoch())
+            Clock::now().time_since_epoch())
             .count();
     return ns;
 }
@@ -96,7 +97,7 @@ int main()
     // Get timestamps as fast as possible
     for (size_t i = 0; i < timestamps_ns.size(); i++)
     {
-        timestamps_ns[i] = nanos();
+        timestamps_ns[i] = nanos<std::chrono::high_resolution_clock>();
     }
 
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
@@ -190,16 +191,18 @@ int main()
 
     // Print results
 
-    printf("Mean:   %.3f ns\n", mean);
-    printf("Median: %.3f ns\n", median);
-    printf("Mode:   %" PRIu64 " ns (appears %zu times, %.3f%%)\n",
+    printf("Estimation of your clock precision:\n\n");
+    printf("Mean:   %11.3f ns\n", mean);
+    printf("Median: %11.3f ns\n", median);
+    printf("Mode:   %7" PRIu64 "     ns (appears %zu times, %.3f%%)  <== USE THIS; MOST RELIABLE "
+           "ESTIMATE\n",
            mode, max_count, (100.0 * max_count) / deltas_ns.size());
-    printf("Stddev: %.3f ns\n", stddev);
+    printf("Stddev: %11.3f ns\n", stddev);
 
     printf("\nAdditional stats:\n");
-    printf("Min:    %" PRIu64 " ns\n", sorted_deltas.front());
-    printf("Max:    %" PRIu64 " ns\n", sorted_deltas.back());
-    printf("Range:  %" PRIu64 " ns\n", sorted_deltas.back() - sorted_deltas.front());
+    printf("Min:    %7" PRIu64 " ns\n", sorted_deltas.front());
+    printf("Max:    %7" PRIu64 " ns\n", sorted_deltas.back());
+    printf("Range:  %7" PRIu64 " ns\n", sorted_deltas.back() - sorted_deltas.front());
 
     return 0;
 }
