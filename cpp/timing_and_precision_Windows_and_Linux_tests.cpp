@@ -33,6 +33,10 @@ References:
    language-agnostic OS-based timing precisions for various clocks.
 1. Here is how to get simple C-like millisecond, microsecond, and nanosecond timestamps in C++
    https://stackoverflow.com/a/49066369/4561887
+1. ---
+1. See all clock types in the "Clocks" section here at the top of this page:
+   https://en.cppreference.com/w/cpp/chrono.html
+1. https://en.cppreference.com/w/cpp/thread/sleep_for.html
 
 See also:
 1. *****+[MY ANSWER] Get a timestamp in C in microseconds? - https://stackoverflow.com/a/67731965/4561887
@@ -49,6 +53,13 @@ scheduler:
     1. [my ans] How to configure the Linux SCHED_RR soft real-time round-robin
     scheduler so that clock_nanosleep() can have improved resolution of ~4 us
     down from ~ 55 us: https://stackoverflow.com/a/71757858/4561887
+
+TODO:
+1. [ ] Print timestamp stats for all 3 major clocks, also indicating if certain clocks are the same
+   based on `using` declarations.
+1. [ ] Use the highest precision clock timestamps to then time sleep calls of various lengths, and
+   see how accurate they are. Identify the minimum sleep time that is possible.
+   ex: 1ns, 1ms, 2ms, 10ms, 20ms, 50ms, 100ms, 500ms, 1s.
 
 */
 
@@ -77,27 +88,19 @@ uint64_t nanos()
 
 static constexpr size_t SAMPLE_SIZE = 20'000'000;
 
-// int main(int argc, char *argv[])  // alternative prototype
-int main()
+// Run clock precision tests for the specified clock type, and print all results.
+template<typename Clock>
+void test_clock_precision()
 {
-    printf("%s running...\n", __FILE__);
-
-    // Print the operating system
-    // - See my answer: https://stackoverflow.com/a/79228659/4561887
-#if defined(_WIN32)
-    printf("Operating System: Windows (32-bit or 64-bit)\n");
-#elif defined (__linux__)
-    printf("Operating System: Linux\n");
-#endif
-
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
-    // See stack sizes: https://stackoverflow.com/a/64085509/4561887
+    // - See stack sizes: https://stackoverflow.com/a/64085509/4561887
+    // Alternatively, use heap via `std::vector`.
     static std::array<uint64_t, SAMPLE_SIZE> timestamps_ns;
 
     // Get timestamps as fast as possible
     for (size_t i = 0; i < timestamps_ns.size(); i++)
     {
-        timestamps_ns[i] = nanos<std::chrono::high_resolution_clock>();
+        timestamps_ns[i] = nanos<Clock>();
     }
 
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
@@ -203,6 +206,29 @@ int main()
     printf("Min:    %7" PRIu64 " ns\n", sorted_deltas.front());
     printf("Max:    %7" PRIu64 " ns\n", sorted_deltas.back());
     printf("Range:  %7" PRIu64 " ns\n", sorted_deltas.back() - sorted_deltas.front());
+}
+
+// int main(int argc, char *argv[])  // alternative prototype
+int main()
+{
+    printf("%s running...\n", __FILE__);
+
+    // Print the operating system
+    // - See my answer: https://stackoverflow.com/a/79228659/4561887
+#if defined(_WIN32)
+    printf("Operating System: Windows (32-bit or 64-bit)\n");
+#elif defined (__linux__)
+    printf("Operating System: Linux\n");
+#endif
+
+    // See all clock types in the "Clocks" section here at the top of this page:
+    // https://en.cppreference.com/w/cpp/chrono.html
+
+    printf(
+        "==================================================\n"
+        "Testing std::chrono::high_resolution_clock:\n"
+        "==================================================\n");
+    test_clock_precision<std::chrono::high_resolution_clock>();
 
     return 0;
 }
