@@ -73,6 +73,7 @@ TODO:
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
 #include <cstdio>   // For `printf()`
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
+#include <type_traits>  // For `std::is_same`
 #include <unordered_map>  // For mode calculation
 
 // Get time stamp in nanoseconds.
@@ -90,7 +91,7 @@ static constexpr size_t SAMPLE_SIZE = 20'000'000;
 
 // Run clock precision tests for the specified clock type, and print all results.
 template<typename Clock>
-void test_clock_precision()
+void test_and_print_clock_precision()
 {
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
     // - See stack sizes: https://stackoverflow.com/a/64085509/4561887
@@ -224,11 +225,51 @@ int main()
     // See all clock types in the "Clocks" section here at the top of this page:
     // https://en.cppreference.com/w/cpp/chrono.html
 
-    printf(
+    // Check if certain clock types are the same
+    printf("\nClock type comparisons:\n");
+    printf("  std::chrono::high_resolution_clock == std::chrono::system_clock: %s\n",
+           std::is_same<std::chrono::high_resolution_clock, std::chrono::system_clock>::value
+           ? "true" : "false");
+    printf("  std::chrono::high_resolution_clock == std::chrono::steady_clock: %s\n",
+           std::is_same<std::chrono::high_resolution_clock, std::chrono::steady_clock>::value
+           ? "true" : "false");
+    printf("  std::chrono::system_clock          == std::chrono::steady_clock: %s\n",
+           std::is_same<std::chrono::system_clock, std::chrono::steady_clock>::value
+           ? "true" : "false");
+
+    printf("\nDefinition reminders:\n"
+        "  - resolution = the smallest value the clock type pretends to represent; ex: 1 ns.\n"
+        "  - precision  = the smallest interval the clock type can actually measure; ex: 20 ns.\n"
+        "  - accuracy   = how close a given clock measurement (whether an absolute timestamp, "
+        "or an interval measurement) is to the true time or value; ex: +/- 1ms.\n"
+        "\n"
+        "This program estimates the PRECISION of each clock type below.\n");
+
+    printf("\n"
         "==================================================\n"
-        "Testing std::chrono::high_resolution_clock:\n"
+        "Testing std::chrono::system_clock precision:\n"
         "==================================================\n");
-    test_clock_precision<std::chrono::high_resolution_clock>();
+    test_and_print_clock_precision<std::chrono::system_clock>();
+
+    printf("\n"
+        "==================================================\n"
+        "Testing std::chrono::steady_clock precision:\n"
+        "==================================================\n");
+    test_and_print_clock_precision<std::chrono::steady_clock>();
+
+    printf("\n"
+        "==================================================\n"
+        "Testing std::chrono::high_resolution_clock precision:\n"
+        "==================================================\n");
+    test_and_print_clock_precision<std::chrono::high_resolution_clock>();
+
+    printf("\n");
+
+    // // Run sleep tests
+
+    // using clock_type = std::chrono::steady_clock;
+
+
 
     return 0;
 }
