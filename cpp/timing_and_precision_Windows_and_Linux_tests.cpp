@@ -55,7 +55,7 @@ scheduler:
     down from ~ 55 us: https://stackoverflow.com/a/71757858/4561887
 
 TODO:
-1. [ ] Print timestamp stats for all 3 major clocks, also indicating if certain clocks are the same
+1. [x] Print timestamp stats for all 3 major clocks, also indicating if certain clocks are the same
    based on `using` declarations.
 1. [ ] Use the highest precision clock timestamps to then time sleep calls of various lengths, and
    see how accurate they are. Identify the minimum sleep time that is possible.
@@ -222,6 +222,27 @@ int main()
     printf("Operating System: Linux\n");
 #endif
 
+    printf("\n");
+    printf("===================================================================================\n");
+    printf("1. Timestamp precision tests\n");
+    printf("===================================================================================\n");
+
+    printf("\nDefinition reminders:\n"
+        "  See my answer here: https://stackoverflow.com/a/73482099/4561887. \n"
+        "  - Resolution = the smallest time difference the units can represent. Ex: 1 ns.\n"
+        "  - Precision  = the repeatability of the measurement. This is the smallest time\n"
+        "    difference the clock can repeatedly measure, and is usually much larger than the\n"
+        "    resolution. Ex: 20 ns.\n"
+        "  - Accuracy   = how close a given clock measurement (whether an absolute timestamp,\n"
+        "    or an interval measurement) is to the true time or value. This has to do with how\n"
+        "    accurate your hardware clock's quartz crystal (or equivalent RC, ceramic, or PLL)\n"
+        "    oscillator is, and how well it's calibrated. Ex: +/- 60 us when measuring a\n"
+        "    1 minute time interval, for a clock which drifts 30 seconds per year.\n"
+        "    (30 sec/year drift / 31557600 sec/year * 60 sec measured time interval =\n"
+        "    0.000057039 sec = 57.039 us drift over that 60 seconds).\n"
+        "\n"
+        "This program estimates the PRECISION of each clock type below.\n");
+
     // See all clock types in the "Clocks" section here at the top of this page:
     // https://en.cppreference.com/w/cpp/chrono.html
 
@@ -237,39 +258,47 @@ int main()
            std::is_same<std::chrono::system_clock, std::chrono::steady_clock>::value
            ? "true" : "false");
 
-    printf("\nDefinition reminders:\n"
-        "  - resolution = the smallest value the clock type pretends to represent; ex: 1 ns.\n"
-        "  - precision  = the smallest interval the clock type can actually measure; ex: 20 ns.\n"
-        "  - accuracy   = how close a given clock measurement (whether an absolute timestamp, "
-        "or an interval measurement) is to the true time or value; ex: +/- 1ms.\n"
-        "\n"
-        "This program estimates the PRECISION of each clock type below.\n");
+    printf("\n");
+    printf("std::chrono::system_clock.is_steady:           %s\n",
+           std::chrono::system_clock::is_steady ? "true" : "false");
+    printf("std::chrono::steady_clock.is_steady:           %s\n",
+           std::chrono::steady_clock::is_steady ? "true" : "false");
+    printf("std::chrono::high_resolution_clock.is_steady:  %s\n",
+           std::chrono::high_resolution_clock::is_steady ? "true" : "false");
 
     printf("\n"
-        "==================================================\n"
+        "----------------------------------------------------------\n"
         "Testing std::chrono::system_clock precision:\n"
-        "==================================================\n");
+        "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::system_clock>();
 
     printf("\n"
-        "==================================================\n"
+        "----------------------------------------------------------\n"
         "Testing std::chrono::steady_clock precision:\n"
-        "==================================================\n");
+        "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::steady_clock>();
 
     printf("\n"
-        "==================================================\n"
+        "----------------------------------------------------------\n"
         "Testing std::chrono::high_resolution_clock precision:\n"
-        "==================================================\n");
+        "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::high_resolution_clock>();
 
     printf("\n");
+    printf("===================================================================================\n");
+    printf("2. Sleep precision tests\n");
+    printf("===================================================================================\n");
 
-    // // Run sleep tests
+#if defined(_WIN32)
+    // Windows
+    using clock_type = std::chrono::steady_clock;
+#elif defined (__linux__)
+    // Linux
+    using clock_type = std::chrono::steady_clock;
+#endif
 
-    // using clock_type = std::chrono::steady_clock;
-
-
+    sleep_test<clock_type>(1ns, 50);
+    sleep_test<clock_type>(1ms, 50);
 
     return 0;
 }
