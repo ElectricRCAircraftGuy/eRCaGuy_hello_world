@@ -82,11 +82,11 @@ TODO:
 
 // Get time stamp in nanoseconds.
 // - See my answer: https://stackoverflow.com/a/49066369/4561887
-template<typename Clock = std::chrono::high_resolution_clock>
+template<typename MeasurementClock = std::chrono::high_resolution_clock>
 uint64_t nanos()
 {
     uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-            Clock::now().time_since_epoch())
+            MeasurementClock::now().time_since_epoch())
             .count();
     return ns;
 }
@@ -94,7 +94,7 @@ uint64_t nanos()
 static constexpr size_t SAMPLE_SIZE = 20'000'000;
 
 // Run clock precision tests for the specified clock type, and print all results.
-template<typename Clock>
+template<typename MeasurementClock>
 void test_and_print_clock_precision()
 {
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
@@ -105,7 +105,7 @@ void test_and_print_clock_precision()
     // Get timestamps as fast as possible
     for (size_t i = 0; i < timestamps_ns.size(); i++)
     {
-        timestamps_ns[i] = nanos<Clock>();
+        timestamps_ns[i] = nanos<MeasurementClock>();
     }
 
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
@@ -213,7 +213,8 @@ void test_and_print_clock_precision()
     printf("Range:  %7" PRIu64 " ns\n", sorted_deltas.back() - sorted_deltas.front());
 }
 
-// Test sleep precision by sleeping multiple times and measuring actual sleep duration.
+// Test sleep precision by sleeping multiple times and measuring actual sleep duration using
+// `MeasurementClock`.
 template<typename MeasurementClock, typename SleepDuration>
 void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
 {
@@ -224,7 +225,7 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
     printf("\n----------------------------------------------------------\n");
     printf("Sleep test: requested duration = %" PRIu64 " ns", requested_ns);
 
-    // Also show in more readable units if appropriate
+    // Also show in more readable units if appropriate: sec, ms, us
     if (requested_ns >= 1'000'000'000)
     {
         printf(" (%.3f s)", requested_ns / 1e9);
@@ -242,12 +243,14 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
 
     // Store actual sleep durations
     std::vector<uint64_t> actual_durations_ns;
+    // Pre-allocate dynamic memory (heap) for speed
     actual_durations_ns.reserve(num_iterations);
 
     // Perform sleep tests
     for (size_t i = 0; i < num_iterations; i++)
     {
         uint64_t start_ns = nanos<MeasurementClock>();
+        // See: https://en.cppreference.com/w/cpp/thread/sleep_for.html
         std::this_thread::sleep_for(sleep_duration);
         uint64_t end_ns = nanos<MeasurementClock>();
 
@@ -271,10 +274,12 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
     size_t mid = sorted_durations.size() / 2;
     if (sorted_durations.size() % 2 == 0)
     {
+        // even number of elements
         median = (sorted_durations[mid - 1] + sorted_durations[mid]) / 2.0;
     }
     else
     {
+        // odd number of elements
         median = sorted_durations[mid];
     }
 
@@ -289,43 +294,49 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
     double stddev = std::sqrt(variance);
 
     // Print results
+
+#define PRINT_HUMAN_READABLE(ns_value)                               \
+    if (ns_value >= 1e9) printf(" (%8.3f s)", ns_value / 1e9);       \
+    else if (ns_value >= 1e6) printf(" (%8.3f ms)", ns_value / 1e6); \
+    else if (ns_value >= 1e3) printf(" (%8.3f us)", ns_value / 1e3);
+
+#define PRINT_HUMAN_READABLE_ABS(ns_value)                                     \
+    if (std::abs(ns_value) >= 1e9) printf(" (%8.3f s)", ns_value / 1e9);       \
+    else if (std::abs(ns_value) >= 1e6) printf(" (%8.3f ms)", ns_value / 1e6); \
+    else if (std::abs(ns_value) >= 1e3) printf(" (%8.3f us)", ns_value / 1e3);
+
     printf("\nActual sleep duration statistics:\n");
-    printf("  Mean:       %11.3f ns", mean);
-    if (mean >= 1e6) printf("  (%.3f ms)", mean / 1e6);
-    else if (mean >= 1e3) printf("  (%.3f us)", mean / 1e3);
+    printf("  Mean:     %16.3f ns", mean);
+    PRINT_HUMAN_READABLE(mean);
     printf("\n");
 
-    printf("  Median:     %11.3f ns", median);
-    if (median >= 1e6) printf("  (%.3f ms)", median / 1e6);
-    else if (median >= 1e3) printf("  (%.3f us)", median / 1e3);
+    printf("  Median:   %16.3f ns", median);
+    PRINT_HUMAN_READABLE(median);
     printf("\n");
 
-    printf("  Stddev:     %11.3f ns", stddev);
-    if (stddev >= 1e6) printf("  (%.3f ms)", stddev / 1e6);
-    else if (stddev >= 1e3) printf("  (%.3f us)", stddev / 1e3);
+    printf("  Stddev:   %16.3f ns", stddev);
+    PRINT_HUMAN_READABLE(stddev);
     printf("\n");
 
-    printf("  Min:        %11" PRIu64 " ns", sorted_durations.front());
-    if (sorted_durations.front() >= 1'000'000) printf("  (%.3f ms)", sorted_durations.front() / 1e6);
-    else if (sorted_durations.front() >= 1'000) printf("  (%.3f us)", sorted_durations.front() / 1e3);
+    printf("  Min:      %12" PRIu64 "     ns", sorted_durations.front());
+    PRINT_HUMAN_READABLE(sorted_durations.front());
     printf("\n");
 
-    printf("  Max:        %11" PRIu64 " ns", sorted_durations.back());
-    if (sorted_durations.back() >= 1'000'000) printf("  (%.3f ms)", sorted_durations.back() / 1e6);
-    else if (sorted_durations.back() >= 1'000) printf("  (%.3f us)", sorted_durations.back() / 1e3);
+    printf("  Max:      %12" PRIu64 "     ns", sorted_durations.back());
+    PRINT_HUMAN_READABLE(sorted_durations.back());
     printf("\n");
 
-    printf("  Range:      %11" PRIu64 " ns\n", sorted_durations.back() - sorted_durations.front());
+    printf("  Range:    %12" PRIu64 "     ns\n",
+        sorted_durations.back() - sorted_durations.front());
 
     // Calculate error
     double error_ns = mean - requested_ns;
     double error_percent = (error_ns / requested_ns) * 100.0;
     printf("\nError (mean - requested):\n");
-    printf("  Absolute:   %11.3f ns ", error_ns);
-    if (std::abs(error_ns) >= 1e6) printf("  (%.3f ms)", error_ns / 1e6);
-    else if (std::abs(error_ns) >= 1e3) printf("  (%.3f us)", error_ns / 1e3);
+    printf("  Absolute: %16.3f ns", error_ns);
+    PRINT_HUMAN_READABLE_ABS(error_ns);
     printf("  <=== WHAT I CARE ABOUT THE MOST\n");
-    printf("  Relative:   %11.3f %%\n", error_percent);
+    printf("  Relative: %16.3f %%\n", error_percent);
 }
 
 // int main(int argc, char *argv[])  // alternative prototype
@@ -408,6 +419,8 @@ int main()
     printf("2. Sleep precision tests\n");
     printf("===================================================================================\n");
 
+    // Allow for a different selection of clock type for measurements just in case we need to
+    // for Windows (in case its steady clock is very poor resolution).
 #if defined(_WIN32)
     // Windows
     using measurement_clock_type = std::chrono::steady_clock;
@@ -418,7 +431,9 @@ int main()
 
     using namespace std::chrono_literals;
 
-    sleep_test<measurement_clock_type>(1ns, 50);
+    sleep_test<measurement_clock_type>(1ns, 1);  // sanity check to compare to the next line to
+                                                 // see if 1 ulta-short sleep iteration works ok
+    sleep_test<measurement_clock_type>(1ns, 100);
     sleep_test<measurement_clock_type>(1ms, 50);
     sleep_test<measurement_clock_type>(2ms, 50);
     sleep_test<measurement_clock_type>(10ms, 10);
