@@ -109,8 +109,9 @@ void test_and_print_clock_precision()
     }
 
     // Calculate time deltas between successive timestamps
+    constexpr size_t MAX_NUM_DELTAS_POSSIBLE = timestamps_ns.size() - 1;
     std::vector<uint64_t> deltas_ns;
-    deltas_ns.reserve(timestamps_ns.size() - 1);
+    deltas_ns.reserve(MAX_NUM_DELTAS_POSSIBLE);
     size_t invalid_delta_count = 0; // increment each time an invalid delta of 0 is found
     for (size_t i = 0; i < timestamps_ns.size() - 1; i++)
     {
@@ -127,12 +128,16 @@ void test_and_print_clock_precision()
         // printf("%" PRIu64 "\n", deltas_ns.back());  // debugging
     }
 
-    printf("invalid_delta_count = %zu (expected: 0 on Linux, lots on Windows)\n",
-        invalid_delta_count);
+    printf("\ninvalid_delta_count = %zu (%.2f%%) (expected 0 sample deltas invalid on Linux, "
+        "and the majority invalid on Windows)\n",
+        invalid_delta_count,
+        (100.0 * invalid_delta_count) / MAX_NUM_DELTAS_POSSIBLE);
 
     // Calculate stats: mean, median, mode, and stddev of the time differences
 
-    printf("\nAnalyzing %zu time delta samples...\n\n", deltas_ns.size());
+    printf("Analyzing %zu (%.2f%% of collected) time delta samples...\n\n",
+        deltas_ns.size(),
+        (100.0 * deltas_ns.size()) / MAX_NUM_DELTAS_POSSIBLE);
 
     // 1. Calculate Mean
 
@@ -260,7 +265,8 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
     actual_durations_ns.reserve(num_iterations);
 
     // Perform sleep tests
-    for (size_t i = 0; i < num_iterations; i++)
+    size_t num_successful_sleeps = 0;
+    while (num_successful_sleeps < num_iterations)
     {
         uint64_t start_ns = nanos<MeasurementClock>();
         // See: https://en.cppreference.com/w/cpp/thread/sleep_for.html
@@ -268,6 +274,16 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
         uint64_t end_ns = nanos<MeasurementClock>();
 
         uint64_t actual_ns = end_ns - start_ns;
+        if (actual_ns == 0)
+        {
+            // This should never happen unless the clock precision is very poor
+            // (ex: Windows system_clock with ~16 ms precision, and on ultra-short sleeps)
+            printf("WARNING: failed to sleep, or clock precision too poor to measure. "
+                "Trying this iteration again.\n");
+            continue;
+        }
+
+        num_successful_sleeps++;
         actual_durations_ns.push_back(actual_ns);
     }
 
@@ -447,6 +463,10 @@ int main()
     sleep_test<measurement_clock_type>(1ns, 1);  // sanity check to compare to the next line to
                                                  // see if 1 ulta-short sleep iteration works ok
     sleep_test<measurement_clock_type>(1ns, 100);
+    sleep_test<measurement_clock_type>(1us, 50);
+    sleep_test<measurement_clock_type>(10us, 50);
+    sleep_test<measurement_clock_type>(100us, 50);
+    sleep_test<measurement_clock_type>(500us, 50);
     sleep_test<measurement_clock_type>(1ms, 50);
     sleep_test<measurement_clock_type>(2ms, 50);
     sleep_test<measurement_clock_type>(10ms, 10);
