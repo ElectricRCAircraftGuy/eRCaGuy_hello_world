@@ -21,10 +21,27 @@ To compile and run (assuming you've already `cd`ed into this dir):
 sudo apt update && sudo apt install ccache
 
 # 1. In C++
+# For Linux
 time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a && bin/a
 
 # OR (just call this file as an exectuable directly)
+# - This run technique works on Linux only right now because it's missing the required
+#   `-lwinmm` Windows Multimedia Library (WinMM) linker flag for Windows.
 time ./timing_and_precision_Windows_and_Linux_tests.cpp
+
+# For Windows
+# - Requires:
+#   1. The MSYS2 ucrt64 environment with g++ installed (see my instructions here:
+#      https://stackoverflow.com/a/77407282/4561887) and
+#   2. The Windows Multimedia Library (WinMM) linker flag option via `-lwinmm`.
+cd path/to/eRCaGuy_hello_world/cpp
+# Then:
+# Option 1: Run from the MSYS2 ucrt64 bash shell in Windows:
+time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a
+# Option 2: Run from Powershell in Windows, accessing the MSYS2 ucrt64 bash shell automatically:
+# - See my answer here under the section titled "When running from a Windows PowerShell":
+#   https://stackoverflow.com/a/79201770/4561887
+C:\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64 -shell bash -c 'time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a'
 ```
 
 References:
@@ -37,6 +54,16 @@ References:
 1. See all clock types in the "Clocks" section here at the top of this page:
    https://en.cppreference.com/w/cpp/chrono.html
 1. https://en.cppreference.com/w/cpp/thread/sleep_for.html
+1. https://learn.microsoft.com/en-us/windows/win32/api/timeapi/nf-timeapi-timebeginperiod:
+   `timeBeginPeriod(1)` - to get higher-resolution and precision sleeps and timestamps and
+   clocks in Windows!
+1. GS NOTES: experimentation and research tells me that this `timeBeginPeriod(1)` call affects
+   only the Windows `Sleep()` call, not the C++ `std::this_thread::sleep_for()` call. It is also
+   expected to affect and improve the timeout precisions of the Windows `WSAPoll()` socket
+   call.
+   - Each call to `timeBeginPeriod()`/`timeEndPeriod()`, however: 1) affects the ENTIRE SYSTEM,
+     not just your program, 2) increases power consumption system-wide, and 3) is inefficient,
+    taking ~200 us each call (range: 2~500us per call).
 
 See also:
 1. *****+[MY ANSWER] Get a timestamp in C in microseconds? - https://stackoverflow.com/a/67731965/4561887
@@ -55,6 +82,7 @@ scheduler:
     down from ~ 55 us: https://stackoverflow.com/a/71757858/4561887
 
 TODO:
+(newest on BOTTOM)
 1. [x] Print timestamp stats for all 3 major clocks, also indicating if certain clocks are the same
    based on `using` declarations.
 1. [x] Use the highest precision clock timestamps to then time sleep calls of various lengths, and
@@ -62,6 +90,7 @@ TODO:
    ex: 1ns, 1ms, 2ms, 10ms, 20ms, 50ms, 100ms, 500ms, 1s.
 1. [ ] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
    logic in both `test_and_print_clock_precision()` and `sleep_test()`.
+1. [ ] Tabulate the results nicely. Reading them in paragraph type form is tedious.
 
 */
 
@@ -128,8 +157,8 @@ void test_and_print_clock_precision()
         // printf("%" PRIu64 "\n", deltas_ns.back());  // debugging
     }
 
-    printf("\ninvalid_delta_count = %zu (%.2f%%) (expected 0 sample deltas invalid on Linux, "
-        "and the majority invalid on Windows)\n",
+    printf("\ninvalid_delta_count = %zu (%.2f%%) (it is expected that there will be "
+        "0 invalid sample deltas on Linux, and tons [the majority] to be invalid on Windows)\n",
         invalid_delta_count,
         (100.0 * invalid_delta_count) / MAX_NUM_DELTAS_POSSIBLE);
 
@@ -332,7 +361,7 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
 
     if (num_failed_sleeps > 0)
     {
-        printf("WARNING: %zu failed sleeps due to clock precision being too poor to measure such\n"
+        printf("\nWARNING: %zu failed sleeps due to clock precision being too poor to measure such\n"
             "a short duration. Probably no sleep took place at all, but a yield may have occurred\n"
             "in which the OS's scheduler ran for a duration <= the clock's minimum resolution.\n"
             "- This is expected on Windows, not on Linux.\n"
@@ -469,14 +498,20 @@ int main()
     // Allow for a different selection of clock type for measurements just in case we need to
     // for Windows (in case its steady clock is very poor resolution).
 #if defined(_WIN32)
-    // Windows
+    // Windows: testing shows `std::chrono::steady_clock` to have exactly 100 ns precision
+    // on Windows 11 on my hardware
     using measurement_clock_type = std::chrono::steady_clock;
 #elif defined (__linux__)
-    // Linux
+    // Linux: testing shows `std::chrono::steady_clock` to have ~20 ns precision on Linux
+    // Ubuntu 22.04 on my hardware
     using measurement_clock_type = std::chrono::steady_clock;
 #endif
 
     using namespace std::chrono_literals;
+
+    printf("IMPORTANT: For Windows, expect that no true sleep will occur for any requested\n"
+        "  duration < 1 ms. Rather, it will be at best only a short yield to the OS scheduler.\n"
+        "  Deduction indicates that true sleeps don't begin on Windows until >= 1 ms.\n");
 
     sleep_test<measurement_clock_type>(1ns, 1);  // sanity check to compare to the next line to
                                                  // see if 1 ulta-short sleep iteration works ok
