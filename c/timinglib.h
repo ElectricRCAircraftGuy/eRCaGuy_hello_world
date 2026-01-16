@@ -97,7 +97,7 @@ uint64_t get_estimated_resolution();
 /// Obtain the specified resolution, as returned by `clock_getres()`. See:
 /// https://linux.die.net/man/3/clock_gettime. Works properly only if `USE_CLOCK_GETTIME` is
 /// defined in the .c file.
-/// - Testing on my x86-64 Linux Ubuntu system returns 1 ns. Run you rown tests via
+/// - Testing on my x86-64 Linux Ubuntu system returns 1 ns. Run your own tests via
 ///   "timinglib_get_resolution.c".
 uint64_t get_specified_resolution();
 

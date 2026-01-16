@@ -1,0 +1,27 @@
+
+GS
+Jan. 2026
+
+Newest on BOTTOM.
+
+Jan. 2026
+Timing improvements in "cpp/timing_and_precision_Windows_and_Linux_tests.cpp" and "cpp/Windows_WIP/" et al:
+[ ] add a periodic stats print task to show CPU usage, loop freq, avg. processing time, etc. once per second! 
+    [ ] Estimate CPU usage in the main loop too.
+        cpu usage = non_sleep_time/total_time
+        total_time = sleep_time + non_sleep_time
+[ ] Answer this question here!: https://stackoverflow.com/questions/13397571/precise-thread-sleep-needed-max-1ms-error
+[ ] Update my main C++ precision timing Stack Overflow answer with a new section on this.
+[ ] Update and commit my cpp/timing_and_precision_Windows_and_Linux_tests.cpp changes on Linux. 
+    [ ] Add a struct to capture all relevant inputs, outputs, stats, etc. Make it global for expediency.
+    [ ] Tabulate the results at the end (use AI). 
+    [ ] write up results into a new answer here: https://stackoverflow.com/questions/13397571/precise-thread-sleep-needed-max-1ms-error
+[ ] Add my changes from Windows into that file too. 
+[ ] Add sleep tests to easily test these things: 
+    1) normal sleep_for()
+    2) sleep_for() with Windows special call for high precision sleep (doesn't work)
+    3) Windows Sleep() call withOUT the 1ms precision fix 
+    4) Windows Sleep() call WITH the 1ms precision fix
+[ ] Windows Sleep() - don't wrap with timeBeginPeriod()/timeEndPeriod() calls--wasted time: ~200 us each call (range: 2~500us); instead, use the special Windows API call to set high precision sleep globally for the whole program!
+[ ] Save my sleep_until_ms func in my hello world repo, and add it to stack overflow!!
+
