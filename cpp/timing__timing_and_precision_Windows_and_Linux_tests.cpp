@@ -1,4 +1,4 @@
-///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=gnu++17 "$0" -o /tmp/a && /tmp/a "$@"; exit
+///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=gnu++20 "$0" -o /tmp/a && /tmp/a "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -13,7 +13,7 @@ STATUS: Done and works!
 
 To compile and run (assuming you've already `cd`ed into this dir):
 ```bash
-# NB: you may need to use `-std=gnu++17` instead of `-std=c++17` in order to obtain extra GNU
+# NB: you may need to use `-std=gnu++20` instead of `-std=c++20` in order to obtain extra GNU
 # gcc features, including gcc extensions, POSIX cmds, and Linux sytem cmds.
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
@@ -22,7 +22,7 @@ sudo apt update && sudo apt install ccache
 
 # 1. In C++
 # For Linux
-time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a && bin/a
 
 # OR (just call this file as an exectuable directly)
 # - This run technique works on Linux only right now because it's missing the required
@@ -37,11 +37,11 @@ time ./timing_and_precision_Windows_and_Linux_tests.cpp
 cd path/to/eRCaGuy_hello_world/cpp
 # Then:
 # Option 1: Run from the MSYS2 ucrt64 bash shell in Windows:
-time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a
 # Option 2: Run from Powershell in Windows, accessing the MSYS2 ucrt64 bash shell automatically:
 # - See my answer here under the section titled "When running from a Windows PowerShell":
 #   https://stackoverflow.com/a/79201770/4561887
-C:\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64 -shell bash -c 'time g++ -Wall -Wextra -Werror -O3 -std=gnu++17 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a'
+C:\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64 -shell bash -c 'time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a'
 ```
 
 References:
@@ -91,6 +91,7 @@ TODO:
 1. [ ] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
    logic in both `test_and_print_clock_precision()` and `sleep_test()`.
 1. [ ] Tabulate the results nicely. Reading them in paragraph type form is tedious.
+1. [ ] Do the todos here too: "eRCaGuy_hello_world/TODO2.txt"
 
 */
 
@@ -111,7 +112,7 @@ TODO:
 
 // Get time stamp in nanoseconds.
 // - See my answer: https://stackoverflow.com/a/49066369/4561887
-template<typename MeasurementClock = std::chrono::high_resolution_clock>
+template<typename MeasurementClock = std::chrono::steady_clock>
 uint64_t nanos()
 {
     uint64_t ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -260,10 +261,138 @@ void test_and_print_clock_precision()
     printf("Range:  %7" PRIu64 " ns\n", sorted_deltas.back() - sorted_deltas.front());
 }
 
+enum class SleepType
+{
+    // ------------------------------------------
+    // Windows and Linux
+    // ------------------------------------------
+
+    // C++ `std::this_thread::sleep_for()`.
+    STD_THISTHREAD_SLEEPFOR = 0,
+
+    // ------------------------------------------
+    // Windows only
+    // ------------------------------------------
+
+    // C++ `std::this_thread::sleep_for()` on Windows with `timeBeginPeriod(minimum)` called first.
+    WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD,
+
+    // LEGACY DEFAULT: Windows `Sleep()` withOUT `timeBeginPeriod(minimum)` called first.
+    // - Legacy ~15.6 ms precision on Windows.
+    WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD,
+
+    // LEGACY BETTER: Windows `Sleep()` WITH `timeBeginPeriod(minimum)` called first every sleep
+    // call.
+    // - Legacy ~1ms precision on Windows.
+    // - System-wide impact.
+    // - NB: it is inefficient to call `timeBeginPeriod(minimum)` and `timeEndPeriod(minimum)` every
+    //   sleep call since it takes ~200 us avg. per begin or end call. The approximate time range is
+    //   2~500us per call.
+    WINDOWS_LEGACY_BETTER__SLEEP_WITH_TIMEBEGINPERIOD_EVERY_CALL,
+
+    // LEGACY BEST: Windows `Sleep()` WITH `timeBeginPeriod(minimum)` called once at the start of
+    // the program.
+    // - Legacy ~1ms precision on Windows.
+    // - System-wide impact.
+    // - Most efficient way to use `timeBeginPeriod(minimum)`/`timeEndPeriod(minimum)`: calling it
+    //   only once each per program run.
+    WINDOWS_LEGACY_BEST__SLEEP_WITH_TIMEBEGINPERIOD_SINGLE_CALL,
+
+    // MODERN BEST: Windows waitable timers via `CreateWaitableTimerEx()`.
+    // - Modern single-process impact.
+    // - Modern ~0.5ms~1ms precision on Windows.
+    WINDOWS_MODERN_BEST__WAITABLE_TIMER,
+
+    // Hybrid approach: to use a sophisticated modern hybrid approach which allows loop iteration
+    // times < 1ms on Windows, you must use a 100%-CPU-usage busy-wait loop with Windows' 100 ns
+    // clock, such as `std::chrono::steady_clock`.
+    // - This is best done with a hybrid approach where you first use my
+    //   `WINDOWS_MODERN_BEST__WAITABLE_TIMER` approach to sleep for the desired time less ~2ms,
+    //   then use a busy-wait loop via `nanos<std::chrono::steady_clock>()` timestamp calls for the
+    //   last ~2ms to hit your desired time precisely.
+    // - Uses busy-wait.
+    // - Has 100% CPU usage for any sleeps < ~2ms.
+    WINDOWS_HYBRID__SLEEP_PLUS_BUSY_WAIT,
+
+    // ------------------------------------------
+    // Linux only
+    // ------------------------------------------
+
+    // Linux `clock_nanosleep()` via my "c/timinglib.h/.c" library `sleep_ns()` call.
+    LINUX__CLOCK_NANOSLEEP,
+
+    // Linux `clock_nanosleep()` via my "c/timinglib.h/.c" library `use_realtime_scheduler()`
+    // and then `sleep_ns()` calls.
+    // - Uses the Linux `SCHED_RR` soft real-time round-robin scheduler to improve sleep precision.
+    LINUX__CLOCK_NANOSLEEP_WITH_SOFT_REALTIME_SCHEDULER,
+
+    // Linux `std::this_thread::sleep_for()` with `use_realtime_scheduler()` called first.
+    // - Uses the Linux `SCHED_RR` soft real-time round-robin scheduler to improve sleep precision.
+    LINUX__STD_THISTHREAD_SLEEPFOR_WITH_SOFT_REALTIME_SCHEDULER,
+};
+
+///////// add mechanism to read string to print type
+///
+// See my answer: https://stackoverflow.com/a/59221452/4561887
+//////////
+// Array of strings to map enum error types to printable strings
+// - see important NOTE above!
+const char* const MYMODULE_ERROR_STRS[] =
+{
+    "STD_THISTHREAD_SLEEPFOR",
+    "WINDOWS_SLEEPFOR_WITH_TIMEBEGINPERIOD_1MS (Legacy default)",
+    "MYMODULE_ERROR_NOMEM",
+    "MYMODULE_ERROR_MYERROR",
+};
+_Static_assert(ARRAY_LEN(MYMODULE_ERROR_STRS) == MYMODULE_ERROR_COUNT,
+    "You must keep your `mymodule_error_t` enum and your "
+    "`MYMODULE_ERROR_STRS` array in-sync!");
+////////
+// To get a printable error string
+const char* mymodule_error_str(mymodule_error_t err);
+
+// Sleep once using the specified sleep type and duration.
+template<typename MeasurementClock, typename SleepDuration>
+void sleep_once(
+    SleepType sleep_type,
+    SleepDuration sleep_duration,
+    uint64_t *actual_sleep_time_ns = nullptr,
+    uint64_t *non_sleep_time_ns = nullptr,
+    double *cpu_usage_pct = nullptr)
+{
+    uint64_t t_start_ns;
+    uint64_t end_ns;
+
+    switch (sleep_type)
+    {
+        case SleepType::STD_THISTHREAD_SLEEPFOR:
+        {
+            /////////// track sleep time and non-sleep time for cpu usage calculation
+
+            t_start_ns = nanos<MeasurementClock>();
+            std::this_thread::sleep_for(sleep_duration);
+            end_ns = nanos<MeasurementClock>();
+            break;
+        }
+        case SleepType::WINDOWS_SLEEPFOR_WITH_TIMEBEGINPERIOD_1MS:
+        {
+            //////
+            break;
+        }
+
+
+    }
+
+    if (actual_sleep_time_ns != nullptr)
+    {
+        *actual_sleep_time_ns = end_ns - t_start_ns;
+    }
+}
+
 // Test sleep precision by sleeping multiple times and measuring actual sleep duration using
 // `MeasurementClock`.
 template<typename MeasurementClock, typename SleepDuration>
-void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
+void sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_iterations)
 {
     // Convert duration to nanoseconds for display
     uint64_t requested_ns =
@@ -298,12 +427,8 @@ void sleep_test(SleepDuration sleep_duration, size_t num_iterations)
     size_t num_failed_sleeps = 0;
     while (num_successful_sleeps < num_iterations)
     {
-        uint64_t start_ns = nanos<MeasurementClock>();
-        // See: https://en.cppreference.com/w/cpp/thread/sleep_for.html
-        std::this_thread::sleep_for(sleep_duration);
-        uint64_t end_ns = nanos<MeasurementClock>();
-
-        uint64_t actual_ns = end_ns - start_ns;
+        uint64_t actual_ns = 0;
+        sleep_once<MeasurementClock>(sleep_type, sleep_duration, &actual_ns);
         if (actual_ns == 0)
         {
             // This should never happen unless the clock precision is very poor
@@ -513,25 +638,28 @@ int main()
         "  duration < 1 ms. Rather, it will be at best only a short yield to the OS scheduler.\n"
         "  Deduction indicates that true sleeps don't begin on Windows until >= 1 ms.\n");
 
-    sleep_test<measurement_clock_type>(1ns, 1);  // sanity check to compare to the next line to
-                                                 // see if 1 ulta-short sleep iteration works ok
-    sleep_test<measurement_clock_type>(1ns, 100);
-    sleep_test<measurement_clock_type>(1us, 50);
-    sleep_test<measurement_clock_type>(10us, 50);
-    sleep_test<measurement_clock_type>(20us, 50);
-    sleep_test<measurement_clock_type>(30us, 50);
-    sleep_test<measurement_clock_type>(50us, 50);
-    sleep_test<measurement_clock_type>(100us, 50);
-    sleep_test<measurement_clock_type>(200us, 50);
-    sleep_test<measurement_clock_type>(500us, 50);
-    sleep_test<measurement_clock_type>(1ms, 50);
-    sleep_test<measurement_clock_type>(2ms, 50);
-    sleep_test<measurement_clock_type>(10ms, 10);
-    sleep_test<measurement_clock_type>(20ms, 10);
-    sleep_test<measurement_clock_type>(50ms, 10);
-    sleep_test<measurement_clock_type>(100ms, 10);
-    sleep_test<measurement_clock_type>(500ms, 1);
-    sleep_test<measurement_clock_type>(1s, 1);
+    //////////// write a loop to loop through all sleep types with all of these durations!//////
+    SleepType sleep_type = SleepType::STD_THISTHREAD_SLEEPFOR;
+    printf("=== sleep_type: %s ===\n", SleepTypeToStr(sleep_type));
+    // sanity check to compare to the next line to see if 1 ulta-short sleep iteration works ok
+    sleep_test<measurement_clock_type>(sleep_type, 1ns, 1);
+    sleep_test<measurement_clock_type>(sleep_type, 1ns, 100);
+    sleep_test<measurement_clock_type>(sleep_type, 1us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 10us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 20us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 30us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 50us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 100us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 200us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 500us, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 1ms, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 2ms, 50);
+    sleep_test<measurement_clock_type>(sleep_type, 10ms, 10);
+    sleep_test<measurement_clock_type>(sleep_type, 20ms, 10);
+    sleep_test<measurement_clock_type>(sleep_type, 50ms, 10);
+    sleep_test<measurement_clock_type>(sleep_type, 100ms, 10);
+    sleep_test<measurement_clock_type>(sleep_type, 500ms, 1);
+    sleep_test<measurement_clock_type>(sleep_type, 1s, 1);
 
     return 0;
 }
