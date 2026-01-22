@@ -110,6 +110,11 @@ TODO:
 #include <unordered_map>  // For mode calculation
 #include <vector>  // For `std::vector`
 
+/// Get the number of elements in any C array
+/// - Usage example: [my own answer]:
+///   https://arduino.stackexchange.com/a/80289/7727
+#define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
+
 // Get time stamp in nanoseconds.
 // - See my answer: https://stackoverflow.com/a/49066369/4561887
 template<typename MeasurementClock = std::chrono::steady_clock>
@@ -329,27 +334,86 @@ enum class SleepType
     // Linux `std::this_thread::sleep_for()` with `use_realtime_scheduler()` called first.
     // - Uses the Linux `SCHED_RR` soft real-time round-robin scheduler to improve sleep precision.
     LINUX__STD_THISTHREAD_SLEEPFOR_WITH_SOFT_REALTIME_SCHEDULER,
+
+    // Not a sleep type; used to count the number of sleep types.
+    count,
 };
 
-///////// add mechanism to read string to print type
-///
-// See my answer: https://stackoverflow.com/a/59221452/4561887
-//////////
-// Array of strings to map enum error types to printable strings
-// - see important NOTE above!
-const char* const MYMODULE_ERROR_STRS[] =
+// Array of strings to map enum error types to printable strings.
+// - See my answer: https://stackoverflow.com/a/59221452/4561887
+const char* const SLEEP_TYPE_STRS[] =
 {
     "STD_THISTHREAD_SLEEPFOR",
-    "WINDOWS_SLEEPFOR_WITH_TIMEBEGINPERIOD_1MS (Legacy default)",
-    "MYMODULE_ERROR_NOMEM",
-    "MYMODULE_ERROR_MYERROR",
+    "WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD",
+    "WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD",
+    "WINDOWS_LEGACY_BETTER__SLEEP_WITH_TIMEBEGINPERIOD_EVERY_CALL",
+    "WINDOWS_LEGACY_BEST__SLEEP_WITH_TIMEBEGINPERIOD_SINGLE_CALL",
+    "WINDOWS_MODERN_BEST__WAITABLE_TIMER",
+    "WINDOWS_HYBRID__SLEEP_PLUS_BUSY_WAIT",
+    "LINUX__CLOCK_NANOSLEEP",
+    "LINUX__CLOCK_NANOSLEEP_WITH_SOFT_REALTIME_SCHEDULER",
+    "LINUX__STD_THISTHREAD_SLEEPFOR_WITH_SOFT_REALTIME_SCHEDULER",
 };
-_Static_assert(ARRAY_LEN(MYMODULE_ERROR_STRS) == MYMODULE_ERROR_COUNT,
-    "You must keep your `mymodule_error_t` enum and your "
-    "`MYMODULE_ERROR_STRS` array in-sync!");
-////////
+static_assert(ARRAY_LEN(SLEEP_TYPE_STRS) == static_cast<size_t>(SleepType::count),
+    "You must keep your `SleepType` enum and your `SLEEP_TYPE_STRS` array in-sync!");
+
 // To get a printable error string
-const char* mymodule_error_str(mymodule_error_t err);
+const char* sleep_type_to_str(SleepType sleep_type)
+{
+    const char* str = "Invalid";
+    size_t i = static_cast<size_t>(sleep_type);
+
+    if (i >= ARRAY_LEN(SLEEP_TYPE_STRS))
+    {
+        return str;
+    }
+
+    str = SLEEP_TYPE_STRS[i];
+    return str;
+}
+
+// Sleep function implementation for the `STD_THISTHREAD_SLEEPFOR` sleep type.
+// Args:
+// - sleep_time_ns: desired sleep time in nanoseconds.
+// - actual_sleep_time_ns: if not nullptr, the actual sleep time will be written here.
+// - non_sleep_time_ns: if not nullptr, the time spent outside the sleep call will be written here.
+//      ie: this is "overhead", or wasted time just to set up the sleep call.
+template<typename MeasurementClock>
+void sleep_ns__std_thisthread_sleepfor(
+    uint64_t sleep_time_ns,
+    uint64_t *actual_sleep_time_ns = nullptr,
+    uint64_t *non_sleep_time_ns = nullptr)
+{
+    // For both Windows and Linux
+
+    uint64_t t_start_ns = nanos<MeasurementClock>();
+    std::this_thread::sleep_for(std::chrono::nanoseconds(sleep_time_ns));
+    uint64_t t_end_ns = nanos<MeasurementClock>();
+
+    if (actual_sleep_time_ns != nullptr)
+    {
+        *actual_sleep_time_ns = t_end_ns - t_start_ns;
+    }
+
+    if (non_sleep_time_ns != nullptr)
+    {
+        uint64_t t_now_ns = nanos<MeasurementClock>();
+        *non_sleep_time_ns = t_now_ns - t_end_ns;
+    }
+}
+
+// // Sleep function implementation for the `WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD`
+// // sleep type.
+// template<typename MeasurementClock>
+// void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
+//     uint64_t sleep_time_ns,
+//     uint64_t *actual_sleep_time_ns = nullptr,
+//     uint64_t *non_sleep_time_ns = nullptr)
+// {
+// //     // Windows only
+// // #ifdef
+// //     //////
+// }
 
 // Sleep once using the specified sleep type and duration.
 template<typename MeasurementClock, typename SleepDuration>
@@ -360,32 +424,87 @@ void sleep_once(
     uint64_t *non_sleep_time_ns = nullptr,
     double *cpu_usage_pct = nullptr)
 {
-    uint64_t t_start_ns;
-    uint64_t end_ns;
+    uint64_t sleep_time_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count();
 
+    using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
+    SleepFuncPtr sleep_func = nullptr;
+
+    // Assign the appropriate sleep function based on the sleep type
     switch (sleep_type)
     {
         case SleepType::STD_THISTHREAD_SLEEPFOR:
         {
-            /////////// track sleep time and non-sleep time for cpu usage calculation
-
-            t_start_ns = nanos<MeasurementClock>();
-            std::this_thread::sleep_for(sleep_duration);
-            end_ns = nanos<MeasurementClock>();
+            sleep_func = &sleep_ns__std_thisthread_sleepfor<MeasurementClock>;
             break;
         }
-        case SleepType::WINDOWS_SLEEPFOR_WITH_TIMEBEGINPERIOD_1MS:
+        case SleepType::WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD:
+        {
+            // sleep_func =
+            //     &sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod<MeasurementClock>;
+            break;
+        }
+        case SleepType::WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD:
         {
             //////
             break;
         }
-
-
+        case SleepType::WINDOWS_LEGACY_BETTER__SLEEP_WITH_TIMEBEGINPERIOD_EVERY_CALL:
+        {
+            //////
+            break;
+        }
+        case SleepType::WINDOWS_LEGACY_BEST__SLEEP_WITH_TIMEBEGINPERIOD_SINGLE_CALL:
+        {
+            //////
+            break;
+        }
+        case SleepType::WINDOWS_MODERN_BEST__WAITABLE_TIMER:
+        {
+            //////
+            break;
+        }
+        case SleepType::WINDOWS_HYBRID__SLEEP_PLUS_BUSY_WAIT:
+        {
+            //////
+            break;
+        }
+        case SleepType::LINUX__CLOCK_NANOSLEEP:
+        {
+            //////
+            break;
+        }
+        case SleepType::LINUX__CLOCK_NANOSLEEP_WITH_SOFT_REALTIME_SCHEDULER:
+        {
+            //////
+            break;
+        }
+        case SleepType::LINUX__STD_THISTHREAD_SLEEPFOR_WITH_SOFT_REALTIME_SCHEDULER:
+        {
+            //////
+            break;
+        }
+        case SleepType::count:
+        {
+            // Invalid
+            std::cout << "Invalid sleep type: SleepType::count\n";
+            return;
+        }
     }
 
-    if (actual_sleep_time_ns != nullptr)
+    // Call the sleep function
+    if (sleep_func != nullptr)
     {
-        *actual_sleep_time_ns = end_ns - t_start_ns;
+        sleep_func(sleep_time_ns, actual_sleep_time_ns, non_sleep_time_ns);
+    }
+
+    // Calculate and pass out CPU usage percentage during the sleep call, since parts of the
+    // sleep call may be setup code that uses CPU time.
+    if (actual_sleep_time_ns != nullptr && non_sleep_time_ns != nullptr && cpu_usage_pct != nullptr)
+    {
+        // Calculate CPU usage percentage during the sleep call
+        uint64_t total_time_ns = *actual_sleep_time_ns + *non_sleep_time_ns;
+        *cpu_usage_pct = static_cast<double>(*non_sleep_time_ns) / total_time_ns * 100.0;
     }
 }
 
@@ -640,7 +759,7 @@ int main()
 
     //////////// write a loop to loop through all sleep types with all of these durations!//////
     SleepType sleep_type = SleepType::STD_THISTHREAD_SLEEPFOR;
-    printf("=== sleep_type: %s ===\n", SleepTypeToStr(sleep_type));
+    printf("=== sleep_type: %s ===\n", sleep_type_to_str(sleep_type));
     // sanity check to compare to the next line to see if 1 ulta-short sleep iteration works ok
     sleep_test<measurement_clock_type>(sleep_type, 1ns, 1);
     sleep_test<measurement_clock_type>(sleep_type, 1ns, 100);
