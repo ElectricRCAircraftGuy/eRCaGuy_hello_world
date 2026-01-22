@@ -34,35 +34,18 @@ References:
 
 // C++ (incl. C) includes
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
-#include <cstdio>   // For `printf()`
-#include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 
-// int main(int argc, char *argv[])  // alternative prototype
-int main()
+#define NS_TO_SEC(ns) ((ns) / 1e9)
+#define NS_TO_MS(ns)  ((ns) / 1e6)
+#define MS_TO_NS(ms)  ((ms) * 1e6)
+
+namespace timing
 {
-    printf("Hello ");
-    std::cout << "world!\n\n";
 
-    return 0;
-}
+uint64_t millis();
+uint64_t micros();
+uint64_t nanos();
 
+void sleep_until_ms(uint64_t* previous_wake_time_ms, uint64_t period_ms);
 
-
-/*
-SAMPLE OUTPUT:
-
-    eRCaGuy_hello_world/cpp$ time g++ -Wall -Wextra -Werror -O3 -std=c++20 hello_world_extra_basic.cpp -o bin/a && bin/a
-
-    real    0m2.079s
-    user    0m0.775s
-    sys 0m0.087s
-    Hello world!
-
-
-You can also run this file as an executable directly!:
-
-    eRCaGuy_hello_world/cpp$ ./hello_world_extra_basic.cpp
-    Hello world!
-
-
-*/
+} // namespace timing
