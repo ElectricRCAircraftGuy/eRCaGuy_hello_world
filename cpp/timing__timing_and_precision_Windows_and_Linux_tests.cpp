@@ -105,6 +105,7 @@ TODO:
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
 #include <cstdio>   // For `printf()`
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
+#include <string>
 #include <thread>  // For `std::this_thread::sleep_for`
 #include <type_traits>  // For `std::is_same`
 #include <unordered_map>  // For mode calculation
@@ -359,7 +360,7 @@ enum class SleepType
     // ------------------------------------------
 
     // C++ `std::this_thread::sleep_for()` on Windows with `timeBeginPeriod(minimum)` called first.
-    WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD,
+    WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL,
 
     // LEGACY DEFAULT: Windows `Sleep()` withOUT `timeBeginPeriod(minimum)` called first.
     // - Legacy ~15.6 ms precision on Windows.
@@ -414,6 +415,10 @@ enum class SleepType
     // - Uses the Linux `SCHED_RR` soft real-time round-robin scheduler to improve sleep precision.
     LINUX__STD_THISTHREAD_SLEEPFOR_WITH_SOFT_REALTIME_SCHEDULER,
 
+    // ------------------------------------------
+    // NA; enum helpers
+    // ------------------------------------------
+
     // Not a sleep type; used to count the number of sleep types.
     count,
 };
@@ -423,7 +428,7 @@ enum class SleepType
 const char* const SLEEP_TYPE_STRS[] =
 {
     "STD_THISTHREAD_SLEEPFOR",
-    "WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD",
+    "WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL",
     "WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD",
     "WINDOWS_LEGACY_BETTER__SLEEP_WITH_TIMEBEGINPERIOD_EVERY_CALL",
     "WINDOWS_LEGACY_BEST__SLEEP_WITH_TIMEBEGINPERIOD_SINGLE_CALL",
@@ -482,7 +487,7 @@ void sleep_ns__std_thisthread_sleepfor(
     }
 }
 
-// Sleep function implementation for the `WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD`
+// Sleep function implementation for the `WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL`
 // sleep type.
 template<typename MeasurementClock>
 void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
@@ -495,10 +500,12 @@ void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
 //     //////
 }
 
-// Sleep once using the specified sleep type and duration.
+using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
+
+// Sleep once using the specified sleep type and duration, timing how long it takes.
 template<typename MeasurementClock, typename SleepDuration>
 void sleep_once(
-    SleepType sleep_type,
+    SleepType sleep_type, ///////// change to sleep func ptr
     SleepDuration sleep_duration,
     uint64_t *actual_sleep_time_ns = nullptr,
     uint64_t *non_sleep_time_ns = nullptr,
@@ -507,20 +514,126 @@ void sleep_once(
     uint64_t sleep_time_ns =
         std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count();
 
-    using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
-    SleepFuncPtr sleep_func = nullptr;
+    SleepFuncPtr sleep_ns = nullptr;
 
-    // Assign the appropriate sleep function based on the sleep type
+
+
+    // Call the sleep function
+    if (sleep_ns != nullptr)
+    {
+        sleep_ns(sleep_time_ns, actual_sleep_time_ns, non_sleep_time_ns);
+    }
+    else
+    {
+        std::cout << "Sleep function not implemented for sleep type: "
+            << sleep_type_to_str(sleep_type) << "\n";
+
+        // Return a sentinel value for the actual sleep time to indicate failure
+        if (actual_sleep_time_ns != nullptr)
+        {
+            *actual_sleep_time_ns = UINT64_MAX;
+        }
+
+        return;
+    }
+
+    // Calculate and pass out CPU usage percentage during the sleep call, since parts of the
+    // sleep call may be setup code that uses CPU time.
+    if (actual_sleep_time_ns != nullptr && non_sleep_time_ns != nullptr && cpu_usage_pct != nullptr)
+    {
+        // Calculate CPU usage percentage during the sleep call
+        uint64_t total_time_ns = *actual_sleep_time_ns + *non_sleep_time_ns;
+        *cpu_usage_pct = static_cast<double>(*non_sleep_time_ns) / total_time_ns * 100.0;
+    }
+}
+
+struct SleepStat
+{
+    // One-time sleep setup, if applicable
+
+    SleepFuncPtr sleep_setup = nullptr;
+    std::string sleep_setup_name;
+    uint64_t sleep_setup_time_ns;
+
+    // Sleep call itself
+
+    SleepType sleep_type;
+    std::string sleep_type_name;
+    uint64_t requested_sleep_time_ns;
+    uint64_t num_iterations; // number of times to test the sleep call duration
+
+    SleepFuncPtr sleep_func = nullptr;
+    std::string sleep_func_name;
+
+    std::vector<uint64_t> actual_sleep_times_ns;
+    Stats sleep_stats;
+
+    std::vector<uint64_t> non_sleep_times_ns;
+    Stats non_sleep_stats;
+
+    std::vector<double> cpu_usages_pct;
+    Stats cpu_usage_stats;
+
+    // One-time sleep teardown, if applicable
+
+    SleepFuncPtr sleep_teardown = nullptr;
+    std::string sleep_teardown_name;
+    uint64_t sleep_teardown_time_ns;
+};
+
+// Test sleep precision by sleeping multiple times and measuring actual sleep duration using
+// `MeasurementClock`.
+// - Return a `SleepStat` struct containing all relevant data and statistics.
+template<typename MeasurementClock, typename SleepDuration>
+SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_iterations)
+{
+    // Convert duration to nanoseconds for display
+    uint64_t requested_ns =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count();
+
+    printf("\n----------------------------------------------------------\n");
+    printf("Sleep test: requested duration = **%" PRIu64 " ns**", requested_ns);
+
+    // Also show in more readable units if appropriate: sec, ms, us
+    if (requested_ns >= 1'000'000'000)
+    {
+        printf(" (**%.3f s**)", requested_ns / 1e9);
+    }
+    else if (requested_ns >= 1'000'000)
+    {
+        printf(" (**%.3f ms**)", requested_ns / 1e6);
+    }
+    else if (requested_ns >= 1'000)
+    {
+        printf(" (**%.3f us**)", requested_ns / 1e3);
+    }
+    printf(", iterations = %zu\n", num_iterations);
+    printf("----------------------------------------------------------\n");
+
+    // Store actual sleep durations
+    std::vector<uint64_t> actual_durations_ns;
+    // Pre-allocate dynamic memory (heap) for speed
+    actual_durations_ns.reserve(num_iterations);
+
+
+
+    // Assign the appropriate sleep functions based on the sleep type.
+    // Intended to be run once at the start of the program before any sleeps.
+    SleepFuncPtr sleep_setup = nullptr;
+    // The sleep call itself to sleep a certain number of nanoseconds.
+    SleepFuncPtr sleep_ns = nullptr;
+    // Intended to be run once at the end of the program after all sleeps.
+    SleepFuncPtr sleep_teardown = nullptr;
     switch (sleep_type)
     {
         case SleepType::STD_THISTHREAD_SLEEPFOR:
         {
-            sleep_func = &sleep_ns__std_thisthread_sleepfor<MeasurementClock>;
+            sleep_ns = &sleep_ns__std_thisthread_sleepfor<MeasurementClock>;
             break;
         }
-        case SleepType::WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD:
+        case SleepType::WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL:
         {
-            sleep_func =
+            sleep_ns =
                 &sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod<MeasurementClock>;
             break;
         }
@@ -572,84 +685,26 @@ void sleep_once(
         }
     }
 
-    // Call the sleep function
-    if (sleep_func != nullptr)
-    {
-        sleep_func(sleep_time_ns, actual_sleep_time_ns, non_sleep_time_ns);
-    }
-    else
-    {
-        std::cout << "Sleep function not implemented for sleep type: "
-            << sleep_type_to_str(sleep_type) << "\n";
-
-        // Return a sentinel value for the actual sleep time to indicate failure
-        if (actual_sleep_time_ns != nullptr)
-        {
-            *actual_sleep_time_ns = UINT64_MAX;
-        }
-
-        return;
-    }
-
-    // Calculate and pass out CPU usage percentage during the sleep call, since parts of the
-    // sleep call may be setup code that uses CPU time.
-    if (actual_sleep_time_ns != nullptr && non_sleep_time_ns != nullptr && cpu_usage_pct != nullptr)
-    {
-        // Calculate CPU usage percentage during the sleep call
-        uint64_t total_time_ns = *actual_sleep_time_ns + *non_sleep_time_ns;
-        *cpu_usage_pct = static_cast<double>(*non_sleep_time_ns) / total_time_ns * 100.0;
-    }
-}
-
-// Test sleep precision by sleeping multiple times and measuring actual sleep duration using
-// `MeasurementClock`.
-template<typename MeasurementClock, typename SleepDuration>
-void sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_iterations)
-{
-    // Convert duration to nanoseconds for display
-    uint64_t requested_ns =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count();
-
-    printf("\n----------------------------------------------------------\n");
-    printf("Sleep test: requested duration = **%" PRIu64 " ns**", requested_ns);
-
-    // Also show in more readable units if appropriate: sec, ms, us
-    if (requested_ns >= 1'000'000'000)
-    {
-        printf(" (**%.3f s**)", requested_ns / 1e9);
-    }
-    else if (requested_ns >= 1'000'000)
-    {
-        printf(" (**%.3f ms**)", requested_ns / 1e6);
-    }
-    else if (requested_ns >= 1'000)
-    {
-        printf(" (**%.3f us**)", requested_ns / 1e3);
-    }
-    printf(", iterations = %zu\n", num_iterations);
-    printf("----------------------------------------------------------\n");
-
-    // Store actual sleep durations
-    std::vector<uint64_t> actual_durations_ns;
-    // Pre-allocate dynamic memory (heap) for speed
-    actual_durations_ns.reserve(num_iterations);
-
-    // Get the base sleep function ///////////
-
     // Perform sleep tests
     size_t num_successful_sleeps = 0;
     size_t num_failed_sleeps = 0;
+    // sleep setup
+    if (sleep_setup != nullptr)
+    {
+        sleep_setup(0, nullptr, nullptr);
+    }
     while (num_successful_sleeps < num_iterations)
     {
         uint64_t actual_ns = 0;
 
 
-        sleep_once<MeasurementClock>(sleep_type, sleep_duration, &actual_ns);
+        sleep_once<MeasurementClock>(sleep_ns, sleep_duration, &actual_ns);
 
         if (actual_ns == 0)
         {
-            // This should never happen unless the clock precision is very poor
-            // (ex: Windows system_clock with ~16 ms precision, and on ultra-short sleeps)
+            // This should never happen unless the clock precision is very poor, or
+            // on ultra-short sleeps which probably just yielded for a moment but didn't sleep.
+            // - This is a Windows-only problem not seen on Linux.
             num_failed_sleeps++;
             continue;
         }
