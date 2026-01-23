@@ -30,7 +30,7 @@ Timing improvements in "cpp/timing_and_precision_Windows_and_Linux_tests.cpp" an
 
 NEXT:
 [x] Have sleep_test() use my stats struct and function to calculate stats
-[ ] git commit the work 
-[ ] store stats into a global vector or something
+[x] git commit the work 
+[ ] store results stats from each run into a global vector or something
 [ ] print a markdown table of the results
 [ ] begin implementing more of the sleep funcs with the different mechanisms to sleep 

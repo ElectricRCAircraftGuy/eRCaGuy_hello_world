@@ -482,18 +482,18 @@ void sleep_ns__std_thisthread_sleepfor(
     }
 }
 
-// // Sleep function implementation for the `WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD`
-// // sleep type.
-// template<typename MeasurementClock>
-// void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
-//     uint64_t sleep_time_ns,
-//     uint64_t *actual_sleep_time_ns = nullptr,
-//     uint64_t *non_sleep_time_ns = nullptr)
-// {
-// //     // Windows only
-// // #ifdef
-// //     //////
-// }
+// Sleep function implementation for the `WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD`
+// sleep type.
+template<typename MeasurementClock>
+void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
+    uint64_t sleep_time_ns,
+    uint64_t *actual_sleep_time_ns = nullptr,
+    uint64_t *non_sleep_time_ns = nullptr)
+{
+//     // Windows only
+// #ifdef
+//     //////
+}
 
 // Sleep once using the specified sleep type and duration.
 template<typename MeasurementClock, typename SleepDuration>
@@ -520,8 +520,8 @@ void sleep_once(
         }
         case SleepType::WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD:
         {
-            // sleep_func =
-            //     &sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod<MeasurementClock>;
+            sleep_func =
+                &sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod<MeasurementClock>;
             break;
         }
         case SleepType::WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD:
@@ -577,6 +577,19 @@ void sleep_once(
     {
         sleep_func(sleep_time_ns, actual_sleep_time_ns, non_sleep_time_ns);
     }
+    else
+    {
+        std::cout << "Sleep function not implemented for sleep type: "
+            << sleep_type_to_str(sleep_type) << "\n";
+
+        // Return a sentinel value for the actual sleep time to indicate failure
+        if (actual_sleep_time_ns != nullptr)
+        {
+            *actual_sleep_time_ns = UINT64_MAX;
+        }
+
+        return;
+    }
 
     // Calculate and pass out CPU usage percentage during the sleep call, since parts of the
     // sleep call may be setup code that uses CPU time.
@@ -621,13 +634,18 @@ void sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_i
     // Pre-allocate dynamic memory (heap) for speed
     actual_durations_ns.reserve(num_iterations);
 
+    // Get the base sleep function ///////////
+
     // Perform sleep tests
     size_t num_successful_sleeps = 0;
     size_t num_failed_sleeps = 0;
     while (num_successful_sleeps < num_iterations)
     {
         uint64_t actual_ns = 0;
+
+
         sleep_once<MeasurementClock>(sleep_type, sleep_duration, &actual_ns);
+
         if (actual_ns == 0)
         {
             // This should never happen unless the clock precision is very poor
@@ -799,28 +817,41 @@ int main()
         "  duration < 1 ms. Rather, it will be at best only a short yield to the OS scheduler.\n"
         "  Deduction indicates that true sleeps don't begin on Windows until >= 1 ms.\n");
 
-    //////////// write a loop to loop through all sleep types with all of these durations!//////
-    SleepType sleep_type = SleepType::STD_THISTHREAD_SLEEPFOR;
-    printf("=== sleep_type: %s ===\n", sleep_type_to_str(sleep_type));
-    // sanity check to compare to the next line to see if 1 ulta-short sleep iteration works ok
-    sleep_test<measurement_clock_type>(sleep_type, 1ns, 1);
-    sleep_test<measurement_clock_type>(sleep_type, 1ns, 100);
-    sleep_test<measurement_clock_type>(sleep_type, 1us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 10us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 20us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 30us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 50us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 100us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 200us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 500us, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 1ms, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 2ms, 50);
-    sleep_test<measurement_clock_type>(sleep_type, 10ms, 10);
-    sleep_test<measurement_clock_type>(sleep_type, 20ms, 10);
-    sleep_test<measurement_clock_type>(sleep_type, 50ms, 10);
-    sleep_test<measurement_clock_type>(sleep_type, 100ms, 10);
-    sleep_test<measurement_clock_type>(sleep_type, 500ms, 1);
-    sleep_test<measurement_clock_type>(sleep_type, 1s, 1);
+    // Iterate over all of the enum sleep types
+    // - See my answer: https://stackoverflow.com/a/69762682/4561887
+    for (size_t i_sleep_type = 0;
+         i_sleep_type < static_cast<size_t>(SleepType::count);
+         i_sleep_type++)
+    {
+        SleepType sleep_type = static_cast<SleepType>(i_sleep_type);
+
+        printf("\n\n"
+               "############################################################################\n");
+        printf("Sleep Type %zu: %s\n", i_sleep_type, sleep_type_to_str(sleep_type));
+        printf("############################################################################\n");
+
+        // Now run all sleep durations for this sleep type
+
+        // sanity check to compare to the next line to see if 1 ulta-short sleep iteration works ok
+        sleep_test<measurement_clock_type>(sleep_type, 1ns, 1);
+        sleep_test<measurement_clock_type>(sleep_type, 1ns, 100);
+        sleep_test<measurement_clock_type>(sleep_type, 1us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 10us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 20us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 30us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 50us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 100us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 200us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 500us, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 1ms, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 2ms, 50);
+        sleep_test<measurement_clock_type>(sleep_type, 10ms, 10);
+        sleep_test<measurement_clock_type>(sleep_type, 20ms, 10);
+        sleep_test<measurement_clock_type>(sleep_type, 50ms, 10);
+        sleep_test<measurement_clock_type>(sleep_type, 100ms, 10);
+        sleep_test<measurement_clock_type>(sleep_type, 500ms, 1);
+        sleep_test<measurement_clock_type>(sleep_type, 1s, 1);
+    }
 
     return 0;
 }
