@@ -20,28 +20,39 @@ To compile and run (assuming you've already `cd`ed into this dir):
 # [run once ever] install ccache
 sudo apt update && sudo apt install ccache
 
-# 1. In C++
-# For Linux
-time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a && bin/a
+# In C++:
+
+# 1. For Linux
+time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing__timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a && bin/a
 
 # OR (just call this file as an exectuable directly)
 # - This run technique works on Linux only right now because it's missing the required
 #   `-lwinmm` Windows Multimedia Library (WinMM) linker flag for Windows.
-time ./timing_and_precision_Windows_and_Linux_tests.cpp
+time ./timing__timing_and_precision_Windows_and_Linux_tests.cpp
 
-# For Windows
+# 2. Cross-compiling from Linux for Windows via mingw-w64: https://www.mingw-w64.org/
+sudo apt update
+sudo apt install mingw-w64
+# Then build only (don't run):
+# - Requires the Windows Multimedia Library (WinMM) linker flag option via `-lwinmm`.
+time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing__timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a.exe -lwinmm
+
+# 3. Building on Windows for Windows
 # - Requires:
 #   1. The MSYS2 ucrt64 environment with g++ installed (see my instructions here:
 #      https://stackoverflow.com/a/77407282/4561887) and
 #   2. The Windows Multimedia Library (WinMM) linker flag option via `-lwinmm`.
 cd path/to/eRCaGuy_hello_world/cpp
+#
 # Then:
+#
 # Option 1: Run from the MSYS2 ucrt64 bash shell in Windows:
-time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a
+time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing__timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a
+#
 # Option 2: Run from Powershell in Windows, accessing the MSYS2 ucrt64 bash shell automatically:
 # - See my answer here under the section titled "When running from a Windows PowerShell":
 #   https://stackoverflow.com/a/79201770/4561887
-C:\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64 -shell bash -c 'time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a'
+C:\msys64\msys2_shell.cmd -defterm -here -no-start -ucrt64 -shell bash -c 'time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing__timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a -lwinmm && bin/a'
 ```
 
 References:
@@ -83,15 +94,16 @@ scheduler:
 
 TODO:
 (newest on BOTTOM)
-1. [x] Print timestamp stats for all 3 major clocks, also indicating if certain clocks are the same
+[x] Print timestamp stats for all 3 major clocks, also indicating if certain clocks are the same
    based on `using` declarations.
-1. [x] Use the highest precision clock timestamps to then time sleep calls of various lengths, and
+[x] Use the highest precision clock timestamps to then time sleep calls of various lengths, and
    see how accurate they are. Identify the minimum sleep time that is possible.
    ex: 1ns, 1ms, 2ms, 10ms, 20ms, 50ms, 100ms, 500ms, 1s.
-1. [x] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
+[x] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
    logic in both `test_and_print_clock_precision()` and `sleep_test()`.
-1. [ ] Tabulate the results nicely. Reading them in paragraph type form is tedious.
-1. [ ] Do the todos here too: "eRCaGuy_hello_world/TODO2.txt"
+[ ] Finish sleep tests; collect all stats; print results
+[ ] Tabulate the results nicely. Reading them in paragraph type form is tedious.
+[ ] Do the todos here too: "eRCaGuy_hello_world/TODO2.txt"
 
 */
 
@@ -456,6 +468,16 @@ const char* sleep_type_to_str(SleepType sleep_type)
     return str;
 }
 
+// Function pointer to the sleep setup and teardown functions.
+using VoidVoidFuncPtr = void (*)();
+
+// Function pointer to sleep functions.
+// Parameters:
+//   [in]  uint64_t sleep_time_ns,
+//   [out] uint64_t *actual_sleep_time_ns = nullptr,
+//   [out] uint64_t *non_sleep_time_ns = nullptr
+using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
+
 // Sleep function implementation for the `STD_THISTHREAD_SLEEPFOR` sleep type.
 // - See the description for this in the `enum class SleepType`.
 // Args:
@@ -500,42 +522,23 @@ void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
 //     //////
 }
 
-using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
-
-// Sleep once using the specified sleep type and duration, timing how long it takes.
-template<typename MeasurementClock, typename SleepDuration>
+// Sleep once using the specified sleep type and duration, timing how long it takes and
+// calculating the CPU usage percentage during the sleep call.
 void sleep_once(
-    SleepType sleep_type, ///////// change to sleep func ptr
-    SleepDuration sleep_duration,
+    SleepFuncPtr sleep_ns_func,
+    uint64_t requested_sleep_time_ns,
     uint64_t *actual_sleep_time_ns = nullptr,
     uint64_t *non_sleep_time_ns = nullptr,
     double *cpu_usage_pct = nullptr)
 {
-    uint64_t sleep_time_ns =
-        std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count();
-
-    SleepFuncPtr sleep_ns = nullptr;
-
-
-
-    // Call the sleep function
-    if (sleep_ns != nullptr)
+    if (sleep_ns_func == nullptr)
     {
-        sleep_ns(sleep_time_ns, actual_sleep_time_ns, non_sleep_time_ns);
-    }
-    else
-    {
-        std::cout << "Sleep function not implemented for sleep type: "
-            << sleep_type_to_str(sleep_type) << "\n";
-
-        // Return a sentinel value for the actual sleep time to indicate failure
-        if (actual_sleep_time_ns != nullptr)
-        {
-            *actual_sleep_time_ns = UINT64_MAX;
-        }
-
+        std::cout << "Error: sleep function pointer is null!\n";
         return;
     }
+
+    // Call the sleep function
+    sleep_ns_func(requested_sleep_time_ns, actual_sleep_time_ns, non_sleep_time_ns);
 
     // Calculate and pass out CPU usage percentage during the sleep call, since parts of the
     // sleep call may be setup code that uses CPU time.
@@ -549,24 +552,32 @@ void sleep_once(
 
 struct SleepStat
 {
+    // --------------------------------------
     // One-time sleep setup, if applicable
+    // --------------------------------------
 
-    SleepFuncPtr sleep_setup = nullptr;
-    std::string sleep_setup_name;
-    uint64_t sleep_setup_time_ns;
+    // Function intended to be run once at the start of the program before any sleeps.
+    VoidVoidFuncPtr sleep_setup_func = nullptr;
+    std::string sleep_setup_name = "NA";
+    uint64_t sleep_setup_time_ns = 0;
 
+    // --------------------------------------
     // Sleep call itself
+    // --------------------------------------
 
     SleepType sleep_type;
     std::string sleep_type_name;
     uint64_t requested_sleep_time_ns;
     uint64_t num_iterations; // number of times to test the sleep call duration
 
+    // The sleep call itself to sleep a certain number of nanoseconds.
     SleepFuncPtr sleep_func = nullptr;
     std::string sleep_func_name;
 
     std::vector<uint64_t> actual_sleep_times_ns;
     Stats sleep_stats;
+    double sleep_error_ns; // `sleep_stats.mean - requested_sleep_time_ns`
+    double sleep_error_pct; // `100.0 * sleep_error_ns / requested_sleep_time_ns`
 
     std::vector<uint64_t> non_sleep_times_ns;
     Stats non_sleep_stats;
@@ -574,11 +585,14 @@ struct SleepStat
     std::vector<double> cpu_usages_pct;
     Stats cpu_usage_stats;
 
+    // --------------------------------------
     // One-time sleep teardown, if applicable
+    // --------------------------------------
 
-    SleepFuncPtr sleep_teardown = nullptr;
-    std::string sleep_teardown_name;
-    uint64_t sleep_teardown_time_ns;
+    // Function intended to be run once at the end of the program after all sleeps.
+    VoidVoidFuncPtr sleep_teardown_func = nullptr;
+    std::string sleep_teardown_name = "NA";
+    uint64_t sleep_teardown_time_ns = 0;
 };
 
 // Test sleep precision by sleeping multiple times and measuring actual sleep duration using
@@ -615,26 +629,26 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
     // Pre-allocate dynamic memory (heap) for speed
     actual_durations_ns.reserve(num_iterations);
 
+    SleepStat sleep_stat;
+    sleep_stat.sleep_type = sleep_type;
+    sleep_stat.sleep_type_name = sleep_type_to_str(sleep_type);
+    sleep_stat.requested_sleep_time_ns = requested_ns;
+    sleep_stat.num_iterations = num_iterations;
 
-
-    // Assign the appropriate sleep functions based on the sleep type.
-    // Intended to be run once at the start of the program before any sleeps.
-    SleepFuncPtr sleep_setup = nullptr;
-    // The sleep call itself to sleep a certain number of nanoseconds.
-    SleepFuncPtr sleep_ns = nullptr;
-    // Intended to be run once at the end of the program after all sleeps.
-    SleepFuncPtr sleep_teardown = nullptr;
     switch (sleep_type)
     {
         case SleepType::STD_THISTHREAD_SLEEPFOR:
         {
-            sleep_ns = &sleep_ns__std_thisthread_sleepfor<MeasurementClock>;
+            sleep_stat.sleep_func = &sleep_ns__std_thisthread_sleepfor<MeasurementClock>;
+            sleep_stat.sleep_func_name = "sleep_ns__std_thisthread_sleepfor()";
             break;
         }
         case SleepType::WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL:
         {
-            sleep_ns =
+            sleep_stat.sleep_func =
                 &sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod<MeasurementClock>;
+            sleep_stat.sleep_func_name =
+                "sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod()";
             break;
         }
         case SleepType::WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD:
@@ -680,27 +694,48 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
         case SleepType::count:
         {
             // Invalid
-            std::cout << "Invalid sleep type: SleepType::count\n";
-            return;
+            std::cout << "Error: invalid sleep type: SleepType::count\n";
+            return sleep_stat;
         }
     }
 
-    // Perform sleep tests
+    // Prepare to perform sleep tests
+
     size_t num_successful_sleeps = 0;
     size_t num_failed_sleeps = 0;
+
     // sleep setup
-    if (sleep_setup != nullptr)
+    if (sleep_stat.sleep_setup_func != nullptr)
     {
-        sleep_setup(0, nullptr, nullptr);
+        uint64_t t_start_ns = nanos<MeasurementClock>();
+        sleep_stat.sleep_setup_func();
+        uint64_t t_end_ns = nanos<MeasurementClock>();
+        sleep_stat.sleep_setup_time_ns = t_end_ns - t_start_ns;
     }
+
+    if (sleep_stat.sleep_func == nullptr)
+    {
+        std::cout << "Warning: sleep function not implemented for sleep type: "
+            << sleep_type_to_str(sleep_type) << "\n";
+        return sleep_stat;
+    }
+
+    // Perform sleep tests
     while (num_successful_sleeps < num_iterations)
     {
-        uint64_t actual_ns = 0;
+        // Variables to receive sleep results for this iteration
+        uint64_t actual_sleep_time_ns = 0;
+        uint64_t non_sleep_time_ns = 0;
+        double cpu_usage_pct = 0.0;
 
+        sleep_once(
+            sleep_stat.sleep_func,
+            sleep_stat.requested_sleep_time_ns,
+            &actual_sleep_time_ns,
+            &non_sleep_time_ns,
+            &cpu_usage_pct);
 
-        sleep_once<MeasurementClock>(sleep_ns, sleep_duration, &actual_ns);
-
-        if (actual_ns == 0)
+        if (actual_sleep_time_ns == 0)
         {
             // This should never happen unless the clock precision is very poor, or
             // on ultra-short sleeps which probably just yielded for a moment but didn't sleep.
@@ -710,13 +745,21 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
         }
 
         num_successful_sleeps++;
-        actual_durations_ns.push_back(actual_ns);
+
+        // Store results for this iteration
+        sleep_stat.actual_sleep_times_ns.push_back(actual_sleep_time_ns);
+        sleep_stat.non_sleep_times_ns.push_back(non_sleep_time_ns);
+        sleep_stat.cpu_usages_pct.push_back(cpu_usage_pct);
     }
 
     // Calculate statistics
-    Stats stats = calculate_stats(actual_durations_ns);
+    sleep_stat.sleep_stats = calculate_stats(sleep_stat.actual_sleep_times_ns);
+    sleep_stat.non_sleep_stats = calculate_stats(sleep_stat.non_sleep_times_ns);
+    sleep_stat.cpu_usage_stats = calculate_stats(sleep_stat.cpu_usages_pct);
 
     // Print results
+    // - For now, just print the sleep duration stats.
+    const Stats& stats = sleep_stat.sleep_stats;
 
     if (num_failed_sleeps > 0)
     {
@@ -765,13 +808,17 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
     printf("\n");
 
     // Calculate error
-    double error_ns = stats.mean - requested_ns;
-    double error_percent = (error_ns / requested_ns) * 100.0;
+    sleep_stat.sleep_error_ns = sleep_stat.sleep_stats.mean - sleep_stat.requested_sleep_time_ns;
+    sleep_stat.sleep_error_pct =
+        100.0 * sleep_stat.sleep_error_ns / sleep_stat.requested_sleep_time_ns;
+
     printf("\nError (mean - requested):\n");
-    printf("  Absolute: %16.3f ns", error_ns);
-    PRINT_HUMAN_READABLE_ABS(error_ns);
+    printf("  Absolute: %16.3f ns", sleep_stat.sleep_error_ns);
+    PRINT_HUMAN_READABLE_ABS(sleep_stat.sleep_error_ns);
     printf("  <=== WHAT I CARE ABOUT THE MOST\n");
-    printf("  Relative: %16.3f %%\n", error_percent);
+    printf("  Relative: %16.3f %%\n", sleep_stat.sleep_error_pct);
+
+    return sleep_stat;
 }
 
 // int main(int argc, char *argv[])  // alternative prototype
@@ -873,6 +920,7 @@ int main()
         "  Deduction indicates that true sleeps don't begin on Windows until >= 1 ms.\n");
 
     // Iterate over all of the enum sleep types
+    //////////////// collect all stats; print markdown tables at end
     // - See my answer: https://stackoverflow.com/a/69762682/4561887
     for (size_t i_sleep_type = 0;
          i_sleep_type < static_cast<size_t>(SleepType::count);
@@ -915,8 +963,8 @@ int main()
 /*
 EXAMPLE RUN ON LINUX:
 
-eRCaGuy_hello_world$ time cpp/timing_and_precision_Windows_and_Linux_tests.cpp
-cpp/timing_and_precision_Windows_and_Linux_tests.cpp running...
+eRCaGuy_hello_world$ time cpp/timing__timing_and_precision_Windows_and_Linux_tests.cpp
+cpp/timing__timing_and_precision_Windows_and_Linux_tests.cpp running...
 Operating System: Linux
 
 ===================================================================================
