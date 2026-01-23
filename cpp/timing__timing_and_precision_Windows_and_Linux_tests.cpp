@@ -116,6 +116,8 @@ TODO:
 #include <cmath>  // For `sqrt`
 #include <cstdint>  // For `uint8_t`, `int8_t`, etc.
 #include <cstdio>   // For `printf()`
+#include <format>   // For `std::format`
+#include <fstream>  // For file I/O
 #include <iostream>  // For `std::cin`, `std::cout`, `std::endl`, etc.
 #include <string>
 #include <thread>  // For `std::this_thread::sleep_for`
@@ -201,9 +203,9 @@ SampleType calculate_max(const std::vector<SampleType>& data_sorted)
 }
 
 // 5. Calculate mode (most frequent value)
-// - Optionally receive back the mode's max count too via the `mode_max_count` pointer.
+// - Optionally receive back the mode's max count too via the `mode_count` pointer.
 template <typename SampleType>
-SampleType calculate_mode(const std::vector<SampleType>& data, size_t *mode_max_count = nullptr)
+SampleType calculate_mode(const std::vector<SampleType>& data, size_t *mode_count = nullptr)
 {
     std::unordered_map<SampleType, size_t> frequency_map;
     for (size_t i = 0; i < data.size(); i++)
@@ -236,9 +238,9 @@ SampleType calculate_mode(const std::vector<SampleType>& data, size_t *mode_max_
         }
     }
 
-    if (mode_max_count != nullptr)
+    if (mode_count != nullptr)
     {
-        *mode_max_count = max_count;
+        *mode_count = max_count;
     }
 
     return mode;
@@ -279,7 +281,7 @@ struct Stats
     SampleType max;
     SampleType range;         // max - min
     SampleType mode;          // the most frequently occurring value
-    size_t mode_max_count;  // the number of times the mode value appears
+    size_t mode_count;  // the number of times the mode value appears
     double mode_pct;        // the percentage of times the mode value appears
     double stddev;
 
@@ -300,8 +302,8 @@ Stats<SampleType> calculate_stats(const std::vector<SampleType>& data)
     stats.min = calculate_min(stats.data_sorted);
     stats.max = calculate_max(stats.data_sorted);
     stats.range = stats.max - stats.min;
-    stats.mode = calculate_mode(data, &stats.mode_max_count);
-    stats.mode_pct = (100.0 * stats.mode_max_count) / data.size();
+    stats.mode = calculate_mode(data, &stats.mode_count);
+    stats.mode_pct = (100.0 * stats.mode_count) / data.size();
     stats.stddev = calculate_stddev(data, stats.mean);
 
     return stats;
@@ -309,7 +311,7 @@ Stats<SampleType> calculate_stats(const std::vector<SampleType>& data)
 
 // Run clock precision tests for the specified clock type, and print all results.
 template<typename MeasurementClock>
-void test_and_print_clock_precision(std::vector<Stats>* all_clock_stats)
+void test_and_print_clock_precision(std::vector<Stats<uint64_t>>* all_clock_stats)
 {
     if (all_clock_stats == nullptr)
     {
@@ -321,6 +323,9 @@ void test_and_print_clock_precision(std::vector<Stats>* all_clock_stats)
     // - See stack sizes: https://stackoverflow.com/a/64085509/4561887
     // Alternatively, use heap via `std::vector`.
     static std::array<uint64_t, SAMPLE_SIZE> timestamps_ns;
+    ///////
+    // // Use heap via `std::vector` to avoid embedding 160 MB in the binary.
+    // std::vector<uint64_t> timestamps_ns(SAMPLE_SIZE);
 
     // Get timestamps as fast as possible
     for (size_t i = 0; i < timestamps_ns.size(); i++)
@@ -364,7 +369,7 @@ void test_and_print_clock_precision(std::vector<Stats>* all_clock_stats)
     printf("Median: %11.3f ns\n", stats.median);
     printf("Mode:   %7" PRIu64 "     ns (appears %zu times, %.3f%%)  <=== ESTIMATED "
         "CLOCK PRECISION; MOST RELIABLE ESTIMATE\n",
-           stats.mode, stats.mode_max_count, stats.mode_pct);
+           stats.mode, stats.mode_count, stats.mode_pct);
     printf("Stddev: %11.3f ns\n", stats.stddev);
 
     printf("\nAdditional stats:\n");
@@ -905,7 +910,7 @@ int main()
            std::chrono::high_resolution_clock::is_steady ? "true" : "false");
 
 
-    std::vector<Stats> all_clock_stats; // one Stats struct per clock type
+    std::vector<Stats<uint64_t>> all_clock_stats; // one Stats struct per clock type
 
     printf("\n"
         "----------------------------------------------------------\n"
@@ -925,7 +930,49 @@ int main()
         "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::high_resolution_clock>(&all_clock_stats);
 
-    // Print a markdown table of all clock precision stats, writing it to a .md file
+    // // Print a markdown table of all clock precision stats, writing it to a .md file
+    // {
+    //     const char* clock_names[] = {
+    //         "std::chrono::system_clock",
+    //         "std::chrono::steady_clock",
+    //         "std::chrono::high_resolution_clock"
+    //     };
+
+    //     std::string filename = "timing__timing_and_precision_Windows_and_Linux_tests_RESULTS.md";
+    //     // Construct and open the file all at once
+    //     std::ofstream outfile(filename);
+
+    //     if (!outfile.is_open())
+    //     {
+    //         std::cout << "Error: Could not open file " << filename << " for writing\n";
+    //     }
+    //     else
+    //     {
+    //         outfile << "# Clock Precision Statistics\n\n";
+    //         outfile << "| Clock Type | Mean (ns) | Median (ns) | Mode (ns)* | Mode Count | Mode % | Stddev (ns) | Min (ns) | Max (ns) | Range (ns) |\n";
+    //         outfile << "|------------|-----------|-------------|-----------|------------|--------|-------------|----------|----------|------------|\n";
+
+    //         for (size_t i = 0; i < all_clock_stats.size() && i < 3; i++)
+    //         {
+    //             const Stats<uint64_t>& stats = all_clock_stats[i];
+    //             outfile << std::format(
+    //                 "| {} | {:.3f} | {:.3f} | {} | {} | {:.2f}% | {:.3f} | {} | {} | {} |\n",
+    //                 clock_names[i],
+    //                 stats.mean,
+    //                 stats.median,
+    //                 stats.mode,
+    //                 stats.mode_count,
+    //                 stats.mode_pct,
+    //                 stats.stddev,
+    //                 stats.min,
+    //                 stats.max,
+    //                 stats.range);
+    //         }
+
+    //         outfile.close();
+    //         std::cout << "\nClock precision statistics written to: " << filename << "\n";
+    //     }
+    // }
 
     printf("\n");
     printf("===================================================================================\n");
