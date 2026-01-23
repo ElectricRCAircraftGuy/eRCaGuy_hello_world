@@ -32,7 +32,7 @@ References:
 */
 
 // Primary include
-#include "timinglib.hpp"
+#include "timinglib.h"
 
 // Local includes
 // NA
@@ -121,10 +121,8 @@ static void windows_sleep_ms(uint64_t sleep_time_ms)
     // Set the timer's wakeup time
 
     LARGE_INTEGER dueTime;
-    // Convert to 100-ns tick intervals; add half the denominator first to do rounding integer
-    // division
-    constexpr uint64_t NS_PER_TICK = 100;
-    uint64_t sleep_ticks = (MS_TO_NS(sleep_time_ms) + NS_PER_TICK/2) / NS_PER_TICK;
+    // Convert to 100-ns tick intervals; do + 50 first to do rounding integer division
+    uint64_t sleep_ticks = (MS_TO_NS(sleep_time_ms) + 50) / 100;
     dueTime.QuadPart = -static_cast<LONGLONG>(sleep_ticks); // negative for relative time
 
     // See:

@@ -1,4 +1,4 @@
-///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=gnu++20 "$0" -o /tmp/a && /tmp/a "$@"; exit
+///usr/bin/env ccache g++ -Wall -Wextra -Werror -O3 -std=gnu++20 "$0" -o bin/a_hashbang && bin/a_hashbang "$@"; exit
 // For the line just above, see my answer here: https://stackoverflow.com/a/75491834/4561887
 
 /*
@@ -498,7 +498,7 @@ using VoidVoidFuncPtr = void (*)();
 //   [out] uint64_t *non_sleep_time_ns = nullptr
 using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
 
-// Sleep function implementation for the `STD_THISTHREAD_SLEEPFOR` sleep type.
+// STD_THISTHREAD_SLEEPFOR
 // - See the description for this in the `enum class SleepType`.
 // Args:
 // - sleep_time_ns: desired sleep time in nanoseconds.
@@ -506,7 +506,7 @@ using SleepFuncPtr = void (*)(uint64_t, uint64_t*, uint64_t*);
 // - non_sleep_time_ns: if not nullptr, the time spent outside the sleep call will be written here.
 //      ie: this is "overhead", or wasted time just to set up the sleep call.
 template<typename MeasurementClock>
-void sleep_ns__std_thisthread_sleepfor(
+void sleep_ns__STD_THISTHREAD_SLEEPFOR(
     uint64_t sleep_time_ns,
     uint64_t *actual_sleep_time_ns = nullptr,
     uint64_t *non_sleep_time_ns = nullptr)
@@ -529,21 +529,19 @@ void sleep_ns__std_thisthread_sleepfor(
     }
 }
 
-// Sleep function implementation for the `WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL`
-// sleep type.
+#ifdef _WIN64
+// Windows only
+
+// WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL
 template<typename MeasurementClock>
-void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
+void sleep_ns__WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL(
     uint64_t sleep_time_ns,
     uint64_t *actual_sleep_time_ns = nullptr,
     uint64_t *non_sleep_time_ns = nullptr)
 {
-    ////////
-    sleep_ns__std_thisthread_sleepfor<MeasurementClock>(sleep_time_ns, actual_sleep_time_ns,
-        non_sleep_time_ns);
-//     // Windows only
-// #ifdef
-//     //////
+
 }
+#endif // _WIN64
 
 // Sleep once using the specified sleep type and duration, timing how long it takes and
 // calculating the CPU usage percentage during the sleep call.
@@ -604,6 +602,15 @@ struct SleepStat
 
     std::vector<uint64_t> non_sleep_times_ns;
     Stats<uint64_t> non_sleep_stats;
+
+    // From the user's perspective, the "sleep time" is the total time spent in the sleep call,
+    // which includes both the actual sleep time and the non-sleep time (setup overhead, etc.).
+    //////////
+    std::vector<uint64_t> user_sleep_times_ns;
+    Stats<uint64_t> user_sleep_stats;
+    ////////
+    double sleep_error_user_ns; // `user_sleep_stats.mean - requested_sleep_time_ns`
+    double sleep_error_user_pct; // `100.0 * sleep_error_user_ns / requested_sleep_time_ns`
 
     std::vector<double> cpu_usages_pct;
     Stats<double> cpu_usage_stats;
@@ -670,55 +677,81 @@ void sleep_test(
     {
         case SleepType::STD_THISTHREAD_SLEEPFOR:
         {
-            sleep_stat.sleep_func = &sleep_ns__std_thisthread_sleepfor<MeasurementClock>;
-            sleep_stat.sleep_func_name = "sleep_ns__std_thisthread_sleepfor()";
+            sleep_stat.sleep_func = &sleep_ns__STD_THISTHREAD_SLEEPFOR<MeasurementClock>;
+            sleep_stat.sleep_func_name = "sleep_ns__STD_THISTHREAD_SLEEPFOR()";
             break;
         }
         case SleepType::WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL:
         {
+            #ifdef _WIN64
+            // Windows only
             sleep_stat.sleep_func =
-                &sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod<MeasurementClock>;
+                &sleep_ns__WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL<MeasurementClock>;
             sleep_stat.sleep_func_name =
-                "sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod()";
+                "sleep_ns__WINDOWS__STD_THISTHREAD_SLEEPFOR_WITH_TIMEBEGINPERIOD_EVERY_CALL()";
+            #endif // _WIN64
             break;
         }
         case SleepType::WINDOWS_LEGACY_DEFAULT__SLEEP_WITHOUT_TIMEBEGINPERIOD:
         {
-            //////
+            #ifdef _WIN64
+            // Windows only
+            #endif // _WIN64
             break;
         }
         case SleepType::WINDOWS_LEGACY_BETTER__SLEEP_WITH_TIMEBEGINPERIOD_EVERY_CALL:
         {
+            #ifdef _WIN64
+            // Windows only
+            #endif // _WIN64
             //////
             break;
         }
         case SleepType::WINDOWS_LEGACY_BEST__SLEEP_WITH_TIMEBEGINPERIOD_SINGLE_CALL:
         {
+            #ifdef _WIN64
+            // Windows only
+            #endif // _WIN64
             //////
             break;
         }
         case SleepType::WINDOWS_MODERN_BEST__WAITABLE_TIMER:
         {
+            #ifdef _WIN64
+            // Windows only
+            #endif // _WIN64
             //////
             break;
         }
         case SleepType::WINDOWS_HYBRID__SLEEP_PLUS_BUSY_WAIT:
         {
+            #ifdef _WIN64
+            // Windows only
+            #endif // _WIN64
             //////
             break;
         }
         case SleepType::LINUX__CLOCK_NANOSLEEP:
         {
+            #ifndef _WIN64
+            // Linux only
+            #endif // not _WIN64
             //////
             break;
         }
         case SleepType::LINUX__CLOCK_NANOSLEEP_WITH_SOFT_REALTIME_SCHEDULER:
         {
+            #ifndef _WIN64
+            // Linux only
+            #endif // not _WIN64
             //////
             break;
         }
         case SleepType::LINUX__STD_THISTHREAD_SLEEPFOR_WITH_SOFT_REALTIME_SCHEDULER:
         {
+            #ifndef _WIN64
+            // Linux only
+            #endif // not _WIN64
             //////
             break;
         }
@@ -777,15 +810,19 @@ void sleep_test(
 
         num_successful_sleeps++;
 
+        uint64_t user_sleep_time_ns = actual_sleep_time_ns + non_sleep_time_ns;
+
         // Store results for this iteration
         sleep_stat.actual_sleep_times_ns.push_back(actual_sleep_time_ns);
         sleep_stat.non_sleep_times_ns.push_back(non_sleep_time_ns);
+        sleep_stat.user_sleep_times_ns.push_back(user_sleep_time_ns);
         sleep_stat.cpu_usages_pct.push_back(cpu_usage_pct);
     }
 
     // Calculate statistics
     sleep_stat.sleep_stats = calculate_stats(sleep_stat.actual_sleep_times_ns);
     sleep_stat.non_sleep_stats = calculate_stats(sleep_stat.non_sleep_times_ns);
+    sleep_stat.user_sleep_stats = calculate_stats(sleep_stat.user_sleep_times_ns);
     sleep_stat.cpu_usage_stats = calculate_stats(sleep_stat.cpu_usages_pct);
 
     // Print results
