@@ -101,7 +101,7 @@ TODO:
    ex: 1ns, 1ms, 2ms, 10ms, 20ms, 50ms, 100ms, 500ms, 1s.
 [x] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
    logic in both `test_and_print_clock_precision()` and `sleep_test()`.
-[ ] Finish sleep tests; collect all stats; print results
+[ ] Finish sleep tests; [x] collect all stats; [ ] print results
 [ ] Tabulate the results nicely. Reading them in paragraph type form is tedious.
 [ ] Do the todos here too: "eRCaGuy_hello_world/TODO2.txt"
 
@@ -143,9 +143,10 @@ uint64_t nanos()
 }
 
 // 1. Calculate mean
-double calculate_mean(const std::vector<uint64_t>& data)
+template <typename SampleType>
+double calculate_mean(const std::vector<SampleType>& data)
 {
-    uint64_t sum = 0;
+    SampleType sum = 0;
     for (size_t i = 0; i < data.size(); i++)
     {
         sum += data[i];
@@ -156,10 +157,11 @@ double calculate_mean(const std::vector<uint64_t>& data)
 
 // 2. Calculate median (requires that this function make a copy of the data and then sort it).
 // To receive back the sorted data, pass in a non-null pointer to a vector via `data_sorted`.
-double calculate_median(const std::vector<uint64_t>& data,
-    std::vector<uint64_t>* data_sorted = nullptr)
+template <typename SampleType>
+double calculate_median(const std::vector<SampleType>& data,
+    std::vector<SampleType>* data_sorted = nullptr)
 {
-    std::vector<uint64_t> data_sorted_ = data;
+    std::vector<SampleType> data_sorted_ = data;
     std::sort(data_sorted_.begin(), data_sorted_.end());
     if (data_sorted != nullptr)
     {
@@ -184,23 +186,26 @@ double calculate_median(const std::vector<uint64_t>& data,
 
 // 3. Calculate min.
 // - You must pass in a sorted data vector--ex: received from `calculate_median()`.
-uint64_t calculate_min(const std::vector<uint64_t>& data_sorted)
+template <typename SampleType>
+SampleType calculate_min(const std::vector<SampleType>& data_sorted)
 {
     return data_sorted.front();
 }
 
 // 4. Calculate max.
 // - You must pass in a sorted data vector--ex: received from `calculate_median()`.
-uint64_t calculate_max(const std::vector<uint64_t>& data_sorted)
+template <typename SampleType>
+SampleType calculate_max(const std::vector<SampleType>& data_sorted)
 {
     return data_sorted.back();
 }
 
 // 5. Calculate mode (most frequent value)
 // - Optionally receive back the mode's max count too via the `mode_max_count` pointer.
-uint64_t calculate_mode(const std::vector<uint64_t>& data, size_t *mode_max_count = nullptr)
+template <typename SampleType>
+SampleType calculate_mode(const std::vector<SampleType>& data, size_t *mode_max_count = nullptr)
 {
-    std::unordered_map<uint64_t, size_t> frequency_map;
+    std::unordered_map<SampleType, size_t> frequency_map;
     for (size_t i = 0; i < data.size(); i++)
     {
         // NB: When you use `operator[]` on a `std::unordered_map` with a key that doesn't
@@ -217,11 +222,11 @@ uint64_t calculate_mode(const std::vector<uint64_t>& data, size_t *mode_max_coun
     }
 
     // Find the value with the highest frequency
-    uint64_t mode = 0;
+    SampleType mode = 0;
     size_t max_count = 0;
-    for (const std::pair<const uint64_t, size_t>& pair : frequency_map)
+    for (const std::pair<const SampleType, size_t>& pair : frequency_map)
     {
-        uint64_t number = pair.first; // key
+        SampleType number = pair.first; // key
         size_t count = pair.second;   // value
 
         if (count > max_count)
@@ -243,7 +248,8 @@ uint64_t calculate_mode(const std::vector<uint64_t>& data, size_t *mode_max_coun
 // - This is the spread of the data around the mean.
 // - It is calculated as the square root of the variance, where the variance is the average
 //   of the squared differences from the mean.
-double calculate_stddev(const std::vector<uint64_t>& data, double mean)
+template <typename SampleType>
+double calculate_stddev(const std::vector<SampleType>& data, double mean)
 {
     // sum of the squared differences from the mean
     double variance_sum = 0;
@@ -264,27 +270,29 @@ double calculate_stddev(const std::vector<uint64_t>& data, double mean)
     return stddev;
 }
 
+template <typename SampleType>
 struct Stats
 {
     double mean;
     double median;
-    uint64_t min;
-    uint64_t max;
-    uint64_t range;         // max - min
-    uint64_t mode;          // the most frequently occurring value
+    SampleType min;
+    SampleType max;
+    SampleType range;         // max - min
+    SampleType mode;          // the most frequently occurring value
     size_t mode_max_count;  // the number of times the mode value appears
     double mode_pct;        // the percentage of times the mode value appears
     double stddev;
 
     // Pointer to the original data vector; NOT owned by this struct
-    const std::vector<uint64_t>* data;
+    const std::vector<SampleType>* data;
     // Copy of the original data vector, sorted; IS owned by this struct
-    std::vector<uint64_t> data_sorted;
+    std::vector<SampleType> data_sorted;
 };
 
-Stats calculate_stats(const std::vector<uint64_t>& data)
+template <typename SampleType>
+Stats<SampleType> calculate_stats(const std::vector<SampleType>& data)
 {
-    Stats stats;
+    Stats<SampleType> stats;
 
     stats.data = &data;
     stats.mean = calculate_mean(data);
@@ -301,8 +309,14 @@ Stats calculate_stats(const std::vector<uint64_t>& data)
 
 // Run clock precision tests for the specified clock type, and print all results.
 template<typename MeasurementClock>
-void test_and_print_clock_precision()
+void test_and_print_clock_precision(std::vector<Stats>* all_clock_stats)
 {
+    if (all_clock_stats == nullptr)
+    {
+        std::cout << "Error: all_clock_stats pointer is null!\n";
+        return;
+    }
+
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
     // - See stack sizes: https://stackoverflow.com/a/64085509/4561887
     // Alternatively, use heap via `std::vector`.
@@ -341,6 +355,7 @@ void test_and_print_clock_precision()
 
     // Calculate stats: mean, median, mode, and stddev of the time differences
     Stats stats = calculate_stats(deltas_ns);
+    all_clock_stats->push_back(stats);
 
     // Print results
 
@@ -517,6 +532,9 @@ void sleep_ns__windows__std_thisthread_sleepfor_with_timebeginperiod(
     uint64_t *actual_sleep_time_ns = nullptr,
     uint64_t *non_sleep_time_ns = nullptr)
 {
+    ////////
+    sleep_ns__std_thisthread_sleepfor<MeasurementClock>(sleep_time_ns, actual_sleep_time_ns,
+        non_sleep_time_ns);
 //     // Windows only
 // #ifdef
 //     //////
@@ -575,15 +593,15 @@ struct SleepStat
     std::string sleep_func_name;
 
     std::vector<uint64_t> actual_sleep_times_ns;
-    Stats sleep_stats;
+    Stats<uint64_t> sleep_stats;
     double sleep_error_ns; // `sleep_stats.mean - requested_sleep_time_ns`
     double sleep_error_pct; // `100.0 * sleep_error_ns / requested_sleep_time_ns`
 
     std::vector<uint64_t> non_sleep_times_ns;
-    Stats non_sleep_stats;
+    Stats<uint64_t> non_sleep_stats;
 
     std::vector<double> cpu_usages_pct;
-    Stats cpu_usage_stats;
+    Stats<double> cpu_usage_stats;
 
     // --------------------------------------
     // One-time sleep teardown, if applicable
@@ -599,8 +617,16 @@ struct SleepStat
 // `MeasurementClock`.
 // - Return a `SleepStat` struct containing all relevant data and statistics.
 template<typename MeasurementClock, typename SleepDuration>
-SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_iterations)
+void sleep_test(
+    std::array<std::vector<SleepStat>, static_cast<size_t>(SleepType::count)>* sleep_stats_array,
+    SleepType sleep_type, SleepDuration sleep_duration, size_t num_iterations)
 {
+    if (sleep_stats_array == nullptr)
+    {
+        std::cout << "Error: sleep_stats_array pointer is null!\n";
+        return;
+    }
+
     // Convert duration to nanoseconds for display
     uint64_t requested_ns =
         std::chrono::duration_cast<std::chrono::nanoseconds>(sleep_duration).count();
@@ -695,7 +721,7 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
         {
             // Invalid
             std::cout << "Error: invalid sleep type: SleepType::count\n";
-            return sleep_stat;
+            return;
         }
     }
 
@@ -717,7 +743,7 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
     {
         std::cout << "Warning: sleep function not implemented for sleep type: "
             << sleep_type_to_str(sleep_type) << "\n";
-        return sleep_stat;
+        return;
     }
 
     // Perform sleep tests
@@ -759,7 +785,7 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
 
     // Print results
     // - For now, just print the sleep duration stats.
-    const Stats& stats = sleep_stat.sleep_stats;
+    const Stats<uint64_t>& stats = sleep_stat.sleep_stats;
 
     if (num_failed_sleeps > 0)
     {
@@ -818,7 +844,7 @@ SleepStat sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t 
     printf("  <=== WHAT I CARE ABOUT THE MOST\n");
     printf("  Relative: %16.3f %%\n", sleep_stat.sleep_error_pct);
 
-    return sleep_stat;
+    (*sleep_stats_array)[static_cast<size_t>(sleep_type)].push_back(sleep_stat);
 }
 
 // int main(int argc, char *argv[])  // alternative prototype
@@ -878,23 +904,28 @@ int main()
     printf("std::chrono::high_resolution_clock.is_steady:  %s\n",
            std::chrono::high_resolution_clock::is_steady ? "true" : "false");
 
+
+    std::vector<Stats> all_clock_stats; // one Stats struct per clock type
+
     printf("\n"
         "----------------------------------------------------------\n"
         "Testing `std::chrono::system_clock` precision:\n"
         "----------------------------------------------------------\n");
-    test_and_print_clock_precision<std::chrono::system_clock>();
+    test_and_print_clock_precision<std::chrono::system_clock>(&all_clock_stats);
 
     printf("\n"
         "----------------------------------------------------------\n"
         "Testing `std::chrono::steady_clock` precision:\n"
         "----------------------------------------------------------\n");
-    test_and_print_clock_precision<std::chrono::steady_clock>();
+    test_and_print_clock_precision<std::chrono::steady_clock>(&all_clock_stats);
 
     printf("\n"
         "----------------------------------------------------------\n"
         "Testing `std::chrono::high_resolution_clock` precision:\n"
         "----------------------------------------------------------\n");
-    test_and_print_clock_precision<std::chrono::high_resolution_clock>();
+    test_and_print_clock_precision<std::chrono::high_resolution_clock>(&all_clock_stats);
+
+    // Print a markdown table of all clock precision stats, writing it to a .md file
 
     printf("\n");
     printf("===================================================================================\n");
@@ -920,8 +951,9 @@ int main()
         "  Deduction indicates that true sleeps don't begin on Windows until >= 1 ms.\n");
 
     // Iterate over all of the enum sleep types
-    //////////////// collect all stats; print markdown tables at end
     // - See my answer: https://stackoverflow.com/a/69762682/4561887
+    // Array of vectors of sleep stats, one vector per sleep type
+    std::array<std::vector<SleepStat>, static_cast<size_t>(SleepType::count)> all_sleep_stats;
     for (size_t i_sleep_type = 0;
          i_sleep_type < static_cast<size_t>(SleepType::count);
          i_sleep_type++)
@@ -936,25 +968,27 @@ int main()
         // Now run all sleep durations for this sleep type
 
         // sanity check to compare to the next line to see if 1 ulta-short sleep iteration works ok
-        sleep_test<measurement_clock_type>(sleep_type, 1ns, 1);
-        sleep_test<measurement_clock_type>(sleep_type, 1ns, 100);
-        sleep_test<measurement_clock_type>(sleep_type, 1us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 10us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 20us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 30us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 50us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 100us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 200us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 500us, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 1ms, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 2ms, 50);
-        sleep_test<measurement_clock_type>(sleep_type, 10ms, 10);
-        sleep_test<measurement_clock_type>(sleep_type, 20ms, 10);
-        sleep_test<measurement_clock_type>(sleep_type, 50ms, 10);
-        sleep_test<measurement_clock_type>(sleep_type, 100ms, 10);
-        sleep_test<measurement_clock_type>(sleep_type, 500ms, 1);
-        sleep_test<measurement_clock_type>(sleep_type, 1s, 1);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 1ns, 1);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 1ns, 100);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 1us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 10us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 20us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 30us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 50us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 100us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 200us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 500us, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 1ms, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 2ms, 50);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 10ms, 10);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 20ms, 10);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 50ms, 10);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 100ms, 10);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 500ms, 1);
+        sleep_test<measurement_clock_type>(&all_sleep_stats, sleep_type, 1s, 1);
     }
+
+    //////////////// print markdown tables at end
 
     return 0;
 }
