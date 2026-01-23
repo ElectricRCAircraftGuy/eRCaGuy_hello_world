@@ -88,7 +88,7 @@ TODO:
 1. [x] Use the highest precision clock timestamps to then time sleep calls of various lengths, and
    see how accurate they are. Identify the minimum sleep time that is possible.
    ex: 1ns, 1ms, 2ms, 10ms, 20ms, 50ms, 100ms, 500ms, 1s.
-1. [ ] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
+1. [x] Write standalone mean, median, mode, stddev, etc. stats functions and quit duplicating that
    logic in both `test_and_print_clock_precision()` and `sleep_test()`.
 1. [ ] Tabulate the results nicely. Reading them in paragraph type form is tedious.
 1. [ ] Do the todos here too: "eRCaGuy_hello_world/TODO2.txt"
@@ -110,7 +110,10 @@ TODO:
 #include <unordered_map>  // For mode calculation
 #include <vector>  // For `std::vector`
 
-/// Get the number of elements in any C array
+// Sample size for testing clock precision.
+static constexpr size_t SAMPLE_SIZE = 20'000'000;
+
+/// Get the number of elements in any C array.
 /// - Usage example: [my own answer]:
 ///   https://arduino.stackexchange.com/a/80289/7727
 #define ARRAY_LEN(array) (sizeof(array) / sizeof((array)[0]))
@@ -126,7 +129,162 @@ uint64_t nanos()
     return ns;
 }
 
-static constexpr size_t SAMPLE_SIZE = 20'000'000;
+// 1. Calculate mean
+double calculate_mean(const std::vector<uint64_t>& data)
+{
+    uint64_t sum = 0;
+    for (size_t i = 0; i < data.size(); i++)
+    {
+        sum += data[i];
+    }
+    double mean = static_cast<double>(sum) / data.size();
+    return mean;
+}
+
+// 2. Calculate median (requires that this function make a copy of the data and then sort it).
+// To receive back the sorted data, pass in a non-null pointer to a vector via `data_sorted`.
+double calculate_median(const std::vector<uint64_t>& data,
+    std::vector<uint64_t>* data_sorted = nullptr)
+{
+    std::vector<uint64_t> data_sorted_ = data;
+    std::sort(data_sorted_.begin(), data_sorted_.end());
+    if (data_sorted != nullptr)
+    {
+        // Pass back the sorted data to the user, if requested
+        *data_sorted = data_sorted_;
+    }
+
+    double median;
+    size_t i_mid = data_sorted_.size() / 2;
+    if (data_sorted_.size() % 2 == 0)
+    {
+        // There are an even number of elements
+        median = (data_sorted_[i_mid - 1] + data_sorted_[i_mid]) / 2.0;
+    }
+    else
+    {
+        // There are an odd number of elements
+        median = data_sorted_[i_mid];
+    }
+    return median;
+}
+
+// 3. Calculate min.
+// - You must pass in a sorted data vector--ex: received from `calculate_median()`.
+uint64_t calculate_min(const std::vector<uint64_t>& data_sorted)
+{
+    return data_sorted.front();
+}
+
+// 4. Calculate max.
+// - You must pass in a sorted data vector--ex: received from `calculate_median()`.
+uint64_t calculate_max(const std::vector<uint64_t>& data_sorted)
+{
+    return data_sorted.back();
+}
+
+// 5. Calculate mode (most frequent value)
+// - Optionally receive back the mode's max count too via the `mode_max_count` pointer.
+uint64_t calculate_mode(const std::vector<uint64_t>& data, size_t *mode_max_count = nullptr)
+{
+    std::unordered_map<uint64_t, size_t> frequency_map;
+    for (size_t i = 0; i < data.size(); i++)
+    {
+        // NB: When you use `operator[]` on a `std::unordered_map` with a key that doesn't
+        // exist yet, it automatically:
+        //
+        // 1. Creates a new entry with that key
+        // 2. Value-initializes the value (for size_t, this means it's initialized to 0)
+        // 3. Returns a reference to that value
+        //
+        // So if the key exists, this line increments its count, and if the key does not yet
+        // exist, it creates an entry with value 0, then increments it to 1.
+        //
+        frequency_map[data[i]]++;
+    }
+
+    // Find the value with the highest frequency
+    uint64_t mode = 0;
+    size_t max_count = 0;
+    for (const std::pair<const uint64_t, size_t>& pair : frequency_map)
+    {
+        uint64_t number = pair.first; // key
+        size_t count = pair.second;   // value
+
+        if (count > max_count)
+        {
+            max_count = count;
+            mode = number;
+        }
+    }
+
+    if (mode_max_count != nullptr)
+    {
+        *mode_max_count = max_count;
+    }
+
+    return mode;
+}
+
+// 6. Calculate Standard Deviation
+// - This is the spread of the data around the mean.
+// - It is calculated as the square root of the variance, where the variance is the average
+//   of the squared differences from the mean.
+double calculate_stddev(const std::vector<uint64_t>& data, double mean)
+{
+    // sum of the squared differences from the mean
+    double variance_sum = 0;
+
+    for (size_t i = 0; i < data.size(); i++)
+    {
+        double difference = data[i] - mean;
+        double difference_squared = difference * difference;
+        variance_sum += difference_squared;
+    }
+
+    // avg of the squared differences
+    double variance = variance_sum / data.size();
+
+    // sqrt of the variance
+    double stddev = std::sqrt(variance);
+
+    return stddev;
+}
+
+struct Stats
+{
+    double mean;
+    double median;
+    uint64_t min;
+    uint64_t max;
+    uint64_t range;         // max - min
+    uint64_t mode;          // the most frequently occurring value
+    size_t mode_max_count;  // the number of times the mode value appears
+    double mode_pct;        // the percentage of times the mode value appears
+    double stddev;
+
+    // Pointer to the original data vector; NOT owned by this struct
+    const std::vector<uint64_t>* data;
+    // Copy of the original data vector, sorted; IS owned by this struct
+    std::vector<uint64_t> data_sorted;
+};
+
+Stats calculate_stats(const std::vector<uint64_t>& data)
+{
+    Stats stats;
+
+    stats.data = &data;
+    stats.mean = calculate_mean(data);
+    stats.median = calculate_median(data, &stats.data_sorted);
+    stats.min = calculate_min(stats.data_sorted);
+    stats.max = calculate_max(stats.data_sorted);
+    stats.range = stats.max - stats.min;
+    stats.mode = calculate_mode(data, &stats.mode_max_count);
+    stats.mode_pct = (100.0 * stats.mode_max_count) / data.size();
+    stats.stddev = calculate_stddev(data, stats.mean);
+
+    return stats;
+}
 
 // Run clock precision tests for the specified clock type, and print all results.
 template<typename MeasurementClock>
@@ -169,101 +327,22 @@ void test_and_print_clock_precision()
         (100.0 * invalid_delta_count) / MAX_NUM_DELTAS_POSSIBLE);
 
     // Calculate stats: mean, median, mode, and stddev of the time differences
-
-    printf("Analyzing %zu (%.2f%% of collected) time delta samples...\n\n",
-        deltas_ns.size(),
-        (100.0 * deltas_ns.size()) / MAX_NUM_DELTAS_POSSIBLE);
-
-    // 1. Calculate Mean
-
-    uint64_t sum = 0;
-    for (size_t i = 0; i < deltas_ns.size(); i++)
-    {
-        sum += deltas_ns[i];
-    }
-    double mean = static_cast<double>(sum) / deltas_ns.size();
-
-    // 2. Calculate Median (requires sorting a copy)
-
-    std::vector<uint64_t> sorted_deltas = deltas_ns;
-    std::sort(sorted_deltas.begin(), sorted_deltas.end());
-
-    double median;
-    size_t i_mid = sorted_deltas.size() / 2;
-    if (sorted_deltas.size() % 2 == 0)
-    {
-        // There are an even number of elements
-        median = (sorted_deltas[i_mid - 1] + sorted_deltas[i_mid]) / 2.0;
-    }
-    else
-    {
-        // There are an odd number of elements
-        median = sorted_deltas[i_mid];
-    }
-
-    // 3. Calculate Mode (most frequent value)
-
-    std::unordered_map<uint64_t, size_t> frequency_map;
-    for (size_t i = 0; i < deltas_ns.size(); i++)
-    {
-        // NB: When you use `operator[]` on a `std::unordered_map` with a key that doesn't
-        // exist yet, it automatically:
-        //
-        // 1. Creates a new entry with that key
-        // 2. Value-initializes the value (for size_t, this means it's initialized to 0)
-        // 3. Returns a reference to that value
-        //
-        // So if the key exists, this line increments its count, and if the key does not yet
-        // exist, it creates an entry with value 0, then increments it to 1.
-        //
-        frequency_map[deltas_ns[i]]++;
-    }
-
-    uint64_t mode = 0;
-    size_t max_count = 0;
-    for (const std::pair<const uint64_t, size_t>& pair : frequency_map)
-    {
-        uint64_t number = pair.first;
-        size_t count = pair.second;
-
-        if (count > max_count)
-        {
-            max_count = count;
-            mode = number;
-        }
-    }
-
-    // 4. Calculate Standard Deviation
-    // - This is the spread of the data around the mean.
-    // - It is calculated as the square root of the variance, where the variance is the average
-    //   of the squared differences from the mean.
-
-    double variance_sum = 0;
-    for (size_t i = 0; i < deltas_ns.size(); i++)
-    {
-        double diff = deltas_ns[i] - mean;
-        double diff_squared = diff * diff;
-        variance_sum += diff_squared;
-    }
-    // avg of the squared differences
-    double variance = variance_sum / deltas_ns.size();
-    // sqrt of the variance
-    double stddev = std::sqrt(variance);
+    Stats stats = calculate_stats(deltas_ns);
 
     // Print results
 
     printf("Estimation of your clock precision:\n\n");
-    printf("Mean:   %11.3f ns\n", mean);
-    printf("Median: %11.3f ns\n", median);
+    printf("Mean:   %11.3f ns\n", stats.mean);
+    printf("Median: %11.3f ns\n", stats.median);
     printf("Mode:   %7" PRIu64 "     ns (appears %zu times, %.3f%%)  <=== ESTIMATED "
         "CLOCK PRECISION; MOST RELIABLE ESTIMATE\n",
-           mode, max_count, (100.0 * max_count) / deltas_ns.size());
-    printf("Stddev: %11.3f ns\n", stddev);
+           stats.mode, stats.mode_max_count, stats.mode_pct);
+    printf("Stddev: %11.3f ns\n", stats.stddev);
 
     printf("\nAdditional stats:\n");
-    printf("Min:    %7" PRIu64 " ns\n", sorted_deltas.front());
-    printf("Max:    %7" PRIu64 " ns\n", sorted_deltas.back());
-    printf("Range:  %7" PRIu64 " ns\n", sorted_deltas.back() - sorted_deltas.front());
+    printf("Min:    %7" PRIu64 " ns\n", stats.min);
+    printf("Max:    %7" PRIu64 " ns\n", stats.max);
+    printf("Range:  %7" PRIu64 " ns\n", stats.range);
 }
 
 enum class SleepType
@@ -373,6 +452,7 @@ const char* sleep_type_to_str(SleepType sleep_type)
 }
 
 // Sleep function implementation for the `STD_THISTHREAD_SLEEPFOR` sleep type.
+// - See the description for this in the `enum class SleepType`.
 // Args:
 // - sleep_time_ns: desired sleep time in nanoseconds.
 // - actual_sleep_time_ns: if not nullptr, the actual sleep time will be written here.
@@ -561,45 +641,7 @@ void sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_i
     }
 
     // Calculate statistics
-
-    // mean
-    uint64_t sum = 0;
-    for (uint64_t duration : actual_durations_ns)
-    {
-        sum += duration;
-    }
-    double mean = static_cast<double>(sum) / actual_durations_ns.size();
-
-    // median
-    std::vector<uint64_t> sorted_durations = actual_durations_ns;
-    std::sort(sorted_durations.begin(), sorted_durations.end());
-
-    double median;
-    size_t mid = sorted_durations.size() / 2;
-    if (sorted_durations.size() % 2 == 0)
-    {
-        // even number of elements
-        median = (sorted_durations[mid - 1] + sorted_durations[mid]) / 2.0;
-    }
-    else
-    {
-        // odd number of elements
-        median = sorted_durations[mid];
-    }
-
-    // min and max
-    uint64_t min = sorted_durations.front();
-    uint64_t max = sorted_durations.back();
-
-    // standard deviation
-    double variance_sum = 0;
-    for (uint64_t duration : actual_durations_ns)
-    {
-        double diff = duration - mean;
-        variance_sum += diff * diff;
-    }
-    double variance = variance_sum / actual_durations_ns.size();
-    double stddev = std::sqrt(variance);
+    Stats stats = calculate_stats(actual_durations_ns);
 
     // Print results
 
@@ -610,7 +652,7 @@ void sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_i
             "in which the OS's scheduler ran for a duration <= the clock's minimum resolution.\n"
             "- This is expected on Windows, not on Linux.\n"
             "- Probable yield duration: < %" PRIu64 " ns\n",
-            num_failed_sleeps, min);
+            num_failed_sleeps, stats.min);
     }
 
 #define PRINT_HUMAN_READABLE(ns_value)                                           \
@@ -625,32 +667,32 @@ void sleep_test(SleepType sleep_type, SleepDuration sleep_duration, size_t num_i
 
     printf("\nActual sleep duration statistics:\n");
 
-    printf("  Mean:     %16.3f ns", mean);
-    PRINT_HUMAN_READABLE(mean);
+    printf("  Mean:     %16.3f ns", stats.mean);
+    PRINT_HUMAN_READABLE(stats.mean);
     printf("\n");
 
-    printf("  Median:   %16.3f ns", median);
-    PRINT_HUMAN_READABLE(median);
+    printf("  Median:   %16.3f ns", stats.median);
+    PRINT_HUMAN_READABLE(stats.median);
     printf("  <=== MEDIAN ACTUAL SLEEP\n");
 
-    printf("  Stddev:   %16.3f ns", stddev);
-    PRINT_HUMAN_READABLE(stddev);
+    printf("  Stddev:   %16.3f ns", stats.stddev);
+    PRINT_HUMAN_READABLE(stats.stddev);
     printf("\n");
 
-    printf("  Min:      %12" PRIu64 "     ns", min);
-    PRINT_HUMAN_READABLE(min);
+    printf("  Min:      %12" PRIu64 "     ns", stats.min);
+    PRINT_HUMAN_READABLE(stats.min);
     printf("\n");
 
-    printf("  Max:      %12" PRIu64 "     ns", max);
-    PRINT_HUMAN_READABLE(max);
+    printf("  Max:      %12" PRIu64 "     ns", stats.max);
+    PRINT_HUMAN_READABLE(stats.max);
     printf("\n");
 
-    printf("  Range:    %12" PRIu64 "     ns", max - min);
-    PRINT_HUMAN_READABLE(max - min);
+    printf("  Range:    %12" PRIu64 "     ns", stats.range);
+    PRINT_HUMAN_READABLE(stats.range);
     printf("\n");
 
     // Calculate error
-    double error_ns = mean - requested_ns;
+    double error_ns = stats.mean - requested_ns;
     double error_percent = (error_ns / requested_ns) * 100.0;
     printf("\nError (mean - requested):\n");
     printf("  Absolute: %16.3f ns", error_ns);
@@ -718,19 +760,19 @@ int main()
 
     printf("\n"
         "----------------------------------------------------------\n"
-        "Testing std::chrono::system_clock precision:\n"
+        "Testing `std::chrono::system_clock` precision:\n"
         "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::system_clock>();
 
     printf("\n"
         "----------------------------------------------------------\n"
-        "Testing std::chrono::steady_clock precision:\n"
+        "Testing `std::chrono::steady_clock` precision:\n"
         "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::steady_clock>();
 
     printf("\n"
         "----------------------------------------------------------\n"
-        "Testing std::chrono::high_resolution_clock precision:\n"
+        "Testing `std::chrono::high_resolution_clock` precision:\n"
         "----------------------------------------------------------\n");
     test_and_print_clock_precision<std::chrono::high_resolution_clock>();
 

@@ -19,12 +19,18 @@ Timing improvements in "cpp/timing_and_precision_Windows_and_Linux_tests.cpp" an
     [ ] write up results into a new answer here: https://stackoverflow.com/questions/13397571/precise-thread-sleep-needed-max-1ms-error
 [ ] Add my changes from Windows into that file too. 
 [ ] Add sleep tests to easily test these things: 
-    [ ] *****+OPEN AND STUDY THIS AI chat: https://share.google/aimode/8zx15oregqzPE3Q98
-    1) normal C++ `std::this_thread::sleep_for()`
-    2) `std::this_thread::sleep_for()` with Windows special call for high precision sleep (doesn't work)
-    3) Windows Sleep() call withOUT the 1ms precision fix 
-    4) Windows Sleep() call WITH the 1ms precision fix
-    [ ] BE SURE TO have each sleep function allow CPU-usage timing by returning via output pointers the actual sleep time!
+    [x] *****+OPEN AND STUDY THIS AI chat: https://share.google/aimode/8zx15oregqzPE3Q98
+    [x] 1) normal C++ `std::this_thread::sleep_for()`
+    [ ] 2) `std::this_thread::sleep_for()` with Windows special call for high precision sleep (doesn't work)
+    [ ] 3) Windows Sleep() call withOUT the 1ms precision fix 
+    [ ] 4) Windows Sleep() call WITH the 1ms precision fix
+    [x] BE SURE TO have each sleep function allow CPU-usage timing by returning via output pointers the actual sleep time!
 [ ] Windows Sleep() - don't wrap with timeBeginPeriod()/timeEndPeriod() calls--wasted time: ~200 us each call (range: 2~500us); instead, use the special Windows API call to set high precision sleep globally for the whole program!
 [ ] Save my sleep_until_ms func in my hello world repo, and add it to stack overflow!!
 
+NEXT:
+[x] Have sleep_test() use my stats struct and function to calculate stats
+[ ] git commit the work 
+[ ] store stats into a global vector or something
+[ ] print a markdown table of the results
+[ ] begin implementing more of the sleep funcs with the different mechanisms to sleep 
