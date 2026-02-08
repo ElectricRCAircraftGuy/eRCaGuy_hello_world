@@ -321,11 +321,12 @@ void test_and_print_clock_precision(std::vector<Stats<uint64_t>>* all_clock_stat
 
     // NB: use `static` to keep off the stack, as it will overflow the stack if too big.
     // - See stack sizes: https://stackoverflow.com/a/64085509/4561887
-    // Alternatively, use heap via `std::vector`.
-    static std::array<uint64_t, SAMPLE_SIZE> timestamps_ns;
-    ///////
-    // // Use heap via `std::vector` to avoid embedding 160 MB in the binary.
-    // std::vector<uint64_t> timestamps_ns(SAMPLE_SIZE);
+    // Even better, use dynamic memory allocation via `std::vector` instead, as `static`
+    // variables get placed into the Windows executable, making it huge (~300 MB).
+    std::vector<uint64_t> timestamps_ns;
+    // resize to allocate and initialize elements (use resize here, not reserve, since I'm using the
+    // size() and indices below!)
+    timestamps_ns.resize(SAMPLE_SIZE);
 
     // Get timestamps as fast as possible
     for (size_t i = 0; i < timestamps_ns.size(); i++)
@@ -334,7 +335,7 @@ void test_and_print_clock_precision(std::vector<Stats<uint64_t>>* all_clock_stat
     }
 
     // Calculate time deltas between successive timestamps
-    constexpr size_t MAX_NUM_DELTAS_POSSIBLE = timestamps_ns.size() - 1;
+    const size_t MAX_NUM_DELTAS_POSSIBLE = timestamps_ns.size() - 1;
     std::vector<uint64_t> deltas_ns;
     deltas_ns.reserve(MAX_NUM_DELTAS_POSSIBLE);
     size_t invalid_delta_count = 0; // increment each time an invalid delta of 0 is found
@@ -354,7 +355,7 @@ void test_and_print_clock_precision(std::vector<Stats<uint64_t>>* all_clock_stat
     }
 
     printf("\ninvalid_delta_count = %zu (%.2f%%) (it is expected that there will be "
-        "0 invalid sample deltas on Linux, and tons [the majority] to be invalid on Windows)\n",
+        "0 invalid sample deltas on Linux, and tons [the majority] to be invalid on Windows)\n\n",
         invalid_delta_count,
         (100.0 * invalid_delta_count) / MAX_NUM_DELTAS_POSSIBLE);
 
