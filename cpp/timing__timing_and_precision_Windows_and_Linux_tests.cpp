@@ -780,7 +780,7 @@ void sleep_test(
 
     if (sleep_stat.sleep_func == nullptr)
     {
-        std::cout << "Warning: sleep function not implemented for sleep type: "
+        std::cout << "Not sleeping: sleep function not implemented for sleep type: "
             << sleep_type_to_str(sleep_type) << "\n";
         return;
     }
