@@ -1,0 +1,2 @@
+Original file name:
+Link to Copy constructor vs assignment operator in C++ - GeeksforGeeks%%%%% [see `t2 = t1;`...calls `operator=()`...same as ''t2.operator=(t1);'' `].desktop
