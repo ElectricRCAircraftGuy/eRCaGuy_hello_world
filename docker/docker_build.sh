@@ -45,7 +45,7 @@ if [ "$EXIT_CODE" -eq "0" ]; then
     echo "Image: ${IMAGE_NAME}:${IMAGE_TAG}"
     echo ""
     echo "To run the container:"
-    echo_blue "  ${SCRIPT_DIRECTORY}/docker_run.sh"
+    echo_blue "${SCRIPT_DIRECTORY}/docker_run.sh"
 else
     echo ""
     echo_red "✗ Build failed with exit code: $EXIT_CODE"
