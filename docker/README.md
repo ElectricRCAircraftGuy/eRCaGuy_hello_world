@@ -100,6 +100,9 @@ docker run -it --rm ubuntu bash
 ```
 
 #### [Highly recommended!] Install and open [`lazydocker`](https://github.com/jesseduffield/lazydocker)
+
+See: https://github.com/jesseduffield/lazydocker?tab=readme-ov-file#binary-release-linuxosxwindows
+
 ```bash
 # Install lazydocker
 curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash

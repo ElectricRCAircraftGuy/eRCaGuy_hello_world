@@ -10,37 +10,52 @@ STATUS: (status)
 keywords to easily grep or ripgrep in this repo for this program and what it teaches
 KEYWORDS:
 
+------------------------------------------------------------------
 To compile and run (assuming you've already `cd`ed into this dir):
+------------------------------------------------------------------
 ```bash
 # NB: you may need to use `-std=gnu++20` instead of `-std=c++20` in order to obtain extra GNU
 # gcc features, including gcc extensions, POSIX cmds, and Linux sytem cmds.
 # See: [my answer]: https://stackoverflow.com/a/71801111/4561887
 
-# [run once ever] install ccache
-sudo apt update && sudo apt install ccache
-
 # In C++
 
-# 1. For Linux, or in MSYS2 ucrt64 bash shell in Windows:
+# -------------------------------------------------------
+# 1. Build and run in Linux, or in MSYS2 ucrt64 bash shell in Windows:
+# -------------------------------------------------------
 # - For MSYS2 setup, see my answer: https://stackoverflow.com/a/77407282/4561887
 # Build and run:
 # Takes ~0.33 sec:
 time ( g++ -Wall -Wextra -Werror -O3 -std=gnu++20 hello_world_extra_basic.cpp -o bin/a && bin/a )
 #
 # OR [BEST] (just call this file as an executable directly).
-# Build and run:
 # Takes ~0.33 sec:
-time ./hello_world_extra_basic.cpp
+sudo apt update && sudo apt install ccache   # [run once ever] install ccache
+time ./hello_world_extra_basic.cpp           # Build and run:
 #
 # Verify it is a Linux executable relying on dynamic libraries:
 file bin/a
 
-# 2. Cross-compiling from Linux for Windows via mingw-w64: https://www.mingw-w64.org/
+# -------------------------------------------------------
+# 2.A. Cross-compiling from Linux for Windows via mingw-w64: https://www.mingw-w64.org/
+# -------------------------------------------------------
 # Install dependencies
 sudo apt update
-sudo apt install mingw-w64
-sudo apt update
 sudo apt install wine wine64
+# Then option 1: the broad mingw-w64 install
+sudo apt install mingw-w64
+# OR option 2 [better]: the specific POSIX thread model version of mingw-w64
+sudo apt install g++-mingw-w64-x86-64-posix
+sudo apt install gcc-mingw-w64-x86-64-posix
+# Ensure the POSIX thread model is active:
+# Check which threading model is active by default
+x86_64-w64-mingw32-g++ -v    # look near the end for "Thread model: posix" or "win32"
+# [Don't do this] Note: to get the "win32" thread model, one would install these packages instead:
+# sudo apt install g++-mingw-w64-x86-64-win32
+# sudo apt install gcc-mingw-w64-x86-64-win32
+# - To change between `posix` and `win32` thread models, you can use the `update-alternatives`
+#   tool to switch the default compiler. See my comment here:
+#   https://github.com/microsoft/vcpkg/issues/41995#issuecomment-3305125203
 #
 # Then build only (don't run):
 time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 hello_world_extra_basic.cpp -o bin/a.exe
@@ -67,11 +82,18 @@ time ( WINEDEBUG=-all wine bin/a_static.exe; wineserver -w )
 # Takes ~0.6 sec:
 time ( WINEDEBUG=-all wine bin/a_static.exe; wineserver -k )
 #
-# OR [BEST] Cross-compile with static linking from Linux for Windows, then run the Windows .exe
+# OR [BETTER] Cross-compile with static linking from Linux for Windows, then run the Windows .exe
 # on Linux via Wine, all in one:
 time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 -static hello_world_extra_basic.cpp -o bin/a_static.exe && WINEDEBUG=-all wine bin/a_static.exe; wineserver -w
 
-# 3. Building and running on Windows for Windows
+# -------------------------------------------------------
+# 2.B. Cross-compiling from Linux for Windows via mingw-w64 **in Docker**
+# -------------------------------------------------------
+
+
+# -------------------------------------------------------
+# 3. Building and running on Windows for Windows in the MSYS2 bash shell
+# -------------------------------------------------------
 # - Requires:
 #   1. The MSYS2 ucrt64 environment with g++ installed (see my instructions here:
 #      https://stackoverflow.com/a/77407282/4561887) and
