@@ -9,6 +9,17 @@ This `Dockerfile` allows you to easily build and use a docker image to get and u
 Much of this comes from [approximately here in my `git & Linux cmds, help, tips & tricks - Gabriel.txt` file](<https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/blob/master/git%20%26%20Linux%20cmds%2C%20help%2C%20tips%20%26%20tricks%20-%20Gabriel.txt#L4945>) in my [eRCaGuy_dotfiles](https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles) repo, under the section in this file titled `Docker installation instructions (for Linux, and Windows 11 via WSL)`. 
 
 
+## Docker terminology
+
+Quick reference:
+
+1. Image = Template (one per build); like a C++ class definition
+1. Container = Running instance (many from one image); like a C++ class instance/object
+1. Tag = Version label (you choose); like a C++ class version
+1. ID = Unique hash (system generated); like a C++ class unique identifier
+1. Name = Optional friendly label (you choose); like a C++ class friendly `std::string` name
+
+
 ## WSL installation for Windows only; Windows 10 or later
 
 1. Install WSL2 with the latest version of Ubuntu (ex: 24.04) as the Linux distribution:
@@ -74,6 +85,20 @@ docker run --rm hello-world
 Done! You have now successfully installed and started Docker Engine.
 
 
+## Usage
+
+```bash
+# Build the docker image
+./docker_build.sh
+
+# Run the docker image
+./docker_run.sh
+
+# Run and build with the docker image
+# TODO
+```
+
+
 ## Other Docker checks and commands
 
 #### Checks
@@ -115,15 +140,26 @@ lazydocker
 #### Misc. commands
 
 ```bash
-# See docker images
+# List docker images and their disk usage sizes
 docker images
 
-# See docker containers (instances of images)
+# List all docker containers (running or stopped instances of images)
 docker ps -a
 
-# See only running containers
+# List only running containers
 docker ps
 
 # See the reclaimable space if you delete unused images and containers
 docker system df
+
+# Copy TO container's `/workspace/` directory
+docker cp myfile.txt CONTAINER_ID:/workspace/
+
+# Copy FROM container at path `/workspace/output.exe` to current directory (`./`) on host
+docker cp CONTAINER_ID:/workspace/output.exe ./
+
+# Run a docker container from image `myimage` while skipping running the `ENTRYPOINT` 
+# script specified in the `Dockerfile`, and running `/bin/bash` directly as the 
+# `--entrypoint` instead. 
+docker run --entrypoint /bin/bash myimage
 ```
