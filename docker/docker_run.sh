@@ -30,8 +30,8 @@ Usage: $EXECUTABLE_NAME [OPTIONS] [-- COMMAND [ARGS...]]
 
 Run a Docker container instance of '${IMAGE_NAME}:${IMAGE_TAG}' for cross-compiling
 from Linux to Windows.
-
-If no COMMAND is given, drops into an interactive bash shell inside the container.
+- Automatically builds the Docker image if it doesn't exist locally yet.
+- If no COMMAND is given, drops into an interactive bash shell inside the container.
 
 OPTIONS:
   -h, -?, --help   Show this help menu and exit.
@@ -81,7 +81,11 @@ parse_args() {
     #   ./docker_run.sh -- myprogram --quiet   # passes --quiet to myprogram, not us
     #   ./docker_run.sh -q -- make --quiet     # quiet docker_run.sh; passes --quiet to make
     #
+    # NOTE: bash functions cannot modify the caller's `$@` via `shift` (shifts are function-local).
+    # So we store remaining (passthrough) args in the global `PASSTHROUGH_ARGS` array, and the
+    # caller uses `set -- "${PASSTHROUGH_ARGS[@]}"` to rebuild its own `$@` after this returns.
     QUIET="false"
+    PASSTHROUGH_ARGS=()
     while [[ $# -gt 0 ]]; do
         case "$1" in
             # Help menu
@@ -94,18 +98,24 @@ parse_args() {
                 QUIET="true"
                 shift # past argument
                 ;;
-            # End of our flags; everything remaining is passed through to the container command
+            # Explicit end of our flags; everything remaining is passed through to the container
+            # command
             "--")
                 shift # past argument
-                break
+                PASSTHROUGH_ARGS+=("$@")
+                break # stop parsing args; exit the while loop
                 ;;
-            # Stop parsing our flags at the first unrecognized arg; pass it and everything after through
+            # Stop parsing our flags at the first unrecognized arg; pass it and everything after
+            # through
             *)
-                break
+                PASSTHROUGH_ARGS+=("$@")
+                break # stop parsing args; exit the while loop
                 ;;
         esac
     done
-    # Remaining args in "$@" are now passed through verbatim to the container command
+
+    # Remaining args in "$@" can now be passed through verbatim to the container command so long as
+    # the caller runs `set -- "${PASSTHROUGH_ARGS[@]}"` after this function returns.
 } # parse_args
 
 # Print only when not in quiet mode
@@ -122,9 +132,36 @@ log_blue() {
     fi
 }
 
+# Print in red only when not in quiet mode
+log_red() {
+    if [ "$QUIET" != "true" ]; then
+        echo_red "$@"
+    fi
+}
+
+# Print in green only when not in quiet mode
+log_green() {
+    if [ "$QUIET" != "true" ]; then
+        echo_green "$@"
+    fi
+}
+
 main() {
     echo "Running Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-    log ""
+
+    # Auto-build the image if it doesn't exist yet
+    if ! docker image inspect "${IMAGE_NAME}:${IMAGE_TAG}" > /dev/null 2>&1; then
+        echo ""
+        echo "Docker image '${IMAGE_NAME}:${IMAGE_TAG}' not found locally. Building it now..."
+        "${SCRIPT_DIRECTORY}/docker_build.sh"
+        if [ "$?" -ne 0 ]; then
+            echo_red "Failed to build Docker image '${IMAGE_NAME}:${IMAGE_TAG}'. Exiting."
+            exit "$RETURN_CODE_ERROR"
+        fi
+        echo_green "Successfully built Docker image '${IMAGE_NAME}:${IMAGE_TAG}'."
+    fi
+
+    echo ""
     log "Running as user UID=$(id -u) and group GID=$(id -g)"
     log_blue "Mounting host dirs to container dirs:"
     log_blue "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
@@ -202,7 +239,10 @@ fi
 # Only run `main` if this script is being **run**, NOT sourced (imported).
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$__name__" = "__main__" ]; then
-    parse_args "$@"
-    time main
+    parse_args "$@" # passes in the original file `$@`
+    # Rebuild the caller's "$@" from the global `PASSTHROUGH_ARGS` array, which was populated by
+    # `parse_args()` with all args after `--`, or the first unrecognized arg.
+    set -- "${PASSTHROUGH_ARGS[@]}"
+    main "$@" # passes in the rebuilt and now truncated "$@" with only the passthrough args
     exit $RETURN_CODE_SUCCESS
 fi

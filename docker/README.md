@@ -88,18 +88,23 @@ Done! You have now successfully installed and started Docker Engine.
 ## Usage
 
 ```bash
-# Build the docker image
+# 1) Build the docker image
 ./docker_build.sh
 
-# Run and enter a Bash terminal in the docker image
+# Delete the built docker image
+docker images           # list all docker images
+. docker_config.sh      # source the config file to get the `IMAGE_NAME` and `IMAGE_TAG` variables
+docker rmi ${IMAGE_NAME}:${IMAGE_TAG}  # remove the image by name and tag
+
+# 2) Run and enter a Bash terminal in the docker image (builds the docker image first if necessary)
 ./docker_run.sh
 
-# Run commands inside the docker container
+# 3) Run commands inside the docker container
 ./docker_run.sh <command>
 # Example
 ./docker_run.sh "x86_64-w64-mingw32-g++ --version"
 
-# Build with the docker image
+# 4) Build with the docker image
 # TODO
 ```
 
