@@ -36,6 +36,7 @@ RUN apt-get update && \
     # libssl-dev \
     # libtool \
     # mingw-w64-tools \
+    nano \
     # ninja-build \
     # pkg-config \
     # plocate \

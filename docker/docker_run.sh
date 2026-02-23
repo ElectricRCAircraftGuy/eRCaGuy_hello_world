@@ -54,17 +54,23 @@ CONTAINER_NAME="${IMAGE_NAME}-${IMAGE_TAG}-${UNIQUE_HASH}"
 # * "$@" = All additional arguments passed to this script, forwarded to `docker run`.
 #      Ex: `./docker_run.sh bash -c "cd cpp && x86_64-w64-mingw32-g++ --version"`
 #
-docker run \
-    --rm \
-    -it \
-    --env USER_ID="$(id -u)" \
-    --env GROUP_ID="$(id -g)" \
-    --env USER_NAME="$(id -un)" \
-    --env GROUP_NAME="$(id -gn)" \
-    --volume "${REPO_ROOT_DIR}:${REPO_ROOT_DIR}" \
-    --volume "${HOME}/.bashrc:${HOME}/.bashrc:ro" \
-    --workdir "${REPO_ROOT_DIR}" \
-    --name "$CONTAINER_NAME" \
-    --hostname "$CONTAINER_NAME" \
-    "${IMAGE_NAME}:${IMAGE_TAG}" \
-    "$@"
+docker_args=(
+    --rm
+    -it
+    # Pass user/group IDs and names for proper file permissions (used by gosu in ENTRYPOINT)
+    --env USER_ID="$(id -u)"
+    --env GROUP_ID="$(id -g)"
+    --env USER_NAME="$(id -un)"
+    --env GROUP_NAME="$(id -gn)"
+    # Directory to take ownership of inside the container
+    --env TAKE_OWNERSHIP_OF_DIR1="${REPO_ROOT_DIR}"
+    # Bind mount the workspace and bashrc file
+    --volume "${REPO_ROOT_DIR}:${REPO_ROOT_DIR}"
+    --volume "${HOME}/.bashrc:${HOME}/.bashrc:ro"
+    # Set working directory and container identity
+    --workdir "${REPO_ROOT_DIR}"
+    --name "$CONTAINER_NAME"
+    --hostname "$CONTAINER_NAME"
+)
+
+docker run "${docker_args[@]}" "${IMAGE_NAME}:${IMAGE_TAG}" "$@"

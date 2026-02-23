@@ -4,6 +4,17 @@
 
 # Docker entrypoint script.
 # - This file runs **every time** a container starts.
+# - Uses gosu and other tools to establish the user and group inside the container to match the host
+#   user's UID and GID, so that files created by the container have the correct ownership and
+#   permissions on the host system when bind-mounted via `docker run --volume
+#   /HOST-DIR:/CONTAINER-DIR`.
+# - Also copies over Ubuntu skel files to the user's home directory if they are not already
+#   bind-mounted as read-only from the host system, so that the user has a nice interactive bash
+#   experience with color in the PS1 prompt string and other features of the default Ubuntu
+#   bash configuration.
+# - Takes ownership of the new Docker user's HOME dir and all parent directories up to `/home`
+#   to ensure that the Docker user can control their own home dir without `sudo`, even if bind
+#   mounts were auto-created by Docker as root inside the Docker user's home dir.
 # - Uses gosu to run the passed-in command to `docker run` or to my custom `docker_run.sh` wrapper
 #   as a non-root user.
 #
@@ -51,6 +62,65 @@ copy_skel_file() {
         echo "Copying skel file '/etc/skel/$file' to home directory '/home/$username/'"
         gosu "$USER_ID:$GROUP_ID" cp "/etc/skel/$file" "/home/$username/"
     fi
+}
+
+# Take ownership of all directories from the target path up to `/home/<username>`, inclusive, but
+# NOT `/home`, as the non-root user.
+# - This is useful when Docker bind mounts (set via calls to
+#   `docker run --volume /HOST-DIR:/CONTAINER-DIR`) create parent directories inside the user's
+#    home dir as root.
+# - It will exit if the target path is not within the user's home directory to avoid taking
+#   ownership of unintended directories OUTSIDE the user's home directory.
+# - NB: call this function as root. Don't use `gosu`.
+#
+# Example Usage:
+# `take_ownership_of_dirs "/home/gabriel/GS/dev/eRCaGuy_hello_world" "$USER_ID" "$GROUP_ID"`
+#
+# Example Result: the above example command will take ownership of the following dirs as the
+# non-root user:
+# - /home/gabriel/
+# - /home/gabriel/GS/
+# - /home/gabriel/GS/dev/
+#
+take_ownership_of_dirs() {
+    local target_path="$1"
+    local user_id="$2"
+    local group_id="$3"
+
+    local username=$(getent passwd "$user_id" | cut -d: -f1)
+
+    echo "Taking ownership of all parent directories of dir '$target_path' up to dir"
+    echo "  '/home/$username' as user '$username' with UID $user_id and GID $group_id."
+
+    # First, ensure that path `/home/$username` is part of the passed-in target path. If it is NOT,
+    # exit, so we don't modify any dirs outside of the user's home dir.
+    # - Note that the `*` below is part of a glob search pattern.
+    if [[ "$target_path" != "/home/$username"* ]]; then
+        echo "Error: target path '$target_path' is not within '/home/$username'. Exiting" \
+            "with error to avoid taking ownership of unintended directories."
+        exit 1
+    fi
+
+    # Get parent directory (don't include the target itself)
+    local current_dir="$(dirname "$target_path")"
+
+    # Collect all parent directories until we reach `/home` or `/`.
+    # - We do NOT want to include and chown these dirs!
+    local dirs_to_chown=()
+    # NB: do NOT put a slash after `/home` or it won't ever match.
+    while [ "$current_dir" != "/home" ] && \
+          [ "$current_dir" != "/" ]; do
+        dirs_to_chown+=("$current_dir")
+        current_dir="$(dirname "$current_dir")"
+    done
+
+    # Chown directories in reverse order (from /home/user down to parent of target)
+    for ((i=${#dirs_to_chown[@]}-1; i>=0; i--)); do
+        echo "Taking ownership of: ${dirs_to_chown[i]}"
+        chown "$user_id:$group_id" "${dirs_to_chown[i]}"
+    done
+
+    echo ""
 }
 
 # If USER_ID and GROUP_ID are provided, create a user and switch to it
@@ -107,26 +177,25 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
         # "$USER_NAME" - The username (e.g., "builder").
         echo "Adding user '$USER_NAME' with UID $USER_ID and GID $GROUP_ID."
         useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME"
-
-        # # Fix ownership of home directory (Docker may have created it as root for volume mounts
-        # # already mounted here)
-        # echo "Fixing ownership of home directory."
-        # # First, the home dir itself.
-        # chown "$USER_ID:$GROUP_ID" "/home/$USER_NAME"
-        # ///////// fix ownership only of dirs ABOVE the bind mount; that were auto-created by it!
-        # /// own_parent_dirs_within_home()
-        # # Then, any existing directories in the home dir that are owned by root.
-        # # find "/home/$USER_NAME" -mindepth 1 -writable -exec chown "$USER_ID:$GROUP_ID" {} +
-
         echo ""
     fi
 
     # Print the user's home directory (need bash -c to expand $HOME in the new user's context)
     gosu "$USER_ID:$GROUP_ID" bash -c 'echo "HOME dir is now: $HOME"'
 
+    # Fix ownership of home directory.
+    # - Docker may have created it as root for all `--volume` bind mounts already mounted therein,
+    #   and we need to take user ownership of the mounts' parent dirs within our user's home dir.
+    echo "Fixing ownership of parent directories inside \"/home/$USER_NAME\" already created"\
+        "by Docker bind mounts."
+    take_ownership_of_dirs "$TAKE_OWNERSHIP_OF_DIR1" "$USER_ID" "$GROUP_ID"
+
     copy_skel_file "$USER_NAME" ".bash_logout"
     copy_skel_file "$USER_NAME" ".bashrc"
     copy_skel_file "$USER_NAME" ".profile"
+
+    # Git configuration
+    gosu "$USER_ID:$GROUP_ID" git config --global core.editor "nano"
 
     echo ""
     # Enable color in the PS1 prompt string for the non-root user; this variable is read by Ubuntu's
