@@ -251,6 +251,6 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     exec gosu "$USER_ID:$GROUP_ID" "$@"
 else
     # Run the main command as root since no user is specified (default behavior)
-    # - Use `exect` to replace the shell with the command so it receives signals properly.
+    # - Use `exec` to replace the shell with the command so it receives signals properly.
     exec "$@"
 fi

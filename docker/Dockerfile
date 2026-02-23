@@ -45,6 +45,8 @@ RUN apt-get update && \
     unzip \
     vim \
     wget \
+    wine \
+    wine64 \
     zip \
     # zlib1g-dev \
     # Remove apt lists to reduce image size

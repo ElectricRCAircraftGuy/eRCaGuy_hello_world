@@ -36,6 +36,10 @@ from Linux to Windows.
 OPTIONS:
   -h, -?, --help   Show this help menu and exit.
   -q, --quiet      Suppress all informational log messages (errors still print).
+  -w, --workdir DIR  Set the working directory inside the container (default: REPO_ROOT_DIR:
+                       '${REPO_ROOT_DIR}').
+                     Ex: '-w "\$PWD"' to use the host's current working directory, assuming it
+                     is also bind-mounted and accessible inside the Docker container.
   --               Mark the end of options. Everything after this is passed verbatim as the
                    container command and its arguments.
 
@@ -55,8 +59,12 @@ EXAMPLES:
   # Run a command that itself uses '--quiet' (without '--', it would be consumed by us):
   $EXECUTABLE_NAME -- myprogram --quiet
 
-  # Compile a C++ file for Windows:
-  $EXECUTABLE_NAME -- bash -c "cd cpp && x86_64-w64-mingw32-g++ myfile.cpp -o myfile.exe"
+  # Compile and run a C++ file in Docker:
+  cd path/to/eRCaGuy_hello_world/cpp
+  $EXECUTABLE_NAME -q -w "$PWD" -- bash -c "time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 hello_world_extra_basic.cpp -o bin/a && ./bin/a"
+
+  # Cross-compile for Windows, and then run in Wine, a C++ file in Docker:
+  $EXECUTABLE_NAME -q -w "$PWD" -- bash -c "time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 -static hello_world_extra_basic.cpp -o bin/a_static.exe && WINEDEBUG=-all wine bin/a_static.exe; wineserver -w"
 
 DOCKER IMAGE:
   Image:    ${IMAGE_NAME}
@@ -85,6 +93,7 @@ parse_args() {
     # So we store remaining (passthrough) args in the global `PASSTHROUGH_ARGS` array, and the
     # caller uses `set -- "${PASSTHROUGH_ARGS[@]}"` to rebuild its own `$@` after this returns.
     QUIET="false"
+    WORKDIR="${REPO_ROOT_DIR}"
     PASSTHROUGH_ARGS=()
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -97,6 +106,17 @@ parse_args() {
             "--quiet"|"-q")
                 QUIET="true"
                 shift # past argument
+                ;;
+            # Set working directory inside the container
+            "--workdir"|"-w")
+                # Ensure a 2nd argument exists and is not another flag (doesn't start with '-')
+                if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                    WORKDIR="$2"
+                    shift 2 # past argument and value
+                else
+                    echo_red "Error: --workdir (-w) requires a non-empty argument after it."
+                    exit "$RETURN_CODE_ERROR"
+                fi
                 ;;
             # Explicit end of our flags; everything remaining is passed through to the container
             # command
@@ -147,7 +167,8 @@ log_green() {
 }
 
 main() {
-    echo "Running Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
+    echo "Running Docker image '${IMAGE_NAME}:${IMAGE_TAG}' inside working directory" \
+        "'${WORKDIR}'..."
 
     # Auto-build the image if it doesn't exist yet
     if ! docker image inspect "${IMAGE_NAME}:${IMAGE_TAG}" > /dev/null 2>&1; then
@@ -165,7 +186,9 @@ main() {
     log "Running as user UID=$(id -u) and group GID=$(id -g)"
     log_blue "Mounting host dirs to container dirs:"
     log_blue "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
-    log ""
+    log_blue ""
+    log_blue "Working directory inside container: ${WORKDIR}"
+    log_blue ""
 
     # Replicate a container name somewhat similar to what `docker compose run` would do if we were
     # using `docker compose run` instead of `docker run`
@@ -205,14 +228,15 @@ main() {
         --env GROUP_ID="$(id -g)"
         --env USER_NAME="$(id -un)"
         --env GROUP_NAME="$(id -gn)"
-        # Directory to take ownership of inside the container
+        # Directory to take ownership of inside the container [matches a `--volume` bind
+        # mount below]
         --env TAKE_OWNERSHIP_OF_DIR1="${REPO_ROOT_DIR}"
         --env REPO_ROOT_DIR="${REPO_ROOT_DIR}"
         # Bind mount the workspace and bashrc file
         --volume "${REPO_ROOT_DIR}:${REPO_ROOT_DIR}"
         --volume "${HOME}/.bashrc:${HOME}/.bashrc:ro"
         # Set working directory and container identity
-        --workdir "${REPO_ROOT_DIR}"
+        --workdir "${WORKDIR}"
         --name "$CONTAINER_NAME"
         --hostname "$CONTAINER_NAME"
     )
@@ -245,7 +269,7 @@ if [ "$__name__" = "__main__" ]; then
     # `parse_args()` with all args after `--`, or the first unrecognized arg. See `help set`.
     set -- "${PASSTHROUGH_ARGS[@]}"
 
-    main "$@" # passes in the rebuilt and now truncated "$@" with only the passthrough args
+    time main "$@" # passes in the rebuilt and now truncated "$@" with only the passthrough args
 
     exit $RETURN_CODE_SUCCESS
 fi

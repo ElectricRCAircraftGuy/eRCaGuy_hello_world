@@ -89,7 +89,19 @@ time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 -static hello
 # -------------------------------------------------------
 # 2.B. Cross-compiling from Linux for Windows via mingw-w64 **in Docker**
 # -------------------------------------------------------
-
+# 1. First, follow the "Docker Setup" instructions in "eRCaGuy_hello_world/docker/README.md", to
+#    install and set up Docker in Linux or in WSL2 in Windows.
+# 2. Then, build the docker Ubuntu image
+cd path/to/eRCaGuy_hello_world
+docker/docker_build.sh
+# 3. Use the built Docker image to cross-compile C++ from Linux in Docker, for Windows
+cd path/to/eRCaGuy_hello_world/cpp
+# see the help menu
+../docker/docker_run.sh -h
+# Build the code in Docker, for Windows
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 hello_world_extra_basic.cpp -o bin/a.exe"
+# OR: BUILD in Docker AND RUN in Docker with Wine, all in one:
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 -static hello_world_extra_basic.cpp -o bin/a_static.exe && WINEDEBUG=-all wine bin/a_static.exe; wineserver -w"
 
 # -------------------------------------------------------
 # 3. Building and running on Windows for Windows in the MSYS2 bash shell

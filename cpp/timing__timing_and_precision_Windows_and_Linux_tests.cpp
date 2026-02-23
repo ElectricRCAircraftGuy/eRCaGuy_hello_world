@@ -37,6 +37,16 @@ sudo apt install mingw-w64
 # - Requires the Windows Multimedia Library (WinMM) linker flag option via `-lwinmm`.
 time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing__timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a.exe -lwinmm
 
+# OR [Best, via Docker]
+# 1. First, follow the "Docker Setup" instructions in "eRCaGuy_hello_world/docker/README.md", to
+#    install and set up Docker in Linux or in WSL2 in Windows.
+# 2. Then, build the docker Ubuntu image
+cd path/to/eRCaGuy_hello_world
+docker/docker_build.sh
+# 3. Use the built Docker image to cross-compile C++ from Linux in Docker, for Windows
+cd path/to/eRCaGuy_hello_world/cpp
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 timing__timing_and_precision_Windows_and_Linux_tests.cpp -o bin/a_docker.exe -lwinmm"
+
 # 3. Building on Windows for Windows
 # - Requires:
 #   1. The MSYS2 ucrt64 environment with g++ installed (see my instructions here:
@@ -606,7 +616,7 @@ struct SleepStat
 
     // From the user's perspective, the "sleep time" is the total time spent in the sleep call,
     // which includes both the actual sleep time and the non-sleep time (setup overhead, etc.).
-    //////////
+    /////////
     std::vector<uint64_t> user_sleep_times_ns;
     Stats<uint64_t> user_sleep_stats;
     ////////

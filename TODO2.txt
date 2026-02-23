@@ -32,7 +32,7 @@ NEXT:
 
 eRCaGuy_hello_world/docker/docker_run.sh:
 [x] Add a main() func. and follow better architectural practices.  
-[ ] Have it auto-build docker if the image doesn't exist yet, and run otherwise. 
+[x] Have it auto-build docker if the image doesn't exist yet, and run otherwise. 
 [x] Make it work when your pwd is outside the repo (ex: in ~) and you call the docker_run.sh script. 
 
 [x] Have sleep_test() use my stats struct and function to calculate stats

@@ -88,24 +88,71 @@ Done! You have now successfully installed and started Docker Engine.
 ## Usage
 
 ```bash
-# 1) Build the docker image
+# --------------------------------
+# Build the docker image
+# --------------------------------
 ./docker_build.sh
 
+# --------------------------------
 # Delete the built docker image
+# --------------------------------
 docker images           # list all docker images
 . docker_config.sh      # source the config file to get the `IMAGE_NAME` and `IMAGE_TAG` variables
 docker rmi ${IMAGE_NAME}:${IMAGE_TAG}  # remove the image by name and tag
 
-# 2) Run and enter a Bash terminal in the docker image (builds the docker image first if necessary)
-./docker_run.sh
+# --------------------------------
+# Run and enter a Bash terminal in the docker image (builds the docker image first if necessary)
+# --------------------------------
+./docker_run.sh    # normal
+./docker_run.sh -q # quiet, suppressing all unnecessary log messages while starting Docker container
 
-# 3) Run commands inside the docker container
-./docker_run.sh <command>
-# Example
-./docker_run.sh "x86_64-w64-mingw32-g++ --version"
+# --------------------------------
+# See the help menu
+# --------------------------------
+./docker_run.sh -h
+./docker_run.sh -?
+./docker_run.sh --help
 
-# 4) Build with the docker image
-# TODO
+# --------------------------------
+# Run commands inside the docker container
+# --------------------------------
+# A) normal, with tons of output
+./docker_run.sh <command> [args...]  
+# B) quiet, suppressing all unnecessary log messages while starting up the Docker container
+./docker_run.sh -q <command> [args...]
+
+# Examples:
+./docker_run.sh -q x86_64-w64-mingw32-g++ --version
+# NB: the `time` command is a shell builtin, so to use it you must run a shell to run the command, 
+# like this:
+./docker_run.sh -q bash -c 'time x86_64-w64-mingw32-g++ --version'
+# Note: you can force parsing inside the container by using the `--` separator to mark the end 
+# of options for `docker_run.sh`:
+./docker_run.sh -q -- x86_64-w64-mingw32-g++ --version
+
+# --------------------------------
+# Compiling C++ code in Linux with the docker image
+# --------------------------------
+cd path/to/eRCaGuy_hello_world/cpp
+# see the help menu
+../docker/docker_run.sh -h
+# Build the code in Docker, for Linux
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 hello_world_extra_basic.cpp -o bin/a"
+# OR: BUILD AND RUN in Docker in Linux
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time g++ -Wall -Wextra -Werror -O3 -std=gnu++20 -static hello_world_extra_basic.cpp -o bin/a && ./bin/a"
+# OR: call the C++ file directly, as an exectuable, letting its hash-bang line do the work
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time ./hello_world_extra_basic.cpp"
+
+# --------------------------------
+# Cross-compiling C++ code in Linux for Windows with the docker image
+# --------------------------------
+cd path/to/eRCaGuy_hello_world/cpp
+# see the help menu
+../docker/docker_run.sh -h
+# Build the code in Docker, for Windows
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 hello_world_extra_basic.cpp -o bin/a.exe"
+# OR: BUILD in Docker AND RUN in Docker with Wine, all in one:
+../docker/docker_run.sh -q -w "$PWD" -- bash -c "time x86_64-w64-mingw32-g++ -Wall -Wextra -Werror -O3 -std=gnu++20 -static hello_world_extra_basic.cpp -o bin/a_static.exe && WINEDEBUG=-all wine bin/a_static.exe; wineserver -w"
 ```
 
 
