@@ -68,6 +68,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 WORKDIR /workspace
 
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# NOTES/STUDY:
+#
 # Set ENTRYPOINT and CMD:
 #
 # ```dockerfile
@@ -75,7 +77,7 @@ WORKDIR /workspace
 # CMD ["/bin/bash"]
 # ```
 #
-# **What happens:**
+# **What happens when you run...:**
 # ```bash
 # docker run myimage
 # # Runs: /usr/local/bin/entrypoint.sh /bin/bash

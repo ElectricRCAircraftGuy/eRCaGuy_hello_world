@@ -3,8 +3,9 @@
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 # Docker entrypoint script.
-# - This runs **every time** a container starts.
-# - Uses gosu to run the passed-in command as a non-root user.
+# - This file runs **every time** a container starts.
+# - Uses gosu to run the passed-in command to `docker run` or to my custom `docker_run.sh` wrapper
+#   as a non-root user.
 #
 # NB:
 # 1. Rebuild the docker image via `./docker_build.sh` whenever the following files are changed:
@@ -24,10 +25,10 @@ SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_SCRIPT")"
 SCRIPT_FILENAME="$(basename "$FULL_PATH_TO_SCRIPT")"
 
 if [ -f "/.dockerenv" ]; then
-    echo "Now running inside a Docker container."
+    echo "Running inside a Docker container..."
 else
-    echo "Not running inside a Docker container. Exiting with error so we don't screw up the"\
-        "host system."
+    echo "Error: not running inside a Docker container. Exiting with error so we don't screw"\
+        "up the host system."
     exit 1
 fi
 
@@ -53,7 +54,7 @@ copy_skel_file() {
 }
 
 # If USER_ID and GROUP_ID are provided, create a user and switch to it
-if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ]; then
+if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROUP_NAME" ]; then
     echo "Preparing to run the command as as non-root user $USER_NAME:$USER_ID,"\
         "group $GROUP_NAME:$GROUP_ID."
 
@@ -107,14 +108,16 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ]; then
         echo "Adding user '$USER_NAME' with UID $USER_ID and GID $GROUP_ID."
         useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME"
 
-        # Fix ownership of home directory (Docker may have created it as root for volume mounts
-        # already mounted here)
-        echo "Fixing ownership of home directory."
-        # First, the home dir itself.
-        chown "$USER_ID:$GROUP_ID" "/home/$USER_NAME"
-        ///////// fix ownership only of dirs ABOVE the bind mount; that were auto-created by it!
-        # Then, any existing directories in the home dir that are owned by root.
-        # find "/home/$USER_NAME" -mindepth 1 -writable -exec chown "$USER_ID:$GROUP_ID" {} +
+        # # Fix ownership of home directory (Docker may have created it as root for volume mounts
+        # # already mounted here)
+        # echo "Fixing ownership of home directory."
+        # # First, the home dir itself.
+        # chown "$USER_ID:$GROUP_ID" "/home/$USER_NAME"
+        # ///////// fix ownership only of dirs ABOVE the bind mount; that were auto-created by it!
+        # /// own_parent_dirs_within_home()
+        # # Then, any existing directories in the home dir that are owned by root.
+        # # find "/home/$USER_NAME" -mindepth 1 -writable -exec chown "$USER_ID:$GROUP_ID" {} +
+
         echo ""
     fi
 
@@ -125,14 +128,13 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ]; then
     copy_skel_file "$USER_NAME" ".bashrc"
     copy_skel_file "$USER_NAME" ".profile"
 
-    # Run the main command as non-root via gosu
-    # - Use `exec` to replace the shell with the command so it receives signals properly.
-
     echo ""
     # Enable color in the PS1 prompt string for the non-root user; this variable is read by Ubuntu's
     # default `~/.bashrc` file which we copy over via `copy_skel_file` just above, or bind mount in
     # from the host system in `docker_run.sh`.
     export force_color_prompt="yes"
+    # Run the main command as non-root via gosu
+    # - Use `exec` to replace the shell with the command so it receives signals properly.
     exec gosu "$USER_ID:$GROUP_ID" "$@"
 else
     # Run the main command as root since no user is specified (default behavior)

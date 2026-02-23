@@ -28,7 +28,7 @@ echo ""
 # Replicate a container name somewhat similar to what `docker compose run` would do if we were
 # using `docker compose run` instead of `docker run`
 #
-# Last 8 chars of a hash over the "sec.ns" since epoch.
+# Last 8 chars of a hash over the "sec.ns" timestamp since epoch.
 UNIQUE_HASH="$(date "+%s.%N" | sha256sum | cut -c1-8)"
 CONTAINER_NAME="${IMAGE_NAME}-${IMAGE_TAG}-${UNIQUE_HASH}"
 
