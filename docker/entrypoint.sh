@@ -30,8 +30,11 @@
 # Exit immediately if any command herein exits with a non-zero status. See `help set`.
 set -e
 
-# Print only when not in quiet mode; QUIET is an env var passed from docker_run.sh.
-log() { [ "${QUIET:-"false"}" != "true" ] && echo "$@" || true; }
+# QUIET is passed in as an env var from docker_run.sh. Default to "false" if not set.
+QUIET="${QUIET:-"false"}"
+
+# Print only when not in quiet mode.
+log() { [ "$QUIET" != "true" ] && echo "$@" || true; }
 
 # See my answer: https://stackoverflow.com/a/60157372/4561887
 FULL_PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]}")"
@@ -50,8 +53,8 @@ fi
 . "${REPO_ROOT_DIR}/bash/ansi_color_codes_simple_lib.sh" # `echo_green` et al
 
 # Color log helpers (require ansi_color_codes_simple_lib.sh to be sourced first)
-log_blue()   { [ "${QUIET:-"false"}" != "true" ] && echo_blue "$@"   || true; }
-log_yellow() { [ "${QUIET:-"false"}" != "true" ] && echo_yellow "$@" || true; }
+log_blue()   { [ "$QUIET" != "true" ] && echo_blue "$@"   || true; }
+log_yellow() { [ "$QUIET" != "true" ] && echo_yellow "$@" || true; }
 
 log "Running entrypoint script: ${FULL_PATH_TO_SCRIPT}"
 log "pwd (bind-mounted to host system): $(pwd)"
@@ -156,7 +159,7 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
         log "Deleting existing user '$EXISTING_USER_WITH_THIS_ID' with conflicting UID $USER_ID."
         # -r removes home dir; redirect stderr to /dev/null in quiet mode to suppress warnings
         # like `"userdel: ubuntu mail spool (/var/mail/ubuntu) not found"`
-        if [ "${QUIET:-"false"}" = "true" ]; then
+        if [ "$QUIET" = "true" ]; then
             userdel -r "$EXISTING_USER_WITH_THIS_ID" 2>/dev/null
         else
             userdel -r "$EXISTING_USER_WITH_THIS_ID"
@@ -169,7 +172,7 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     then
         log "Deleting existing group '$EXISTING_GROUP_WITH_THIS_ID' with conflicting GID" \
             "$GROUP_ID."
-        if [ "${QUIET:-"false"}" = "true" ]; then
+        if [ "$QUIET" = "true" ]; then
             groupdel "$EXISTING_GROUP_WITH_THIS_ID" 2>/dev/null
         else
             groupdel "$EXISTING_GROUP_WITH_THIS_ID"
@@ -181,7 +184,7 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
 
     if ! getent group "$GROUP_ID" > /dev/null 2>&1; then
         log "Adding group '$GROUP_NAME' with GID $GROUP_ID."
-        if [ "${QUIET:-"false"}" = "true" ]; then
+        if [ "$QUIET" = "true" ]; then
             groupadd -g "$GROUP_ID" "$GROUP_NAME" 2>/dev/null
         else
             groupadd -g "$GROUP_ID" "$GROUP_NAME"
@@ -204,7 +207,7 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
         # useradd: warning: the home directory /home/gabriel already exists.
         # useradd: Not copying any file from skel directory into it.
         # ```
-        if [ "${QUIET:-false}" = "true" ]; then
+        if [ "$QUIET" = "true" ]; then
             useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME" 2>/dev/null
         else
             useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME"
@@ -213,7 +216,7 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     fi
 
     # Print the user's home directory (need bash -c to expand $HOME in the new user's context)
-    if [ "${QUIET:-"false"}" != "true" ]; then
+    if [ "$QUIET" != "true" ]; then
         gosu "$USER_ID:$GROUP_ID" bash -c 'echo "HOME dir is now: $HOME"'
     fi
 
