@@ -67,7 +67,7 @@ HOST BIND MOUNTS: HOST-DIR -> CONTAINER-DIR:
   ${REPO_ROOT_DIR}  ->  ${REPO_ROOT_DIR}
   ${HOME}/.bashrc   ->  ${HOME}/.bashrc  (read-only)
 
-EOF
+EOF | less -RFX
 }
 
 parse_args() {
@@ -103,13 +103,13 @@ parse_args() {
             "--")
                 shift # past argument
                 PASSTHROUGH_ARGS+=("$@")
-                break # stop parsing args; exit the while loop
+                break # stop parsing remaining args; exit the while loop
                 ;;
             # Stop parsing our flags at the first unrecognized arg; pass it and everything after
             # through
             *)
                 PASSTHROUGH_ARGS+=("$@")
-                break # stop parsing args; exit the while loop
+                break # stop parsing remaining args; exit the while loop
                 ;;
         esac
     done
@@ -239,10 +239,13 @@ fi
 # Only run `main` if this script is being **run**, NOT sourced (imported).
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$__name__" = "__main__" ]; then
-    parse_args "$@" # passes in the original file `$@`
+    parse_args "$@" # passes in the original `$@`
+
     # Rebuild the caller's "$@" from the global `PASSTHROUGH_ARGS` array, which was populated by
-    # `parse_args()` with all args after `--`, or the first unrecognized arg.
+    # `parse_args()` with all args after `--`, or the first unrecognized arg. See `help set`.
     set -- "${PASSTHROUGH_ARGS[@]}"
+
     main "$@" # passes in the rebuilt and now truncated "$@" with only the passthrough args
+
     exit $RETURN_CODE_SUCCESS
 fi

@@ -97,6 +97,9 @@ OPTIONS
         Pass in custom argument b.
     -c <arg>, --argc <arg>
         Pass in custom argument c.
+    -- [passthrough args]
+        All arguments after the '--' separator are passed through verbatim to a subcommand our
+        program calls. In this demo program, we just echo them.
 
 EXAMPLE USAGES:
 
@@ -123,6 +126,10 @@ EXAMPLE USAGES:
     $SCRIPT_NAME -a 'some invalid argument' one two -b 'Nice to meet you!' -c 789 three
         Same as above, except make argument a be invalid so the code will exit early and print an
         error about it.
+    $SCRIPT_NAME --arga 'hello world' --argb 'Nice to meet you!' --argc 789 -- --arga 'a:hello world' --argb 'b:Nice to meet you!' --argc c:789
+        Also pass in some passthrough args after the '--' separator, which will be captured
+        into the 'PASSTHROUGH_ARGS_ARRAY' and can be passed through verbatim to a subcommand
+        our program calls, such as 'echo' in this demo program.
 
 This program is part of eRCaGuy_dotfiles: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles
 by Gabriel Staples.
@@ -215,6 +222,7 @@ parse_args() {
 
     ALL_ARGS_ARRAY=("$@")  # See: https://stackoverflow.com/a/70572787/4561887
     POSITIONAL_ARGS_ARRAY=()
+    PASSTHROUGH_ARGS_ARRAY=()
     while [ "$#" -gt 0 ]; do
         arg="$1"
         # get first letter of `arg`; see: https://stackoverflow.com/a/10218528/4561887
@@ -269,6 +277,13 @@ parse_args() {
                 shift # past argument (`$1`)
                 shift # past value (`$2`)
                 ;;
+            # Explicit end of our arguments; everything remaining after this is meant to be
+            # passed through to a subcommand our program calls
+            "--")
+                shift # past argument (`$1`)
+                PASSTHROUGH_ARGS+=("$@")
+                break # stop parsing remaining args; exit the while loop
+                ;;
             # All positional args (ie: unmatched in the switch cases above)
             *)
                 # error out for any unexpected options passed in
@@ -302,6 +317,15 @@ parse_args() {
     echo_debug "POSITIONAL_ARG1 = '$POSITIONAL_ARG1'"
     echo_debug "POSITIONAL_ARG2 = '$POSITIONAL_ARG2'"
     echo_debug ""
+
+    passthrough_args_len="${#PASSTHROUGH_ARGS[@]}"
+    echo_debug "Number of passthrough args = $passthrough_args_len"
+    echo_debug "PASSTHROUGH_ARGS_ARRAY contains:"
+    print_array_debug PASSTHROUGH_ARGS
+    echo_debug ""
+
+    # Remaining args in "$@" can now be passed through verbatim to our `main` function so long as
+    # the caller to `parse_args` runs `set -- "${PASSTHROUGH_ARGS[@]}"` after this function returns.
 } # parse_args
 
 # Check arguments and print errors and exit if any critical ones are invalid
@@ -402,13 +426,22 @@ main() {
     exit_if_last_command_failed
     echo ""
 
-    echo "== Example command 3: =="
+    echo "== Example command 3, receiving all passthrough args, if any: =="
+    # Remaining args in "$@" can now be passed through verbatim to other functions, such as `echo`
+    echo "Passthrough args in \"\$@\" are:"
+    echo "$@"  # <-- example of a subcommand we call and pass our passthrough args to
+    exit_if_last_command_failed
+    echo ""
+
+    echo "== Example command 4: =="
     # Disable unused check for this variable since it is used by reference below.
     # See: https://github.com/koalaman/shellcheck/wiki/SC2034
     # shellcheck disable=SC2034
     cmd_array=(ls -1 "$HOME/temp/some folder with spaces")
     print_and_run_cmd cmd_array
-    exit_if_last_command_failed
+    exit_if_last_command_failed  # This one intentionally fails and exits as part of this demo!
+                                 # Output:
+                                 # `ERROR: Last command failed with error code 2.`
     echo ""
 } # main
 
@@ -431,7 +464,13 @@ fi
 # Only run `main` if this script is being **run**, NOT sourced (imported).
 # - See my answer: https://stackoverflow.com/a/70662116/4561887
 if [ "$__name__" = "__main__" ]; then
-    parse_args "$@"
-    time main "$@"
+    parse_args "$@" # passes in the original `$@`
+
+    # Rebuild the caller's "$@" from the global `PASSTHROUGH_ARGS` array, which was populated by
+    # `parse_args()` with all args after the `--` separator. See `help set`.
+    set -- "${PASSTHROUGH_ARGS[@]}"
+
+    main "$@" # passes in the rebuilt and now truncated "$@" with only the passthrough args
+
     exit $RETURN_CODE_SUCCESS
 fi
