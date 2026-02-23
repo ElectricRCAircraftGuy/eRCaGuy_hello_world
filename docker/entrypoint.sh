@@ -43,6 +43,9 @@ else
     exit 1
 fi
 
+# Import (source) libraries
+. "${REPO_ROOT_DIR}/bash/ansi_color_codes_simple_lib.sh" # `echo_green` et al
+
 echo "Running entrypoint script: ${FULL_PATH_TO_SCRIPT}"
 echo "pwd (bind-mounted to host system): $(pwd)"
 echo "Command being run by entrypoint script:"
@@ -198,6 +201,13 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     gosu "$USER_ID:$GROUP_ID" git config --global core.editor "nano"
 
     echo ""
+    echo_yellow "NOTICE: you are now running in Docker as user '$USER_NAME' with UID $USER_ID and"
+    echo_yellow "GID $GROUP_ID. Home dir is '/home/$USER_NAME'. The current working directory"
+    echo_yellow "is BIND-MOUNTED to the host system, so any files you create, modify, or delete"
+    echo_yellow "in '$(pwd)' will also be affected"
+    echo_yellow "on your host system!"
+    echo ""
+
     # Enable color in the PS1 prompt string for the non-root user; this variable is read by Ubuntu's
     # default `~/.bashrc` file which we copy over via `copy_skel_file` just above, or bind mount in
     # from the host system in `docker_run.sh`.

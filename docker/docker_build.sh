@@ -22,8 +22,8 @@ FULL_PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_SCRIPT")"
 
 # Source (import) libraries
-. "${SCRIPT_DIRECTORY}/docker_config.sh"  # For `IMAGE_NAME` and `IMAGE_TAG` variables
 . "${SCRIPT_DIRECTORY}/../bash/ansi_color_codes_simple_lib.sh" # `echo_green` et al
+. "${SCRIPT_DIRECTORY}/docker_config.sh"  # For `IMAGE_NAME` and `IMAGE_TAG` variables
 
 echo "Building Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
 echo "From Dockerfile: ${SCRIPT_DIRECTORY}/Dockerfile"

@@ -14,6 +14,7 @@ FULL_PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_SCRIPT")"
 
 # Source (import) libraries
+. "${SCRIPT_DIRECTORY}/../bash/ansi_color_codes_simple_lib.sh" # `echo_green` et al
 . "${SCRIPT_DIRECTORY}/docker_config.sh"  # For `IMAGE_NAME` and `IMAGE_TAG` variables
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
@@ -21,8 +22,8 @@ REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 echo "Running Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
 echo ""
 echo "Running as user UID=$(id -u) and group GID=$(id -g)"
-echo "Mounting host dirs to container dirs:"
-echo "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
+echo_blue "Mounting host dirs to container dirs:"
+echo_blue "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
 echo ""
 
 # Replicate a container name somewhat similar to what `docker compose run` would do if we were
@@ -64,6 +65,7 @@ docker_args=(
     --env GROUP_NAME="$(id -gn)"
     # Directory to take ownership of inside the container
     --env TAKE_OWNERSHIP_OF_DIR1="${REPO_ROOT_DIR}"
+    --env REPO_ROOT_DIR="${REPO_ROOT_DIR}"
     # Bind mount the workspace and bashrc file
     --volume "${REPO_ROOT_DIR}:${REPO_ROOT_DIR}"
     --volume "${HOME}/.bashrc:${HOME}/.bashrc:ro"
