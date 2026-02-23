@@ -91,10 +91,15 @@ Done! You have now successfully installed and started Docker Engine.
 # Build the docker image
 ./docker_build.sh
 
-# Run the docker image
+# Run and enter a Bash terminal in the docker image
 ./docker_run.sh
 
-# Run and build with the docker image
+# Run commands inside the docker container
+./docker_run.sh <command>
+# Example
+./docker_run.sh "x86_64-w64-mingw32-g++ --version"
+
+# Build with the docker image
 # TODO
 ```
 

@@ -30,27 +30,34 @@
 # Exit immediately if any command herein exits with a non-zero status. See `help set`.
 set -e
 
+# Print only when not in quiet mode; QUIET is an env var passed from docker_run.sh.
+log() { [ "${QUIET:-"false"}" != "true" ] && echo "$@" || true; }
+
 # See my answer: https://stackoverflow.com/a/60157372/4561887
 FULL_PATH_TO_SCRIPT="$(realpath "${BASH_SOURCE[0]}")"
 SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_SCRIPT")"
 SCRIPT_FILENAME="$(basename "$FULL_PATH_TO_SCRIPT")"
 
 if [ -f "/.dockerenv" ]; then
-    echo "Running inside a Docker container..."
+    log "Running inside a Docker container..."
 else
     echo "Error: not running inside a Docker container. Exiting with error so we don't screw"\
-        "up the host system."
+        "up the host system." >&2
     exit 1
 fi
 
 # Import (source) libraries
 . "${REPO_ROOT_DIR}/bash/ansi_color_codes_simple_lib.sh" # `echo_green` et al
 
-echo "Running entrypoint script: ${FULL_PATH_TO_SCRIPT}"
-echo "pwd (bind-mounted to host system): $(pwd)"
-echo "Command being run by entrypoint script:"
-echo "$*"
-echo ""
+# Color log helpers (require ansi_color_codes_simple_lib.sh to be sourced first)
+log_blue()   { [ "${QUIET:-"false"}" != "true" ] && echo_blue "$@"   || true; }
+log_yellow() { [ "${QUIET:-"false"}" != "true" ] && echo_yellow "$@" || true; }
+
+log "Running entrypoint script: ${FULL_PATH_TO_SCRIPT}"
+log "pwd (bind-mounted to host system): $(pwd)"
+log "Command being run by entrypoint script:"
+log "$*"
+log ""
 
 # Copy over Ubuntu skel files if they are not already bind-mounted as read-only from the
 # host system.
@@ -59,10 +66,10 @@ copy_skel_file() {
     local username="$1"
     local file="$2"
     if [ -f "/home/$username/$file" ]; then
-        echo "Skel file '/etc/skel/$file' already exists in home directory '/home/$username/'." \
+        log "Skel file '/etc/skel/$file' already exists in home directory '/home/$username/'." \
             "Not copying."
     else
-        echo "Copying skel file '/etc/skel/$file' to home directory '/home/$username/'"
+        log "Copying skel file '/etc/skel/$file' to home directory '/home/$username/'"
         gosu "$USER_ID:$GROUP_ID" cp "/etc/skel/$file" "/home/$username/"
     fi
 }
@@ -92,8 +99,8 @@ take_ownership_of_dirs() {
 
     local username=$(getent passwd "$user_id" | cut -d: -f1)
 
-    echo "Taking ownership of all parent directories of dir '$target_path' up to dir"
-    echo "  '/home/$username' as user '$username' with UID $user_id and GID $group_id."
+    log "Taking ownership of all parent directories of dir '$target_path' up to dir"
+    log "  '/home/$username' as user '$username' with UID $user_id and GID $group_id."
 
     # First, ensure that path `/home/$username` is part of the passed-in target path. If it is NOT,
     # exit, so we don't modify any dirs outside of the user's home dir.
@@ -119,16 +126,16 @@ take_ownership_of_dirs() {
 
     # Chown directories in reverse order (from /home/user down to parent of target)
     for ((i=${#dirs_to_chown[@]}-1; i>=0; i--)); do
-        echo "Taking ownership of: ${dirs_to_chown[i]}"
+        log "Taking ownership of: ${dirs_to_chown[i]}"
         chown "$user_id:$group_id" "${dirs_to_chown[i]}"
     done
 
-    echo ""
+    log ""
 }
 
 # If USER_ID and GROUP_ID are provided, create a user and switch to it
 if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROUP_NAME" ]; then
-    echo "Preparing to run the command as as non-root user $USER_NAME:$USER_ID,"\
+    log "Preparing to run the command as as non-root user $USER_NAME:$USER_ID,"\
         "group $GROUP_NAME:$GROUP_ID."
 
     # NB: The Ubuntu 24.04 base image already has a default `ubuntu` user with UID 1000.
@@ -146,27 +153,27 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     EXISTING_USER_WITH_THIS_ID=$(getent passwd "$USER_ID" | cut -d: -f1)
     if [ -n "$EXISTING_USER_WITH_THIS_ID" ] && [ "$EXISTING_USER_WITH_THIS_ID" != "$USER_NAME" ];
     then
-        echo "Deleting existing user '$EXISTING_USER_WITH_THIS_ID' with conflicting UID $USER_ID."
+        log "Deleting existing user '$EXISTING_USER_WITH_THIS_ID' with conflicting UID $USER_ID."
         # -r removes home dir
         userdel -r "$EXISTING_USER_WITH_THIS_ID"
-        echo ""
+        log ""
     fi
 
     EXISTING_GROUP_WITH_THIS_ID=$(getent group "$GROUP_ID" | cut -d: -f1)
     if [ -n "$EXISTING_GROUP_WITH_THIS_ID" ] && [ "$EXISTING_GROUP_WITH_THIS_ID" != "$GROUP_NAME" ];
     then
-        echo "Deleting existing group '$EXISTING_GROUP_WITH_THIS_ID' with conflicting GID" \
+        log "Deleting existing group '$EXISTING_GROUP_WITH_THIS_ID' with conflicting GID" \
             "$GROUP_ID."
         groupdel "$EXISTING_GROUP_WITH_THIS_ID"
-        echo ""
+        log ""
     fi
 
     # 2. Add new group, then user, in that required order.
 
     if ! getent group "$GROUP_ID" > /dev/null 2>&1; then
-        echo "Adding group '$GROUP_NAME' with GID $GROUP_ID."
+        log "Adding group '$GROUP_NAME' with GID $GROUP_ID."
         groupadd -g "$GROUP_ID" "$GROUP_NAME"
-        echo ""
+        log ""
     fi
 
     if ! getent passwd "$USER_ID" > /dev/null 2>&1; then
@@ -178,18 +185,20 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
         # --create-home - Creates a home directory for the user (e.g., /home/builder).
         # --shell /bin/bash - Sets the default shell to bash.
         # "$USER_NAME" - The username (e.g., "builder").
-        echo "Adding user '$USER_NAME' with UID $USER_ID and GID $GROUP_ID."
+        log "Adding user '$USER_NAME' with UID $USER_ID and GID $GROUP_ID."
         useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME"
-        echo ""
+        log ""
     fi
 
     # Print the user's home directory (need bash -c to expand $HOME in the new user's context)
-    gosu "$USER_ID:$GROUP_ID" bash -c 'echo "HOME dir is now: $HOME"'
+    if [ "${QUIET:-"false"}" != "true" ]; then
+        gosu "$USER_ID:$GROUP_ID" bash -c 'echo "HOME dir is now: $HOME"'
+    fi
 
     # Fix ownership of home directory.
     # - Docker may have created it as root for all `--volume` bind mounts already mounted therein,
     #   and we need to take user ownership of the mounts' parent dirs within our user's home dir.
-    echo "Fixing ownership of parent directories inside \"/home/$USER_NAME\" already created"\
+    log "Fixing ownership of parent directories inside \"/home/$USER_NAME\" already created"\
         "by Docker bind mounts."
     take_ownership_of_dirs "$TAKE_OWNERSHIP_OF_DIR1" "$USER_ID" "$GROUP_ID"
 
@@ -200,13 +209,13 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     # Git configuration
     gosu "$USER_ID:$GROUP_ID" git config --global core.editor "nano"
 
-    echo ""
-    echo_yellow "NOTICE: you are now running in Docker as user '$USER_NAME' with UID $USER_ID and"
-    echo_yellow "GID $GROUP_ID. Home dir is '/home/$USER_NAME'. The current working directory"
-    echo_yellow "is BIND-MOUNTED to the host system, so any files you create, modify, or delete"
-    echo_yellow "in '$(pwd)' will also be affected"
-    echo_yellow "on your host system!"
-    echo ""
+    log ""
+    log_yellow "NOTICE: you are now running in Docker as user '$USER_NAME' with UID $USER_ID and"
+    log_yellow "GID $GROUP_ID. Home dir is '/home/$USER_NAME'. The current working directory"
+    log_yellow "is BIND-MOUNTED to the host system, so any files you create, modify, or delete"
+    log_yellow "in '$(pwd)' will also be affected"
+    log_yellow "on your host system!"
+    log ""
 
     # Enable color in the PS1 prompt string for the non-root user; this variable is read by Ubuntu's
     # default `~/.bashrc` file which we copy over via `copy_skel_file` just above, or bind mount in

@@ -19,12 +19,36 @@ SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_SCRIPT")"
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
+# Parse our own flags; remaining args are forwarded to `docker run`
+QUIET="false"
+PASSTHROUGH_ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        # Quiet: don't echo nor print log messages
+        --quiet|-q)
+            QUIET="true"
+            ;;
+        # All positional args (ie: unmatched in the switch cases above)
+        *)
+            PASSTHROUGH_ARGS+=("$arg")
+            ;;
+    esac
+done
+# Replace the script's positional parameters ($1, $2, $3, ..., and $@) with the contents of the
+# `PASSTHROUGH_ARGS` array.
+set -- "${PASSTHROUGH_ARGS[@]}"
+
+# Print only when not in quiet mode
+# - Return true if if `$QUIET` is not "true", to return a non-error exit code regardless.
+log()      { [ "$QUIET" != "true" ] && echo "$@"      || true; }
+log_blue() { [ "$QUIET" != "true" ] && echo_blue "$@" || true; }
+
 echo "Running Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-echo ""
-echo "Running as user UID=$(id -u) and group GID=$(id -g)"
-echo_blue "Mounting host dirs to container dirs:"
-echo_blue "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
-echo ""
+log ""
+log "Running as user UID=$(id -u) and group GID=$(id -g)"
+log_blue "Mounting host dirs to container dirs:"
+log_blue "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
+log ""
 
 # Replicate a container name somewhat similar to what `docker compose run` would do if we were
 # using `docker compose run` instead of `docker run`
@@ -59,6 +83,7 @@ docker_args=(
     --rm
     -it
     # Pass user/group IDs and names for proper file permissions (used by gosu in ENTRYPOINT)
+    --env QUIET="${QUIET}"
     --env USER_ID="$(id -u)"
     --env GROUP_ID="$(id -g)"
     --env USER_NAME="$(id -un)"
