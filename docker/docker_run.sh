@@ -25,7 +25,7 @@ RETURN_CODE_ERROR=1
 EXECUTABLE_NAME="$(basename "$0")"
 
 print_help() {
-    cat <<EOF
+    cat <<EOF | less -RFX
 Usage: $EXECUTABLE_NAME [OPTIONS] [-- COMMAND [ARGS...]]
 
 Run a Docker container instance of '${IMAGE_NAME}:${IMAGE_TAG}' for cross-compiling
@@ -67,7 +67,7 @@ HOST BIND MOUNTS: HOST-DIR -> CONTAINER-DIR:
   ${REPO_ROOT_DIR}  ->  ${REPO_ROOT_DIR}
   ${HOME}/.bashrc   ->  ${HOME}/.bashrc  (read-only)
 
-EOF | less -RFX
+EOF
 }
 
 parse_args() {
