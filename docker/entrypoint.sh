@@ -154,8 +154,13 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     if [ -n "$EXISTING_USER_WITH_THIS_ID" ] && [ "$EXISTING_USER_WITH_THIS_ID" != "$USER_NAME" ];
     then
         log "Deleting existing user '$EXISTING_USER_WITH_THIS_ID' with conflicting UID $USER_ID."
-        # -r removes home dir
-        userdel -r "$EXISTING_USER_WITH_THIS_ID"
+        # -r removes home dir; redirect stderr to /dev/null in quiet mode to suppress warnings
+        # like `"userdel: ubuntu mail spool (/var/mail/ubuntu) not found"`
+        if [ "${QUIET:-"false"}" = "true" ]; then
+            userdel -r "$EXISTING_USER_WITH_THIS_ID" 2>/dev/null
+        else
+            userdel -r "$EXISTING_USER_WITH_THIS_ID"
+        fi
         log ""
     fi
 
@@ -164,7 +169,11 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
     then
         log "Deleting existing group '$EXISTING_GROUP_WITH_THIS_ID' with conflicting GID" \
             "$GROUP_ID."
-        groupdel "$EXISTING_GROUP_WITH_THIS_ID"
+        if [ "${QUIET:-"false"}" = "true" ]; then
+            groupdel "$EXISTING_GROUP_WITH_THIS_ID" 2>/dev/null
+        else
+            groupdel "$EXISTING_GROUP_WITH_THIS_ID"
+        fi
         log ""
     fi
 
@@ -172,7 +181,11 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
 
     if ! getent group "$GROUP_ID" > /dev/null 2>&1; then
         log "Adding group '$GROUP_NAME' with GID $GROUP_ID."
-        groupadd -g "$GROUP_ID" "$GROUP_NAME"
+        if [ "${QUIET:-"false"}" = "true" ]; then
+            groupadd -g "$GROUP_ID" "$GROUP_NAME" 2>/dev/null
+        else
+            groupadd -g "$GROUP_ID" "$GROUP_NAME"
+        fi
         log ""
     fi
 
@@ -186,7 +199,16 @@ if [ -n "$USER_ID" ] && [ -n "$GROUP_ID" ] && [ -n "$USER_NAME" ] && [ -n "$GROU
         # --shell /bin/bash - Sets the default shell to bash.
         # "$USER_NAME" - The username (e.g., "builder").
         log "Adding user '$USER_NAME' with UID $USER_ID and GID $GROUP_ID."
-        useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME"
+        # Redirect stderr to /dev/null in quiet mode to suppress warnings like:
+        # ```
+        # useradd: warning: the home directory /home/gabriel already exists.
+        # useradd: Not copying any file from skel directory into it.
+        # ```
+        if [ "${QUIET:-false}" = "true" ]; then
+            useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME" 2>/dev/null
+        else
+            useradd -u "$USER_ID" -g "$GROUP_ID" --create-home --shell /bin/bash "$USER_NAME"
+        fi
         log ""
     fi
 

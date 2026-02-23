@@ -19,24 +19,88 @@ SCRIPT_DIRECTORY="$(dirname "$FULL_PATH_TO_SCRIPT")"
 
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-# Parse our own flags; remaining args are forwarded to `docker run`
+EXECUTABLE_NAME="$(basename "$0")"
+print_help() {
+    cat <<EOF
+Usage: $EXECUTABLE_NAME [OPTIONS] [-- COMMAND [ARGS...]]
+
+Run a Docker container instance of '${IMAGE_NAME}:${IMAGE_TAG}' for cross-compiling
+from Linux to Windows.
+
+If no COMMAND is given, drops into an interactive bash shell inside the container.
+
+OPTIONS:
+  -h, -?, --help   Show this help menu and exit.
+  -q, --quiet      Suppress all informational log messages (errors still print).
+  --               Mark the end of options. Everything after this is passed verbatim as the
+                   container command and its arguments.
+
+EXAMPLES:
+  # Drop into an interactive bash shell:
+  $EXECUTABLE_NAME
+
+  # Drop into an interactive bash shell, suppressing startup log messages:
+  $EXECUTABLE_NAME --quiet
+
+  # Run the single command inside the container, then exit:
+  $EXECUTABLE_NAME -- x86_64-w64-mingw32-g++ --version
+
+  # Run a build command quietly (first '-q'/'--quiet' is ours; '--quiet' at end goes to make):
+  $EXECUTABLE_NAME -q -- make --quiet
+
+  # Run a command that itself uses '--quiet' (without '--', it would be consumed by us):
+  $EXECUTABLE_NAME -- myprogram --quiet
+
+  # Compile a C++ file for Windows:
+  $EXECUTABLE_NAME -- bash -c "cd cpp && x86_64-w64-mingw32-g++ myfile.cpp -o myfile.exe"
+
+DOCKER IMAGE:
+  Image:    ${IMAGE_NAME}
+  Tag:      ${IMAGE_TAG}
+  Full:     ${IMAGE_NAME}:${IMAGE_TAG}
+
+HOST BIND MOUNTS: HOST-DIR -> CONTAINER-DIR:
+  ${REPO_ROOT_DIR}  ->  ${REPO_ROOT_DIR}
+  ${HOME}/.bashrc   ->  ${HOME}/.bashrc  (read-only)
+
+EOF
+}
+
+# Parse our own flags that come BEFORE `--`.
+# Everything after `--` is passed through verbatim to the container command.
+# This follows the POSIX/Unix convention used by git, ssh, find, etc.
+#
+# Usage examples:
+#   ./docker_run.sh                        # interactive bash shell, verbose
+#   ./docker_run.sh --quiet                # interactive bash shell, quiet
+#   ./docker_run.sh -- myprogram --quiet   # passes --quiet to myprogram, not us
+#   ./docker_run.sh -q -- make --quiet     # quiet docker_run.sh; passes --quiet to make
+#
 QUIET="false"
-PASSTHROUGH_ARGS=()
-for arg in "$@"; do
-    case "$arg" in
-        # Quiet: don't echo nor print log messages
-        --quiet|-q)
-            QUIET="true"
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        # Help menu
+        "--help"|"-h"|"-?")
+            print_help
+            exit 0
             ;;
-        # All positional args (ie: unmatched in the switch cases above)
+        # Quiet: don't echo nor print log messages
+        "--quiet"|"-q")
+            QUIET="true"
+            shift # past argument
+            ;;
+        # End of our flags; everything remaining is passed through to the container command
+        "--")
+            shift # past argument
+            break
+            ;;
+        # Stop parsing our flags at the first unrecognized arg; pass it and everything after through
         *)
-            PASSTHROUGH_ARGS+=("$arg")
+            break
             ;;
     esac
 done
-# Replace the script's positional parameters ($1, $2, $3, ..., and $@) with the contents of the
-# `PASSTHROUGH_ARGS` array.
-set -- "${PASSTHROUGH_ARGS[@]}"
+# Remaining args in "$@" are now passed through verbatim to the container command
 
 # Print only when not in quiet mode
 # - Return true if if `$QUIET` is not "true", to return a non-error exit code regardless.
@@ -44,7 +108,7 @@ log()      { [ "$QUIET" != "true" ] && echo "$@"      || true; }
 log_blue() { [ "$QUIET" != "true" ] && echo_blue "$@" || true; }
 
 echo "Running Docker image: ${IMAGE_NAME}:${IMAGE_TAG}"
-log ""
+echo ""
 log "Running as user UID=$(id -u) and group GID=$(id -g)"
 log_blue "Mounting host dirs to container dirs:"
 log_blue "- ${REPO_ROOT_DIR} -> ${REPO_ROOT_DIR}"
