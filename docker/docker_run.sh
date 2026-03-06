@@ -32,14 +32,17 @@ Run a Docker container instance of '${IMAGE_NAME}:${IMAGE_TAG}' for cross-compil
 from Linux to Windows.
 - Automatically builds the Docker image if it doesn't exist locally yet.
 - If no COMMAND is given, drops into an interactive bash shell inside the container.
+- Starts in the working directory as specified below. See the '--workdir' option.
 
 OPTIONS:
   -h, -?, --help   Show this help menu and exit.
   -q, --quiet      Suppress all informational log messages (errors still print).
-  -w, --workdir DIR  Set the working directory inside the container (default: REPO_ROOT_DIR:
-                       '${REPO_ROOT_DIR}').
-                     Ex: '-w "\$PWD"' to use the host's current working directory, assuming it
-                     is also bind-mounted and accessible inside the Docker container.
+  -w, --workdir DIR  Set the working directory inside the container.
+                     Default is PWD (currently '$PWD')
+                     if inside the '$REPO_ROOT_DIR'
+                     repo, else 'REPO_ROOT_DIR ('$REPO_ROOT_DIR') if not.
+                     Ex: '-w "\$PWD"' to explicitly use the host's current working directory,
+                     assuming it is also bind-mounted and accessible inside the Docker container.
   --               Mark the end of options. Everything after this is passed verbatim as the
                    container command and its arguments.
 
@@ -92,9 +95,31 @@ parse_args() {
     # NOTE: bash functions cannot modify the caller's `$@` via `shift` (shifts are function-local).
     # So we store remaining (passthrough) args in the global `PASSTHROUGH_ARGS` array, and the
     # caller uses `set -- "${PASSTHROUGH_ARGS[@]}"` to rebuild its own `$@` after this returns.
+
+    # 1. Set default values for our own flags and options.
+
     QUIET="false"
-    WORKDIR="${REPO_ROOT_DIR}"
+
+    # Default WORKDIR behavior:
+    # - If host PWD is inside REPO_ROOT_DIR, use PWD.
+    # - Otherwise, fall back to REPO_ROOT_DIR.
+    case "${PWD}/" in
+        "${REPO_ROOT_DIR}/"*)
+            echo_green "Host PWD '${PWD}' is inside REPO_ROOT_DIR '${REPO_ROOT_DIR}'. Using PWD as"
+            echo_green "  WORKDIR inside container."
+            WORKDIR="${PWD}"
+            ;;
+        *)
+            echo_yellow "Host PWD '${PWD}' is outside REPO_ROOT_DIR '${REPO_ROOT_DIR}'. Using"
+            echo_yellow "  REPO_ROOT_DIR as WORKDIR inside container."
+            WORKDIR="${REPO_ROOT_DIR}"
+            ;;
+    esac
+
     PASSTHROUGH_ARGS=()
+
+    # 2. Now parse all args until we hit `--` or the first unrecognized arg, at which point we stop
+    # parsing and pass through all remaining args verbatim to the container command.
     while [[ $# -gt 0 ]]; do
         case "$1" in
             # Help menu
