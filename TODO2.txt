@@ -40,3 +40,4 @@ eRCaGuy_hello_world/docker/docker_run.sh:
 [x] store results stats from each run into a global vector or something
 [ ] print a markdown table of the results
 [ ] begin implementing more of the sleep funcs with the different mechanisms to sleep 
+[ ] get to a stopping point ASAP so I can work on other things!
