@@ -81,6 +81,34 @@ HOST BIND MOUNTS: HOST-DIR -> CONTAINER-DIR:
 EOF
 }
 
+# Print only when not in quiet mode
+log() {
+    if [ "$QUIET" != "true" ]; then
+        echo "$@"
+    fi
+}
+
+# Print in blue only when not in quiet mode
+log_blue() {
+    if [ "$QUIET" != "true" ]; then
+        echo_blue "$@"
+    fi
+}
+
+# Print in red only when not in quiet mode
+log_red() {
+    if [ "$QUIET" != "true" ]; then
+        echo_red "$@"
+    fi
+}
+
+# Print in green only when not in quiet mode
+log_green() {
+    if [ "$QUIET" != "true" ]; then
+        echo_green "$@"
+    fi
+}
+
 parse_args() {
     # Parse our own flags that come BEFORE `--`.
     # Everything after `--` is passed through verbatim to the container command.
@@ -105,13 +133,9 @@ parse_args() {
     # - Otherwise, fall back to REPO_ROOT_DIR.
     case "${PWD}/" in
         "${REPO_ROOT_DIR}/"*)
-            echo_green "Host PWD '${PWD}' is inside REPO_ROOT_DIR '${REPO_ROOT_DIR}'. Using PWD as"
-            echo_green "  WORKDIR inside container."
             WORKDIR="${PWD}"
             ;;
         *)
-            echo_yellow "Host PWD '${PWD}' is outside REPO_ROOT_DIR '${REPO_ROOT_DIR}'. Using"
-            echo_yellow "  REPO_ROOT_DIR as WORKDIR inside container."
             WORKDIR="${REPO_ROOT_DIR}"
             ;;
     esac
@@ -162,34 +186,6 @@ parse_args() {
     # Remaining args in "$@" can now be passed through verbatim to the container command so long as
     # the caller runs `set -- "${PASSTHROUGH_ARGS[@]}"` after this function returns.
 } # parse_args
-
-# Print only when not in quiet mode
-log() {
-    if [ "$QUIET" != "true" ]; then
-        echo "$@"
-    fi
-}
-
-# Print in blue only when not in quiet mode
-log_blue() {
-    if [ "$QUIET" != "true" ]; then
-        echo_blue "$@"
-    fi
-}
-
-# Print in red only when not in quiet mode
-log_red() {
-    if [ "$QUIET" != "true" ]; then
-        echo_red "$@"
-    fi
-}
-
-# Print in green only when not in quiet mode
-log_green() {
-    if [ "$QUIET" != "true" ]; then
-        echo_green "$@"
-    fi
-}
 
 main() {
     echo "Running Docker image '${IMAGE_NAME}:${IMAGE_TAG}' inside working directory" \
@@ -295,6 +291,7 @@ if [ "$__name__" = "__main__" ]; then
     set -- "${PASSTHROUGH_ARGS[@]}"
 
     time main "$@" # passes in the rebuilt and now truncated "$@" with only the passthrough args
+    return_code="$?"
 
-    exit $RETURN_CODE_SUCCESS
+    exit "$return_code"
 fi
