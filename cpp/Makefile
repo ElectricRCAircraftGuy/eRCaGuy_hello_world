@@ -3,22 +3,27 @@
 
 BUILD_DIR := build
 BUILD_FLAGS := -Wall -Wextra -Werror -O3 -std=gnu++20
-TIMING_TEST_FILE := timing__timing_and_precision_Windows_and_Linux_tests.cpp
-LINUX_BIN := $(BUILD_DIR)/timing__timing_and_precision_Windows_and_Linux_tests
-WINDOWS_BIN := $(BUILD_DIR)/timing__timing_and_precision_Windows_and_Linux_tests.exe
+
+TIMING_TARGET := timing__timing_and_precision_Windows_and_Linux_tests
+TIMING_TARGET_LINUX := $(TIMING_TARGET)-linux
+TIMING_TARGET_WINDOWS := $(TIMING_TARGET)-windows
+TIMING_TARGET_BASE := $(basename $(TIMING_TARGET))
+LINUX_BIN := $(BUILD_DIR)/$(TIMING_TARGET_BASE)
+WINDOWS_BIN := $(BUILD_DIR)/$(TIMING_TARGET_BASE).exe
 
 # Mark all targets as PHONY (not real files)
 .PHONY:
 	all \
 	build_prep \
 	clean \
-	timing__timing_and_precision_Windows_and_Linux_tests.cpp \
-	timing__timing_and_precision_Windows_and_Linux_tests.cpp-linux \
-	timing__timing_and_precision_Windows_and_Linux_tests.cpp-windows
+	print_vars \
+	$(TIMING_TARGET) \
+	$(TIMING_TARGET_LINUX) \
+	$(TIMING_TARGET_WINDOWS)
 
 # NB: this is the first target, so it runs by default when you just run "make" with no args.
 all: \
-	timing__timing_and_precision_Windows_and_Linux_tests.cpp
+	$(TIMING_TARGET)
 
 build_prep:
 	mkdir -p $(BUILD_DIR)
@@ -26,20 +31,30 @@ build_prep:
 clean:
 	rm -rf "$(BUILD_DIR)"
 
-timing__timing_and_precision_Windows_and_Linux_tests.cpp: \
-	timing__timing_and_precision_Windows_and_Linux_tests.cpp-linux \
-	timing__timing_and_precision_Windows_and_Linux_tests.cpp-windows
 
-timing__timing_and_precision_Windows_and_Linux_tests.cpp-linux: build_prep
+
+print_vars:
+	@echo "TIMING_TARGET:           ${TIMING_TARGET}"
+	@echo "TIMING_TARGET_LINUX:     ${TIMING_TARGET_LINUX}"
+	@echo "TIMING_TARGET_WINDOWS:   ${TIMING_TARGET_WINDOWS}"
+	@echo "TIMING_TARGET_BASE:      ${TIMING_TARGET_BASE}"
+	@echo "LINUX_BIN:               ${LINUX_BIN}"
+	@echo "WINDOWS_BIN:             ${WINDOWS_BIN}"
+
+$(TIMING_TARGET): \
+	$(TIMING_TARGET_LINUX) \
+	$(TIMING_TARGET_WINDOWS)
+
+$(TIMING_TARGET_LINUX): build_prep
 	# Build
-	time g++ $(BUILD_FLAGS) "$(TIMING_TEST_FILE)" -o "$(LINUX_BIN)"
+	time g++ $(BUILD_FLAGS) "$(TIMING_TARGET)" -o "$(LINUX_BIN)"
 
 	# Run
 	@echo "Running the Linux binary..."
 	"$(LINUX_BIN)"
 
-timing__timing_and_precision_Windows_and_Linux_tests.cpp-windows: build_prep
+$(TIMING_TARGET_WINDOWS): build_prep
 	# Build
-	time x86_64-w64-mingw32-g++ $(BUILD_FLAGS) "$(TIMING_TEST_FILE)" -o "$(WINDOWS_BIN)" -lwinmm
+	time x86_64-w64-mingw32-g++ $(BUILD_FLAGS) "$(TIMING_TARGET)" -o "$(WINDOWS_BIN)" -lwinmm
 
 	@echo "Not running the Windows binary in Linux."
