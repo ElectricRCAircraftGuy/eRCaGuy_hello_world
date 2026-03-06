@@ -42,17 +42,6 @@ DOCKER_RUN := $(abspath ../docker/docker_run.sh)
 	clean \
 	print_vars
 
-# -----------------------------------------------------
-ifeq ($(INSIDE_DOCKER),true)
-# Inside Docker, run the normal build targets directly.
-# -----------------------------------------------------
-
-build_prep:
-	mkdir -p $(BUILD_DIR)
-
-clean:
-	rm -rf "$(BUILD_DIR)"
-
 # ========================================================================
 # timing__timing_and_precision_Windows_and_Linux_tests.cpp
 # ========================================================================
@@ -68,6 +57,17 @@ LINUX_BIN := $(BUILD_DIR)/$(TARGET)
 WINDOWS_BIN := $(BUILD_DIR)/$(TARGET).exe
 LINUX_OBJ := $(BUILD_DIR)/$(TARGET).linux.o
 WINDOWS_OBJ := $(BUILD_DIR)/$(TARGET).windows.o
+
+# -----------------------------------------------------
+ifeq ($(INSIDE_DOCKER),true)
+# Inside Docker, run the normal build targets directly.
+# -----------------------------------------------------
+
+build_prep:
+	mkdir -p $(BUILD_DIR)
+
+clean:
+	rm -rf "$(BUILD_DIR)"
 
 .PHONY: $(TARGET) $(TARGET_LINUX) $(TARGET_WINDOWS)
 
@@ -120,18 +120,25 @@ else # ifeq ($(INSIDE_DOCKER),true)
 # Not inside Docker, forward all targets into Docker.
 # -----------------------------------------------------
 
+# Host-side wrapper: forward requested make goals into Docker.
+# - `%` catches arbitrary target names so newly added targets are auto-forwarded.
+# - Add explicit target rules ABOVE `ifeq ($(INSIDE_DOCKER),true)` for host-only exceptions.
+
 FORWARD_DRYRUN_FLAG := $(if $(findstring n,$(MAKEFLAGS)),-n,)
 FORWARD_JOBS_FLAG := $(firstword $(filter -j% --jobs --jobs=%,$(MAKEFLAGS)))
 FORWARDED_MAKE_FLAGS := $(strip $(FORWARD_DRYRUN_FLAG) $(FORWARD_JOBS_FLAG))
 
-# Host-side wrapper: forward requested make goals into Docker.
-# - `%` catches arbitrary target names so newly added targets are auto-forwarded.
-# - Add explicit target rules ABOVE `ifeq ($(INSIDE_DOCKER),true)` for host-only exceptions.
 .PHONY: _forward_to_docker
+
 _forward_to_docker:
 	@echo "Host detected (not in Docker). Forwarding target(s) to Docker: $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)"
 	@"$(DOCKER_RUN)" --quiet -- $(MAKE) $(FORWARDED_MAKE_FLAGS) -C "$(CURDIR)" $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)
 
+# Prevent make's internal makefile-remake logic from matching the `%` forwarding rule.
+Makefile:
+	@:
+
+# Catch-all for additional targets not explicitly listed above.
 %: _forward_to_docker
 	@echo "✅ Target '$@' executed successfully inside Docker."
 
