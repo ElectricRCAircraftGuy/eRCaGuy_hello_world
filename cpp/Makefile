@@ -19,6 +19,14 @@
 #
 # So: keep both. Make avoids unnecessary work; ccache accelerates the recompiles that still happen.
 #
+#
+# Dry run:
+# ```bash
+# make -n
+# # OR
+# make -n all
+# ```
+#
 # References
 # 1. GNU make manual [one webpage]: https://www.gnu.org/software/make/manual/make.html
 #
@@ -31,6 +39,16 @@ CCACHE := $(if $(CCACHE_BIN),ccache,)
 INSIDE_DOCKER := $(shell if [ -f /.dockerenv ] || grep -qaE '(docker|containerd|kubepods)' /proc/1/cgroup 2>/dev/null; then echo true; else echo false; fi)
 DOCKER_RUN := $(abspath ../docker/docker_run.sh)
 
+# If inside Docker, run the build targets directly, so make the wrapper empty. Otherwise, forward
+# all targets into Docker.
+ifeq ($(INSIDE_DOCKER),true)
+$(info Already inside Docker container, so no need to forward targets into Docker.)
+DOCKER_RUN_WRAPPER :=
+else
+$(info Not inside Docker container, so forwarding targets into Docker.)
+DOCKER_RUN_WRAPPER := $(DOCKER_RUN) --quiet --
+endif
+
 # NB: if you don't have this line, then the first target runs by default when you just run "make"
 # with no args.
 .DEFAULT_GOAL := all
@@ -41,6 +59,12 @@ DOCKER_RUN := $(abspath ../docker/docker_run.sh)
 	build_prep \
 	clean \
 	print_vars
+
+build_prep:
+	mkdir -p $(BUILD_DIR)
+
+clean:
+	rm -rf "$(BUILD_DIR)"
 
 # ========================================================================
 # timing__timing_and_precision_Windows_and_Linux_tests.cpp
@@ -57,17 +81,6 @@ LINUX_BIN := $(BUILD_DIR)/$(TARGET)
 WINDOWS_BIN := $(BUILD_DIR)/$(TARGET).exe
 LINUX_OBJ := $(BUILD_DIR)/$(TARGET).linux.o
 WINDOWS_OBJ := $(BUILD_DIR)/$(TARGET).windows.o
-
-# -----------------------------------------------------
-ifeq ($(INSIDE_DOCKER),true)
-# Inside Docker, run the normal build targets directly.
-# -----------------------------------------------------
-
-build_prep:
-	mkdir -p $(BUILD_DIR)
-
-clean:
-	rm -rf "$(BUILD_DIR)"
 
 .PHONY: $(TARGET) $(TARGET_LINUX) $(TARGET_WINDOWS)
 
@@ -95,54 +108,24 @@ $(TARGET_LINUX): $(LINUX_BIN)
 $(TARGET_WINDOWS): $(WINDOWS_BIN)
 	@echo "✅ Windows build completed successfully: $(TARGET_WINDOWS)."
 
+# Note: ccache is not helpful for linking; just compiling
+$(LINUX_BIN): $(LINUX_OBJ)
+	@echo "= Linking Linux binary ="
+	$(DOCKER_RUN_WRAPPER) g++ "$(LINUX_OBJ)" -o "$(LINUX_BIN)"
+
+# Note: ccache is not helpful for linking; just compiling
+$(WINDOWS_BIN): $(WINDOWS_OBJ)
+	@echo "= Linking Windows binary ="
+	$(DOCKER_RUN_WRAPPER) x86_64-w64-mingw32-g++ "$(WINDOWS_OBJ)" -o "$(WINDOWS_BIN)" -lwinmm
+
 # Note: prerequisites to the left of `|` are normal prerequisites that get rebuilt if their
 # timestamps change, and those to the right are order-only prerequisites that must be done first.
 $(LINUX_OBJ): $(FILE) | build_prep
 	@echo ""
 	@echo "= Compiling Linux object ="
-	$(CCACHE) g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(LINUX_OBJ)"
+	$(DOCKER_RUN_WRAPPER) $(CCACHE) g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(LINUX_OBJ)"
 
 $(WINDOWS_OBJ): $(FILE) | build_prep
 	@echo ""
 	@echo "= Compiling Windows object ="
-	$(CCACHE) x86_64-w64-mingw32-g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(WINDOWS_OBJ)"
-
-$(LINUX_BIN): $(LINUX_OBJ)
-	@echo "= Linking Linux binary ="
-	g++ "$(LINUX_OBJ)" -o "$(LINUX_BIN)"
-
-$(WINDOWS_BIN): $(WINDOWS_OBJ)
-	@echo "= Linking Windows binary ="
-	x86_64-w64-mingw32-g++ "$(WINDOWS_OBJ)" -o "$(WINDOWS_BIN)" -lwinmm
-
-# -----------------------------------------------------
-else # ifeq ($(INSIDE_DOCKER),true)
-# Not inside Docker, forward all targets into Docker.
-# -----------------------------------------------------
-
-# Host-side wrapper: forward requested make goals into Docker.
-# - `%` catches arbitrary target names so newly added targets are auto-forwarded.
-# - Add explicit target rules ABOVE `ifeq ($(INSIDE_DOCKER),true)` for host-only exceptions.
-
-FORWARD_DRYRUN_FLAG := $(if $(findstring n,$(MAKEFLAGS)),-n,)
-FORWARD_JOBS_FLAG := $(firstword $(filter -j% --jobs --jobs=%,$(MAKEFLAGS)))
-FORWARDED_MAKE_FLAGS := $(strip $(FORWARD_DRYRUN_FLAG) $(FORWARD_JOBS_FLAG))
-
-.PHONY: _forward_to_docker
-
-_forward_to_docker:
-	@echo "Host detected (not in Docker). Forwarding target(s) to Docker: $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)"
-	@"$(DOCKER_RUN)" --quiet -- $(MAKE) $(FORWARDED_MAKE_FLAGS) -C "$(CURDIR)" $(if $(MAKECMDGOALS),$(MAKECMDGOALS),all)
-
-# Prevent make's internal makefile-remake logic from matching the `%` forwarding rule.
-Makefile:
-	@:
-
-# Catch-all for additional targets not explicitly listed above.
-%: _forward_to_docker
-	@echo "✅ Target '$@' executed successfully inside Docker."
-
-# -----------------------------------------------------
-endif # ifeq ($(INSIDE_DOCKER),true)
-# -----------------------------------------------------
-
+	$(DOCKER_RUN_WRAPPER) $(CCACHE) x86_64-w64-mingw32-g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(WINDOWS_OBJ)"
