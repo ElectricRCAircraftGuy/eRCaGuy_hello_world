@@ -76,7 +76,7 @@ help:
 	@echo "    timing__timing_and_precision_Windows_and_Linux_tests:          Build both Linux and Windows binaries"
 	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-linux:    Build Linux binary only"
 	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-windows:  Build Windows binary only"
-	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-run:      Run the built binary based on the current OS"
+	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-run:      Build the binary, then run it, based on the current OS"
 
 clean:
 	rm -rf "$(BUILD_DIR)"
@@ -110,6 +110,7 @@ FILE := timing__timing_and_precision_Windows_and_Linux_tests.cpp
 TARGET := $(basename $(FILE))
 TARGET_LINUX := $(TARGET)-linux
 TARGET_WINDOWS := $(TARGET)-windows
+TARGET_RUN := $(TARGET)-run
 LINUX_BIN := $(BUILD_DIR)/$(TARGET)
 WINDOWS_BIN := $(BUILD_DIR)/$(TARGET).exe
 LINUX_OBJ := $(BUILD_DIR)/$(TARGET).linux.o
@@ -127,6 +128,7 @@ print_vars::
 	@echo "WINDOWS_BIN:         ${WINDOWS_BIN}"
 	@echo "LINUX_OBJ:           ${LINUX_OBJ}"
 	@echo "WINDOWS_OBJ:         ${WINDOWS_OBJ}"
+	@echo "TARGET_RUN:          ${TARGET_RUN}"
 	@echo ""
 
 # File targets:
@@ -138,19 +140,19 @@ print_vars::
 # first.
 $(LINUX_OBJ): $(FILE) | build_prep
 	@echo ""
-	@echo "= Compiling Linux object ="
+	@echo "= Compiling Linux object in Docker ="
 	# Compile only (-c), no linking; ccache wraps the compiler for cache hits
 	$(DOCKER_RUN_WRAPPER) $(CCACHE) g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(LINUX_OBJ)"
 
 $(WINDOWS_OBJ): $(FILE) | build_prep
 	@echo ""
-	@echo "= Compiling Windows object ="
+	@echo "= Compiling Windows object in Docker ="
 	# Compile only (-c), no linking; ccache wraps the compiler for cache hits
 	$(DOCKER_RUN_WRAPPER) $(CCACHE) x86_64-w64-mingw32-g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(WINDOWS_OBJ)"
 
 # Note: ccache is not helpful for linking; just compiling, so it's not used here.
 $(LINUX_BIN): $(LINUX_OBJ)
-	@echo "= Linking Linux binary ="
+	@echo "= Linking Linux binary in Docker ="
 	$(DOCKER_RUN_WRAPPER) g++ "$(LINUX_OBJ)" -o "$(LINUX_BIN)"
 
 # Note: ccache is not helpful for linking; just compiling, so it's not used here.
@@ -159,7 +161,7 @@ $(WINDOWS_BIN): $(WINDOWS_OBJ)
 	$(DOCKER_RUN_WRAPPER) x86_64-w64-mingw32-g++ "$(WINDOWS_OBJ)" -o "$(WINDOWS_BIN)" -lwinmm
 
 # Phony targets
-.PHONY: $(TARGET_LINUX) $(TARGET_WINDOWS) $(TARGET) $(TARGET)-run
+.PHONY: $(TARGET_LINUX) $(TARGET_WINDOWS) $(TARGET) $(TARGET_RUN)
 
 $(TARGET_LINUX): $(LINUX_BIN)
 	@echo "✅ Linux build completed successfully: $(TARGET_LINUX)."
@@ -170,13 +172,13 @@ $(TARGET_WINDOWS): $(WINDOWS_BIN)
 $(TARGET): $(TARGET_LINUX) $(TARGET_WINDOWS)
 	@echo "✅ All targets built successfully: $(TARGET_LINUX) and $(TARGET_WINDOWS)."
 
-$(TARGET)-run:
-	@echo "Running the built binary for the current OS..."
 # See: https://stackoverflow.com/a/12099167/4561887
 ifeq ($(OS),Windows_NT)
+$(TARGET_RUN): $(TARGET_WINDOWS)
 	@echo "Detected Windows OS. Running Windows binary..."
-	$(DOCKER_RUN_WRAPPER) "$(WINDOWS_BIN)"
+	"$(WINDOWS_BIN)"
 else
-	@echo "Detected non-Windows OS. Running Linux binary..."
+$(TARGET_RUN): $(TARGET_LINUX)
+	@echo "Detected non-Windows OS. Running Linux binary in Docker..."
 	$(DOCKER_RUN_WRAPPER) "$(LINUX_BIN)"
 endif
