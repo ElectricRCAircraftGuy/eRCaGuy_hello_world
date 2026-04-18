@@ -1,4 +1,4 @@
-# This is a wrapper Makefile instead of just a normal Makefile.
+# This is also a wrapper-style Makefile instead of just a normal Makefile.
 # - Inspired by: https://github.com/ElectricRCAircraftGuy/eRCaGuy_Linux_Windows_CMake_Sockets_MSYS2/blob/main/Makefile
 #
 #
@@ -43,9 +43,11 @@ DOCKER_RUN := $(abspath ../docker/docker_run.sh)
 # all targets into Docker.
 ifeq ($(INSIDE_DOCKER),true)
 $(info Already inside Docker container, so no need to forward targets into Docker.)
+$(info )
 DOCKER_RUN_WRAPPER :=
 else
 $(info Not inside Docker container, so forwarding targets into Docker.)
+$(info )
 DOCKER_RUN_WRAPPER := $(DOCKER_RUN) --quiet --
 endif
 
@@ -55,16 +57,43 @@ endif
 
 # Mark all targets as PHONY (not real files)
 .PHONY: \
+	help \
 	all \
-	build_prep \
 	clean \
+	build_prep \
 	print_vars
+
+help:
+	@echo "Primary targets:"
+	@echo "  help:          Show this help message"
+	@echo "  all:           Build all targets (default)"
+	@echo "  clean:         Remove build artifacts from dir \"$(BUILD_DIR)\""
+	@echo "  print_vars:    Print variable values for debugging"
+	@echo "  build_prep:    Prepare build directory"
+	@echo ""
+	@echo "Project-specific targets:"
+	@echo "  timing__timing_and_precision_Windows_and_Linux_tests.cpp:"
+	@echo "    timing__timing_and_precision_Windows_and_Linux_tests:          Build both Linux and Windows binaries"
+	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-linux:    Build Linux binary only"
+	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-windows:  Build Windows binary only"
+
+clean:
+	rm -rf "$(BUILD_DIR)"
 
 build_prep:
 	mkdir -p $(BUILD_DIR)
 
-clean:
-	rm -rf "$(BUILD_DIR)"
+print_vars::
+	@echo "== print_vars =="
+	@echo ""
+	@echo "BUILD_DIR:           ${BUILD_DIR}"
+	@echo "BUILD_FLAGS:         ${BUILD_FLAGS}"
+	@echo "CCACHE_BIN:          ${CCACHE_BIN}"
+	@echo "CCACHE:              ${CCACHE}"
+	@echo "INSIDE_DOCKER:       ${INSIDE_DOCKER}"
+	@echo "DOCKER_RUN:          ${DOCKER_RUN}"
+	@echo "DOCKER_RUN_WRAPPER:  ${DOCKER_RUN_WRAPPER}"
+	@echo ""
 
 # ========================================================================
 # timing__timing_and_precision_Windows_and_Linux_tests.cpp
@@ -86,18 +115,17 @@ WINDOWS_OBJ := $(BUILD_DIR)/$(TARGET).windows.o
 
 all: $(TARGET)  # append this `$(TARGET)` dependency to target `all`
 
-print_vars:
-	@echo "== print_vars =="
-	@echo "INSIDE_DOCKER:    ${INSIDE_DOCKER}"
-	@echo "FILE:             ${FILE}"
-	@echo "TARGET:           ${TARGET}"
-	@echo "TARGET_LINUX:     ${TARGET_LINUX}"
-	@echo "TARGET_WINDOWS:   ${TARGET_WINDOWS}"
-	@echo "LINUX_BIN:        ${LINUX_BIN}"
-	@echo "WINDOWS_BIN:      ${WINDOWS_BIN}"
-	@echo "LINUX_OBJ:        ${LINUX_OBJ}"
-	@echo "WINDOWS_OBJ:      ${WINDOWS_OBJ}"
-	@echo "CCACHE:           ${CCACHE}"
+# For debugging the Makefile
+print_vars::
+	@echo "FILE:                ${FILE}"
+	@echo "TARGET:              ${TARGET}"
+	@echo "TARGET_LINUX:        ${TARGET_LINUX}"
+	@echo "TARGET_WINDOWS:      ${TARGET_WINDOWS}"
+	@echo "LINUX_BIN:           ${LINUX_BIN}"
+	@echo "WINDOWS_BIN:         ${WINDOWS_BIN}"
+	@echo "LINUX_OBJ:           ${LINUX_OBJ}"
+	@echo "WINDOWS_OBJ:         ${WINDOWS_OBJ}"
+	@echo ""
 
 $(TARGET): $(TARGET_LINUX) $(TARGET_WINDOWS)
 	@echo "✅ All targets built successfully: $(TARGET_LINUX) and $(TARGET_WINDOWS)."
@@ -108,24 +136,27 @@ $(TARGET_LINUX): $(LINUX_BIN)
 $(TARGET_WINDOWS): $(WINDOWS_BIN)
 	@echo "✅ Windows build completed successfully: $(TARGET_WINDOWS)."
 
-# Note: ccache is not helpful for linking; just compiling
+# Note: ccache is not helpful for linking; just compiling, so it's not used here.
 $(LINUX_BIN): $(LINUX_OBJ)
 	@echo "= Linking Linux binary ="
 	$(DOCKER_RUN_WRAPPER) g++ "$(LINUX_OBJ)" -o "$(LINUX_BIN)"
 
-# Note: ccache is not helpful for linking; just compiling
+# Note: ccache is not helpful for linking; just compiling, so it's not used here.
 $(WINDOWS_BIN): $(WINDOWS_OBJ)
 	@echo "= Linking Windows binary ="
 	$(DOCKER_RUN_WRAPPER) x86_64-w64-mingw32-g++ "$(WINDOWS_OBJ)" -o "$(WINDOWS_BIN)" -lwinmm
 
-# Note: prerequisites to the left of `|` are normal prerequisites that get rebuilt if their
-# timestamps change, and those to the right are order-only prerequisites that must be done first.
+# Note: prerequisites to the right of `:` and left of `|` are normal prerequisites that get rebuilt
+# if their timestamps change, and those to the right are order-only prerequisites that must be done
+# first.
 $(LINUX_OBJ): $(FILE) | build_prep
 	@echo ""
 	@echo "= Compiling Linux object ="
+	# Compile only (-c), no linking; ccache wraps the compiler for cache hits
 	$(DOCKER_RUN_WRAPPER) $(CCACHE) g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(LINUX_OBJ)"
 
 $(WINDOWS_OBJ): $(FILE) | build_prep
 	@echo ""
 	@echo "= Compiling Windows object ="
+	# Compile only (-c), no linking; ccache wraps the compiler for cache hits
 	$(DOCKER_RUN_WRAPPER) $(CCACHE) x86_64-w64-mingw32-g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(WINDOWS_OBJ)"

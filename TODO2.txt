@@ -41,3 +41,10 @@ eRCaGuy_hello_world/docker/docker_run.sh:
 [ ] print a markdown table of the results
 [ ] begin implementing more of the sleep funcs with the different mechanisms to sleep 
 [ ] get to a stopping point ASAP so I can work on other things!
+
+Fri. 17 Apr. 2026
+[ ] Fix cpp/Makefile and test it out 
+[ ] fix windows build bugs: `make timing__timing_and_precision_Windows_and_Linux_tests-windows`
+[ ] finish the file: timing__timing_and_precision_Windows_and_Linux_tests.cpp
+[ ] see above
+
