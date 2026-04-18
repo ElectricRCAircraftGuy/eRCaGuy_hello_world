@@ -76,6 +76,7 @@ help:
 	@echo "    timing__timing_and_precision_Windows_and_Linux_tests:          Build both Linux and Windows binaries"
 	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-linux:    Build Linux binary only"
 	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-windows:  Build Windows binary only"
+	@echo "    timing__timing_and_precision_Windows_and_Linux_tests-run:      Run the built binary based on the current OS"
 
 clean:
 	rm -rf "$(BUILD_DIR)"
@@ -83,6 +84,9 @@ clean:
 build_prep:
 	mkdir -p $(BUILD_DIR)
 
+# NB: use double colon `::` to allow multiple rules with the same name, so we can have a separate
+# `print_vars` rule for each section of the Makefile. Running `make print_vars` will then run all of
+# them sequentially.
 print_vars::
 	@echo "== print_vars =="
 	@echo ""
@@ -111,8 +115,6 @@ WINDOWS_BIN := $(BUILD_DIR)/$(TARGET).exe
 LINUX_OBJ := $(BUILD_DIR)/$(TARGET).linux.o
 WINDOWS_OBJ := $(BUILD_DIR)/$(TARGET).windows.o
 
-.PHONY: $(TARGET) $(TARGET_LINUX) $(TARGET_WINDOWS)
-
 all: $(TARGET)  # append this `$(TARGET)` dependency to target `all`
 
 # For debugging the Makefile
@@ -127,24 +129,9 @@ print_vars::
 	@echo "WINDOWS_OBJ:         ${WINDOWS_OBJ}"
 	@echo ""
 
-$(TARGET): $(TARGET_LINUX) $(TARGET_WINDOWS)
-	@echo "✅ All targets built successfully: $(TARGET_LINUX) and $(TARGET_WINDOWS)."
-
-$(TARGET_LINUX): $(LINUX_BIN)
-	@echo "✅ Linux build completed successfully: $(TARGET_LINUX)."
-
-$(TARGET_WINDOWS): $(WINDOWS_BIN)
-	@echo "✅ Windows build completed successfully: $(TARGET_WINDOWS)."
-
-# Note: ccache is not helpful for linking; just compiling, so it's not used here.
-$(LINUX_BIN): $(LINUX_OBJ)
-	@echo "= Linking Linux binary ="
-	$(DOCKER_RUN_WRAPPER) g++ "$(LINUX_OBJ)" -o "$(LINUX_BIN)"
-
-# Note: ccache is not helpful for linking; just compiling, so it's not used here.
-$(WINDOWS_BIN): $(WINDOWS_OBJ)
-	@echo "= Linking Windows binary ="
-	$(DOCKER_RUN_WRAPPER) x86_64-w64-mingw32-g++ "$(WINDOWS_OBJ)" -o "$(WINDOWS_BIN)" -lwinmm
+# File targets:
+# "If any prerequisite is newer than the target (or the target doesn't exist yet), the target is
+#  out of date → rebuild it."
 
 # Note: prerequisites to the right of `:` and left of `|` are normal prerequisites that get rebuilt
 # if their timestamps change, and those to the right are order-only prerequisites that must be done
@@ -160,3 +147,36 @@ $(WINDOWS_OBJ): $(FILE) | build_prep
 	@echo "= Compiling Windows object ="
 	# Compile only (-c), no linking; ccache wraps the compiler for cache hits
 	$(DOCKER_RUN_WRAPPER) $(CCACHE) x86_64-w64-mingw32-g++ $(BUILD_FLAGS) -c "$(FILE)" -o "$(WINDOWS_OBJ)"
+
+# Note: ccache is not helpful for linking; just compiling, so it's not used here.
+$(LINUX_BIN): $(LINUX_OBJ)
+	@echo "= Linking Linux binary ="
+	$(DOCKER_RUN_WRAPPER) g++ "$(LINUX_OBJ)" -o "$(LINUX_BIN)"
+
+# Note: ccache is not helpful for linking; just compiling, so it's not used here.
+$(WINDOWS_BIN): $(WINDOWS_OBJ)
+	@echo "= Linking Windows binary ="
+	$(DOCKER_RUN_WRAPPER) x86_64-w64-mingw32-g++ "$(WINDOWS_OBJ)" -o "$(WINDOWS_BIN)" -lwinmm
+
+# Phony targets
+.PHONY: $(TARGET_LINUX) $(TARGET_WINDOWS) $(TARGET) $(TARGET)-run
+
+$(TARGET_LINUX): $(LINUX_BIN)
+	@echo "✅ Linux build completed successfully: $(TARGET_LINUX)."
+
+$(TARGET_WINDOWS): $(WINDOWS_BIN)
+	@echo "✅ Windows build completed successfully: $(TARGET_WINDOWS)."
+
+$(TARGET): $(TARGET_LINUX) $(TARGET_WINDOWS)
+	@echo "✅ All targets built successfully: $(TARGET_LINUX) and $(TARGET_WINDOWS)."
+
+$(TARGET)-run:
+	@echo "Running the built binary for the current OS..."
+# See: https://stackoverflow.com/a/12099167/4561887
+ifeq ($(OS),Windows_NT)
+	@echo "Detected Windows OS. Running Windows binary..."
+	$(DOCKER_RUN_WRAPPER) "$(WINDOWS_BIN)"
+else
+	@echo "Detected non-Windows OS. Running Linux binary..."
+	$(DOCKER_RUN_WRAPPER) "$(LINUX_BIN)"
+endif
