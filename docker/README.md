@@ -13,11 +13,11 @@ Much of this comes from [approximately here in my `git & Linux cmds, help, tips 
 
 Quick reference:
 
-1. Image = Template (one per build); like a C++ class definition
-1. Container = Running instance (many from one image); like a C++ class instance/object
-1. Tag = Version label (you choose); like a C++ class version
-1. ID = Unique hash (system generated); like a C++ class unique identifier
-1. Name = Optional friendly label (you choose); like a C++ class friendly `std::string` name
+1. **Image** = Template (one per build); like a C++ class definition
+1. **Container** = Running instance (many from one image); like a C++ class instance/object
+1. **Tag** = Version label (you choose)
+1. **ID** = Unique hash (system generated)
+1. **Name** = Optional friendly label (you choose); like a friendly `std::string` name inside a C++ class, used to describe the class
 
 
 ## WSL installation for Windows only; Windows 10 or later
@@ -91,7 +91,10 @@ Done! You have now successfully installed and started Docker Engine.
 # --------------------------------
 # Build the docker image
 # --------------------------------
-./docker_build.sh
+./docker_build.sh   # just build the Docker image
+
+./docker_run.sh     # OR: build and then run/enter the Docker image; see below for more details
+./docker_run.sh -h  # See the help menu of this script
 
 # --------------------------------
 # Delete the built docker image
