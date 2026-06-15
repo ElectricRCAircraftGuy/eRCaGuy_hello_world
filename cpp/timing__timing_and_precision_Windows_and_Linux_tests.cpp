@@ -9,9 +9,28 @@ C++ Windows and Linux cross-platform timing tests.
 GS
 Jan. 2026
 
-STATUS: Done and works!
+STATUS: wip
 
 To compile and run (assuming you've already `cd`ed into this dir):
+
+NEWER STEPS:
+vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+1. Install Docker as explained in the readme here: "eRCaGuy_hello_world/docker/README.md".
+
+2. Now build this executable for both Linux and Windows, in Linux or in WSL2 in Windows, using
+   Docker.
+   - Note that this builds for both Linux and Windows from a Linux Ubuntu 24.04 Docker container,
+     using `g++` to compile for Linux from Linux, and using `x86_64-w64-mingw32-g++` to
+     **cross-compile for Windows** from Linux, which is pretty awesome!
+
+   ```bash
+   cd path/to/eRCaGuy_hello_world/cpp
+   make timing__timing_and_precision_Windows_and_Linux_tests
+   ```
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+OLDER STEPS:
+
 ```bash
 # NB: you may need to use `-std=gnu++20` instead of `-std=c++20` in order to obtain extra GNU
 # gcc features, including gcc extensions, POSIX cmds, and Linux sytem cmds.
@@ -616,7 +635,7 @@ struct SleepStat
 
     // From the user's perspective, the "sleep time" is the total time spent in the sleep call,
     // which includes both the actual sleep time and the non-sleep time (setup overhead, etc.).
-    /////////
+    ////////
     std::vector<uint64_t> user_sleep_times_ns;
     Stats<uint64_t> user_sleep_stats;
     ////////

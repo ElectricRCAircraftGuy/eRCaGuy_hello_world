@@ -94,6 +94,9 @@ int main()
     // 1. `struct tm`: https://man7.org/linux/man-pages/man3/ctime.3.html
     struct tm localtime_struct;
     // Note: retptr means "return pointer"
+    // - NB: use `gmtime_r()` instead of `localtime_r()` as a direct, drop-in replacement to get the
+    //   UTC time (Greenwich Mean Time) instead of the local time.
+    // struct tm * retptr = gmtime_r(&ts.tv_sec, &localtime_struct);
     struct tm * retptr = localtime_r(&ts.tv_sec, &localtime_struct);
     if (retptr == NULL)
     {
