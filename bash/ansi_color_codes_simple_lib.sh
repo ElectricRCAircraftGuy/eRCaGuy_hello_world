@@ -3,42 +3,68 @@
 # This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
 # GS
+#
+# Written:
 # July 2022 - Sep. 2025
+#
+# Updated:
+# 2026: modified to more closely match file "bash/ansi_color_codes.sh".
 
 # A simple library for printing colored text to the terminal using ANSI color codes.
 # You can source this file in your bash scripts to use the color printing functions.
 
 # Status: done and works!
+# Test me:
+# ```bash
+# cd path/to/here
+# ./ansi_color_codes_simple_lib.sh
+# # and
+# ./ansi_color_codes_simple_lib_demo.sh
+# ```
 
-# See also: 
-# 1. "eRCaGuy_hello_world/bash/ansi_color_codes.sh": 
+# See also:
+# 1. "eRCaGuy_hello_world/bash/ansi_color_codes.sh":
 #    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/ansi_color_codes.sh
 # 1. For Python, see my repo here: https://github.com/ElectricRCAircraftGuy/eRCaGuy_PyColors
 
-COLOR_GRN="\e[;32m"  # ANSI color green
-COLOR_RED="\e[;91m"  # ANSI color bright red
-COLOR_YLW="\e[;93m"  # ANSI color bright yellow
-COLOR_BLU="\e[;94m"  # ANSI color bright blue
-COLOR_OFF="\e[m"     # ANSI color reset
+# --------------------------------------------------------------------------------------------------
+
+# ANSI color codes.
+# See:
+# 1. https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/ansi_color_codes_simple_lib.sh
+# 2. https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/ansi_color_codes.sh
+# 3. https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit
+
+ANSI_START="\e["
+ANSI_END="m"
+# the combination of ANSI_START + ANSI_END with no numeric codes in between
+ANSI_OFF="${ANSI_START}${ANSI_END}"
+
+ANSI_FG_RED=";31"      # foreground color red
+ANSI_FG_BR_RED=";91"   # foreground color bright red
+ANSI_FG_GRE=";32"      # foreground color green
+ANSI_FG_BLU=";34"      # foreground color blue
+ANSI_FG_BR_BLU=";94"   # foreground color bright blue
+ANSI_FG_BR_YLW=";93"   # foreground color bright yellow
 
 echo_blue() {
     local text="$*"
-    echo -e "${COLOR_BLU}${text}${COLOR_OFF}"
+    echo -e "${ANSI_START}${ANSI_FG_BR_BLU}${ANSI_END}${text}${ANSI_OFF}"
 }
 
 echo_green() {
     local text="$*"
-    echo -e "${COLOR_GRN}${text}${COLOR_OFF}"
+    echo -e "${ANSI_START}${ANSI_FG_GRE}${ANSI_END}${text}${ANSI_OFF}"
 }
 
 echo_yellow() {
     local text="$*"
-    echo -e "${COLOR_YLW}${text}${COLOR_OFF}"
+    echo -e "${ANSI_START}${ANSI_FG_BR_YLW}${ANSI_END}${text}${ANSI_OFF}"
 }
 
 echo_red() {
     local text="$*"
-    echo -e "${COLOR_RED}${text}${COLOR_OFF}"
+    echo -e "${ANSI_START}${ANSI_FG_BR_RED}${ANSI_END}${text}${ANSI_OFF}"
 }
 
 
