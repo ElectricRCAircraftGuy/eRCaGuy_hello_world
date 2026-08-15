@@ -64,6 +64,9 @@ lock_file = Path("temp/counter.txt.lock")
 lock = FileLock(lock_file, timeout=5)
 
 try:
+    print("Trying to acquire lock...")
+    # NB: to immediately return if the lock is not available, use `with
+    # lock.acquire(blocking=False):` or `with lock.acquire(timeout=0):` instead of `with lock:`.
     with lock:
         print("Lock acquired.")
 
@@ -84,3 +87,15 @@ try:
 except Timeout:
     print("Could not acquire the lock within 5 seconds.")
 
+
+# pylint: disable-next=pointless-string-statement
+"""
+SAMPLE OUTPUT:
+
+    eRCaGuy_hello_world$ python/filelock_counter_incrementing_demo.py
+    Trying to acquire lock...
+    Lock acquired.
+    Current count: 12. Incrementing by one...
+    New count written: 13
+
+"""
