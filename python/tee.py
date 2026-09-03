@@ -8,9 +8,11 @@ GS
 Oct. 2024
 
 "Tee" all output after the `tee.begin()` call and before the `tee.end()` call to both stdout and to
-a file. 
+a file.
 
 This is a REALLY USEFUL library for easy datalogging of your script in Python!
 
-SEE: https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/Tee.py
+See:
+1. New repo!: https://github.com/ElectricRCAircraftGuy/eRCaGuy_Tee
+2. Original code: https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/Tee.py
 """

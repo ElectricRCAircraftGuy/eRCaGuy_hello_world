@@ -4,7 +4,7 @@
 This file is part of eRCaGuy_hello_world:
 https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
-Tee all stdout output to a log file, to capture all prints in the program. 
+Tee all stdout output to a log file, to capture all prints in the program.
 
 GS
 Sep. 2024
@@ -12,7 +12,8 @@ Sep. 2024
 Status: TODO
 
 UPDATE: SEE A FULL, WORKING VERSION OF MINE HERE:
-https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/Tee.py
+1. New repo!: https://github.com/ElectricRCAircraftGuy/eRCaGuy_Tee
+2. Original code: https://github.com/ElectricRCAircraftGuy/eRCaGuy_PathShortener/blob/main/Tee.py
 
 
 PROMPT TO GITHUB COPILOT:
