@@ -2,6 +2,10 @@
 
 # GS
 # Oct. 2026
+# SEE THIS FILE IN MY STACK OVERFLOW ANSWER HERE:
+# How to auto-stop/auto-kill a Docker container or set of Docker Compose
+# services/containers after a set amount of time:
+# https://stackoverflow.com/a/80005935/4561887
 #
 # Example usage:
 # ```bash
