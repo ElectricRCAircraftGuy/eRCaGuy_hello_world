@@ -41,14 +41,12 @@ References:
 
 """
 
-
 import os
 import pathlib
 import sys
 
 # pretty print; see: https://stackoverflow.com/a/1523664/4561887
 from pprint import pprint
-
 
 DEFAULT_SYS_PATH = sys.path
 HOME = str(pathlib.Path.home())
@@ -186,9 +184,8 @@ def _test():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     _test()
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -33,12 +33,12 @@ References:
 
 """
 
-
 import textwrap
 
 SOME_VALUE1 = 700
 SOME_VALUE2 = 800
 SOME_STRING1 = "hello world"
+
 
 def main():
     """
@@ -52,9 +52,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -36,8 +36,8 @@ References:
 
 """
 
-
 from dataclasses import dataclass
+
 
 @dataclass
 class MyStruct:
@@ -45,17 +45,20 @@ class MyStruct:
     A simple struct-like dataclass with some fields of various types.
     2 fields have default values.
     """
+
     name: str
     x: int
     y: int
     z: float = 0.0  # default value
     is_ready: bool = False  # default value
 
+
 # Create an instance of MyStruct
 my_data = MyStruct(name="My struct", x=123, y=456)
-my_data.z = 789.001 # set z later if desired
-my_data.x = 999     # modify x later if desired
+my_data.z = 789.001  # set z later if desired
+my_data.x = 999  # modify x later if desired
 
+# fmt: off
 my_data2 = MyStruct(
     name="Another struct",
     x=10,
@@ -63,6 +66,7 @@ my_data2 = MyStruct(
     z=30.0,
     is_ready=True
 )
+# fmt: on
 
 print(my_data)
 print(my_data2)

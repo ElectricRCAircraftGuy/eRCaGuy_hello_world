@@ -40,7 +40,6 @@ References:
 
 """
 
-
 import os
 import subprocess
 
@@ -83,24 +82,27 @@ def git_get_short_hash2():
         - `None` if you are not in a git repo.
     """
 
-    result = subprocess.run(['git', 'rev-parse', '--is-inside-work-tree'],
-        capture_output=True, text=True)
+    result = subprocess.run(
+        ["git", "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True
+    )
     if result.stdout != "true\n":
         # We are not in a git repo
         return None
 
     # At this point we know we are in a git repo, so get the short hash
 
-    git_short_hash = subprocess.run(['git', 'rev-parse', '--short', 'HEAD'],
-        capture_output=True, text=True).stdout
+    git_short_hash = subprocess.run(
+        ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True
+    ).stdout
     # strip off the trailing newline char
     if git_short_hash[-1] == "\n":
         git_short_hash = git_short_hash[:-1]
 
     # See if the `git status` is clean or dirty
 
-    result_of_git_status = subprocess.run(['git', 'status', '--porcelain'],
-        capture_output=True, text=True).stdout
+    result_of_git_status = subprocess.run(
+        ["git", "status", "--porcelain"], capture_output=True, text=True
+    ).stdout
     if len(result_of_git_status) != 0:
         # git status is dirty
         git_short_hash += "-dirty"
@@ -155,7 +157,7 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
 

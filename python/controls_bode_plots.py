@@ -57,8 +57,9 @@ FILENAME = str(os.path.basename(FULL_PATH_TO_SCRIPT))
 FILENAME_NO_EXTENSION = os.path.splitext(FILENAME)[0]
 FILENAME_EXTENSION = os.path.splitext(FILENAME)[1]
 
+
 def save_figure(savename):
-    plt.savefig(f'{SCRIPT_DIRECTORY}/{FILENAME_NO_EXTENSION}_{savename}.svg')
+    plt.savefig(f"{SCRIPT_DIRECTORY}/{FILENAME_NO_EXTENSION}_{savename}.svg")
     # plt.savefig(f'{SCRIPT_DIRECTORY}/{FILENAME_NO_EXTENSION}_{savename}.png')
     # plt.savefig(f'{SCRIPT_DIRECTORY}/{FILENAME_NO_EXTENSION}_{savename}.jpg')
 
@@ -108,21 +109,22 @@ num = [1, 1]
 den = [1]
 G = control.TransferFunction(num, den)
 
-mag, phase, omega = control.bode(G, dB=True, Hz=False, omega_limits=(10e-3, 10e2), wrap_phase=True,
-                                 plot=False)
+mag, phase, omega = control.bode(
+    G, dB=True, Hz=False, omega_limits=(10e-3, 10e2), wrap_phase=True, plot=False
+)
 
 # **Manually** create the plots
 
 plt.subplot(2, 1, 1)  # row 1, col 1, plot 1
-plt.semilogx(omega, 20*np.log10(mag))  # Bode magnitude plot
+plt.semilogx(omega, 20 * np.log10(mag))  # Bode magnitude plot
 # plt.xlabel('Frequency (rad/sec)')  # no label needed here--just put on the bottom plot
-plt.ylabel('Magnitude (dB)')
+plt.ylabel("Magnitude (dB)")
 plt.grid(True, which="both")  # "both" means major and minor grid lines
 
 plt.subplot(2, 1, 2)
 plt.semilogx(omega, np.degrees(phase))  # Bode phase plot
-plt.xlabel('Frequency (rad/sec)')
-plt.ylabel('Phase (deg)')
+plt.xlabel("Frequency (rad/sec)")
+plt.ylabel("Phase (deg)")
 plt.grid(True, which="both")  # "both" means major and minor grid lines
 # Set major gridlines at multiples of 45 degrees
 ax = plt.gca()
@@ -160,8 +162,7 @@ save_figure("bode_plot_3")
 # Display the plots
 # =========================================================
 
-plt.show() # show all plots
-
+plt.show()  # show all plots
 
 
 # pylint: disable-next=pointless-string-statement

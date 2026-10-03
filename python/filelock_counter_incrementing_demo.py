@@ -52,7 +52,6 @@ How to test it:
 
 """
 
-
 from filelock import FileLock, Timeout
 from pathlib import Path
 import time

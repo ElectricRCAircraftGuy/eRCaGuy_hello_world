@@ -40,10 +40,8 @@ References:
 
 """
 
-
 import os
 import sys
-
 
 FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
 SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))

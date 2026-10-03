@@ -46,6 +46,7 @@ References:
 
 import asyncio
 
+
 class MyClass:
     async def async_method1(self):
         print("async_method1 start")
@@ -57,15 +58,16 @@ class MyClass:
         await self.async_method1()
         print("async_method2 end")
 
+
 # Usage
 async def main():
     obj = MyClass()
     await obj.async_method2()
     await obj.async_method1()
 
+
 # Run the main function
 asyncio.run(main())
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -56,6 +56,7 @@ import numpy as np
 # meters; see: https://en.wikipedia.org/wiki/Earth_radius#Global_radii
 EARTH_EQUATORIAL_RADIUS_M = 6378137.0
 
+
 def get_haversine_distance(lon1_deg, lat1_deg, lon2_deg, lat2_deg):
     """
     Find the curved earth (great circle) distance between two latitude and longitude points using
@@ -77,16 +78,21 @@ def get_haversine_distance(lon1_deg, lat1_deg, lon2_deg, lat2_deg):
     - distance_m: distance between the two points, in meters
     """
 
-    lon1_rad, lat1_rad, lon2_rad, lat2_rad = \
-        map(np.radians, [lon1_deg, lat1_deg, lon2_deg, lat2_deg])
+    lon1_rad, lat1_rad, lon2_rad, lat2_rad = map(
+        np.radians, [lon1_deg, lat1_deg, lon2_deg, lat2_deg]
+    )
 
     delta_lat_rad = lat2_rad - lat1_rad
     delta_lon_rad = lon2_rad - lon1_rad
 
-    dist_m = 2 * EARTH_EQUATORIAL_RADIUS_M * np.arcsin(
-        np.sqrt(
-            np.sin(delta_lat_rad/2)**2 +
-            np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(delta_lon_rad/2)**2
+    dist_m = (
+        2
+        * EARTH_EQUATORIAL_RADIUS_M
+        * np.arcsin(
+            np.sqrt(
+                np.sin(delta_lat_rad / 2) ** 2
+                + np.cos(lat1_rad) * np.cos(lat2_rad) * np.sin(delta_lon_rad / 2) ** 2
+            )
         )
     )
 
@@ -123,13 +129,17 @@ def main():
     LONDON_LON_LAT_DEG = (-0.1278, 51.5074)  # (longitude, latitude)
 
     haversine_dist_m = get_haversine_distance(
-        NEW_YORK_CITY_LON_LAT_DEG[0], NEW_YORK_CITY_LON_LAT_DEG[1],
-        LONDON_LON_LAT_DEG[0], LONDON_LON_LAT_DEG[1]
+        NEW_YORK_CITY_LON_LAT_DEG[0],
+        NEW_YORK_CITY_LON_LAT_DEG[1],
+        LONDON_LON_LAT_DEG[0],
+        LONDON_LON_LAT_DEG[1],
     )
 
     pythagorean_dist_m = get_pythagorean_distance(
-        NEW_YORK_CITY_LON_LAT_DEG[0], NEW_YORK_CITY_LON_LAT_DEG[1],
-        LONDON_LON_LAT_DEG[0], LONDON_LON_LAT_DEG[1]
+        NEW_YORK_CITY_LON_LAT_DEG[0],
+        NEW_YORK_CITY_LON_LAT_DEG[1],
+        LONDON_LON_LAT_DEG[0],
+        LONDON_LON_LAT_DEG[1],
     )
 
     print(f"Distance between New York City and London:")
@@ -144,9 +154,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

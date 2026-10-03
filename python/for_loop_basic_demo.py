@@ -39,7 +39,6 @@ References:
 
 """
 
-
 END_NUM = 7
 for i in range(1, END_NUM + 1):
     # 3 techniques to print:
@@ -57,8 +56,7 @@ for i in range(1, END_NUM + 1):
     # pylint: disable-next=consider-using-f-string
     print("line%i" % i)
 
-    print() # newline
-
+    print()  # newline
 
 
 # pylint: disable-next=pointless-string-statement

@@ -38,7 +38,6 @@ References:
 
 """
 
-
 #!/usr/bin/env python3
 
 import hashlib
@@ -49,7 +48,7 @@ my_dict = {
     "name": "John Doe",
     "age": 30,
     "balance": 1234.56,  # Decimal or float
-    "timestamp": datetime.datetime.now()  # Non-serializable object
+    "timestamp": datetime.datetime.now(),  # Non-serializable object
 }
 
 hash_input_str = json.dumps(my_dict, sort_keys=True, default=str)

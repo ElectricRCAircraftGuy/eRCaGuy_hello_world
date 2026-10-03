@@ -59,16 +59,12 @@ class MyClass:
 
 import pprint
 
-myClass = MyClass(
-    1, "two", 3, "ignore_this",
-    extra1="extra_value", extra2="another_extra_value"
-)
+myClass = MyClass(1, "two", 3, "ignore_this", extra1="extra_value", extra2="another_extra_value")
 
 input_args_dict = myClass.get_input_args_dict()
 
 print("input_args_dict:")
 pprint.pprint(input_args_dict)
-
 
 
 # pylint: disable-next=pointless-string-statement

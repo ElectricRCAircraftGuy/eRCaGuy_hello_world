@@ -27,11 +27,11 @@ References:
 import cv2
 import numpy as np
 
-file_in = '../test_photos/test1.jpg'
+file_in = "../test_photos/test1.jpg"
 print(f"File to process = {file_in}")
 print(f"See https://stackoverflow.com/a/67343271/4561887.")
 
-file_in_base = file_in[:-4] # strip file extension
+file_in_base = file_in[:-4]  # strip file extension
 file_in_extension = file_in[-4:]
 
 img = cv2.imread(file_in)
@@ -53,21 +53,22 @@ for i in cv2.split(img):
 
 # From @Canette Ouverture's answer: https://stackoverflow.com/a/56365560/4561887
 print("Processing img using @Canette Ouverture's technique.")
-img_out2 = np.zeros_like(img) # Initialize final image
+img_out2 = np.zeros_like(img)  # Initialize final image
 for channel_index in range(3):
     hist, bins = np.histogram(img[..., channel_index].ravel(), 256, (0, 256))
-    bmin = np.min(np.where(hist>(hist.sum()*0.0005)))
-    bmax = np.max(np.where(hist>(hist.sum()*0.0005)))
-    img_out2[...,channel_index] = np.clip(img[...,channel_index], bmin, bmax)
-    img_out2[...,channel_index] = ((img_out2[...,channel_index]-bmin) /
-        (bmax - bmin) * 255)
+    bmin = np.min(np.where(hist > (hist.sum() * 0.0005)))
+    bmax = np.max(np.where(hist > (hist.sum() * 0.0005)))
+    img_out2[..., channel_index] = np.clip(img[..., channel_index], bmin, bmax)
+    img_out2[..., channel_index] = (img_out2[..., channel_index] - bmin) / (bmax - bmin) * 255
 
 # Write new files
 file_out1 = file_in_base + '_out1' + file_in_extension
 file_out2 = file_in_base + '_out2' + file_in_extension
+# fmt: off
 print("Writing new files:\n" +
      f"  {file_out1}\n" +
      f"  {file_out2}")
+# fmt: on
 cv2.imwrite(file_out1, img_out1)
 cv2.imwrite(file_out2, img_out2)
 
