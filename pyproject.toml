@@ -4,10 +4,15 @@
 #   https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#what-on-earth-is-a-pyproject-toml-file
 [tool.black]
 line-length = 100
+# Notes:
+# - Ignore `/linux/systemd-by-example/` since it's a submodule.
+# - Ignore the `/c/linux/` symlink since it points to `/linux/`.
+# - Ignore the `/math/python` <-> `/python/math` recursive loop symlinks.
 extend-exclude = '''
 (
-    ^linux/systemd-by-example/
-    | ^(math/python|python/math)/
+    ^/linux/systemd-by-example/
+    | ^/c/linux/
+    | ^/(math/python|python/math)/
 )
 '''
 
