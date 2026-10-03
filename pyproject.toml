@@ -6,8 +6,8 @@
 line-length = 100
 extend-exclude = '''
 (
-    ^/linux/systemd-by-example/
-    | ^/(math/python|python/math)/
+    ^linux/systemd-by-example/
+    | ^(math/python|python/math)/
 )
 '''
 
