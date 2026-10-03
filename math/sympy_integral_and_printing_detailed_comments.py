@@ -36,18 +36,17 @@ References:
 
 """
 
-
 from sympy import *
-x, y, z = symbols('x y z')
+
+x, y, z = symbols("x y z")
 init_printing(use_unicode=True)
 
 # Store an integral
-integral = Integral(exp(-x**2 - y**2), (x, -oo, oo), (y, -oo, oo))
+integral = Integral(exp(-(x**2) - y**2), (x, -oo, oo), (y, -oo, oo))
 
 # Print the integral in various ways
 
-print("1. pretty print it (this technique works only when " +
-      "running in an interactive session)")
+print("1. pretty print it (this technique works only when " + "running in an interactive session)")
 integral
 
 print("2. pretty print it with 'print(pretty())'")
@@ -63,9 +62,11 @@ pprint(integral, use_unicode=False)
 print("5. print it as plain text")
 print(integral)
 
-print("6. print it in LaTeX format--ex: to copy and paste onto " +
-      "https://math.stackexchange.com/ or onto your blog or website which " +
-      "uses MathJax for pretty equation rendering.")
+print(
+    "6. print it in LaTeX format--ex: to copy and paste onto "
+    + "https://math.stackexchange.com/ or onto your blog or website which "
+    + "uses MathJax for pretty equation rendering."
+)
 print(latex(integral))
 
 
@@ -80,7 +81,6 @@ print("Result in plain text")
 print(result)
 print("Result in LaTeX format")
 print(latex(result))
-
 
 
 # pylint: disable-next=pointless-string-statement

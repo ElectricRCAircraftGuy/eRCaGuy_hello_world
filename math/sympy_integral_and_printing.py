@@ -36,20 +36,20 @@ References:
 
 """
 
-
 from sympy import *
-x, y, z = symbols('x y z')
+
+x, y, z = symbols("x y z")
 init_printing(use_unicode=True)
 
 # Store an integral
-integral = Integral(exp(-x**2 - y**2), (x, -oo, oo), (y, -oo, oo))
+integral = Integral(exp(-(x**2) - y**2), (x, -oo, oo), (y, -oo, oo))
 # print it in various ways
 print("ORIGINAL INTEGRAL:")
 print(pretty(integral))
-pprint(integral)        # "pretty print": same as above
+pprint(integral)  # "pretty print": same as above
 print(pretty(integral, use_unicode=False))  # pretty print with ASCII instead
-                                            # of unicode
-print(integral)         # plain text
+# of unicode
+print(integral)  # plain text
 print(latex(integral))  # in LaTeX format
 
 # Now solve the integral and output the result by telling it to
@@ -62,7 +62,6 @@ pprint(result)
 print(pretty(result, use_unicode=False))
 print(result)
 print(latex(result))
-
 
 
 # pylint: disable-next=pointless-string-statement

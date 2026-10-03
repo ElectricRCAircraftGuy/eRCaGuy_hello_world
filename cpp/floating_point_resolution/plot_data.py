@@ -26,6 +26,7 @@ Run command:
 """
 
 import matplotlib.pyplot as pyplot
+
 # import numpy
 import pandas
 import time
@@ -56,4 +57,3 @@ pyplot.title("Floating Point Error")
 # pyplot.legend()
 print("Showing plot.")
 pyplot.show()
-
