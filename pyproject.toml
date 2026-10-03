@@ -1,0 +1,21 @@
+
+# `black` Python format tool
+# - See:
+#   https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#what-on-earth-is-a-pyproject-toml-file
+[tool.black]
+line-length = 100
+extend-exclude = '''
+(
+    ^/linux/systemd-by-example/
+    | ^/(math/python|python/math)/
+)
+'''
+
+# `pytest` options
+# - See:
+#   1. https://docs.pytest.org/en/stable/how-to/usage.html
+#   2. pyproject.toml: https://docs.pytest.org/en/stable/reference/customize.html
+# Prevent pytest from following either direction of the math <-> python symlink loop.
+[tool.pytest.ini_options]
+# (Add Opts) Additional options for pytest
+addopts = "--ignore=math/python --ignore=python/math"
