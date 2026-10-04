@@ -90,16 +90,22 @@ test:
 # default, so it safely avoids the math <-> python directory-link loop.
 # - Keep `.venv/` dirs intact because they hold user-managed virtual environments and are
 #   expensive to rebuild.
+# - For `find`, see my answer: https://stackoverflow.com/a/69830768/4561887
 clean:
 	@echo "Printing and removing generated build and test artifacts..."
 
-	@find . -type d -name __pycache__ -prune -exec sh -c '\
-		for cache_dir; do \
-			find "$$cache_dir" -depth -print; \
-			rm -rf "$$cache_dir"; \
+	@find . \
+		-not \( -type d -name ".venv" -prune \) \
+		-type d -name __pycache__ -prune -exec sh -c '\
+		for pycache_dir; do \
+			find "$$pycache_dir" -depth -print; \
+			rm -rf "$$pycache_dir"; \
 		done' sh {} +
 
-	@find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -print -delete
+	@find . \
+		-not \( -type d -name ".venv" -prune \) \
+		-type f \( -name '*.pyc' -o -name '*.pyo' \) \
+		-print -exec rm -f {} +
 
 	@if [ -d .pytest_cache ]; then \
 		find .pytest_cache -depth -print; \
