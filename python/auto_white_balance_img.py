@@ -62,8 +62,8 @@ for channel_index in range(3):
     img_out2[..., channel_index] = (img_out2[..., channel_index] - bmin) / (bmax - bmin) * 255
 
 # Write new files
-file_out1 = file_in_base + '_out1' + file_in_extension
-file_out2 = file_in_base + '_out2' + file_in_extension
+file_out1 = file_in_base + "_out1" + file_in_extension
+file_out2 = file_in_base + "_out2" + file_in_extension
 # fmt: off
 print("Writing new files:\n" +
      f"  {file_out1}\n" +

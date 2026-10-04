@@ -180,10 +180,9 @@ LEAP_SECONDS_TABLE = [
     # GS: just use Unix time here, I think, but with a fixed epoch of 1 Jan. 1900.
     #  |       leap seconds to add to Unix or UTC time to get TAI time
     #  |         |
-    # fmt: off
-    (2272060800, 10, "1 Jan 1972"), # GS note: 2272060800/(3600×24×365.25) = 71.997 years, so
-                                    # this number of seconds clearly accounts for leap seconds
-    # fmt: on
+    # GS note: 2272060800/(3600×24×365.25) = 71.997 years, so this number of seconds clearly
+    # accounts for leap seconds
+    (2272060800, 10, "1 Jan 1972"),
     (2287785600, 11, "1 Jul 1972"),
     (2303683200, 12, "1 Jan 1973"),
     (2335219200, 13, "1 Jan 1974"),
