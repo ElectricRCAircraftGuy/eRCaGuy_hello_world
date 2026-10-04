@@ -91,7 +91,17 @@ test:
 # - Keep `.venv/` dirs intact because they hold user-managed virtual environments and are
 #   expensive to rebuild.
 clean:
-	@echo "Removing generated build and test artifacts..."
-	@find . -type d -name __pycache__ -prune -exec rm -rf {} +
-	@find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete
-	@rm -rf .pytest_cache bin build temp
+	@echo "Printing and removing generated build and test artifacts..."
+
+	@find . -type d -name __pycache__ -prune -exec sh -c '\
+		for cache_dir; do \
+			find "$$cache_dir" -depth -print; \
+			rm -rf "$$cache_dir"; \
+		done' sh {} +
+
+	@find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -print -delete
+
+	@if [ -d .pytest_cache ]; then \
+		find .pytest_cache -depth -print; \
+		rm -rf .pytest_cache; \
+	fi
