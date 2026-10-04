@@ -42,6 +42,7 @@ import textwrap
 
 # 1. For **absolute path imports**, add the filesystem root to the `sys.path` list variable
 import sys
+
 filesystem_root = "/"  # filesystem root
 # Allow importing Python packages relative to the filesystem root!
 sys.path.insert(0, filesystem_root)
@@ -49,6 +50,7 @@ sys.path.insert(0, filesystem_root)
 # 2. Print the `sys.path` now so we can see that `'/'` has been added
 # pretty print; see: https://stackoverflow.com/a/1523664/4561887
 from pprint import pprint
+
 print("sys.path = ")
 pprint(sys.path)
 print()
@@ -58,6 +60,7 @@ print()
 #   "eRCaGuy_hello_world/python/package_import_from_file_system_root/main2_relative_path_import.py"
 # - UPDATE THIS PATH BELOW FOR YOUR SPECIFIC FILESYSTEM PATH!
 import home.gabriel.GS.dev.eRCaGuy_hello_world.python.constants as constants
+
 
 def main():
     """
@@ -74,9 +77,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -62,7 +62,8 @@ REFERENCES:
 
 import textwrap
 
-class MyClass():
+
+class MyClass:
 
     # 1. Class variables (shared among all instances of this class--must be defined outside all other
     # class methods)
@@ -75,12 +76,11 @@ class MyClass():
 
     # special list of all string names of our instance variables
     # __slots__ = ['var1', 'var2']  # <======== does NOT work because it doesn't define 'var3' which we use and need below too!
-    __slots__ = ['var1', 'var2', 'var3']  # <======== WORKS!
+    __slots__ = ["var1", "var2", "var3"]  # <======== WORKS!
 
     # arbitrarily-named, private (prefixed with single `_`) list of the types (stored as strings)
     # for the instance variables specified above
-    _slot_types = ['string', 'int', 'list of ints']
-
+    _slot_types = ["string", "int", "list of ints"]
 
     def __init__(self, *args, **kwargs):
         """
@@ -100,21 +100,21 @@ class MyClass():
 
         # 2. Instance variables (begin with `self.`--these can be defined and/or accessed within ANY
         # method within a class!):
-        self.var1 = kwargs['var1']
-        self.var2 = kwargs['var2']
-        self.var3 = kwargs['var3']
+        self.var1 = kwargs["var1"]
+        self.var2 = kwargs["var2"]
+        self.var3 = kwargs["var3"]
 
         print("MyClass.instance_counter = {}".format(MyClass.instance_counter))
 
-        if (MyClass.instance_counter == 1):
-            print(textwrap.dedent('''\
+        if MyClass.instance_counter == 1:
+            print(textwrap.dedent("""\
 
                 Note to self: to pass in the args list and the dict to another func as if you typed them into the
                 function directly, it would look like this:
                         func(*args)
                         # and
                         func2(**kwargs)
-            '''))
+            """))
 
         print("Here are all the dictionary items you passed in!:")
         print("args = {}".format(args))
@@ -122,14 +122,13 @@ class MyClass():
         for key, value in kwargs.items():
             print("  {}: {}".format(key, value))
 
-
     def printVariables(self):
         """
         Print all class and instance variables for this class.
         """
         print("Class variables:")
         print("  animal (MyClass.animal) = {}".format(MyClass.animal))
-        print("  animal (self.animal)    = {}".format(self.animal)) # alternative way
+        print("  animal (self.animal)    = {}".format(self.animal))  # alternative way
 
         print("Instance variables:")
         print("  self.var1               = {}".format(self.var1))
@@ -137,20 +136,20 @@ class MyClass():
         print("  self.var3               = {}".format(self.var3))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """
     This runs only if you run this file directly, NOT if you import this file as a module into
     another Python program. That is what this `if` statement does for us here!
     """
 
     print("instance1:")
-    instance1 = MyClass(var1 = "hello", var2 = 710, var3 = [1, 2, 3])
+    instance1 = MyClass(var1="hello", var2=710, var3=[1, 2, 3])
     instance1.printVariables()
 
     print()
 
     print("instance2:")
-    instance2 = MyClass(var1 = "world", var2 = 18, var3 = [4, 5, 6])
+    instance2 = MyClass(var1="world", var2=18, var3=[4, 5, 6])
     instance2.printVariables()
 
 

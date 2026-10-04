@@ -7,7 +7,7 @@ https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 GS
 Dec. 2024
 
-Test the minimum time precision possible on your system using `time.monotonic_ns()`. 
+Test the minimum time precision possible on your system using `time.monotonic_ns()`.
 
 Status: DONE AND WORKS!
 
@@ -29,9 +29,9 @@ python3 time_monotonic_ns__get_precision.py
 ```
 
 References:
-1. *****+See my answer with this code, here: 
+1. *****+See my answer with this code, here:
    https://stackoverflow.com/a/73482099/4561887
-1. My answer: How to iterate over Pandas DataFrames without iterating: 
+1. My answer: How to iterate over Pandas DataFrames without iterating:
    https://stackoverflow.com/a/77270285/4561887
 
 """
@@ -46,12 +46,15 @@ SAMPLE_SIZE_DEFAULT = 20000
 SAMPLE_SIZE_MIN_FOR_WINDOWS = 20000000
 DEBUG = False  # Set to True to enable debug prints
 
+
 def debug_print(*args, **kwargs):
     if DEBUG:
         print(*args, **kwargs)
 
+
 def print_bar():
-    debug_print("="*56, "\n")
+    debug_print("=" * 56, "\n")
+
 
 def process_timestamps(timestamps_ns, output_stats_header_str):
     """
@@ -59,7 +62,7 @@ def process_timestamps(timestamps_ns, output_stats_header_str):
     """
 
     # Create a pandas DataFrame for efficient analysis of large datasets
-    df = pd.DataFrame({"timestamp_ns": timestamps_ns}, dtype='int64')
+    df = pd.DataFrame({"timestamp_ns": timestamps_ns}, dtype="int64")
     debug_print(f"df original:\n{df}")
     print_bar()
 
@@ -71,21 +74,22 @@ def process_timestamps(timestamps_ns, output_stats_header_str):
     debug_print(f"df no duplicates:\n{df}")
     print_bar()
     if len(df) < 2:
-        print("Error: not enough data to calculate time precision. Try \n"
-              "increasing `SAMPLE_SIZE` by a factor of 10, and try again.")
+        print(
+            "Error: not enough data to calculate time precision. Try \n"
+            "increasing `SAMPLE_SIZE` by a factor of 10, and try again."
+        )
         exit(1)
 
     # Now calculate the time differences between the timestamps.
     df["previous_timestamp_ns"] = df["timestamp_ns"].shift(1)
     df = df.dropna()  # remove NaN row
-    df["previous_timestamp_ns"] = df["previous_timestamp_ns"].astype('int64')
-    df["delta_time_us"] = (
-        df["timestamp_ns"] - df["previous_timestamp_ns"]) / 1e3
+    df["previous_timestamp_ns"] = df["previous_timestamp_ns"].astype("int64")
+    df["delta_time_us"] = (df["timestamp_ns"] - df["previous_timestamp_ns"]) / 1e3
     debug_print(f"df:\n{df}")
     print_bar()
 
     # Output statistics
-    
+
     mean = df["delta_time_us"].mean()
     median = df["delta_time_us"].median()
     mode = df["delta_time_us"].mode()[0]
@@ -96,25 +100,24 @@ def process_timestamps(timestamps_ns, output_stats_header_str):
     print(f"Median: {median:.3f} us")
     print(f"Mode:   {mode:.3f} us")
     print(f"Stdev:  {stdev:.3f} us")
-    print(f"FINAL ANSWER: time precision on this system: "
-        + f"{median:.3f} +/- {stdev:.3f} us\n")
+    print(f"FINAL ANSWER: time precision on this system: " + f"{median:.3f} +/- {stdev:.3f} us\n")
+
 
 # =============================================================================
 # 1. Test `time.monotonic_ns()`
 # =============================================================================
 
 SAMPLE_SIZE = SAMPLE_SIZE_DEFAULT
-if os.name == 'nt':
+if os.name == "nt":
     # The OS is Windows
     if SAMPLE_SIZE < SAMPLE_SIZE_MIN_FOR_WINDOWS:
         SAMPLE_SIZE = SAMPLE_SIZE_MIN_FOR_WINDOWS
-        print(f"Detected: running on Windows. Using a larger SAMPLE_SIZE of "
-            f"{SAMPLE_SIZE}.\n")
+        print(f"Detected: running on Windows. Using a larger SAMPLE_SIZE of " f"{SAMPLE_SIZE}.\n")
 
 # Gather timestamps with zero delays between them
 # - preallocated list, so that no dynamic memory allocation will happen in the
 #   loop below
-timestamps_ns = [None]*SAMPLE_SIZE
+timestamps_ns = [None] * SAMPLE_SIZE
 for i in range(len(timestamps_ns)):
     timestamps_ns[i] = time.monotonic_ns()
 
@@ -126,7 +129,7 @@ process_timestamps(timestamps_ns, "1. time.monotonic_ns()")
 
 SAMPLE_SIZE = SAMPLE_SIZE_DEFAULT
 
-timestamps_ns = [None]*SAMPLE_SIZE
+timestamps_ns = [None] * SAMPLE_SIZE
 for i in range(len(timestamps_ns)):
     timestamps_ns[i] = time.perf_counter_ns()
 
@@ -137,14 +140,13 @@ process_timestamps(timestamps_ns, "2. time.perf_counter_ns()")
 # =============================================================================
 
 SAMPLE_SIZE = SAMPLE_SIZE_DEFAULT
-if os.name == 'nt':
+if os.name == "nt":
     # The OS is Windows
     if SAMPLE_SIZE < SAMPLE_SIZE_MIN_FOR_WINDOWS:
         SAMPLE_SIZE = SAMPLE_SIZE_MIN_FOR_WINDOWS
-        print(f"Detected: running on Windows. Using a larger SAMPLE_SIZE of "
-            f"{SAMPLE_SIZE}.\n")
+        print(f"Detected: running on Windows. Using a larger SAMPLE_SIZE of " f"{SAMPLE_SIZE}.\n")
 
-timestamps_ns = [None]*SAMPLE_SIZE
+timestamps_ns = [None] * SAMPLE_SIZE
 for i in range(len(timestamps_ns)):
     timestamps_ns[i] = time.time_ns()
 

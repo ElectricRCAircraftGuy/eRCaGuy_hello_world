@@ -49,7 +49,7 @@ References:
 
 """
 
-import pyproj # cartographic **proj**ections and coordinate transformations library
+import pyproj  # cartographic **proj**ections and coordinate transformations library
 import unittest
 
 
@@ -58,6 +58,7 @@ class LatLonToXYConverter:
     Singleton class to convert latitude and longitude coordinates in degrees to x and y coordinates
     in meters, or vice versa.
     """
+
     def __init__(self) -> None:
         # Define CRSs (Coordinate Reference Systems) for the two coordinate systems we want to
         # convert
@@ -73,9 +74,11 @@ class LatLonToXYConverter:
         # See:
         # https://pyproj4.github.io/pyproj/stable/api/transformer.html#pyproj.transformer.Transformer.from_crs
         self.transformer_latlon_to_xy = pyproj.Transformer.from_crs(
-            self.crs_wgs84_latlon, self.crs_wgs84_xy)
+            self.crs_wgs84_latlon, self.crs_wgs84_xy
+        )
         self.transformer_xy_to_latlon = pyproj.Transformer.from_crs(
-            self.crs_wgs84_xy, self.crs_wgs84_latlon)
+            self.crs_wgs84_xy, self.crs_wgs84_latlon
+        )
 
     def convert_lonlat_to_xy(self, lon_deg, lat_deg):
         """
@@ -83,7 +86,7 @@ class LatLonToXYConverter:
         NB: the input order is lon, lat!--since lon corresponds to x and lat corresponds to y.
         """
         # NB: input order to this function is lat, lon.
-        x_m, y_m = self.transformer_latlon_to_xy.transform(lat_deg, lon_deg) # NB: lat, lon order
+        x_m, y_m = self.transformer_latlon_to_xy.transform(lat_deg, lon_deg)  # NB: lat, lon order
         return x_m, y_m
 
     def convert_xy_to_lonlat(self, x_m, y_m):
@@ -137,9 +140,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

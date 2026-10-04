@@ -36,7 +36,6 @@ References:
 import textwrap
 import time
 
-
 print()
 
 full_uint8_t_range = list(range(0, 256))
@@ -74,7 +73,7 @@ else:
 # https://docs.python.org/3/library/codecs.html#error-handlers
 # - 'replace' will replace all non-utf-8 chars with this replacement question mark char to indicate
 # the char is non-printable and not a valid utf-8 char!: `�`
-bytes_buffer_str1 = bytes_buffer.decode(encoding='utf-8', errors='replace')
+bytes_buffer_str1 = bytes_buffer.decode(encoding="utf-8", errors="replace")
 print(f"bytes_buffer_str1 (as utf-8) = \n{bytes_buffer_str1}\n")
 
 print("About to make the bell char ('\\a') sound again.")
@@ -87,15 +86,17 @@ time.sleep(0.5)
 # Do it again, as ASCII this time. ASCII is a valid subset of utf-8, so you'll see no difference,
 # in this case, to the above print). Note that utf-8 is always preferred, in case non-ASCII
 # utf-8 chars exist in any buffer too.
-bytes_buffer_str2 = bytes_buffer.decode(encoding='ascii', errors='replace')
+bytes_buffer_str2 = bytes_buffer.decode(encoding="ascii", errors="replace")
 print(f"bytes_buffer_str2 (as ascii) = \n{bytes_buffer_str2}\n")
 
-print("bytes_buffer_str1 == bytes_buffer_str2 ?: {}\n".format(bytes_buffer_str1 == bytes_buffer_str2))
+print(
+    "bytes_buffer_str1 == bytes_buffer_str2 ?: {}\n".format(bytes_buffer_str1 == bytes_buffer_str2)
+)
 
 # Ok, this time get the bytes buffer string again but use the 'backslashreplace' error handler
 # to replace all invalid chars with their backslashed hex number!
 # See: https://docs.python.org/3/library/codecs.html#error-handlers
-bytes_buffer_str3 = bytes_buffer.decode(encoding='utf-8', errors='backslashreplace')
+bytes_buffer_str3 = bytes_buffer.decode(encoding="utf-8", errors="backslashreplace")
 print(f"[BEST PRINTING OPTION I THINK!]\nbytes_buffer_str3 = \n{bytes_buffer_str3}\n")
 
 # print bytes_buffer as a hex str
@@ -104,5 +105,5 @@ bytes_buffer_hex_str = bytes_buffer.hex()
 print(f"bytes_buffer_hex_str = \n{bytes_buffer_hex_str}\n")
 # And convert it back from a hex str to a bytes buffer.
 # See: https://docs.python.org/3/library/stdtypes.html#bytes.fromhex
-bytes_buffer2 = b''.fromhex(bytes_buffer_hex_str)
+bytes_buffer2 = b"".fromhex(bytes_buffer_hex_str)
 print(f"bytes_buffer2 (converted back from `bytes_buffer_hex_str`) = \n{bytes_buffer2}\n")

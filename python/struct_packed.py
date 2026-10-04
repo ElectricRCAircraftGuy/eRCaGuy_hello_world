@@ -35,7 +35,6 @@ References:
 
 """
 
-
 import struct
 
 
@@ -82,14 +81,18 @@ def main():
     print(f"data = {data_c}\n")
 
     print("Unpacking the last struct.")
-    (byte_1, uint32_1, uint32_2, uint32_3) = struct.unpack(format_string, data_c)
-    print("(byte_1, uint32_1, uint32_2, uint32_3) = " +
-         f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n")
+    byte_1, uint32_1, uint32_2, uint32_3 = struct.unpack(format_string, data_c)
+    print(
+        "(byte_1, uint32_1, uint32_2, uint32_3) = "
+        + f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n"
+    )
 
     # ----------------------------------------------------------------------------------------------
-    print("== Option 2. pack a struct using a `struct.Struct` class. ==\n" +
-          "Note: the only thing extra this technique really does is store the `format` string\n" +
-          "internally, so you don't have to manually pass it to every function call!\n")
+    print(
+        "== Option 2. pack a struct using a `struct.Struct` class. ==\n"
+        + "Note: the only thing extra this technique really does is store the `format` string\n"
+        + "internally, so you don't have to manually pass it to every function call!\n"
+    )
     # ----------------------------------------------------------------------------------------------
     # This technique is more efficient because it requires converting the format string into an
     # underlying C-struct only **once*. See: https://docs.python.org/3/library/struct.html#classes:
@@ -107,16 +110,22 @@ def main():
     print(f"Format string = {struct_class_object.format}")
     print(f"data = {data_2c}\n")
 
-    print("Unpacking the first option's last struct (data_c), and the last struct (data_2c)\n" +
-          "using the struct_class_object.")
+    print(
+        "Unpacking the first option's last struct (data_c), and the last struct (data_2c)\n"
+        + "using the struct_class_object."
+    )
     # data_c
-    (byte_1, uint32_1, uint32_2, uint32_3) = struct_class_object.unpack(data_c)
-    print("(byte_1, uint32_1, uint32_2, uint32_3) = " +
-         f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})")
+    byte_1, uint32_1, uint32_2, uint32_3 = struct_class_object.unpack(data_c)
+    print(
+        "(byte_1, uint32_1, uint32_2, uint32_3) = "
+        + f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})"
+    )
     # data_2c
-    (byte_1, uint32_1, uint32_2, uint32_3) = struct_class_object.unpack(data_2c)
-    print("(byte_1, uint32_1, uint32_2, uint32_3) = " +
-         f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n")
+    byte_1, uint32_1, uint32_2, uint32_3 = struct_class_object.unpack(data_2c)
+    print(
+        "(byte_1, uint32_1, uint32_2, uint32_3) = "
+        + f"({byte_1}, {uint32_1}, {uint32_2}, {uint32_3})\n\n"
+    )
 
     # prove that the data object packed by the global functions is the same as the one packed by the
     # class
@@ -130,9 +139,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -77,7 +77,7 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
 # pylint: disable-next=pointless-string-statement
@@ -100,4 +100,3 @@ SAMPLE OUTPUT:
 
 
 """
-

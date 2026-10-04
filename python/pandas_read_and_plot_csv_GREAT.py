@@ -52,8 +52,8 @@ def mkdir(directory):
 
 
 def save_figure(filename):
-    plt.savefig(f'{SCRIPT_DIRECTORY}/../fake_data/figures/{filename}.svg')
-    plt.savefig(f'{SCRIPT_DIRECTORY}/../fake_data/figures/{filename}.png')
+    plt.savefig(f"{SCRIPT_DIRECTORY}/../fake_data/figures/{filename}.svg")
+    plt.savefig(f"{SCRIPT_DIRECTORY}/../fake_data/figures/{filename}.png")
 
 
 def read_csv_file(filename):
@@ -61,7 +61,7 @@ def read_csv_file(filename):
     Read a CSV file into a Pandas DataFrame object, and return it.
     """
     filepath = f"{SCRIPT_DIRECTORY}/../fake_data/{filename}"
-    print(f"Reading file: \"{filepath}\"")
+    print(f'Reading file: "{filepath}"')
 
     # dataframe = pd.read_csv(
     #     filepath,
@@ -90,7 +90,7 @@ def read_csv_file(filename):
     # 1. GitHub CoPilot
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.Series.str.html
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.Series.astype.html
-    dataframe['dollar'] = dataframe['dollar'].str.replace('$', '').astype(float)
+    dataframe["dollar"] = dataframe["dollar"].str.replace("$", "").astype(float)
 
     # for debugging
     print(f"Dataframe: = \n{dataframe}")
@@ -126,7 +126,6 @@ def plot_data(dataframe):
     plt.subplots_adjust(wspace=0.3)  # adjust the width space between subplots
     save_figure("Figure_1_automatically_plotted")
 
-
     # Let's do some more advanced **manual** plotting now.
 
     # ==============================================================================================
@@ -137,6 +136,7 @@ def plot_data(dataframe):
     # Ages
     fig.add_subplot(2, 3, 1)  # nrows, ncols, index
     plt.title("Ages", y=1.05)
+    # fmt: off
     plt.plot(
         dataframe['age'],
         'b-o',
@@ -144,6 +144,7 @@ def plot_data(dataframe):
         markersize=2,
         label="age (yrs)"
     )
+    # fmt: on
     plt.legend()
     plt.xlabel("points (-)")
     plt.ylabel("age (years)")
@@ -151,6 +152,7 @@ def plot_data(dataframe):
     # Dollars
     fig.add_subplot(2, 3, 2)  # nrows, ncols, index
     plt.title("Dollars", y=1.05)
+    # fmt: off
     plt.plot(
         dataframe['dollar'],
         'b-o',
@@ -158,6 +160,7 @@ def plot_data(dataframe):
         markersize=2,
         label="Dollars ($)"
     )
+    # fmt: on
     plt.legend()
     plt.xlabel("points (-)")
     plt.ylabel("dollars ($)")
@@ -166,12 +169,12 @@ def plot_data(dataframe):
     fig.add_subplot(2, 3, 3)  # nrows, ncols, index
     plt.title("Dollars vs age", y=1.05)
     plt.plot(
-        dataframe['age'].to_numpy(),
-        dataframe['dollar'].to_numpy(),
-        'b-o',
+        dataframe["age"].to_numpy(),
+        dataframe["dollar"].to_numpy(),
+        "b-o",
         linewidth=1,
         markersize=2,
-        label="Dollars ($)"
+        label="Dollars ($)",
     )
     plt.legend()
     plt.xlabel("age (years)")
@@ -181,12 +184,12 @@ def plot_data(dataframe):
     fig.add_subplot(2, 3, 4)  # nrows, ncols, index
     plt.title("Dollars vs age (sorted by age)", y=1.05)
     plt.plot(
-        dataframe_sorted['age'].to_numpy(),
-        dataframe_sorted['dollar'].to_numpy(),
-        'b-o',
+        dataframe_sorted["age"].to_numpy(),
+        dataframe_sorted["dollar"].to_numpy(),
+        "b-o",
         linewidth=1,
         markersize=2,
-        label="Dollars ($)"
+        label="Dollars ($)",
     )
     plt.legend()
     plt.xlabel("age (years)")
@@ -197,12 +200,12 @@ def plot_data(dataframe):
     fig.add_subplot(2, 3, 5)  # nrows, ncols, index
     plt.title("Dollars vs age (sorted by dollars)", y=1.05)
     plt.plot(
-        dataframe_sorted_by_dollars['age'].to_numpy(),
-        dataframe_sorted_by_dollars['dollar'].to_numpy(),
-        'b-o',
+        dataframe_sorted_by_dollars["age"].to_numpy(),
+        dataframe_sorted_by_dollars["dollar"].to_numpy(),
+        "b-o",
         linewidth=1,
         markersize=2,
-        label="Dollars ($)"
+        label="Dollars ($)",
     )
     plt.legend()
     plt.xlabel("age (years)")
@@ -212,12 +215,12 @@ def plot_data(dataframe):
     fig.add_subplot(2, 3, 6)  # nrows, ncols, index
     plt.title("Dollars vs age (scatter plot--no line)", y=1.05)
     plt.plot(
-        dataframe['age'].to_numpy(),
-        dataframe['dollar'].to_numpy(),
-        'bo',  # just remove the `-` is all to not have a line!
+        dataframe["age"].to_numpy(),
+        dataframe["dollar"].to_numpy(),
+        "bo",  # just remove the `-` is all to not have a line!
         linewidth=1,
         markersize=2,
-        label="Dollars ($)"
+        label="Dollars ($)",
     )
     # plt.legend()  # no need for a legend either
     plt.xlabel("age (years)")
@@ -243,9 +246,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

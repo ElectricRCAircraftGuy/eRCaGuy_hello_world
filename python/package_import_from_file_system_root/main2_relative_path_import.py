@@ -44,6 +44,7 @@ from pprint import pprint
 # 1. Then add _that_ dir to the `sys.path` list.
 import os
 import sys
+
 FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
 SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
 # Allow importing Python packages relative to one dir up from the level of this
@@ -72,6 +73,7 @@ print("sys.path = ")
 pprint(sys.path)
 print()
 
+
 def main():
     """
     The main function of this program.
@@ -99,13 +101,14 @@ def main():
     constants.SOME_VALUE1 = 999
     print("Done")
     print(f"constants.SOME_VALUE1 = {constants.SOME_VALUE1}")
-    print(f"eRCaGuy_hello_world.python.constants.SOME_VALUE1 = {eRCaGuy_hello_world.python.constants.SOME_VALUE1}")
+    print(
+        f"eRCaGuy_hello_world.python.constants.SOME_VALUE1 = {eRCaGuy_hello_world.python.constants.SOME_VALUE1}"
+    )
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -38,7 +38,6 @@ References:
 
 """
 
-
 import datetime
 
 # See: "eRCaGuy_hello_world/python/time_convert_utc_timestamps_to_unix_sec.py":
@@ -58,7 +57,6 @@ date_utc_time = date_local_time.replace(tzinfo=datetime.timezone.utc)
 date_utc_sec = date_utc_time.timestamp()
 
 print(f"date_utc_time = {date_utc_time}\ndate_utc_sec = {date_utc_sec}")
-
 
 
 # pylint: disable-next=pointless-string-statement

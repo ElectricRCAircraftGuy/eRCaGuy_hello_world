@@ -78,7 +78,6 @@ TODO:
 
 """
 
-
 import numpy as np
 
 # <========================  Discussion with @Ebernardes; SciPy, and Sympy  ========================
@@ -90,6 +89,7 @@ import numpy as np
 # in https://scipy.org/." Ebernardes has helped write these functions in both SciPy and Sympy. See
 # his response to me (where I am @ERCaGuy) in the Wikipedia Talk page here:
 # https://en.wikipedia.org/wiki/Talk:Conversion_between_quaternions_and_Euler_angles#Changed_the_quaternion_to_Euler_angles_conversion_formula
+
 
 def quaternion2euler(q):
     """
@@ -136,22 +136,23 @@ def quaternion2euler(q):
     # - TODO: BEST: just fix q to be normalized if it comes in non-normalized.
     # - NB: if this code is ever expected to run in real-time, safety-critical-like or live control
     #   code, do NOT assert in it! Gracefully handle errors instead!
-    assert np.isclose(np.sqrt(w**2 + x**2 + y**2 + z**2), 1), \
-        "q must be a normalized unit vector of length 1!"
+    assert np.isclose(
+        np.sqrt(w**2 + x**2 + y**2 + z**2), 1
+    ), "q must be a normalized unit vector of length 1!"
 
     # roll (x-axis rotation)
-    sinr_cosp = 2*(w*x + y*z)
-    cosr_cosp = 1 - 2*(x**2 + y**2)
+    sinr_cosp = 2 * (w * x + y * z)
+    cosr_cosp = 1 - 2 * (x**2 + y**2)
     roll = np.arctan2(sinr_cosp, cosr_cosp)
 
     # pitch (y-axis rotation)
-    sinp = np.sqrt(1 + 2*(w*y - x*z))
-    cosp = np.sqrt(1 - 2*(w*y - x*z))
-    pitch = 2*np.arctan2(sinp, cosp) - np.pi/2
+    sinp = np.sqrt(1 + 2 * (w * y - x * z))
+    cosp = np.sqrt(1 - 2 * (w * y - x * z))
+    pitch = 2 * np.arctan2(sinp, cosp) - np.pi / 2
 
     # yaw (z-axis rotation)
-    siny_cosp = 2*(w*z + x*y)
-    cosy_cosp = 1 - 2*(y**2 + z**2)
+    siny_cosp = 2 * (w * z + x * y)
+    cosy_cosp = 1 - 2 * (y**2 + z**2)
     yaw = np.arctan2(siny_cosp, cosy_cosp)
 
     # convert radians to degrees
@@ -197,15 +198,16 @@ def quaternion2euler2(q):
 
     # - NB: if this code is ever expected to run in real-time, safety-critical-like or live control
     #   code, do NOT assert in it! Gracefully handle errors instead!
-    assert np.isclose(np.sqrt(w**2 + x**2 + y**2 + z**2), 1), \
-        "q must be a normalized unit vector of length 1!"
+    assert np.isclose(
+        np.sqrt(w**2 + x**2 + y**2 + z**2), 1
+    ), "q must be a normalized unit vector of length 1!"
 
     # roll
-    phi = np.arctan2(2*(w*x + y*z), 1 - 2*(x**2 + y**2))
+    phi = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x**2 + y**2))
     # pitch
-    theta = np.arcsin(2*(w*y - z*x))
+    theta = np.arcsin(2 * (w * y - z * x))
     # yaw
-    psi = np.arctan2(2*(w*z + x*y), 1 - 2*(y**2 + z**2))
+    psi = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y**2 + z**2))
 
     phi = np.degrees(phi)
     theta = np.degrees(theta)
@@ -252,18 +254,19 @@ def fix_heading_error(error_deg):
     df.loc[df["error_yaw_deg"] <= -180, "error_yaw_deg"] += 360
     ```
     """
-    error_deg = error_deg % 360 # wrap the error around 360 degrees
-    if error_deg > 180: # if the error is too large, subtract 360
+    error_deg = error_deg % 360  # wrap the error around 360 degrees
+    if error_deg > 180:  # if the error is too large, subtract 360
         error_deg -= 360
-    elif error_deg <= -180: # if the error is too small, add 360
+    elif error_deg <= -180:  # if the error is too small, add 360
         error_deg += 360
     return error_deg
 
 
 def assert_is_close(func, q, euler_angles_expected):
     euler_angles = func(q)
-    assert np.isclose(euler_angles, euler_angles_expected).all(), \
-        f"{euler_angles} != {euler_angles_expected}"
+    assert np.isclose(
+        euler_angles, euler_angles_expected
+    ).all(), f"{euler_angles} != {euler_angles_expected}"
 
 
 def test_convert_plus_or_minus_180_to_0_to_360():
@@ -341,9 +344,8 @@ def run_tests():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_tests()
-
 
 
 # pylint: disable-next=pointless-string-statement

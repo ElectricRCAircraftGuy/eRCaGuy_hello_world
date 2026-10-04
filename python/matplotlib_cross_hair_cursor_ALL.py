@@ -52,13 +52,14 @@ class Cursor:
     """
     A cross hair cursor.
     """
+
     def __init__(self, ax):
         self.ax = ax
-        self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
-        self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
+        self.horizontal_line = ax.axhline(color="k", lw=0.8, ls="--")
+        self.vertical_line = ax.axvline(color="k", lw=0.8, ls="--")
         # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
         # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-        self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
+        self.text = ax.text(0.72, 0.9, "", transform=ax.transAxes)
 
     def set_cross_hair_visible(self, visible: bool):
         need_redraw = self.horizontal_line.get_visible() != visible
@@ -78,7 +79,7 @@ class Cursor:
             # update the line positions
             self.horizontal_line.set_ydata([y])
             self.vertical_line.set_xdata([x])
-            self.text.set_text(f'x={x:1.2f}, y={y:1.2f}')
+            self.text.set_text(f"x={x:1.2f}, y={y:1.2f}")
             self.ax.figure.canvas.draw()
 
 
@@ -87,16 +88,14 @@ def test_simple_cursor():
     y = np.sin(2 * 2 * np.pi * x)
 
     fig, ax = plt.subplots()
-    ax.set_title('Simple cursor')
-    ax.plot(x, y, 'o')
+    ax.set_title("Simple cursor")
+    ax.plot(x, y, "o")
     simple_cursor = Cursor(ax)
-    fig.canvas.mpl_connect('motion_notify_event', simple_cursor.on_mouse_move)
+    fig.canvas.mpl_connect("motion_notify_event", simple_cursor.on_mouse_move)
 
     # Simulate a mouse move to (0.5, 0.5), needed for online docs
     t = ax.transData
-    MouseEvent(
-        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-    )._process()
+    MouseEvent("motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5)))._process()
 
     return simple_cursor
 
@@ -119,16 +118,17 @@ class BlittedCursor:
     """
     A cross-hair cursor using blitting for faster redraw.
     """
+
     def __init__(self, ax):
         self.ax = ax
         self.background = None
-        self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
-        self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
+        self.horizontal_line = ax.axhline(color="k", lw=0.8, ls="--")
+        self.vertical_line = ax.axvline(color="k", lw=0.8, ls="--")
         # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
         # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-        self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
+        self.text = ax.text(0.72, 0.9, "", transform=ax.transAxes)
         self._creating_background = False
-        ax.figure.canvas.mpl_connect('draw_event', self.on_draw)
+        ax.figure.canvas.mpl_connect("draw_event", self.on_draw)
 
     def on_draw(self, event):
         self.create_new_background()
@@ -165,7 +165,7 @@ class BlittedCursor:
             x, y = event.xdata, event.ydata
             self.horizontal_line.set_ydata([y])
             self.vertical_line.set_xdata([x])
-            self.text.set_text(f'x={x:1.2f}, y={y:1.2f}')
+            self.text.set_text(f"x={x:1.2f}, y={y:1.2f}")
 
             self.ax.figure.canvas.restore_region(self.background)
             self.ax.draw_artist(self.horizontal_line)
@@ -179,10 +179,10 @@ def test_blitted_cursor():
     y = np.sin(2 * 2 * np.pi * x)
 
     fig, ax = plt.subplots()
-    ax.set_title('Blitted cursor')
-    ax.plot(x, y, 'o')
+    ax.set_title("Blitted cursor")
+    ax.plot(x, y, "o")
     blitted_cursor = BlittedCursor(ax)
-    fig.canvas.mpl_connect('motion_notify_event', blitted_cursor.on_mouse_move)
+    fig.canvas.mpl_connect("motion_notify_event", blitted_cursor.on_mouse_move)
 
     # Note: Simulated mouse events don't work well with blitted cursors
     # due to background creation timing. Move mouse over plot to see cursor.
@@ -210,15 +210,16 @@ class SnappingCursor:
 
     For simplicity, this assumes that *x* values of the data are sorted.
     """
+
     def __init__(self, ax, line):
         self.ax = ax
-        self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
-        self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
+        self.horizontal_line = ax.axhline(color="k", lw=0.8, ls="--")
+        self.vertical_line = ax.axvline(color="k", lw=0.8, ls="--")
         self.x, self.y = line.get_data()
         self._last_index = None
         # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
         # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-        self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
+        self.text = ax.text(0.72, 0.9, "", transform=ax.transAxes)
 
     def set_cross_hair_visible(self, visible: bool):
         need_redraw = self.horizontal_line.get_visible() != visible
@@ -245,7 +246,7 @@ class SnappingCursor:
             # update the line positions
             self.horizontal_line.set_ydata([y])
             self.vertical_line.set_xdata([x])
-            self.text.set_text(f'x={x:1.2f}, y={y:1.2f}')
+            self.text.set_text(f"x={x:1.2f}, y={y:1.2f}")
             self.ax.figure.canvas.draw()
 
 
@@ -254,16 +255,14 @@ def test_snapping_cursor():
     y = np.sin(2 * 2 * np.pi * x)
 
     fig, ax = plt.subplots()
-    ax.set_title('Snapping cursor')
-    line, = ax.plot(x, y, 'o')
+    ax.set_title("Snapping cursor")
+    (line,) = ax.plot(x, y, "o")
     snap_cursor = SnappingCursor(ax, line)
-    fig.canvas.mpl_connect('motion_notify_event', snap_cursor.on_mouse_move)
+    fig.canvas.mpl_connect("motion_notify_event", snap_cursor.on_mouse_move)
 
     # Simulate a mouse move to (0.5, 0.5), needed for online docs
     t = ax.transData
-    MouseEvent(
-        "motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5))
-    )._process()
+    MouseEvent("motion_notify_event", ax.figure.canvas, *t.transform((0.5, 0.5)))._process()
 
     return snap_cursor
 
@@ -275,18 +274,19 @@ class SnappingBlittedCursor:
     This combines the best of both worlds: snapping to exact data points for precision
     and blitting for performance.
     """
+
     def __init__(self, ax: matplotlib.axes.Axes, line: matplotlib.lines.Line2D):
         self.ax = ax
         self.background = None
-        self.horizontal_line = ax.axhline(color='k', lw=0.8, ls='--')
-        self.vertical_line = ax.axvline(color='k', lw=0.8, ls='--')
+        self.horizontal_line = ax.axhline(color="k", lw=0.8, ls="--")
+        self.vertical_line = ax.axvline(color="k", lw=0.8, ls="--")
         self.x, self.y = line.get_data()
         self._last_index = None
         # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
         # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-        self.text = ax.text(0.72, 0.9, '', transform=ax.transAxes)
+        self.text = ax.text(0.72, 0.9, "", transform=ax.transAxes)
         self._creating_background = False
-        ax.figure.canvas.mpl_connect('draw_event', self.on_draw)
+        ax.figure.canvas.mpl_connect("draw_event", self.on_draw)
 
     def on_draw(self, event):
         self.create_new_background()
@@ -333,7 +333,7 @@ class SnappingBlittedCursor:
             # update the line positions
             self.horizontal_line.set_ydata([y])
             self.vertical_line.set_xdata([x])
-            self.text.set_text(f'x={x:1.2f}, y={y:1.2f}')
+            self.text.set_text(f"x={x:1.2f}, y={y:1.2f}")
 
             self.ax.figure.canvas.restore_region(self.background)
             self.ax.draw_artist(self.horizontal_line)
@@ -352,11 +352,13 @@ class SnappingBlittedCursorMultipleSubplots:
 
     Can handle multiple subplots with synchronized cursors across all subplots.
     """
-    def __init__(self,
-                 axes: Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]],
-                 lines: Union[matplotlib.lines.Line2D, List[matplotlib.lines.Line2D]],
-                 text_loc: tuple = (0.82, 0.95),  # default text location in axes coords
-                 ):
+
+    def __init__(
+        self,
+        axes: Union[matplotlib.axes.Axes, List[matplotlib.axes.Axes]],
+        lines: Union[matplotlib.lines.Line2D, List[matplotlib.lines.Line2D]],
+        text_loc: tuple = (0.82, 0.95),  # default text location in axes coords
+    ):
         """
         Initialize the cursor.
 
@@ -372,7 +374,8 @@ class SnappingBlittedCursorMultipleSubplots:
             # Multiple axes case: `axes` is a list of axes, and `lines` is a list of lines
             if not isinstance(lines, list) or len(lines) != len(axes):
                 raise ValueError(
-                    "When `axes` is a list, `lines` must also be a list of the same length.")
+                    "When `axes` is a list, `lines` must also be a list of the same length."
+                )
             self.axes = axes
             self.lines = lines
         else:
@@ -388,14 +391,14 @@ class SnappingBlittedCursorMultipleSubplots:
         self.figures = {}  # Dict[figure] -> {'axes': [axes], 'background': background}
         for ax in self.axes:
             if ax.figure not in self.figures:
-                self.figures[ax.figure] = {'axes': [], 'background': None}
-            self.figures[ax.figure]['axes'].append(ax)
+                self.figures[ax.figure] = {"axes": [], "background": None}
+            self.figures[ax.figure]["axes"].append(ax)
 
         print(f"DEBUG: len(self.figures) = {len(self.figures)}")
 
         # Connect draw events to all figures
         for fig in self.figures.keys():
-            fig.canvas.mpl_connect('draw_event', self.on_draw)
+            fig.canvas.mpl_connect("draw_event", self.on_draw)
 
         self.horizontal_lines = []
         self.vertical_lines = []
@@ -407,11 +410,11 @@ class SnappingBlittedCursorMultipleSubplots:
 
         # Create cursor elements for each axis
         for i, (ax, line) in enumerate(zip(self.axes, self.lines)):
-            h_line = ax.axhline(color='k', lw=0.8, ls='--')
-            v_line = ax.axvline(color='k', lw=0.8, ls='--')
+            h_line = ax.axhline(color="k", lw=0.8, ls="--")
+            v_line = ax.axvline(color="k", lw=0.8, ls="--")
             # text location in axes coordinates [`transform=ax.transAxes`] to always keep it in the
             # same plot location regardless of data limits, zooming, panning, scrolling, etc.
-            text = ax.text(text_loc[0], text_loc[1], '', transform=ax.transAxes)
+            text = ax.text(text_loc[0], text_loc[1], "", transform=ax.transAxes)
 
             self.horizontal_lines.append(h_line)
             self.vertical_lines.append(v_line)
@@ -445,14 +448,14 @@ class SnappingBlittedCursorMultipleSubplots:
         # Create background for each figure separately
         for fig, fig_data in self.figures.items():
             fig.canvas.draw()
-            fig_data['background'] = fig.canvas.copy_from_bbox(fig.bbox)
+            fig_data["background"] = fig.canvas.copy_from_bbox(fig.bbox)
 
         self.set_cross_hair_visible(True)
         self._creating_background = False
 
     def on_mouse_move(self, event: MouseEvent):
         # Check if any figure needs background creation
-        need_background = any(fig_data['background'] is None for fig_data in self.figures.values())
+        need_background = any(fig_data["background"] is None for fig_data in self.figures.values())
         if need_background:
             self.create_new_background()
 
@@ -470,8 +473,8 @@ class SnappingBlittedCursorMultipleSubplots:
             if need_redraw:
                 # Restore and blit each figure separately
                 for fig, fig_data in self.figures.items():
-                    if fig_data['background'] is not None:
-                        fig.canvas.restore_region(fig_data['background'])
+                    if fig_data["background"] is not None:
+                        fig.canvas.restore_region(fig_data["background"])
                         fig.canvas.blit(fig.bbox)
         else:
             # The mouse is in one of our axes
@@ -513,8 +516,10 @@ class SnappingBlittedCursorMultipleSubplots:
 
             # Update cursor lines on ALL axes using the same x position
             for i, (h_line, v_line, text, x_data, y_data) in enumerate(
-                zip(self.horizontal_lines, self.vertical_lines, self.texts,
-                    self.x_data, self.y_data)):
+                zip(
+                    self.horizontal_lines, self.vertical_lines, self.texts, self.x_data, self.y_data
+                )
+            ):
 
                 # So long as the subplots all share the same x-axis data, we can just use the same
                 # index
@@ -527,26 +532,28 @@ class SnappingBlittedCursorMultipleSubplots:
                 # Format the text display - handle datetime vs numeric data
                 if self.use_date_objects:
                     # For datetime objects, use a more readable format
-                    if hasattr(snapped_x, 'strftime'):
+                    if hasattr(snapped_x, "strftime"):
                         # Use slicing to truncate the last 3 chars to show milliseconds instead of
                         # microseconds
-                        x_text = snapped_x.strftime('%H:%M:%S.%f')[:-3]
+                        x_text = snapped_x.strftime("%H:%M:%S.%f")[:-3]
                     else:
                         x_text = str(snapped_x)
                 else:
                     # For numeric data, use standard formatting
-                    x_text = f'{snapped_x:1.9f}'
+                    x_text = f"{snapped_x:1.9f}"
 
-                text.set_text(f'x={x_text}, y={snapped_y:1.9f}')
+                text.set_text(f"x={x_text}, y={snapped_y:1.9f}")
 
             # Restore background and draw artists for each figure separately
             for fig, fig_data in self.figures.items():
-                if fig_data['background'] is not None:
-                    fig.canvas.restore_region(fig_data['background'])
+                if fig_data["background"] is not None:
+                    fig.canvas.restore_region(fig_data["background"])
 
                     # Draw artists for axes in this figure only
-                    for ax in fig_data['axes']:
-                        for i, (h_line, v_line, text) in enumerate(zip(self.horizontal_lines, self.vertical_lines, self.texts)):
+                    for ax in fig_data["axes"]:
+                        for i, (h_line, v_line, text) in enumerate(
+                            zip(self.horizontal_lines, self.vertical_lines, self.texts)
+                        ):
                             if h_line.axes == ax:
                                 ax.draw_artist(h_line)
                                 ax.draw_artist(v_line)
@@ -561,10 +568,10 @@ def test_snapping_blitted_cursor():
     y = np.sin(2 * 2 * np.pi * x)
 
     fig, ax = plt.subplots()
-    ax.set_title('Snapping Blitted cursor')
-    line, = ax.plot(x, y, 'o')
+    ax.set_title("Snapping Blitted cursor")
+    (line,) = ax.plot(x, y, "o")
     snap_blit_cursor = SnappingBlittedCursor(ax, line)
-    fig.canvas.mpl_connect('motion_notify_event', snap_blit_cursor.on_mouse_move)
+    fig.canvas.mpl_connect("motion_notify_event", snap_blit_cursor.on_mouse_move)
 
     # Note: Simulated mouse events don't work well with blitted cursors
     # due to background creation timing. Move mouse over plot to see cursor.
@@ -580,10 +587,10 @@ def test_snapping_blitted_cursor2():
     y = np.sin(2 * 2 * np.pi * x)
 
     fig, ax = plt.subplots()
-    ax.set_title('Snapping Blitted cursor 2')
-    line, = ax.plot(x, y, 'o')
+    ax.set_title("Snapping Blitted cursor 2")
+    (line,) = ax.plot(x, y, "o")
     snap_blit_cursor = SnappingBlittedCursorMultipleSubplots(ax, line)
-    fig.canvas.mpl_connect('motion_notify_event', snap_blit_cursor.on_mouse_move)
+    fig.canvas.mpl_connect("motion_notify_event", snap_blit_cursor.on_mouse_move)
 
     # Note: Simulated mouse events don't work well with blitted cursors
     # due to background creation timing. Move mouse over plot to see cursor.
@@ -602,30 +609,30 @@ def test_snapping_blitted_cursor_multiple_subplots():
     """
     # Generate different datasets for each subplot
     x = np.arange(0, 2, 0.02)  # Common x-axis for all plots
-    y1 = np.sin(2 * np.pi * x)           # Sine wave (sin(2πx))
-    y2 = np.cos(3 * np.pi * x)           # Cosine wave with different frequency (cos(3πx))
-    y3 = x**2 - x                        # Quadratic function (x² - x)
+    y1 = np.sin(2 * np.pi * x)  # Sine wave (sin(2πx))
+    y2 = np.cos(3 * np.pi * x)  # Cosine wave with different frequency (cos(3πx))
+    y3 = x**2 - x  # Quadratic function (x² - x)
 
     # Create figure with 3 subplots in 1 column
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 8), sharex=True)
 
     # Plot data on each subplot
-    line1, = ax1.plot(x, y1, 'o-', markersize=3, label='sin(2πx)')
-    line2, = ax2.plot(x, y2, 's-', markersize=3, color='orange', label='cos(3πx)')
-    line3, = ax3.plot(x, y3, '^-', markersize=3, color='green', label='x² - x')
+    (line1,) = ax1.plot(x, y1, "o-", markersize=3, label="sin(2πx)")
+    (line2,) = ax2.plot(x, y2, "s-", markersize=3, color="orange", label="cos(3πx)")
+    (line3,) = ax3.plot(x, y3, "^-", markersize=3, color="green", label="x² - x")
 
     # Set titles and labels
-    ax1.set_title('Multiple Subplots with Synchronized Snapping Blitted Cursor')
-    ax1.set_ylabel('sin(2πx)')
+    ax1.set_title("Multiple Subplots with Synchronized Snapping Blitted Cursor")
+    ax1.set_ylabel("sin(2πx)")
     ax1.legend()
     ax1.grid(True, alpha=0.3)
 
-    ax2.set_ylabel('cos(3πx)')
+    ax2.set_ylabel("cos(3πx)")
     ax2.legend()
     ax2.grid(True, alpha=0.3)
 
-    ax3.set_ylabel('x² - x')
-    ax3.set_xlabel('x')
+    ax3.set_ylabel("x² - x")
+    ax3.set_xlabel("x")
     ax3.legend()
     ax3.grid(True, alpha=0.3)
 
@@ -633,12 +640,17 @@ def test_snapping_blitted_cursor_multiple_subplots():
     axes = [ax1, ax2, ax3]
     lines = [line1, line2, line3]
     multi_cursor = SnappingBlittedCursorMultipleSubplots(axes, lines)
-    fig.canvas.mpl_connect('motion_notify_event', multi_cursor.on_mouse_move)
+    fig.canvas.mpl_connect("motion_notify_event", multi_cursor.on_mouse_move)
 
     # Add instructions
-    fig.text(0.5, 0.02,
-             'Move mouse over any subplot to see synchronized cursors that snap to data points.',
-             ha='center', fontsize=10, style='italic')
+    fig.text(
+        0.5,
+        0.02,
+        "Move mouse over any subplot to see synchronized cursors that snap to data points.",
+        ha="center",
+        fontsize=10,
+        style="italic",
+    )
 
     plt.tight_layout()
     plt.subplots_adjust(bottom=0.1)  # Make room for instructions
@@ -678,38 +690,47 @@ def test_snapping_blitted_cursor_multiple_subplots_and_figures():
     # Figure 1: Multi-subplot figure (3 subplots)
     # ==============================================
     fig1, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 9), sharex=True)
-    fig1.suptitle('Figure 1: Data Analysis - Velocity, Acceleration, Jerk', fontsize=14)
+    fig1.suptitle("Figure 1: Data Analysis - Velocity, Acceleration, Jerk", fontsize=14)
 
     # Plot data on each subplot
-    line1, = ax1.plot(x, y_velocity, 'o-', markersize=2, linewidth=1,
-                      color='blue', label='Velocity (m/sec)')
-    line2, = ax2.plot(x, y_acceleration, 's-', markersize=2, linewidth=1,
-                      color='orange', label='Acceleration (m/sec²)')
-    line3, = ax3.plot(x, y_jerk, '^-', markersize=2, linewidth=1,
-                      color='green', label='Jerk (m/sec³)')
+    (line1,) = ax1.plot(
+        x, y_velocity, "o-", markersize=2, linewidth=1, color="blue", label="Velocity (m/sec)"
+    )
+    (line2,) = ax2.plot(
+        x,
+        y_acceleration,
+        "s-",
+        markersize=2,
+        linewidth=1,
+        color="orange",
+        label="Acceleration (m/sec²)",
+    )
+    (line3,) = ax3.plot(
+        x, y_jerk, "^-", markersize=2, linewidth=1, color="green", label="Jerk (m/sec³)"
+    )
 
     # Configure subplots
-    ax1.set_ylabel('Velocity (m/sec)')
-    ax1.legend(loc='upper right')
+    ax1.set_ylabel("Velocity (m/sec)")
+    ax1.legend(loc="upper right")
     ax1.grid(True, alpha=0.3)
-    ax1.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+    ax1.axhline(y=0, color="black", linewidth=0.5, alpha=0.7)
 
-    ax2.set_ylabel('Acceleration (m/sec²)')
-    ax2.legend(loc='upper right')
+    ax2.set_ylabel("Acceleration (m/sec²)")
+    ax2.legend(loc="upper right")
     ax2.grid(True, alpha=0.3)
-    ax2.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+    ax2.axhline(y=0, color="black", linewidth=0.5, alpha=0.7)
 
-    ax3.set_ylabel('Jerk (m/sec³)')
-    ax3.set_xlabel('Time (arbitrary units)')
-    ax3.legend(loc='upper right')
+    ax3.set_ylabel("Jerk (m/sec³)")
+    ax3.set_xlabel("Time (arbitrary units)")
+    ax3.legend(loc="upper right")
     ax3.grid(True, alpha=0.3)
-    ax3.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+    ax3.axhline(y=0, color="black", linewidth=0.5, alpha=0.7)
 
     # ==============================================
     # Figure 2: Single subplot figure
     # ==============================================
     fig2, ax4 = plt.subplots(1, 1, figsize=(12, 4))
-    fig2.suptitle('Figure 2: Combined Data Signal', fontsize=14)
+    fig2.suptitle("Figure 2: Combined Data Signal", fontsize=14)
 
     # Manually share x-axis with ax1 from Figure 1 to synchronize zooming/panning across both figures
     # Note: sharex parameter in plt.subplots() doesn't work across different figures, so we must
@@ -717,15 +738,16 @@ def test_snapping_blitted_cursor_multiple_subplots_and_figures():
     ax4.sharex(ax1)
 
     # Plot combined data
-    line4, = ax4.plot(x, y_combined, 'd-', markersize=2, linewidth=1.5,
-                      color='red', label='Combined Signal')
+    (line4,) = ax4.plot(
+        x, y_combined, "d-", markersize=2, linewidth=1.5, color="red", label="Combined Signal"
+    )
 
     # Configure subplot
-    ax4.set_ylabel('Combined Signal')
-    ax4.set_xlabel('Time (arbitrary units)')
-    ax4.legend(loc='upper right')
+    ax4.set_ylabel("Combined Signal")
+    ax4.set_xlabel("Time (arbitrary units)")
+    ax4.legend(loc="upper right")
     ax4.grid(True, alpha=0.3)
-    ax4.axhline(y=0, color='black', linewidth=0.5, alpha=0.7)
+    ax4.axhline(y=0, color="black", linewidth=0.5, alpha=0.7)
 
     # ==============================================
     # Create unified cursor system across both figures
@@ -743,8 +765,8 @@ def test_snapping_blitted_cursor_multiple_subplots_and_figures():
     unified_cursor = SnappingBlittedCursorMultipleSubplots(all_axes, all_lines)
 
     # Connect mouse events to both figures
-    fig1.canvas.mpl_connect('motion_notify_event', unified_cursor.on_mouse_move)
-    fig2.canvas.mpl_connect('motion_notify_event', unified_cursor.on_mouse_move)
+    fig1.canvas.mpl_connect("motion_notify_event", unified_cursor.on_mouse_move)
+    fig2.canvas.mpl_connect("motion_notify_event", unified_cursor.on_mouse_move)
 
     # [Sometimes required] Restore the original axis limits after cursor creation
     ax1.set_xlim(ax1_xlim)
@@ -758,25 +780,37 @@ def test_snapping_blitted_cursor_multiple_subplots_and_figures():
     fig1.subplots_adjust(bottom=0.08, top=0.92)  # Make room for suptitle and instructions
 
     fig2.tight_layout()
-    fig2.subplots_adjust(bottom=0.15, top=0.85)   # Make room for suptitle and instructions
+    fig2.subplots_adjust(bottom=0.15, top=0.85)  # Make room for suptitle and instructions
 
     # Add instructions to both figures
-    fig1.text(0.5, 0.02,
-              'Move mouse over ANY subplot in EITHER figure to see synchronized cursors across '
-              'ALL plots',
-              ha='center', fontsize=10, style='italic', weight='bold')
+    fig1.text(
+        0.5,
+        0.02,
+        "Move mouse over ANY subplot in EITHER figure to see synchronized cursors across "
+        "ALL plots",
+        ha="center",
+        fontsize=10,
+        style="italic",
+        weight="bold",
+    )
 
-    fig2.text(0.5, 0.02,
-              'Cursors synchronized with Figure 1 - Move mouse here or on Figure 1',
-              ha='center', fontsize=10, style='italic', weight='bold')
+    fig2.text(
+        0.5,
+        0.02,
+        "Cursors synchronized with Figure 1 - Move mouse here or on Figure 1",
+        ha="center",
+        fontsize=10,
+        style="italic",
+        weight="bold",
+    )
 
     # Position figures side by side (if using interactive backend)
     try:
         # Try to position windows side by side
         mngr1 = fig1.canvas.manager
         mngr2 = fig2.canvas.manager
-        mngr1.window.move(100, 100)    # Figure 1 on the left
-        mngr2.window.move(1300, 100)   # Figure 2 on the right
+        mngr1.window.move(100, 100)  # Figure 1 on the left
+        mngr2.window.move(1300, 100)  # Figure 2 on the right
     except:
         # If window positioning fails, just continue
         pass

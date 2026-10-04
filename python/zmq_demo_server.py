@@ -65,7 +65,6 @@ References:
 
 """
 
-
 #   https://zeromq.org/languages/python/
 #
 #   Hello World server in Python
@@ -176,7 +175,6 @@ while True:
 
     #  Send reply back to client
     socket.send(b"World")
-
 
 
 # pylint: disable-next=pointless-string-statement

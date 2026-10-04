@@ -63,8 +63,8 @@ References:
 
 """
 
-
 import sys
+
 
 class Tee:
     def __init__(self, *files):
@@ -78,6 +78,7 @@ class Tee:
     def flush(self):
         for f in self.files:
             f.flush()
+
 
 # Open the file in write mode
 logfile = open("output.log", "w")
@@ -97,9 +98,8 @@ logfile.close()
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
-    pass # TODO
-
+if __name__ == "__main__":
+    pass  # TODO
 
 
 # pylint: disable-next=pointless-string-statement

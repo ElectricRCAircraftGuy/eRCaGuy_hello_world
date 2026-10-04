@@ -47,8 +47,8 @@ import numpy as np
 # "bell curve") noise added to it
 
 NUM_POINTS = 200
-ONE_PERIOD = 2*np.pi  # 2*pi radians = 360 degrees = 1 full period
-x = np.linspace(0, 2*ONE_PERIOD, NUM_POINTS)
+ONE_PERIOD = 2 * np.pi  # 2*pi radians = 360 degrees = 1 full period
+x = np.linspace(0, 2 * ONE_PERIOD, NUM_POINTS)
 
 # the standard deviation, or "width", of the noise; see:
 # https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html
@@ -60,7 +60,7 @@ noise_array = np.random.normal(CENTER, SCALE, NUM_POINTS)
 y = np.sin(x) + noise_array
 
 # create a dataframe from the numpy arrays above
-df = pd.DataFrame({'x': x, 'y': y})
+df = pd.DataFrame({"x": x, "y": y})
 print(df)
 
 # plot the data
@@ -72,11 +72,11 @@ plt.plot(
     df["x"].to_numpy(),
     df["y"].to_numpy(),
     # 'bo', # blue circles, no line
-    'b-o', # blue line with circles
+    "b-o",  # blue line with circles
     # add summary statistics to the legend; NB: "The 50 percentile is the same
     # as the median."; see:
     # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.describe.html
-    label=f"{df['y'].describe()}"
+    label=f"{df['y'].describe()}",
 )
 # fontsize: int or 'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large',
 # 'xx-large'; see:

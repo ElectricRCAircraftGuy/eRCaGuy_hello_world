@@ -40,26 +40,24 @@ from pynput import keyboard
 
 print("Keyboard monitor demo program. Press Esc to exit.")
 
+
 def on_press(key):
     try:
-        print('alphanumeric key {0} pressed'.format(
-            key.char))
+        print("alphanumeric key {0} pressed".format(key.char))
     except AttributeError:
-        print('special key {0} pressed'.format(
-            key))
+        print("special key {0} pressed".format(key))
+
 
 def on_release(key):
-    print('{0} released'.format(
-        key))
+    print("{0} released".format(key))
     if key == keyboard.Key.esc:
         # Stop listener
         print("Exiting the program.")
         return False
 
+
 # Collect events until released
-with keyboard.Listener(
-        on_press=on_press,
-        on_release=on_release) as listener:
+with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
     listener.join()
 
 # # ...or, in a non-blocking fashion:
@@ -67,7 +65,6 @@ with keyboard.Listener(
 #     on_press=on_press,
 #     on_release=on_release)
 # listener.start()
-
 
 
 # pylint: disable-next=pointless-string-statement

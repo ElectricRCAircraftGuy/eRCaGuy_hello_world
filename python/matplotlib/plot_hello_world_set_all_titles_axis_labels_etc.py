@@ -37,7 +37,6 @@ References:
 
 """
 
-
 import matplotlib.pyplot as plt
 
 # ----------------------------------
@@ -65,7 +64,7 @@ x_vals = [1, 2, 3, 4, 5, 6, 7]
 y_vals = [val**2 for val in x_vals]
 
 # Plot your x, y values: red (`r`) line (`-`) with circles (`o`) for points
-plt.plot(x_vals, y_vals, 'r-o', label="Drag curve for Vehicle 1")
+plt.plot(x_vals, y_vals, "r-o", label="Drag curve for Vehicle 1")
 plt.legend()
 plt.xlabel("x-axis label")
 plt.ylabel("y-axis label")
@@ -76,12 +75,14 @@ for i, x in enumerate(x_vals):
     y = y_vals[i]
     # for your last 2 points only
     if i >= len(x_vals) - 2:
-        plt.text(x-.2, y-1, f"({x} m/s, {y:.2f} N drag)",
-                 horizontalalignment="right", rotation=0)
+        plt.text(
+            x - 0.2, y - 1, f"({x} m/s, {y:.2f} N drag)", horizontalalignment="right", rotation=0
+        )
     # for all other points
     else:
-        plt.text(x+.2, y-1, f"({x} m/s, {y:.2f} N drag)",
-                 horizontalalignment="left", rotation=0)
+        plt.text(
+            x + 0.2, y - 1, f"({x} m/s, {y:.2f} N drag)", horizontalalignment="left", rotation=0
+        )
 
 # ----------------------------------
 # 3. When all done adding as many subplots as you want to for your figure,
@@ -92,8 +93,9 @@ fig.suptitle("Figure title", fontsize=16)
 # Figure subtitle
 fig.text(0.5, 0.9, "Figure subtitle", horizontalalignment="center")
 # Figure footer title
-fig.text(0.5, 0.015, "Figure footer: see my website at www.whatever.com.",
-         horizontalalignment="center")
+fig.text(
+    0.5, 0.015, "Figure footer: see my website at www.whatever.com.", horizontalalignment="center"
+)
 # Important!:
 # 1. Use `top=0.8` to bring the top of the plot down to leave some space above
 # the plot for the figure subtitle to go above the plot title!
@@ -107,7 +109,6 @@ plt.subplots_adjust(top=0.8, bottom=0.2)
 # ----------------------------------
 
 plt.show()
-
 
 
 # pylint: disable-next=pointless-string-statement

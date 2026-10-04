@@ -42,11 +42,9 @@ References:
 
 """
 
-
 import time
 
 from pynput.keyboard import Key, Controller
-
 
 # ========== technique 1 ===========
 # From: https://pynput.readthedocs.io/en/latest/keyboard.html
@@ -55,8 +53,8 @@ print("Trying technique 1")
 keyboard = Controller()
 SUPER_KEY = Key.cmd
 with keyboard.pressed(SUPER_KEY):
-    keyboard.press('d')
-    keyboard.release('d')
+    keyboard.press("d")
+    keyboard.release("d")
 
 
 time.sleep(1.0)
@@ -69,8 +67,8 @@ keyboard = Controller()
 SUPER_KEY = Key.cmd
 
 keyboard.press(SUPER_KEY)
-keyboard.press('d')
-keyboard.release('d')
+keyboard.press("d")
+keyboard.release("d")
 keyboard.release(SUPER_KEY)
 
 

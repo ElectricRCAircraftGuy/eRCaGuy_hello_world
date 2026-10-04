@@ -47,7 +47,6 @@ print()
 print(result.stdout.decode("utf-8"))
 
 
-
 # pylint: disable-next=pointless-string-statement
 """
 SAMPLE OUTPUT:

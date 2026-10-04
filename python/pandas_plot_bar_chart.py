@@ -36,7 +36,6 @@ References:
 
 """
 
-
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -55,15 +54,15 @@ results_dict = {
 
 results_df = pd.DataFrame(results_dict)
 # sort all columns by their values in the first row at index 0 (`by=0`)
-results_df = results_df.sort_values(by=0, axis='columns', ascending=False)
+results_df = results_df.sort_values(by=0, axis="columns", ascending=False)
 
 # create a bar chart
 fig = plt.figure(figsize=(10, 7))  # default is `(6.4, 4.8)` inches
 values = results_df.values.flatten()
 plt.bar(results_df.columns, values)
-plt.title('Time vs iteration method', fontsize=14)
-plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
-plt.ylabel('Time (sec)', fontsize=12)
+plt.title("Time vs iteration method", fontsize=14)
+plt.xlabel("Iteration method", labelpad=15, fontsize=12)  # use labelpad to lower the label
+plt.ylabel("Time (sec)", fontsize=12)
 
 # show the plot
 plt.show()

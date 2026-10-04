@@ -36,24 +36,22 @@ References:
 
 """
 
-
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 values = [7, 57, 121, 192, 123, 240, 546]
-labels = ['1950s', '1960s', '1970s', '1980s', '1990s', '2000s', '2010s']
+labels = ["1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s"]
 
-plt.plot(range(len(labels)), values, 'bo') # Plotting data
-plt.xticks(range(len(labels)), labels) # Redefining x-axis labels
+plt.plot(range(len(labels)), values, "bo")  # Plotting data
+plt.xticks(range(len(labels)), labels)  # Redefining x-axis labels
 
 for i, v in enumerate(values):
     # GS note: using `plt.text()` here works just fine too!
     # plt.text(i, v+25, "%d" %v, ha="center")
-    ax.text(i, v+25, "%d" %v, ha="center")
+    ax.text(i, v + 25, "%d" % v, ha="center")
 plt.ylim(-10, 595)
 plt.show()
-
 
 
 # pylint: disable-next=pointless-string-statement

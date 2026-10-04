@@ -123,7 +123,6 @@ print(int(unix_timestamp))
 
 """
 
-
 import pprint
 
 """
@@ -181,8 +180,10 @@ LEAP_SECONDS_TABLE = [
     # GS: just use Unix time here, I think, but with a fixed epoch of 1 Jan. 1900.
     #  |       leap seconds to add to Unix or UTC time to get TAI time
     #  |         |
+    # fmt: off
     (2272060800, 10, "1 Jan 1972"), # GS note: 2272060800/(3600×24×365.25) = 71.997 years, so
                                     # this number of seconds clearly accounts for leap seconds
+    # fmt: on
     (2287785600, 11, "1 Jul 1972"),
     (2303683200, 12, "1 Jan 1973"),
     (2335219200, 13, "1 Jan 1974"),
@@ -212,11 +213,13 @@ LEAP_SECONDS_TABLE = [
     (3692217600, 37, "1 Jan 2017"),
 ]
 
+
 def ns_to_sec(ns):
     """
     Convert nanoseconds to seconds.
     """
     return ns / 1e9
+
 
 def sec_to_ns(sec):
     """
@@ -224,10 +227,11 @@ def sec_to_ns(sec):
     """
     return sec * 1e9
 
+
 # Convert the leap seconds table to nanoseconds, and use a Unix-like epoch of 1 Jan. 1970
 
-LEAP_SECONDS_TABLE_NEW = [None]*len(LEAP_SECONDS_TABLE)
-TWO_UNIX_YEARS_SEC = 3600*24*365*2
+LEAP_SECONDS_TABLE_NEW = [None] * len(LEAP_SECONDS_TABLE)
+TWO_UNIX_YEARS_SEC = 3600 * 24 * 365 * 2
 # UTC offset - two Unix-time years
 EPOCH_OFFSET_SEC = LEAP_SECONDS_TABLE[0][0] - TWO_UNIX_YEARS_SEC
 for i, row in enumerate(LEAP_SECONDS_TABLE):
@@ -242,6 +246,7 @@ for i, row in enumerate(LEAP_SECONDS_TABLE):
     col2 = LEAP_SECONDS_TABLE[i][1]
     col3 = LEAP_SECONDS_TABLE[i][2]
     LEAP_SECONDS_TABLE_NEW[i] = (col0, col1, col2, col3)
+
 
 def get_leap_seconds_from_tai_time(timestamp_tai_ns):
     """
@@ -262,6 +267,7 @@ def get_leap_seconds_from_tai_time(timestamp_tai_ns):
 
     return leap_sec
 
+
 def get_leap_seconds_from_unix_time(timestamp_unix_ns):
     """
     Get the number of leap seconds to add to Unix time to get TAI time.
@@ -281,6 +287,7 @@ def get_leap_seconds_from_unix_time(timestamp_unix_ns):
 
     return leap_sec
 
+
 def time_tai10_to_tai(timestamp_tai10_ns):
     """
     Convert TAI-10 ("TAI minus 10 seconds") Time in nanoseconds to TAI Time in nanoseconds.
@@ -294,6 +301,7 @@ def time_tai10_to_tai(timestamp_tai10_ns):
     timestamp_tai_ns = timestamp_tai10_ns + sec_to_ns(10)
     return timestamp_tai_ns
 
+
 def time_tai_to_tai10(timestamp_tai_ns):
     """
     Convert TAI Time in nanoseconds to TAI-10 ("TAI minus 10 seconds") Time in nanoseconds.
@@ -302,6 +310,7 @@ def time_tai_to_tai10(timestamp_tai_ns):
     """
     timestamp_tai10_ns = timestamp_tai_ns - sec_to_ns(10)
     return timestamp_tai10_ns
+
 
 def time_tai_to_unix(timestamp_tai_ns):
     """
@@ -314,6 +323,7 @@ def time_tai_to_unix(timestamp_tai_ns):
     timestamp_unix_ns = timestamp_tai_ns - leap_ns
     return timestamp_unix_ns
 
+
 def time_unix_to_tai(timestamp_unix_ns):
     """
     Convert Unix Time in nanoseconds to TAI Time in nanoseconds.
@@ -325,6 +335,7 @@ def time_unix_to_tai(timestamp_unix_ns):
     timestamp_tai_ns = timestamp_unix_ns + leap_ns
     return timestamp_tai_ns
 
+
 def time_tai10_to_unix(timestamp_tai10_ns):
     """
     Convert TAI-10 ("TAI minus 10 seconds") Time in nanoseconds to Unix Time in nanoseconds.
@@ -333,6 +344,7 @@ def time_tai10_to_unix(timestamp_tai10_ns):
     timestamp_unix_ns = time_tai_to_unix(time_tai10_to_tai(timestamp_tai10_ns))
     return timestamp_unix_ns
 
+
 def time_unix_to_tai10(timestamp_unix_ns):
     """
     Convert Unix Time in nanoseconds to TAI-10 ("TAI minus 10 seconds") Time in nanoseconds.
@@ -340,6 +352,7 @@ def time_unix_to_tai10(timestamp_unix_ns):
     """
     timestamp_tai10_ns = time_tai_to_tai10(time_unix_to_tai(timestamp_unix_ns))
     return timestamp_tai10_ns
+
 
 # BONUS FUNCTION:
 def time_tai10_to_unix_simple(timestamp_tai10_ns):
@@ -376,6 +389,7 @@ def time_tai10_to_unix_simple(timestamp_tai10_ns):
     """
     timestamp_unix_ns = timestamp_tai10_ns - 27_000_000_000
     return timestamp_unix_ns
+
 
 def run_unit_tests():
     print("Running unit tests.")
@@ -414,6 +428,7 @@ def run_unit_tests():
 
     print("ALL UNIT TESTS PASSED!")
 
+
 def main():
     """
     The main function of this program.
@@ -422,9 +437,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -38,7 +38,6 @@ References:
 
 """
 
-
 #   https://zeromq.org/languages/python/
 #
 #   Hello World client in Python
@@ -77,7 +76,6 @@ for request_num in range(10):
     #  Get the reply.
     message = socket.recv()
     print("Received reply %s [ %s ]" % (request_num, message))
-
 
 
 # pylint: disable-next=pointless-string-statement

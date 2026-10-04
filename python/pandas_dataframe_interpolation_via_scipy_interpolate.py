@@ -130,7 +130,6 @@ import numpy as np
 import pandas as pd
 from scipy.interpolate import interp1d
 
-
 # =================================
 # [GOOD] Super simple, more-manual way to interpolate
 # - mostly written by GitHub Copilot
@@ -138,16 +137,16 @@ print("==== [GOOD] METHOD 1: manual, using the x-values of the longer dataframe 
 # =================================
 
 # assume df1 is the longer dataframe and df2 is the shorter dataframe
-df1 = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [2, 4, 6, 8, 10]})
-df2 = pd.DataFrame({'x': [1.5, 2.5, 3.5], 'y': [3, 5, 7]})
+df1 = pd.DataFrame({"x": [1, 2, 3, 4, 5], "y": [2, 4, 6, 8, 10]})
+df2 = pd.DataFrame({"x": [1.5, 2.5, 3.5], "y": [3, 5, 7]})
 
 # interpolate the y values of df2 (the shorter dataframe) to the x values of df1 (the longer
 # dataframe)
-f = interp1d(df2['x'], df2['y'], kind='linear', fill_value='extrapolate')
-df2_interpolated = pd.DataFrame({'x': df1['x'], 'y': f(df1['x'])})
+f = interp1d(df2["x"], df2["y"], kind="linear", fill_value="extrapolate")
+df2_interpolated = pd.DataFrame({"x": df1["x"], "y": f(df1["x"])})
 
 # subtract the interpolated y values of df2 from the original y values of df1
-df_diff = pd.DataFrame({'x': df1['x'], 'y': df1['y'] - df2_interpolated['y']})
+df_diff = pd.DataFrame({"x": df1["x"], "y": df1["y"] - df2_interpolated["y"]})
 
 # print the results
 print(f"df1:\n{df1}\n")
@@ -158,8 +157,11 @@ print(f"df_diff:\n{df_diff}\n")
 # =================================
 # [BETTER] Alternative, generic way to do this at the x-values of the longer dataframe
 # - By me
-print("==== [BETTER] METHOD 2: generic, function-based, using the x-values of the longer dataframe ====\n")
+print(
+    "==== [BETTER] METHOD 2: generic, function-based, using the x-values of the longer dataframe ====\n"
+)
 # =================================
+
 
 def interpolate_df(x1, y1, x2, y2):
     """
@@ -169,7 +171,7 @@ def interpolate_df(x1, y1, x2, y2):
     values, with the longer one being original, and the shorter one being interpolated to match the
     length of the longer one.
     """
-    if (len(x1) >= len(x2)):
+    if len(x1) >= len(x2):
         x_long = x1
         y_long = y1
         x_short = x2
@@ -185,28 +187,31 @@ def interpolate_df(x1, y1, x2, y2):
     x_to = x_long
 
     # interpolate the y values of the shorter dataframe to the x values of the longer dataframe
-    func = interp1d(x_from, y_from, kind='linear', fill_value='extrapolate')
+    func = interp1d(x_from, y_from, kind="linear", fill_value="extrapolate")
     y_interpolated = func(x_to)  # the interpolated "to" y_to values
 
     # Return a new dataframe with the "to" x values, and the two sets of y values
-    df_interpolated = pd.DataFrame({
-        x_to.name: x_to,        # the longer set of x-values
-        y_long.name: y_long,    # the one set of y-values which was already longer
-        y_short.name + "_interpolated": y_interpolated,  # the other set of y-values,
-                                                         # now interpolated
-    })
+    df_interpolated = pd.DataFrame(
+        {
+            x_to.name: x_to,  # the longer set of x-values
+            y_long.name: y_long,  # the one set of y-values which was already longer
+            y_short.name + "_interpolated": y_interpolated,  # the other set of y-values,
+            # now interpolated
+        }
+    )
 
     # Do some math on the values; ex: calculate the difference between the two sets of y-values
-    df_interpolated["y_diff"] = df_interpolated[y_long.name] - df_interpolated[
-        y_short.name + "_interpolated"]
+    df_interpolated["y_diff"] = (
+        df_interpolated[y_long.name] - df_interpolated[y_short.name + "_interpolated"]
+    )
 
     return df_interpolated  # Contains x_long, y_long, y_short_interpolated, and y_diff
 
 
-df1 = pd.DataFrame({'x1': [1, 2, 3, 4, 5], 'y1': [2, 4, 6, 8, 10]})
-df2 = pd.DataFrame({'x2': [1.5, 2.5, 3.5], 'y2': [3, 5, 7]})
+df1 = pd.DataFrame({"x1": [1, 2, 3, 4, 5], "y1": [2, 4, 6, 8, 10]})
+df2 = pd.DataFrame({"x2": [1.5, 2.5, 3.5], "y2": [3, 5, 7]})
 
-df_new_interpolated = interpolate_df(df1['x1'], df1['y1'], df2['x2'], df2['y2'])
+df_new_interpolated = interpolate_df(df1["x1"], df1["y1"], df2["x2"], df2["y2"])
 
 print(f"df1:\n{df1}\n")
 print(f"df2:\n{df2}\n")
@@ -215,9 +220,12 @@ print(f"df_new_interpolated:\n{df_new_interpolated}\n")
 # =================================
 # [BEST!!!] Alternative, generic way to do this at fixed x-value intervals
 # - By me, with CoPilot's assistance
-print("==== [BEST] METHOD 3: generic, function-based, at fixed x-value intervals; uses\n"
-      "`scipy.interpolate.interp1d()` ====\n")
+print(
+    "==== [BEST] METHOD 3: generic, function-based, at fixed x-value intervals; uses\n"
+    "`scipy.interpolate.interp1d()` ====\n"
+)
 # =================================
+
 
 def interpolate_df_at_fixed_x_intervals(x1, y1, x2, y2, x_interval):
     """
@@ -230,26 +238,30 @@ def interpolate_df_at_fixed_x_intervals(x1, y1, x2, y2, x_interval):
     # Create a new set of x values at fixed intervals
     # - The new x-values are produced as a floating point numpy `arange` array range of values.
     #   See: https://numpy.org/doc/stable/reference/generated/numpy.arange.html
+    # fmt: off
     x_new = np.arange(x_min, x_max + x_interval, x_interval)  # <========= HOW TO CREATE A NEW NUMPY
                                                               # FLOATING POINT RANGE ARRAY (array
                                                               # range)
+    # fmt: on
     x_new = pd.Series(x_new)  # convert to a Pandas Series
 
     # Create interpolated y values for each set of data at the new x values
-    interpolation_func1 = interp1d(x1, y1, kind='linear', fill_value='extrapolate')
-    interpolation_func2 = interp1d(x2, y2, kind='linear', fill_value='extrapolate')
+    interpolation_func1 = interp1d(x1, y1, kind="linear", fill_value="extrapolate")
+    interpolation_func2 = interp1d(x2, y2, kind="linear", fill_value="extrapolate")
     y1_new = interpolation_func1(x_new)
     y2_new = interpolation_func2(x_new)
     y_diff = y1_new - y2_new  # better way than doing it later, below
 
     # Return a new dataframe with the new x values, and the two sets of y values
-    df_interpolated = pd.DataFrame({
-        x1.name + "_new": x_new,     # the new set of x-values; arbitrarily use `x1`'s name
-        y1.name + "_new": y1_new,    # the new, interpolated y1 values
-        y2.name + "_new": y2_new,    # the new, interpolated y2 values
-        # Better way than doing this later, below
-        "y_diff": y_diff
-    })
+    df_interpolated = pd.DataFrame(
+        {
+            x1.name + "_new": x_new,  # the new set of x-values; arbitrarily use `x1`'s name
+            y1.name + "_new": y1_new,  # the new, interpolated y1 values
+            y2.name + "_new": y2_new,  # the new, interpolated y2 values
+            # Better way than doing this later, below
+            "y_diff": y_diff,
+        }
+    )
 
     # Do some math on the values; ex: calculate the difference between the two sets of y-values
     # - TODO/NB: if you know you need this calculation, it's cleaner to just do it *before* creating
@@ -262,6 +274,7 @@ def interpolate_df_at_fixed_x_intervals(x1, y1, x2, y2, x_interval):
 
     return df_interpolated  # Contains x_new, y1_new, y2_new, and y_diff
 
+
 # NB: NOT ALLOWED!
 #       ValueError: All arrays must be of the same length
 # df = pd.DataFrame({
@@ -270,7 +283,8 @@ def interpolate_df_at_fixed_x_intervals(x1, y1, x2, y2, x_interval):
 # })
 
 df_new_interpolated_at_fixed_x_intervals = interpolate_df_at_fixed_x_intervals(
-    df1['x1'], df1['y1'], df2['x2'], df2['y2'], x_interval=0.25)
+    df1["x1"], df1["y1"], df2["x2"], df2["y2"], x_interval=0.25
+)
 
 print(f"df1:\n{df1}\n")
 print(f"df2:\n{df2}\n")
@@ -278,9 +292,12 @@ print(f"df_new_interpolated_at_fixed_x_intervals:\n{df_new_interpolated_at_fixed
 
 # =================================
 # Method 3B to insert NaNs instead of allowing extrapolation outside of the input x-bounds.
-print("==== [BEST, if you want NO extrapolation] Method 3B: same as Method 3, except don't allow\n"
-      "extrapolation ====\n")
+print(
+    "==== [BEST, if you want NO extrapolation] Method 3B: same as Method 3, except don't allow\n"
+    "extrapolation ====\n"
+)
 # =================================
+
 
 def interpolate_df_at_fixed_x_intervals_no_extrapolation(x1, y1, x2, y2, x_interval):
     """
@@ -295,36 +312,46 @@ def interpolate_df_at_fixed_x_intervals_no_extrapolation(x1, y1, x2, y2, x_inter
     # To prevent extrapolation outside of the range of `x1` and `x2`, and to thereby force
     # those values to be `NaN` instead, set `bounds_error=False`.
     # - ie: use `bounds_error=False` to force NaNs for out-of-bounds values.
-    interpolation_func1 = interp1d(x1, y1, kind='linear', bounds_error=False)
-    interpolation_func2 = interp1d(x2, y2, kind='linear', bounds_error=False)
+    interpolation_func1 = interp1d(x1, y1, kind="linear", bounds_error=False)
+    interpolation_func2 = interp1d(x2, y2, kind="linear", bounds_error=False)
     y1_new = interpolation_func1(x_new)
     y2_new = interpolation_func2(x_new)
     y_diff = y1_new - y2_new
 
-    df_interpolated = pd.DataFrame({
-        "x_new": x_new,      # the new set of x-values; arbitrarily use `x1`'s name
-        "y1_new": y1_new,    # the new, interpolated y1 values
-        "y2_new": y2_new,    # the new, interpolated y2 values
-        "y_diff": y_diff
-    })
+    df_interpolated = pd.DataFrame(
+        {
+            "x_new": x_new,  # the new set of x-values; arbitrarily use `x1`'s name
+            "y1_new": y1_new,  # the new, interpolated y1 values
+            "y2_new": y2_new,  # the new, interpolated y2 values
+            "y_diff": y_diff,
+        }
+    )
 
     return df_interpolated
 
-df_new_interpolated_at_fixed_x_intervals_no_extrapolation = \
+
+df_new_interpolated_at_fixed_x_intervals_no_extrapolation = (
     interpolate_df_at_fixed_x_intervals_no_extrapolation(
-        df1['x1'], df1['y1'], df2['x2'], df2['y2'], x_interval=0.25)
+        df1["x1"], df1["y1"], df2["x2"], df2["y2"], x_interval=0.25
+    )
+)
 
 print(f"df1:\n{df1}\n")
 print(f"df2:\n{df2}\n")
-print(f"df_new_interpolated_at_fixed_x_intervals_no_extrapolation [NOTICE THE NAN values!]:\n"
-      f"{df_new_interpolated_at_fixed_x_intervals_no_extrapolation}\n")
+print(
+    f"df_new_interpolated_at_fixed_x_intervals_no_extrapolation [NOTICE THE NAN values!]:\n"
+    f"{df_new_interpolated_at_fixed_x_intervals_no_extrapolation}\n"
+)
 
 # =================================
 # [less-robust (and erroneous: CANNOT EXTRAPOLATE) alternative to using SciPy's `interp1d()`]
-print("==== [DO NOT USE! PRODUCES ERRONEOUS RESULTS WHEN EXTRAPOLATING OUTSIDE OF THE INPUT\n"
-      "X VALUES; all y_diff values should be zeros, but are not here!] METHOD 4: using\n"
-      "`np.interp()` at fixed x-value intervals ====")
+print(
+    "==== [DO NOT USE! PRODUCES ERRONEOUS RESULTS WHEN EXTRAPOLATING OUTSIDE OF THE INPUT\n"
+    "X VALUES; all y_diff values should be zeros, but are not here!] METHOD 4: using\n"
+    "`np.interp()` at fixed x-value intervals ===="
+)
 # =================================
+
 
 def interpolate_df_at_fixed_x_intervals_numpy(x1, y1, x2, y2, x_interval):
     """
@@ -339,23 +366,28 @@ def interpolate_df_at_fixed_x_intervals_numpy(x1, y1, x2, y2, x_interval):
     y2_new = np.interp(x_new, x2, y2)
     y_diff = y1_new - y2_new
 
-    df_interpolated = pd.DataFrame({
-        x1.name + "_new": x_new,     # the new set of x-values; arbitrarily use `x1`'s name
-        y1.name + "_new": y1_new,    # the new, interpolated y1 values
-        y2.name + "_new": y2_new,    # the new, interpolated y2 values
-        "y_diff": y_diff,
-    })
+    df_interpolated = pd.DataFrame(
+        {
+            x1.name + "_new": x_new,  # the new set of x-values; arbitrarily use `x1`'s name
+            y1.name + "_new": y1_new,  # the new, interpolated y1 values
+            y2.name + "_new": y2_new,  # the new, interpolated y2 values
+            "y_diff": y_diff,
+        }
+    )
 
     return df_interpolated  # Contains x_new, y1_new, y2_new, and y_diff
 
+
 df_new_interpolated_at_fixed_x_intervals_numpy = interpolate_df_at_fixed_x_intervals_numpy(
-    df1['x1'], df1['y1'], df2['x2'], df2['y2'], x_interval=0.25)
+    df1["x1"], df1["y1"], df2["x2"], df2["y2"], x_interval=0.25
+)
 
 print(f"df1:\n{df1}\n")
 print(f"df2:\n{df2}\n")
-print(f"df_new_interpolated_at_fixed_x_intervals_numpy:\n"
-      f"{df_new_interpolated_at_fixed_x_intervals_numpy}\n")
-
+print(
+    f"df_new_interpolated_at_fixed_x_intervals_numpy:\n"
+    f"{df_new_interpolated_at_fixed_x_intervals_numpy}\n"
+)
 
 
 # pylint: disable-next=pointless-string-statement

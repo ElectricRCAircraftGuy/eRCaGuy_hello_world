@@ -37,7 +37,6 @@ References:
 
 """
 
-
 import matplotlib.pyplot as plt
 
 from statistics import mean
@@ -57,45 +56,44 @@ y_speed = [
 # Figure 1
 # -----------
 f1 = plt.figure()
-plt.plot(x_cluster_size, y_speed, 'b-o', label='When writing a 5.3 GB file')
-plt.legend(loc='lower right')
-plt.xscale('log', base=2)
-plt.ylabel('Speed (MB/sec)')
-plt.xlabel('exFAT cluster size (KiB)')
+plt.plot(x_cluster_size, y_speed, "b-o", label="When writing a 5.3 GB file")
+plt.legend(loc="lower right")
+plt.xscale("log", base=2)
+plt.ylabel("Speed (MB/sec)")
+plt.xlabel("exFAT cluster size (KiB)")
 plt.title("exFAT cluster size vs speed")
 # display (x, y) values next to each point
 for i, x in enumerate(x_cluster_size):
     y = y_speed[i]
     # first element
     if i == 0:
-        plt.text(x+.2, y, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="left")
+        plt.text(x + 0.2, y, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="left")
     # last element
     elif i == len(x_cluster_size) - 1:
-        plt.text(x-10000, y, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="right")
+        plt.text(x - 10000, y, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="right")
     else:
-        plt.text(x, y-20, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="left")
+        plt.text(x, y - 20, f"({x} KiB, {y:.0f} MB/sec)", horizontalalignment="left")
 
 # -----------
 # Figure 2
 # -----------
 f2 = plt.figure()
 values = [7, 57, 121, 192, 123, 240, 546]
-labels = ['1950s', '1960s', '1970s', '1980s', '1990s', '2000s', '2010s']
+labels = ["1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s"]
 
-plt.plot(range(len(labels)), values, 'bo') # Plotting data
-plt.xticks(range(len(labels)), labels) # Redefining x-axis labels
+plt.plot(range(len(labels)), values, "bo")  # Plotting data
+plt.xticks(range(len(labels)), labels)  # Redefining x-axis labels
 
 for i, v in enumerate(values):
     # GS note: using `plt.text()` here works just fine too!
     # plt.text(i, v+25, "%d" %v, ha="center")
-    plt.text(i, v+25, "%d" %v, ha="center")
+    plt.text(i, v + 25, "%d" % v, ha="center")
 plt.ylim(-10, 595)
 
 # -----------
 # Show all figures
 # -----------
 plt.show()
-
 
 
 # pylint: disable-next=pointless-string-statement

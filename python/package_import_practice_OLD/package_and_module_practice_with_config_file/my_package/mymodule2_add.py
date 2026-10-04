@@ -13,14 +13,17 @@ Modified from @Aya's excellent answer here: https://stackoverflow.com/a/16985066
 # from my_package.mymodule1_int import to_int
 from mymodule1_int import to_int
 
+
 # Exported function
 def add(a, b):
     return to_int(a) + to_int(b)
 
+
 # Test function for module
 def _test():
-    assert add('1', '1') == 2
+    assert add("1", "1") == 2
     print("Tests passed!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

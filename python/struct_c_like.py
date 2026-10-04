@@ -45,10 +45,12 @@ References:
 
 import json  # for pretty-printing dicts
 
+
 class MyData:
     """
     A simple C-like struct with initializer function.
     """
+
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -68,7 +70,9 @@ class AnyData:
     """
     A truly bare-bones struct that the user can put any members into they want.
     """
+
     pass
+
 
 # Make a universal print function to print all user-added members of any class like this:
 def print_any_class(class_instance):
@@ -111,7 +115,6 @@ print()
 
 # Or by calling the universal print function I made above:
 print_any_class(myData2)
-
 
 
 # pylint: disable-next=pointless-string-statement

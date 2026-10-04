@@ -45,7 +45,6 @@ below over TCP like this.
 
 import socket
 
-
 # Note: `socket.SOCK_STREAM` is usually used with TCP and `socket.SOCK_DGRAM` is usually used with
 # UDP. See:
 # 1. Stack Overflow: What is SOCK_DGRAM and SOCK_STREAM?:
@@ -56,7 +55,7 @@ import socket
 #    https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/c/socket__geeksforgeeks_udp_server_GS_edit_GREAT.c
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-HOST = '192.168.0.1'
+HOST = "192.168.0.1"
 PORT = 9999
 s.connect((HOST, PORT))
 s.settimeout(1)
@@ -72,15 +71,14 @@ s.sendall("my command to send".encode())
 # 2. Read the response back from the device, up to this many bytes from the receive buffer
 data = s.recv(4096)
 
-print('Received', repr(data))
+print("Received", repr(data))
 # alternative way to print
-print('Received ', end='')
+print("Received ", end="")
 print(data)
 
 # Close the connection when done. Leaving a TCP connection open in an infinite loop, for instance,
 # will block other users on the computer from opening a socket to communicate with the same device.
 s.close()
-
 
 
 """

@@ -10,17 +10,21 @@ By Gabriel Staples
 Modified from @Aya's excellent answer here: https://stackoverflow.com/a/16985066/4561887
 """
 
+
 # Exported function
 def to_int(a):
     return int(a)
 
+
 # def get_MY_CONSTANT3():
 #     return ##########
 
+
 # Test function for module
 def _test():
-    assert to_int('1') == 1
+    assert to_int("1") == 1
     print("Tests passed!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()

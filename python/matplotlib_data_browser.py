@@ -28,17 +28,17 @@ class PointBrowser:
     def __init__(self):
         self.lastind = 0
 
-        self.text = ax.text(0.05, 0.95, 'selected: none',
-                            transform=ax.transAxes, va='top')
-        self.selected, = ax.plot([xs[0]], [ys[0]], 'o', ms=12, alpha=0.4,
-                                 color='yellow', visible=False)
+        self.text = ax.text(0.05, 0.95, "selected: none", transform=ax.transAxes, va="top")
+        (self.selected,) = ax.plot(
+            [xs[0]], [ys[0]], "o", ms=12, alpha=0.4, color="yellow", visible=False
+        )
 
     def on_press(self, event):
         if self.lastind is None:
             return
-        if event.key not in ('n', 'p'):
+        if event.key not in ("n", "p"):
             return
-        if event.key == 'n':
+        if event.key == "n":
             inc = 1
         else:
             inc = -1
@@ -76,17 +76,22 @@ class PointBrowser:
         ax2.clear()
         ax2.plot(X[dataind])
 
-        ax2.text(0.05, 0.9, f'mu={xs[dataind]:1.3f}\nsigma={ys[dataind]:1.3f}',
-                 transform=ax2.transAxes, va='top')
+        ax2.text(
+            0.05,
+            0.9,
+            f"mu={xs[dataind]:1.3f}\nsigma={ys[dataind]:1.3f}",
+            transform=ax2.transAxes,
+            va="top",
+        )
         ax2.set_ylim(-0.5, 1.5)
         self.selected.set_visible(True)
         self.selected.set_data([xs[dataind]], [ys[dataind]])
 
-        self.text.set_text('selected: %d' % dataind)
+        self.text.set_text("selected: %d" % dataind)
         fig.canvas.draw()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     # Fixing random state for reproducibility
@@ -97,12 +102,12 @@ if __name__ == '__main__':
     ys = np.std(X, axis=1)
 
     fig, (ax, ax2) = plt.subplots(2, 1)
-    ax.set_title('click on point to plot time series')
-    line, = ax.plot(xs, ys, 'o', picker=True, pickradius=5)
+    ax.set_title("click on point to plot time series")
+    (line,) = ax.plot(xs, ys, "o", picker=True, pickradius=5)
 
     browser = PointBrowser()
 
-    fig.canvas.mpl_connect('pick_event', browser.on_pick)
-    fig.canvas.mpl_connect('key_press_event', browser.on_press)
+    fig.canvas.mpl_connect("pick_event", browser.on_pick)
+    fig.canvas.mpl_connect("key_press_event", browser.on_press)
 
     plt.show()

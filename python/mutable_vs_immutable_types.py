@@ -68,7 +68,7 @@ def modify_variable(var):
         var += 1  # increment it
     elif type(var) is str:
         print("var is a str (string)")
-        var += "; some more words" # append some new words to it
+        var += "; some more words"  # append some new words to it
     elif type(var) is list:
         print("var is a list")
         var.append(1)  # append a 1 to it
@@ -122,6 +122,7 @@ modify_variable(my_list)
 modify_variable(my_dict)
 modify_variable(my_tuple)
 
+# fmt: off
 print("is_mutable(my_bool, True)                                    --> ",
        is_mutable(my_bool, True))
 print("is_mutable(my_float, 1.0)                                    --> ",
@@ -137,6 +138,7 @@ print('is_mutable(my_dict, {"key1": "value1", "key2": "value2"})    --> ',
 print("is_mutable(my_tuple, (7, 8, 9))                              --> ",
        is_mutable(my_tuple, (7, 8, 9)))
 print()
+# fmt: on
 
 # Here's another way to test if a type is mutable:
 # 1. Set 3 variables to the same value.
@@ -156,7 +158,7 @@ my_list3 = my_list2 = my_list1 = [7, 8, 9]
 my_list3.append(1)
 if my_list3 == my_list2 == my_list1:
     # side effects occurred (modifying one variable modified another)
-    print("list is mutable")   # <== this is the result
+    print("list is mutable")  # <== this is the result
 else:
     # side effects did not occur (modifying one variable did not modify another)
     print("list is immutable")
@@ -176,13 +178,13 @@ my_dict1 = {"key": "value"}
 my_dict2 = {"key": "value"}
 my_dict3 = {"key": "value"}
 # Therefore, each of these is False because the underlying objects differ.
-print(my_dict3 is my_dict2)    # False
-print(my_dict2 is my_dict1)    # False
-print(my_dict3 is my_dict1)    # False
+print(my_dict3 is my_dict2)  # False
+print(my_dict2 is my_dict1)  # False
+print(my_dict3 is my_dict1)  # False
 # But, each of these is True because all variables have the same value.
-print(my_dict3 == my_dict2)    # True
-print(my_dict2 == my_dict1)    # True
-print(my_dict3 == my_dict1)    # True
+print(my_dict3 == my_dict2)  # True
+print(my_dict2 == my_dict1)  # True
+print(my_dict3 == my_dict1)  # True
 print()
 
 print("IMMUTABLE TYPES")
@@ -191,13 +193,13 @@ my_int1 = 7
 my_int2 = 7
 my_int3 = 7
 # Therefore, each of these is True because the underlying objects are the same.
-print(my_int3 is my_int2)      # True
-print(my_int2 is my_int1)      # True
-print(my_int3 is my_int1)      # True
+print(my_int3 is my_int2)  # True
+print(my_int2 is my_int1)  # True
+print(my_int3 is my_int1)  # True
 # And, each of these is also True because all variables have the same value.
-print(my_int3 == my_int2)      # True
-print(my_int2 == my_int1)      # True
-print(my_int3 == my_int1)      # True
+print(my_int3 == my_int2)  # True
+print(my_int2 == my_int1)  # True
+print(my_int3 == my_int1)  # True
 print()
 #
 # Try the test again, this time like this
@@ -206,13 +208,13 @@ my_int1 = 7
 my_int2 = my_int1
 my_int3 = my_int2
 # Same as above: same underlying object, so each of these is True
-print(my_int3 is my_int2)      # True
-print(my_int2 is my_int1)      # True
-print(my_int3 is my_int1)      # True
+print(my_int3 is my_int2)  # True
+print(my_int2 is my_int1)  # True
+print(my_int3 is my_int1)  # True
 # Same as above: same value, so each of these is True
-print(my_int3 == my_int2)      # True
-print(my_int2 == my_int1)      # True
-print(my_int3 == my_int1)      # True
+print(my_int3 == my_int2)  # True
+print(my_int2 == my_int1)  # True
+print(my_int3 == my_int1)  # True
 print()
 
 
@@ -227,13 +229,13 @@ my_dict2 = my_dict1
 my_dict3 = my_dict2
 # Therefore, each of these is True because the underlying object is the same
 # blob of memory.
-print(my_dict3 is my_dict2)    # True
-print(my_dict2 is my_dict1)    # True
-print(my_dict3 is my_dict1)    # True
+print(my_dict3 is my_dict2)  # True
+print(my_dict2 is my_dict1)  # True
+print(my_dict3 is my_dict1)  # True
 # And each of these is True because all variables have the same value.
-print(my_dict3 == my_dict2)    # True
-print(my_dict2 == my_dict1)    # True
-print(my_dict3 == my_dict1)    # True
+print(my_dict3 == my_dict2)  # True
+print(my_dict2 == my_dict1)  # True
+print(my_dict3 == my_dict1)  # True
 print()
 
 # Force-copy **by value**, so each variable has its own underlying object.
@@ -242,13 +244,13 @@ my_dict1 = {"key": "value"}
 my_dict2 = my_dict1.copy()
 my_dict3 = my_dict2.copy()
 # Therefore, each of these is False because the underlying objects differ.
-print(my_dict3 is my_dict2)    # False
-print(my_dict2 is my_dict1)    # False
-print(my_dict3 is my_dict1)    # False
+print(my_dict3 is my_dict2)  # False
+print(my_dict2 is my_dict1)  # False
+print(my_dict3 is my_dict1)  # False
 # But, each of these is True because all variables have the same value.
-print(my_dict3 == my_dict2)    # True
-print(my_dict2 == my_dict1)    # True
-print(my_dict3 == my_dict1)    # True
+print(my_dict3 == my_dict2)  # True
+print(my_dict2 == my_dict1)  # True
+print(my_dict3 == my_dict1)  # True
 print()
 
 
@@ -256,9 +258,11 @@ print()
 print("How to update immutable vs mutable variables in a function:\n")
 # ==============================================================================
 
+
 def modify_immutable_type(var_immutable):
     var_immutable += 1  # increment
     return var_immutable
+
 
 my_int = 7
 print(my_int)  # 7
@@ -270,6 +274,7 @@ print()
 
 def modify_mutable_type(var_mutable):
     var_mutable.append(1)  # append to a list
+
 
 my_list = [7, 8, 9]
 print(my_list)  # [7, 8, 9]
@@ -283,6 +288,7 @@ print()
 def modify_immutable_type_hack(var_list):
     var_list[0] += 1  # increment
 
+
 my_int = 10
 my_int_list = [my_int]
 print(my_int_list[0])  # 10
@@ -292,9 +298,8 @@ print(my_int_list[0])  # 10
 # list gets passed **by reference** instead of **by value.**
 modify_immutable_type_hack(my_int_list)
 print(my_int_list[0])  # 11
-print(my_int)          # 10
+print(my_int)  # 10
 print()
-
 
 
 # pylint: disable-next=pointless-string-statement

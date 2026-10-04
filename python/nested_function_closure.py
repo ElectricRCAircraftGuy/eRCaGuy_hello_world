@@ -72,9 +72,9 @@ def outer_function():
 
     return inner_function
 
+
 my_func_closure = outer_function()
 my_func_closure()  # Output: 1
-
 
 
 # pylint: disable-next=pointless-string-statement

@@ -9,10 +9,10 @@ May 2025
 
 Goal: use introspection to see which underlying socket selectors (low-level OS-supported socket
 utilities, such as on Linux: select, `poll()`, or `epoll()`) are available on a given OS, such as
-Linux or Windows. 
-- See the references below. 
+Linux or Windows.
+- See the references below.
 
-My prompt to GitHub Copilot: 
+My prompt to GitHub Copilot:
 
 > Write me some Python with the selectors module to see what underlying selector I get. I'll run it
 on different OSs to see what each OS provides.
@@ -40,31 +40,32 @@ References:
 1. https://docs.python.org/3/library/selectors.html [highest level]
 1. https://docs.python.org/3/library/select.html    [mid-level]
 1. https://docs.python.org/3/library/socket.html    [lowest level]
-1. 
+1.
 
 """
 
 import selectors
 import sys
 
+
 def check_and_print_selector():
     """
     Check and print the default selector for the current platform.
-    
+
     This function creates a default selector using the selectors module and prints
     information about the selector, including its class name, module, and available
     selector implementations.
     """
 
-    # Create default selector for this platform. 
+    # Create default selector for this platform.
     # See: https://docs.python.org/3/library/selectors.html#selectors.DefaultSelector
     default_selector = selectors.DefaultSelector()
-    
+
     # Get information about the selector
     selector_class = default_selector.__class__
     selector_class_name = selector_class.__name__
     selector_class_module = selector_class.__module__
-    
+
     print(f"Python version:                {sys.version}")
     print(f"Platform (OS):                 {sys.platform}")
     print()
@@ -72,16 +73,17 @@ def check_and_print_selector():
     print(f"Default selector class:        {selector_class}")
     print(f"Default selector class module: {selector_class_module}")
     print(f"Default selector class name:   {selector_class_name}")
-    
+
     # Show all available selector implementations
     print("\nAvailable selector implementations on this OS:")
     i = 0
     for name in dir(selectors):
-        if name.endswith('Selector'):
+        if name.endswith("Selector"):
             i += 1
             print(f"  {i}. {name}")
 
     print()
+
 
 if __name__ == "__main__":
     check_and_print_selector()

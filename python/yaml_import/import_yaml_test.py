@@ -21,18 +21,20 @@ References:
 import os
 import yaml
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Obtain the path to the directory this file is contained in
     # See: https://stackoverflow.com/questions/5137497/find-current-directory-and-files-directory/5137509#5137509
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    print("Directory this Python file is in = \"{}\"\n".format(dir_path))
+    print('Directory this Python file is in = "{}"\n'.format(dir_path))
 
+    # fmt: off
     print("====================\n"
           "1ST YAML FILE IMPORT\n"
           "====================\n")
+    # fmt: on
     # Open 1st yaml config file
-    stream = open("{}/my_config1.yaml".format(dir_path), 'r')
+    stream = open("{}/my_config1.yaml".format(dir_path), "r")
     dictionary = yaml.load(stream)
     # print manually
     for key, value in dictionary.items():
@@ -41,11 +43,13 @@ if __name__ == '__main__':
     print()
     print(yaml.dump(dictionary))
 
+    # fmt: off
     print("====================\n"
           "2ND YAML FILE IMPORT\n"
           "====================\n")
+    # fmt: on
     # Open 2nd yaml config file & update the dictionary
-    stream = open("{}/my_config2.yaml".format(dir_path), 'r')
+    stream = open("{}/my_config2.yaml".format(dir_path), "r")
     dictionary.update(yaml.load(stream))
     # print manually
     for key, value in dictionary.items():

@@ -25,7 +25,7 @@ THIS_FILE_DIR = os.path.dirname(FULL_PATH_TO_THIS_FILE)
 
 # the number of levels deep from this file's directory up to the package root
 # - update this for this particular "__init__.py" file
-NUM_LEVELS_DEEP = 0 #########
+NUM_LEVELS_DEEP = 0  #########
 
 PACKAGE_ROOT_DIR = THIS_FILE_DIR
 for i in range(NUM_LEVELS_DEEP):
@@ -34,4 +34,3 @@ for i in range(NUM_LEVELS_DEEP):
 print(f"PACKAGE_ROOT_DIR = {PACKAGE_ROOT_DIR}")  # debugging
 
 sys.path.append(PACKAGE_ROOT_DIR)
-

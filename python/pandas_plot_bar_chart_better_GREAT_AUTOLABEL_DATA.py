@@ -45,6 +45,7 @@ References:
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
 def add_newlines_every_n_chars(s, n):
     """
     ********** NOTE **********
@@ -72,7 +73,7 @@ def add_newlines_every_n_chars(s, n):
         # print(f"i_start = {i_start}")
 
         # Find the nearest underscore to the nth character
-        split_index = s.find('_', i_start + n//2, i_start + n + n//2)
+        split_index = s.find("_", i_start + n // 2, i_start + n + n // 2)
 
         if split_index == -1:
             # If there is no underscore in the range, split at the nth character
@@ -85,7 +86,7 @@ def add_newlines_every_n_chars(s, n):
             break
 
         # Split the string
-        s = s[:split_index] + '\n' + s[split_index:]
+        s = s[:split_index] + "\n" + s[split_index:]
 
         remaining_chars = len(s) - split_index
         i_start = split_index
@@ -94,12 +95,17 @@ def add_newlines_every_n_chars(s, n):
 
 
 results_dict = {
-    "Method": ["iterrows", "default_named_itertuples", "nameless_itertuples", "polyvalent_itertuples"],
+    "Method": [
+        "iterrows",
+        "default_named_itertuples",
+        "nameless_itertuples",
+        "polyvalent_itertuples",
+    ],
     "Time_sec": [104.96, 1.26, 0.94, 2.94],
 }
 
-results_df = pd.DataFrame(results_dict) # columns are "Method" and "Time_sec"
-results_df = results_df.sort_values(by="Time_sec", axis='rows', ascending=False)
+results_df = pd.DataFrame(results_dict)  # columns are "Method" and "Time_sec"
+results_df = results_df.sort_values(by="Time_sec", axis="rows", ascending=False)
 # Be sure to reset the indices after sorting, or else the indices will be sorted out of their
 # original order now too!
 # - Note: this defaults to `drop=False`, which means the old indices will be kept in a new column
@@ -108,21 +114,26 @@ results_df = results_df.sort_values(by="Time_sec", axis='rows', ascending=False)
 results_df = results_df.reset_index()
 
 results_df["Method_short_names"] = results_df["Method"].apply(
-    lambda s: add_newlines_every_n_chars(s, 12))
+    lambda s: add_newlines_every_n_chars(s, 12)
+)
 
 # create a bar chart
 fig = plt.figure(figsize=(10, 7))  # default is `(6.4, 4.8)` inches
 plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-plt.title('Time vs iteration method (*Lower* is better)', fontsize=14)
-plt.xlabel('Iteration method', labelpad=15, fontsize=12) # use labelpad to lower the label
-plt.ylabel('Time (sec)', fontsize=12)
+plt.title("Time vs iteration method (*Lower* is better)", fontsize=14)
+plt.xlabel("Iteration method", labelpad=15, fontsize=12)  # use labelpad to lower the label
+plt.ylabel("Time (sec)", fontsize=12)
 
 # Prepare to add text labels to each bar
-results_df["text_x"] = results_df.index # use the indices as the x-positions
-results_df["text_y"] = results_df["Time_sec"] + 0.05*results_df["Time_sec"].max()
+results_df["text_x"] = results_df.index  # use the indices as the x-positions
+results_df["text_y"] = results_df["Time_sec"] + 0.05 * results_df["Time_sec"].max()
 results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].min()
-results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\n" +
-                            results_df["time_multiplier"].round(1).astype(str) + "x")
+results_df["text_label"] = (
+    results_df["Time_sec"].round(3).astype(str)
+    + " sec\n"
+    + results_df["time_multiplier"].round(1).astype(str)
+    + "x"
+)
 
 # ********** NOTE **********
 # The most up-to-date version of this auto-labelling code is now in
@@ -131,31 +142,24 @@ results_df["text_label"] = (results_df["Time_sec"].round(3).astype(str) + " sec\
 # Use a list comprehension to actually call `plot.text()` to add a label for each row in the
 # dataframe
 [
-    plt.text(
-        text_x,
-        text_y,
-        text_label,
-        horizontalalignment='center',
-        verticalalignment='center'
-    ) for text_x, text_y, text_label
+    plt.text(text_x, text_y, text_label, horizontalalignment="center", verticalalignment="center")
+    for text_x, text_y, text_label
     # Note: this `[[...]]` syntax is called "double-bracket indexing" and is used to select a subset
     # of columns from the dataframe, kind of like boolean indexing. The inner `[]` brackets create a
     # list from the column names within them, and the outer `[]` brackets accept this list to index
     # into the dataframe and select just this list of columns.
     # - One of the **list comprehension** examples in this answer here uses `.to_numpy()` like this:
     #   https://stackoverflow.com/a/55557758/4561887
-    in results_df[[
-        "text_x",
-        "text_y",
-        "text_label"
-    ]].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
-                   # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
+    in results_df[
+        ["text_x", "text_y", "text_label"]
+    ].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
+    # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
 ]
 
 print(f"results_df =\n{results_df}")
 
 ymin, ymax = plt.ylim()
-plt.ylim(ymin, ymax*1.1)  # add 10% to the top of the y-axis
+plt.ylim(ymin, ymax * 1.1)  # add 10% to the top of the y-axis
 # increase the whitespace under the figure to leave space for long, wrapping labels
 fig.subplots_adjust(bottom=0.2)
 

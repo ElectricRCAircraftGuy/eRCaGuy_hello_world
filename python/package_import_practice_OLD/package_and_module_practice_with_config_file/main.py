@@ -14,12 +14,14 @@ from my_package.mymodule2_add import add
 
 # works!
 import config
+
 config._test()
 print("config.MY_CONSTANT2 = {}".format(config.MY_CONSTANT2))
 print()
 
 # also works!
 from config import MY_CONSTANT1
+
 print("MY_CONSTANT1 = {}".format(MY_CONSTANT1))
 # print("MY_CONSTANT2 = {}".format(MY_CONSTANT2))  # not defined
 print()
@@ -31,5 +33,5 @@ def main():
     assert sum == 2
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

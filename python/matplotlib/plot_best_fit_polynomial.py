@@ -79,12 +79,12 @@ np.random.seed(11)
 # Line-space: get evenly-spaced points to plot a line. See:
 # https://numpy.org/doc/stable/reference/generated/numpy.linspace.html
 # Returns a numpy ndarray: https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html
-x = np.linspace(0, 2*np.pi, num=20)
+x = np.linspace(0, 2 * np.pi, num=20)
 
 # Create some points from numpy ndarray `x` which are sinusoidal + some normal (Gaussian) noise.
 # See `numpy.random.normal()` here:
 # https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html
-y = np.sin(x) + np.random.normal(scale=.1, size=x.shape)
+y = np.sin(x) + np.random.normal(scale=0.1, size=x.shape)
 
 # For Chebyshev Series, see:
 # 1. https://numpy.org/doc/stable/reference/routines.polynomials.chebyshev.html
@@ -109,11 +109,20 @@ xx_poly, yy_poly = poly_series.linspace()
 
 f1 = plt.figure()
 
-plt.plot(x, y, 'o')
-plt.plot(xx_cheby, yy_cheby, linewidth=4,
-   label="Chebyshev Series 5th degree\nleast squares best fit curve")
-plt.plot(xx_poly, yy_poly, 'k', linewidth=1,
-   label="Polynomial Series 5th degree\nleast squares best fit curve")
+plt.plot(x, y, "o")
+plt.plot(
+    xx_cheby,
+    yy_cheby,
+    linewidth=4,
+    label="Chebyshev Series 5th degree\nleast squares best fit curve",
+)
+plt.plot(
+    xx_poly,
+    yy_poly,
+    "k",
+    linewidth=1,
+    label="Polynomial Series 5th degree\nleast squares best fit curve",
+)
 
 plt.legend()
 plt.show()

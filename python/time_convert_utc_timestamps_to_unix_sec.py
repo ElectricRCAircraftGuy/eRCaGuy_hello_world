@@ -39,8 +39,8 @@ References:
 
 """
 
-
 import datetime
+
 
 def utc_timestamp_to_unix_sec(utc_yyyy_mm_dd_str, utc_time_of_day_sec):
     """
@@ -113,16 +113,15 @@ def test_utc_timestamp_to_unix_sec():
     assert utc_timestamp_to_unix_sec("2023.09.23", 0) == 1695427200
     assert utc_timestamp_to_unix_sec("2023.09.23", 4123) == (1695427200 + 4123)
 
-    print("\033[32mAll unit tests passed!\033[0m") # print in green
+    print("\033[32mAll unit tests passed!\033[0m")  # print in green
 
 
 def run_unit_tests():
     test_utc_timestamp_to_unix_sec()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_unit_tests()
-
 
 
 # pylint: disable-next=pointless-string-statement

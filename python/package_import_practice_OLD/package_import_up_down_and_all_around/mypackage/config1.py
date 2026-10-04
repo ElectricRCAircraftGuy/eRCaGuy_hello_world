@@ -72,6 +72,7 @@ MY_CONSTANT1 = 11
 MY_CONSTANT2 = 22
 MY_CONSTANT3 = 33
 
+
 def _test():
     print(textwrap.dedent(f"""\
         MY_CONSTANT1 = {MY_CONSTANT1}
@@ -87,7 +88,8 @@ def _test():
     """))
     print()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     _test()
 
 

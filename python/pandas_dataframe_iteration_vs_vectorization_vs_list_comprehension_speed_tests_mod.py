@@ -73,14 +73,14 @@ FILENAME_NO_EXTENSION = os.path.splitext(FILENAME)[0]
 # For text formatting and colorization in the terminal.
 # - See my ANSI format library here:
 #   https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world/blob/master/bash/ansi_text_format_lib.sh
-ANSI_START = "\033["    # start of an ANSI formatting sequence
-ANSI_FG_GRE = ";32"     # foreground color green
-ANSI_FG_BLU = ";34"     # foreground color blue
+ANSI_START = "\033["  # start of an ANSI formatting sequence
+ANSI_FG_GRE = ";32"  # foreground color green
+ANSI_FG_BLU = ";34"  # foreground color blue
 ANSI_FG_BR_BLU = ";94"  # foreground color bright blue
-ANSI_END = "m"          # end of an ANSI formatting sequence
+ANSI_END = "m"  # end of an ANSI formatting sequence
 ANSI_OFF = f"{ANSI_START}{ANSI_END}"
-FGR = f"{ANSI_START}{ANSI_FG_GRE}{ANSI_END}"     # green text
-FBL = f"{ANSI_START}{ANSI_FG_BLU}{ANSI_END}"     # blue text
+FGR = f"{ANSI_START}{ANSI_FG_GRE}{ANSI_END}"  # green text
+FBL = f"{ANSI_START}{ANSI_FG_BLU}{ANSI_END}"  # blue text
 FBB = f"{ANSI_START}{ANSI_FG_BR_BLU}{ANSI_END}"  # bright blue text
 F = ANSI_OFF
 
@@ -92,14 +92,15 @@ def mkdir(directory):
 
 DEBUG_ON = False  # set to False to disable debug prints
 
+
 def debug_print(*args, **kwargs):
     if DEBUG_ON:
         print("DEBUG: ", *args, **kwargs)
 
 
 def save_figure(filename):
-    plt.savefig(f'{SCRIPT_DIRECTORY}/{filename}.svg')
-    plt.savefig(f'{SCRIPT_DIRECTORY}/{filename}.png')
+    plt.savefig(f"{SCRIPT_DIRECTORY}/{filename}.svg")
+    plt.savefig(f"{SCRIPT_DIRECTORY}/{filename}.png")
 
 
 def add_newlines_every_n_chars(s, n):
@@ -145,21 +146,25 @@ def add_newlines_every_n_chars(s, n):
 
         # Find the char of interest which is nearest to the nth character
         # See: https://docs.python.org/3/library/re.html#re.search
-        match = re.search(regex_pattern, s[i_start + n//2:i_start + n + n//2])
+        match = re.search(regex_pattern, s[i_start + n // 2 : i_start + n + n // 2])
         if match:
-            debug_print(f"match.start() (offset by (i_start + n//2) = "
-                      + f"{i_start + n//2}) = {match.start()}")
+            debug_print(
+                f"match.start() (offset by (i_start + n//2) = "
+                + f"{i_start + n//2}) = {match.start()}"
+            )
 
             # If there is a match, split one char to the right of the match, just after the matching
             # char we found
-            split_index = i_start + n//2 + match.start() + 1
-            debug_print(f"split_index = i_start + n//2 + match.start() + 1 = "
-                      + f"{i_start} + {n//2} + {match.start()} + 1 = {split_index}")
+            split_index = i_start + n // 2 + match.start() + 1
+            debug_print(
+                f"split_index = i_start + n//2 + match.start() + 1 = "
+                + f"{i_start} + {n//2} + {match.start()} + 1 = {split_index}"
+            )
             if split_index >= len(s):
                 break
 
         # Split the string
-        s = s[:split_index] + '\n' + s[split_index:]
+        s = s[:split_index] + "\n" + s[split_index:]
 
         remaining_chars = len(s) - split_index - 1  # subtract the 1 we added above
         i_start = split_index + 1  # + 1 to go to the right of the newline char we just inserted
@@ -187,41 +192,38 @@ def plot_data(results_df, num_data_rows, num_data_cols):
     # create a bar chart
     fig = plt.figure(figsize=(19, 13))  # default is `(6.4, 4.8)` inches
     plt.bar(results_df["Method_short_names"], results_df["Time_sec"])
-    plt.title(f'Computation time vs Pandas iteration technique over {num_data_rows:,} rows ' +
-              f'x {num_data_cols} columns\n' +
-              f'in a DataFrame (*Lower* is better; {len(results_df)} techniques tested).',
-              fontsize=14)
-    plt.xlabel('Iteration technique', labelpad=15, fontsize=12) # use labelpad to lower the label
-    plt.ylabel('Computation time (sec)', fontsize=12)
+    plt.title(
+        f"Computation time vs Pandas iteration technique over {num_data_rows:,} rows "
+        + f"x {num_data_cols} columns\n"
+        + f"in a DataFrame (*Lower* is better; {len(results_df)} techniques tested).",
+        fontsize=14,
+    )
+    plt.xlabel("Iteration technique", labelpad=15, fontsize=12)  # use labelpad to lower the label
+    plt.ylabel("Computation time (sec)", fontsize=12)
 
     # Prepare to add text labels to each bar
-    results_df["text_x"] = results_df.index # use the indices as the x-positions
-    results_df["text_y"] = results_df["Time_sec"] + 0.05*results_df["Time_sec"].max()
+    results_df["text_x"] = results_df.index  # use the indices as the x-positions
+    results_df["text_y"] = results_df["Time_sec"] + 0.05 * results_df["Time_sec"].max()
     results_df["time_multiplier"] = results_df["Time_sec"] / results_df["Time_sec"].min()
-    results_df["text_label"] = (results_df["Time_sec"].map("{:.4f} sec\n".format) +
-                                results_df["time_multiplier"].map("{:.2f}x".format))
+    results_df["text_label"] = results_df["Time_sec"].map("{:.4f} sec\n".format) + results_df[
+        "time_multiplier"
+    ].map("{:.2f}x".format)
 
     # Use a list comprehension to actually call `plot.text()` to **automatically add a plot label**
     # for each row in the dataframe
     [
         plt.text(
-            text_x,
-            text_y,
-            text_label,
-            horizontalalignment='center',
-            verticalalignment='center'
-        ) for text_x, text_y, text_label
-        in zip(
-            results_df["text_x"],
-            results_df["text_y"],
-            results_df["text_label"]
+            text_x, text_y, text_label, horizontalalignment="center", verticalalignment="center"
+        )
+        for text_x, text_y, text_label in zip(
+            results_df["text_x"], results_df["text_y"], results_df["text_label"]
         )
     ]
 
     print(f"results_df =\n{results_df}")
 
     ymin, ymax = plt.ylim()
-    plt.ylim(ymin, ymax*1.1)  # add 10% to the top of the y-axis
+    plt.ylim(ymin, ymax * 1.1)  # add 10% to the top of the y-axis
     # increase the whitespace under the figure to leave space for long, wrapping labels; decrease
     # the whitespace on all other sides
     fig.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.25)
@@ -233,14 +235,7 @@ def calculate_new_column_b_value(b_value):
     return b_value_new
 
 
-def calculate_val(
-        A_i_minus_2,
-        A_i_minus_1,
-        A,
-        A_i_plus_1,
-        B,
-        C,
-        D):
+def calculate_val(A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D):
     """
     Calculate and return a new value, `val`, by performing the following equation:
     val_i = 2 * A_(i-2)
@@ -273,7 +268,7 @@ def assert_all_results_are_equal(df_dict):
     df_first = df_dict[list(df_dict.keys())[0]]
     series_first = df_first["val"]
     for name, df in df_dict.items():
-        print(f"Checking stats for technique \"{name}\"")
+        print(f'Checking stats for technique "{name}"')
 
         debug_print(df)
         debug_print(f"\ndf.dtypes =\n{df.dtypes}\n\n")
@@ -300,7 +295,7 @@ def run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt
     time_end_sec = time.monotonic()
 
     val = df["val"]
-    print(f"len(val) = {len(val)}") # debugging
+    print(f"len(val) = {len(val)}")  # debugging
     # print(f"val[:10] = {val[:10]}") # debugging
     # print(f"val[-10:] = {val[-10:]}") # debugging
 
@@ -309,7 +304,7 @@ def run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt
     df_dict[name] = df
 
     print(f"{FBL}dt_sec[{name}] = {dt_sec[name]:.6f} sec{F}")
-    print(f'df_dict[{name}]:\n------\n{df_dict[name]}')
+    print(f"df_dict[{name}]:\n------\n{df_dict[name]}")
 
 
 def main():
@@ -339,7 +334,7 @@ def main():
     # inside `calculate_val()`
 
     dt_sec = {}  # dictionary of time deltas in seconds
-    df_dict = {}   # dictionary mapping string names to Pandas DataFrame objects
+    df_dict = {}  # dictionary mapping string names to Pandas DataFrame objects
     technique_num = 0
 
     # ==============================================================================================
@@ -347,18 +342,19 @@ def main():
     print(f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing ===")
     # ==============================================================================================
     name = f"{technique_num}_raw_for_loop_using_regular_df_indexing"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for i in range(len(df)):
-            if i < 2 or i > len(df)-2:
+            if i < 2 or i > len(df) - 2:
                 continue
 
             val[i] = calculate_val(
-                df["A"][i-2],
-                df["A"][i-1],
+                df["A"][i - 2],
+                df["A"][i - 1],
                 df["A"][i],
-                df["A"][i+1],
+                df["A"][i + 1],
                 df["B"][i],
                 df["C"][i],
                 df["D"][i],
@@ -369,25 +365,28 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.loc[]` " +
-           "label-based indexing ===")
+    print(
+        f"\n=== Technique {technique_num}: raw Python `for` loop using `df.loc[]` "
+        + "label-based indexing ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_raw_for_loop_using_df.loc[]_indexing"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for i in range(len(df)):
-            if i < 2 or i > len(df)-2:
+            if i < 2 or i > len(df) - 2:
                 continue
 
             val[i] = calculate_val(
-                df.loc[i-2, "A"],
-                df.loc[i-1, "A"],
-                df.loc[i,   "A"],
-                df.loc[i+1, "A"],
-                df.loc[i,   "B"],
-                df.loc[i,   "C"],
-                df.loc[i,   "D"],
+                df.loc[i - 2, "A"],
+                df.loc[i - 1, "A"],
+                df.loc[i, "A"],
+                df.loc[i + 1, "A"],
+                df.loc[i, "B"],
+                df.loc[i, "C"],
+                df.loc[i, "D"],
             )
 
         df["val"] = val  # put this column back into the dataframe
@@ -396,10 +395,13 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.iloc[]` " +
-           "index-based indexing ===")
+    print(
+        f"\n=== Technique {technique_num}: raw Python `for` loop using `df.iloc[]` "
+        + "index-based indexing ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_raw_for_loop_using_df.iloc[]_indexing"
+
     def technique_to_run_and_time(df):
 
         # column indices
@@ -408,19 +410,19 @@ def main():
         i_C = 2
         i_D = 3
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for i in range(len(df)):
-            if i < 2 or i > len(df)-2:
+            if i < 2 or i > len(df) - 2:
                 continue
 
             val[i] = calculate_val(
-                df.iloc[i-2, i_A],
-                df.iloc[i-1, i_A],
-                df.iloc[i,   i_A],
-                df.iloc[i+1, i_A],
-                df.iloc[i,   i_B],
-                df.iloc[i,   i_C],
-                df.iloc[i,   i_D],
+                df.iloc[i - 2, i_A],
+                df.iloc[i - 1, i_A],
+                df.iloc[i, i_A],
+                df.iloc[i + 1, i_A],
+                df.iloc[i, i_B],
+                df.iloc[i, i_C],
+                df.iloc[i, i_D],
             )
 
         df["val"] = val  # put this column back into the dataframe
@@ -429,21 +431,24 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [BAD-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ===")
+    print(
+        f"\n=== Technique {technique_num} [BAD-**NEVER** USE!]: use `iterrows()` in a Python `for` loop ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_iterrows_in_for_loop"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for index, row in df.iterrows():
-            if index < 2 or index > len(df)-2:
+            if index < 2 or index > len(df) - 2:
                 continue
 
             val[index] = calculate_val(
-                df["A"][index-2],
-                df["A"][index-1],
+                df["A"][index - 2],
+                df["A"][index - 1],
                 row["A"],
-                df["A"][index+1],
+                df["A"][index + 1],
                 row["B"],
                 row["C"],
                 row["D"],
@@ -454,8 +459,10 @@ def main():
     run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
-    print("\n=== For all of the next examples, we must first prepare the dataframe by adding\n" +
-          "columns with previous and next values: A_(i-2), A_(i-1), and A_(i+1). ===")
+    print(
+        "\n=== For all of the next examples, we must first prepare the dataframe by adding\n"
+        + "columns with previous and next values: A_(i-2), A_(i-1), and A_(i+1). ==="
+    )
     # ==============================================================================================
     name = "adding_shifted_data"
 
@@ -471,7 +478,7 @@ def main():
     # techniques below will end up matching the stats which were produced by the prior techniques
     # above.
     # df_original = df_original.dropna()
-    df_original.iloc[:2, :] = np.NAN   # slicing operators: first two rows, all columns
+    df_original.iloc[:2, :] = np.NAN  # slicing operators: first two rows, all columns
     df_original.iloc[-1:, :] = np.NAN  # slicing operators: last row, all columns
 
     time_end_sec = time.monotonic()
@@ -481,13 +488,16 @@ def main():
     # ==============================================================================================
     # MOD: using the pre-shifted rows
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing "
-          f"and the pre-shifted rows ===")
+    print(
+        f"\n=== Technique {technique_num}: raw Python `for` loop using regular df indexing "
+        f"and the pre-shifted rows ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_MOD_raw_for_loop_using_regular_df_indexing_and_the_preshifted_rows"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for i in range(len(df)):
             val[i] = calculate_val(
                 df["A_i_minus_2"][i],
@@ -505,13 +515,16 @@ def main():
     # ==============================================================================================
     # MOD: using the pre-shifted rows
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.loc[]` " +
-           "label-based indexing and the pre-shifted rows ===")
+    print(
+        f"\n=== Technique {technique_num}: raw Python `for` loop using `df.loc[]` "
+        + "label-based indexing and the pre-shifted rows ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_MOD_raw_for_loop_using_df.loc[]_indexing_and_the_preshifted_rows"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for i in range(len(df)):
             val[i] = calculate_val(
                 df.loc[i, "A_i_minus_2"],
@@ -530,10 +543,13 @@ def main():
     # ==============================================================================================
     # MOD: using the pre-shifted rows
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: raw Python `for` loop using `df.iloc[]` " +
-           "index-based indexing and the pre-shifted rows ===")
+    print(
+        f"\n=== Technique {technique_num}: raw Python `for` loop using `df.iloc[]` "
+        + "index-based indexing and the pre-shifted rows ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_MOD_raw_for_loop_using_df.iloc[]_indexing_and_the_preshifted_rows"
+
     def technique_to_run_and_time(df):
 
         # column indices
@@ -547,7 +563,7 @@ def main():
         i_A_minus_1 = -2
         i_A_plus_1 = -1
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for i in range(len(df)):
             val[i] = calculate_val(
                 df.iloc[i, i_A_minus_2],
@@ -566,13 +582,16 @@ def main():
     # ==============================================================================================
     # MOD: using the pre-shifted rows
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [BAD-**NEVER** USE!]: use `iterrows()` in a Python "
-          f"`for` loop, and the pre-shifted rows ===")
+    print(
+        f"\n=== Technique {technique_num} [BAD-**NEVER** USE!]: use `iterrows()` in a Python "
+        f"`for` loop, and the pre-shifted rows ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_MOD_iterrows_in_for_loop_and_the_preshifted_rows"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for index, row in df.iterrows():
             val[index] = calculate_val(
                 row["A_i_minus_2"],
@@ -595,9 +614,10 @@ def main():
     # https://stackoverflow.com/a/59413206/4561887
     # ==============================================================================================
     name = f"{technique_num}_itertuples_in_for_loop"
+
     def technique_to_run_and_time(df):
 
-        val = [np.NAN]*len(df)
+        val = [np.NAN] * len(df)
         for row in df.itertuples():
             val[row.Index] = calculate_val(
                 row.A_i_minus_2,
@@ -615,10 +635,13 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: vectorization, w/`apply()` for " +
-           "if statement corner-case ===")
+    print(
+        f"\n=== Technique {technique_num}: vectorization, w/`apply()` for "
+        + "if statement corner-case ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_vectorization__with_apply_for_if_statement_corner_case"
+
     def technique_to_run_and_time(df):
 
         # In this particular example, since we have an embedded `if-else` statement for the `B` column,
@@ -646,18 +669,19 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: vectorization, w/list comprehension for " +
-           "if statement corner-case ===")
+    print(
+        f"\n=== Technique {technique_num}: vectorization, w/list comprehension for "
+        + "if statement corner-case ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_vectorization__with_list_comprehension_for_if_statment_corner_case"
+
     def technique_to_run_and_time(df):
 
         # In this particular example, since we have an embedded `if-else` statement for the `B` column,
         # pure vectorization is less intuitive. So, first we'll calculate a new `B` column using **list
         # comprehension**, then we'll use vectorization for the rest.
-        df["B_new"] = [
-            calculate_new_column_b_value(b_value) for b_value in df["B"]
-        ]
+        df["B_new"] = [calculate_new_column_b_value(b_value) for b_value in df["B"]]
 
         # Now we can use vectorization for the rest. "Vectorization" in this case means to simply use
         # the column series variables in equations directly, without manually iterating over them.
@@ -677,10 +701,13 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: pure vectorization: w/`df.loc[]` " +
-           "boolean array indexing for if statement corner-case ===")
+    print(
+        f"\n=== Technique {technique_num}: pure vectorization: w/`df.loc[]` "
+        + "boolean array indexing for if statement corner-case ==="
+    )
     # ==============================================================================================
     name = f"{technique_num}_pure_vectorization__with_df.loc[]_boolean_array_indexing_for_if_statment_corner_case"
+
     def technique_to_run_and_time(df):
 
         # If statement to evaluate:
@@ -741,6 +768,7 @@ def main():
     # 1. https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html
     # ==============================================================================================
     name = f"{technique_num}_apply_function_with_lambda"
+
     def technique_to_run_and_time(df):
 
         df["val"] = df.apply(
@@ -751,21 +779,24 @@ def main():
                 row["A_i_plus_1"],
                 row["B"],
                 row["C"],
-                row["D"]
+                row["D"],
             ),
-            axis='columns' # same as `axis=1`: "apply function to each row", rather than to each column
+            axis="columns",  # same as `axis=1`: "apply function to each row", rather than to each column
         )
 
     run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension " +
-           "with `zip()` and direct variable assignment passed to func ===")
+    print(
+        f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension "
+        + "with `zip()` and direct variable assignment passed to func ==="
+    )
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
     name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment_passed_to_func"
+
     def technique_to_run_and_time(df):
 
         df["val"] = [
@@ -774,23 +805,15 @@ def main():
             # sub-routines or multi-line if statements.
             #
             # I'm using a function call.
-            calculate_val(
-                A_i_minus_2,
-                A_i_minus_1,
-                A,
-                A_i_plus_1,
-                B,
-                C,
-                D
-            ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
-            in zip(
+            calculate_val(A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D)
+            for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D in zip(
                 df["A_i_minus_2"],
                 df["A_i_minus_1"],
                 df["A"],
                 df["A_i_plus_1"],
                 df["B"],
                 df["C"],
-                df["D"]
+                df["D"],
             )
         ]
 
@@ -798,32 +821,29 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension " +
-           "with `zip()` and direct variable assignment calculated in place ===")
+    print(
+        f"\n=== Technique {technique_num} [EASIEST/VERY GOOD]: using a list comprehension "
+        + "with `zip()` and direct variable assignment calculated in place ==="
+    )
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
     name = f"{technique_num}_list_comprehension_w_zip_and_direct_variable_assignment_calculated_in_place"
+
     def technique_to_run_and_time(df):
 
         df["val"] = [
-            2 * A_i_minus_2
-            + 3 * A_i_minus_1
-            + 4 * A
-            + 5 * A_i_plus_1
+            2 * A_i_minus_2 + 3 * A_i_minus_1 + 4 * A + 5 * A_i_plus_1
             # Python ternary operator; don't forget parentheses around the entire ternary expression!
-            + ((6 * B) if B > 0 else (60 * B))
-            + 7 * C
-            - 8 * D
-            for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
-            in zip(
+            + ((6 * B) if B > 0 else (60 * B)) + 7 * C - 8 * D
+            for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D in zip(
                 df["A_i_minus_2"],
                 df["A_i_minus_1"],
                 df["A"],
                 df["A_i_plus_1"],
                 df["B"],
                 df["C"],
-                df["D"]
+                df["D"],
             )
         ]
 
@@ -831,12 +851,15 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: using a list comprehension with `zip()` and `row` " +
-          "tuple passed to func ===")
+    print(
+        f"\n=== Technique {technique_num}: using a list comprehension with `zip()` and `row` "
+        + "tuple passed to func ==="
+    )
     # For more styles and ways to use list comprehensions, see:
     # https://stackoverflow.com/a/55557758/4561887
     # ==============================================================================================
     name = f"{technique_num}_list_comprehension_w_zip_and_row_tuple_passed_to_func"
+
     def technique_to_run_and_time(df):
 
         df["val"] = [
@@ -848,15 +871,15 @@ def main():
                 row[4],
                 row[5],
                 row[6],
-            ) for row
-            in zip(
+            )
+            for row in zip(
                 df["A_i_minus_2"],
                 df["A_i_minus_1"],
                 df["A"],
                 df["A_i_plus_1"],
                 df["B"],
                 df["C"],
-                df["D"]
+                df["D"],
             )
         ]
 
@@ -864,8 +887,10 @@ def main():
 
     # ==============================================================================================
     technique_num += 1
-    print(f"\n=== Technique {technique_num}: using a list comprehension with `.to_numpy()` " +
-          "and direct variable assignment passed to func ===")
+    print(
+        f"\n=== Technique {technique_num}: using a list comprehension with `.to_numpy()` "
+        + "and direct variable assignment passed to func ==="
+    )
     # Notes:
     # 1. This could be done with a `row` tuple, as just above, too, but I won't show that minor
     # variation.
@@ -878,6 +903,7 @@ def main():
     #   > columns together is the most straightforward workaround to this.
     # ==============================================================================================
     name = f"{technique_num}_list_comprehension_w__to_numpy__and_direct_variable_assignment_passed_to_func"
+
     def technique_to_run_and_time(df):
 
         df["val"] = [
@@ -886,15 +912,8 @@ def main():
             # sub-routines or multi-line if statements.
             #
             # I'm using a function call.
-            calculate_val(
-                A_i_minus_2,
-                A_i_minus_1,
-                A,
-                A_i_plus_1,
-                B,
-                C,
-                D
-            ) for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
+            calculate_val(A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D)
+            for A_i_minus_2, A_i_minus_1, A, A_i_plus_1, B, C, D
             # Note: this `[[...]]` double-bracket indexing is used to select a subset of columns
             # from the dataframe. The inner `[]` brackets create a list from the column names within
             # them, and the outer `[]` brackets accept this list to index into the dataframe and
@@ -907,16 +926,10 @@ def main():
             #     https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas/55557758#comment136020567_55557758
             # - One of the **list comprehension** examples in this answer here uses `.to_numpy()`
             #   like this: https://stackoverflow.com/a/55557758/4561887
-            in df[[
-                "A_i_minus_2",
-                "A_i_minus_1",
-                "A",
-                "A_i_plus_1",
-                "B",
-                "C",
-                "D"
-            ]].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
-                        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
+            in df[
+                ["A_i_minus_2", "A_i_minus_1", "A", "A_i_plus_1", "B", "C", "D"]
+            ].to_numpy()  # NB: `.values` works here too, but is deprecated. See:
+            # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.values.html
         ]
 
     run_and_time_this_technique(name, technique_to_run_and_time, df_original, dt_sec, df_dict)
@@ -934,8 +947,8 @@ def main():
         "Method": list(dt_sec.keys()),
         "Time_sec": list(dt_sec.values()),
     }
-    results_df = pd.DataFrame(results_dict) # columns are "Method" and "Time_sec"
-    results_df = results_df.sort_values(by="Time_sec", axis='rows', ascending=False)
+    results_df = pd.DataFrame(results_dict)  # columns are "Method" and "Time_sec"
+    results_df = results_df.sort_values(by="Time_sec", axis="rows", ascending=False)
     # Be sure to reset the indices after sorting, or else the indices will be sorted out of their
     # original order now too!
     # - Note: this defaults to `drop=False`, which means the old indices will be kept in a new column
@@ -943,7 +956,8 @@ def main():
     #   column, pass argument `drop=True`.
     results_df = results_df.reset_index()
     results_df["Method_short_names"] = results_df["Method"].apply(
-        lambda s: add_newlines_every_n_chars(s, 9))
+        lambda s: add_newlines_every_n_chars(s, 9)
+    )
 
     # Now plot the results in a bar chart
     plot_data(results_df, NUM_ROWS, NUM_COLS)
@@ -952,9 +966,8 @@ def main():
 
 
 # Only run `main()` if this script is **run**, NOT imported
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
 
 
 # pylint: disable-next=pointless-string-statement

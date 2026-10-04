@@ -43,19 +43,21 @@ import pandas as pd
 FULL_PATH_TO_SCRIPT = os.path.abspath(__file__)
 SCRIPT_DIRECTORY = str(os.path.dirname(FULL_PATH_TO_SCRIPT))
 
+
 def mkdir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
+
 
 mkdir(f"{SCRIPT_DIRECTORY}/../fake_data/figures")
 
 filename = "fake_person_data.csv"
 filepath = f"{SCRIPT_DIRECTORY}/../fake_data/{filename}"
-print(f"Reading file: \"{filepath}\"")
+print(f'Reading file: "{filepath}"')
 
 dataframe = pd.read_csv(
     filepath,
-    sep=r"[,\t]+", # allow any number of either commas or tabs as the separator
+    sep=r"[,\t]+",  # allow any number of either commas or tabs as the separator
     header=0,  # the first non-blank row is the header
     # NB: using the "python" engine instead of the default "c" engine is much slower, but allows
     # us to have a regex `sep` separator value above, instead of just specifying a single
@@ -74,10 +76,9 @@ dataframe = pd.read_csv(
 
 # write it back to a plain CSV file with commas as the delimiter
 filepath_out = os.path.splitext(filepath)[0] + "_converted.csv"
-print(f"Writing file: \"{filepath_out}\"")
+print(f'Writing file: "{filepath_out}"')
 # Note: for tab-delimited, use `sep="\t"` instead of `sep=","`
 dataframe.to_csv(filepath_out, sep=",", index=False)
-
 
 
 # pylint: disable-next=pointless-string-statement

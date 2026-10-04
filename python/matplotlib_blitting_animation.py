@@ -59,4 +59,4 @@ for j in range(100):
     # flush any pending GUI events, re-painting the screen if needed
     fig.canvas.flush_events()
     # you can put a pause in if you want to slow things down
-    plt.pause(.1)
+    plt.pause(0.1)

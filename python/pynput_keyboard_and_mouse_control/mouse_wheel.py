@@ -54,19 +54,22 @@ References:
 
 from pynput import mouse
 
+
 def on_scroll(x, y, dx, dy):
-    print('Scrolled {}; (x, y)=({:4d}, {:4d}); (dx, dy)={}'.format(
-        'down' if dy < 0 else 'up  ',
-        x, y,
-        (dx, dy),
-    ))
+    print(
+        "Scrolled {}; (x, y)=({:4d}, {:4d}); (dx, dy)={}".format(
+            "down" if dy < 0 else "up  ",
+            x,
+            y,
+            (dx, dy),
+        )
+    )
+
 
 # block the main thread, listening
 # Collect events until released
-with mouse.Listener(
-        on_scroll=on_scroll) as listener:
+with mouse.Listener(on_scroll=on_scroll) as listener:
     listener.join()
-
 
 
 # def main():
@@ -79,7 +82,6 @@ with mouse.Listener(
 # # Only run `main()` if this script is **run**, NOT imported
 # if __name__ == '__main__':
 #     main()
-
 
 
 # pylint: disable-next=pointless-string-statement
