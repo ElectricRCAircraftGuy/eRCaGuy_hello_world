@@ -1,5 +1,7 @@
 This file is part of eRCaGuy_hello_world: https://github.com/ElectricRCAircraftGuy/eRCaGuy_hello_world
 
+For `ssh` setup, see instead: https://github.com/ElectricRCAircraftGuy/eRCaGuy_dotfiles/tree/master/home/.ssh.
+
 
 This `Dockerfile` allows you to easily build and use a docker image to get and use the [mingw-w64](https://www.mingw-w64.org/) cross compiler toolchain to build C and C++ executables for Windows on Linux, for instance. 
 
