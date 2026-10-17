@@ -44,19 +44,30 @@ help:
 	help \
 	docker_run
 
-# Run a Docker container with auto-kill after `AUTOKILL_TIME_SEC` seconds
+# Run a Docker container with auto-kill after `AUTOKILL_TIME_SEC` seconds.
+# - See my answer: https://stackoverflow.com/a/80005935/4561887
 docker_run:
 	@bash -c \
 	' \
+		AUTOKILL_STILL_ACTIVE_FLAGFILE=$$( \
+			mktemp /dev/shm/docker-autokill.XXXXXX \
+		) || exit; \
 		set -m; \
-		sleep $(AUTOKILL_TIME_SEC) \
-			&& docker kill "ubuntu-latest" \
-			&& echo "Autokilling complete..." & \
+		( \
+			sleep $(AUTOKILL_TIME_SEC) \
+				&& rm -- "$$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+				&& docker kill "ubuntu-latest"; \
+		) & \
 		timer_pgid=$$!; \
 		set +m; \
 		docker run --name "ubuntu-latest" -it --rm ubuntu bash; \
 		docker_status=$$?; \
-		kill -- "-$$timer_pgid" 2>/dev/null || true; \
-		wait -f "$$timer_pgid" 2>/dev/null || true; \
+		if [[ -e "$$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then \
+			kill -- "-$$timer_pgid" 2>/dev/null || true; \
+			wait -f "$$timer_pgid" 2>/dev/null || true; \
+			rm -f -- "$$AUTOKILL_STILL_ACTIVE_FLAGFILE"; \
+		elif wait -f "$$timer_pgid"; then \
+			printf "\nAutokilling complete...\n"; \
+		fi; \
 		exit "$$docker_status" \
 	'

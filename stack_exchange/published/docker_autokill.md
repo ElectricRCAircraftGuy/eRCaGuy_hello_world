@@ -11,6 +11,8 @@ The [main answer](https://stackoverflow.com/a/48299490/4561887) says to use `tim
 
 > I tried `timeout` for hours. Unfortunately, while it _does_ work in an active shell, it does not work inside a script or Makefile. Even with `timeout --foreground`, Docker Compose captures the kill signal and it never gets forwarded to the individual running containers. After hours of terrible and hacky solutions, finally, I came up with this answer which does work everywhere I need it to and is _super simple_: [How to auto-kill a set of Docker Compose services/containers after a set amount of time](https://stackoverflow.com/a/80005935/4561887).
 
+Making it work properly in all scenarios makes it much less simple, but it is still the best solution I can find.
+
 
 ## Quick summary
 
@@ -21,8 +23,15 @@ Here's the most basic fully-functional example, and _unlike `timeout`_, this tec
     `docker_run_with_autokill.sh`:
     ```bash
     # 1. Start autokill timer
+    AUTOKILL_STILL_ACTIVE_FLAGFILE="$(
+        mktemp /dev/shm/docker-autokill.XXXXXX
+    )" || exit
     set -m  # enable job control
-    sleep 30 && docker kill "ubuntu-latest" &
+    (
+        sleep 30 \
+            && rm -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+            && docker kill "ubuntu-latest"
+    ) &
     timer_pgid="$!"
     set +m  # disable job control
 
@@ -31,9 +40,16 @@ Here's the most basic fully-functional example, and _unlike `timeout`_, this tec
     docker_status="$?"
 
     # 3. In case the user stops the Docker container early with Ctrl+C, 
-    #    kill the timer and exit
-    kill -- "-$timer_pgid" 2>/dev/null
-    wait -f "$timer_pgid" 2>/dev/null
+    #    kill the pending timer and exit
+    if [[ -e "$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then
+        # The autokill timer is still running, so kill the pending timer
+        kill -- "-$timer_pgid" 2>/dev/null || true
+        wait -f "$timer_pgid" 2>/dev/null || true
+        rm -f -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE"
+    elif wait -f "$timer_pgid"; then
+        # The autokill timer worked and has fully completed
+        printf '\nAutokilling complete...\n'
+    fi
     exit "$docker_status"
     ```
 
@@ -66,19 +82,30 @@ Here's the most basic fully-functional example, and _unlike `timeout`_, this tec
         docker_run
 
     # Run a Docker container with auto-kill after `AUTOKILL_TIME_SEC` seconds
+    # - See my answer: https://stackoverflow.com/a/80005935/4561887
     docker_run:
         @bash -c \
         ' \
+            AUTOKILL_STILL_ACTIVE_FLAGFILE=$$( \
+                mktemp /dev/shm/docker-autokill.XXXXXX \
+            ) || exit; \
             set -m; \
-            sleep $(AUTOKILL_TIME_SEC) \
-                && docker kill "ubuntu-latest" \
-                && echo "Autokilling complete..." & \
+            ( \
+                sleep $(AUTOKILL_TIME_SEC) \
+                    && rm -- "$$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+                    && docker kill "ubuntu-latest"; \
+            ) & \
             timer_pgid=$$!; \
             set +m; \
             docker run --name "ubuntu-latest" -it --rm ubuntu bash; \
             docker_status=$$?; \
-            kill -- "-$$timer_pgid" 2>/dev/null || true; \
-            wait -f "$$timer_pgid" 2>/dev/null || true; \
+            if [[ -e "$$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then \
+                kill -- "-$$timer_pgid" 2>/dev/null || true; \
+                wait -f "$$timer_pgid" 2>/dev/null || true; \
+                rm -f -- "$$AUTOKILL_STILL_ACTIVE_FLAGFILE"; \
+            elif wait -f "$$timer_pgid"; then \
+                printf "\nAutokilling complete...\n"; \
+            fi; \
             exit "$$docker_status" \
         '
     ```
@@ -103,9 +130,9 @@ Here's the most basic fully-functional example, and _unlike `timeout`_, this tec
 ## Details
 
 
-## 1. Introduction, and `docker run` with auto-kill
+## 1. Introduction, problems & solutions, and `docker run` with auto-kill
 
-**The simplest solution if you will never use <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop the container before the sleep ends:**
+#### The simplest solution if you will never use <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop the container before the sleep ends
 
 To auto-kill the Docker image after a set amount of time, we use `sleep`, `docker kill`, and a named container we can reference with `docker kill`. Notice that putting an ampersand (`&`) at the end of a line causes that line to run in a background process so that the next line after it is run immediately in the main foreground process. That's super important here:
 
@@ -117,7 +144,7 @@ sleep 30 && docker kill "ubuntu-latest" &
 docker run --name "ubuntu-latest" -it --rm ubuntu bash
 ```
 
-**Problem 1: Sleep still runs after container stops:**
+#### Problem 1: Sleep still runs after container stops
 
 There's a problem here, though. If you use <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop the container before the sleep ends, the sleep command will still run and try to kill the container that is already stopped. This can especially become confusing if you run the whole command again before the first sleep expires, as the old sleep from the previous run will finish and kill your current run at an unexpected time. 
 
@@ -175,7 +202,7 @@ wait -f "$timer_pgid" 2>/dev/null
 exit "$docker_status"
 ```
 
-**Problem 2: running many containers at once doesn't work if they all have the same container name:**
+#### Problem 2: running many containers at once doesn't work if they all have the same container name
 
 If you need to run many containers at once, each needs their own unique container `--name` to be auto-killed after the sleep. An easy way to do this is to append to the container name a timestamp down to the nanoseconds, with format `YYYY.MM.DD-HH.MM.SS.NNNNNNNNN`. That can be achieved with the `date` command in Bash, like this: `date +%Y.%m.%d-%H.%M.%S.%N`. 
 
@@ -201,6 +228,59 @@ wait -f "$timer_pgid" 2>/dev/null
 exit "$docker_status"
 ```
 
+#### Problem 3: race condition if you want to do something post-auto-kill
+
+Let's say we want to print "Autokill complete!" after the container is auto-killed, so we do this for the sleep line instead:
+
+```bash
+sleep 30 && docker kill "$CONTAINER_NAME" && printf '\nAutokill complete!\n' &
+```
+
+Well, it's now broken and we now have a race condition! This is okay, with the extra command *before* the `docker kill` command: 
+```bash
+sleep 30 && printf '\nAutokilling...\n' && docker kill "$CONTAINER_NAME" &
+```
+...but putting the extra command *after* the `docker kill` command causes a race condition where the kill command kills the main process, causing it to return from running the container and then immediately call `kill -- "-$timer_pgid" 2>/dev/null` which then _kills the process group running the `printf '\nAutokill complete!\n'` command itself!_ This race condition means that anything after the `docker kill` command may never run at all. 
+
+**The solution** is to not put any commands after the kill command, and instead use a flag file such as `AUTOKILL_STILL_ACTIVE_FLAGFILE` in the RAM-only shared memory ("shm") file section `/dev/shm` to indicate to a returning foreground process when the autokill timer is still active. This lets you do certain things, such as a post-kill print, when the autokill timer expires and kills the main process. So, **in the sleep timer auto-stop/kill command chain, the `docker stop`, `docker kill`, or `docker compose down` command _must_ be last.** 
+
+#### And that leads us to our final solution
+...already presented in the "Quick summary" at the top. 
+
+The timer removes the RAM-backed flag before calling `docker kill`. Once `docker run` returns, the foreground shell cancels the timer only if the flag still exists. Otherwise, it waits for the timer's kill or stop command to finish and prints `Autokilling complete...` itself, but only if that command succeeded. That message is no longer in a background process that cleanup prematurely kills with `kill -- "-$timer_pgid"`.
+
+```bash
+    # 1. Start autokill timer
+    AUTOKILL_STILL_ACTIVE_FLAGFILE="$(
+        mktemp /dev/shm/docker-autokill.XXXXXX
+    )" || exit
+    set -m  # enable job control
+    (
+        sleep 30 \
+            && rm -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+            && docker kill "ubuntu-latest"
+    ) &
+    timer_pgid="$!"
+    set +m  # disable job control
+
+    # 2. Run the container
+    docker run --name "ubuntu-latest" -it --rm ubuntu bash
+    docker_status="$?"
+
+    # 3. In case the user stops the Docker container early with Ctrl+C, 
+    #    kill the pending timer and exit
+    if [[ -e "$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then
+        # The autokill timer is still running, so kill the pending timer
+        kill -- "-$timer_pgid" 2>/dev/null || true
+        wait -f "$timer_pgid" 2>/dev/null || true
+        rm -f -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE"
+    elif wait -f "$timer_pgid"; then
+        # The autokill timer worked and has fully completed
+        printf '\nAutokilling complete...\n'
+    fi
+    exit "$docker_status"
+```
+
 
 ## 2. `docker compose run` with auto-kill
 
@@ -208,9 +288,15 @@ Here's an example with `docker compose run` to start and auto-kill a single serv
 
 ```bash
 # 1. Start autokill timer
+AUTOKILL_STILL_ACTIVE_FLAGFILE="$(
+    mktemp /dev/shm/docker-autokill.XXXXXX
+)" || exit
 set -m  # enable job control
-sleep 30 && docker stop -s INT my-container-name \
-    && echo "" && echo "Autokilling complete..." &
+(
+    sleep 30 \
+        && rm -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+        && docker stop -s INT my-container-name
+) &
 timer_pgid="$!"
 set +m  # disable job control
 
@@ -224,10 +310,17 @@ docker compose \
     my-service
 docker_status="$?"
 
-# 3. In case the user stops the Docker container early with Ctrl+C, 
-#    kill the timer and exit
-kill -- "-$timer_pgid" 2>/dev/null
-wait -f "$timer_pgid" 2>/dev/null
+# 3. In case the user stops the Docker container early with Ctrl+C,
+#    kill the pending timer and exit
+if [[ -e "$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then
+    # The autokill timer is still running, so kill the pending timer
+    kill -- "-$timer_pgid" 2>/dev/null || true
+    wait -f "$timer_pgid" 2>/dev/null || true
+    rm -f -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE"
+elif wait -f "$timer_pgid"; then
+    # The autokill timer worked and has fully completed
+    printf '\nAutokilling complete...\n'
+fi
 exit "$docker_status"
 ```
 
@@ -240,9 +333,15 @@ Here's a super simple example to start and auto-kill many services/containers at
 
 ```bash
 # 1. Start autokill timer to stop the running containers after 30 seconds
+AUTOKILL_STILL_ACTIVE_FLAGFILE="$(
+    mktemp /dev/shm/docker-autokill.XXXXXX
+)" || exit
 set -m  # enable job control
-sleep 30 && docker compose down \
-    && echo "" && echo "Autokilling complete...Press Enter to exit." &
+(
+    sleep 30 \
+        && rm -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+        && docker compose down
+) &
 timer_pgid="$!"
 set +m  # disable job control
 
@@ -250,10 +349,17 @@ set +m  # disable job control
 docker compose up
 docker_status="$?"
 
-# 3. In case the user stops the Docker container early with Ctrl+C, 
-#    kill the timer and exit
-kill -- "-$timer_pgid" 2>/dev/null
-wait -f "$timer_pgid" 2>/dev/null
+# 3. In case the user stops the Docker containers early with Ctrl+C,
+#    kill the pending timer and exit
+if [[ -e "$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then
+    # The autokill timer is still running, so kill the pending timer
+    kill -- "-$timer_pgid" 2>/dev/null || true
+    wait -f "$timer_pgid" 2>/dev/null || true
+    rm -f -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE"
+elif wait -f "$timer_pgid"; then
+    # The autokill timer worked and has fully completed
+    printf '\nAutokilling complete...\n'
+fi
 exit "$docker_status"
 ```
 
@@ -266,15 +372,18 @@ AUTOKILL_TIME_SEC="3600"
 
 # 1. Configure a background sleep process to wake up and stop/kill the 
 #    Docker containers after the specified amount of time.
+AUTOKILL_STILL_ACTIVE_FLAGFILE="$(
+    mktemp /dev/shm/docker-autokill.XXXXXX
+)" || exit
 set -m  # enable job control
-sleep "$AUTOKILL_TIME_SEC" \
-    && docker compose \
-        -f compose.yml \
-        --env-file .docker.env \
-        down \
-    && echo "" \
-    && echo "Autokilling complete...All docker containers stopped" \
-            "and removed. Press Enter to exit." &
+(
+    sleep "$AUTOKILL_TIME_SEC" \
+        && rm -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE" \
+        && docker compose \
+            -f compose.yml \
+            --env-file .docker.env \
+            down
+) &
 timer_pgid="$!"
 set +m  # disable job control
 
@@ -290,10 +399,19 @@ docker compose \
         myservice3
 docker_status="$?"
 
-# 3. In case the user stops the Docker container early with Ctrl+C, 
-#    kill the timer and exit
-kill -- "-$timer_pgid" 2>/dev/null
-wait -f "$timer_pgid" 2>/dev/null
+# 3. In case the user stops the Docker containers early with Ctrl+C,
+#    kill the pending timer and exit
+if [[ -e "$AUTOKILL_STILL_ACTIVE_FLAGFILE" ]]; then
+    # The autokill timer is still running, so kill the pending timer
+    kill -- "-$timer_pgid" 2>/dev/null || true
+    wait -f "$timer_pgid" 2>/dev/null || true
+    rm -f -- "$AUTOKILL_STILL_ACTIVE_FLAGFILE"
+elif wait -f "$timer_pgid"; then
+    # The autokill timer worked and has fully completed
+    printf '\n%s %s\n' \
+        'Autokilling complete...All docker containers stopped' \
+        'and removed.'
+fi
 exit "$docker_status"
 ```
 
@@ -302,7 +420,7 @@ It works! I'm very happy to have finally figured out the above patterns and tech
 
 ## Process groups 
 
-Remember that what allows us to kill the `sleep && docker stop && echo` type string of commands is using _process groups._ That is enabled in the shell with `set -m` and disabled with `set +m`. It is disabled by default. When enabled, `$!` grabs a Process Group ID, or PGID (instead of a regular Process ID, or PID), and you must put a minus sign (`-`) before it to kill the whole group, as in: `kill -- "-$timer_pgid"`. 
+Remember that what allows us to kill the `sleep && docker stop && echo` type string of commands is using _process groups._ That is enabled in the shell with `set -m` and disabled with `set +m`. It is disabled by default. When enabled, `$!` grabs a Process Group ID, or PGID (instead of a regular Process ID, or PID), and you must put a minus sign (`-`) before it to kill the whole group, as in: `kill -- "-$timer_pgid"`. Use a RAM-based flag file to avoid the auto-kill race condition and allow running custom commands after an auto-kill. Keeping the file in "shared memory"/RAM via the `/dev/shm` tempfs dir avoids unnecessary flash disk wear. 
 
 References: 
 1. Enable process "job control"; see: `set --help` and:
