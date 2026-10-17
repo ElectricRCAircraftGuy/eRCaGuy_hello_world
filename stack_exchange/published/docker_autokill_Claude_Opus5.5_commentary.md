@@ -1,5 +1,6 @@
 
-Oct. 2026
+Oct. 2026  
+Claude Opus 5.5 commentary on my answer. 
 
 
 ## Where the article is right
