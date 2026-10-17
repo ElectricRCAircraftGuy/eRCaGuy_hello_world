@@ -101,8 +101,9 @@ cat /proc/sys/net/ipv4/ip_local_port_range
 Change the ephemeral port range to `34000` to `60999`, for example:
 ```bash
 echo 'net.ipv4.ip_local_port_range = 34000 60999' | sudo tee /etc/sysctl.d/99-custom-port-range.conf
+# Apply only this configuration file.
 sudo sysctl -p /etc/sysctl.d/99-custom-port-range.conf
-# OR, set it for the whole system
+# OR, reload all system sysctl configuration files, including this one.
 sudo sysctl --system
 
 # Verify the new ephemeral port range
